@@ -1,0 +1,32 @@
+{
+    # Comment the next line in production. But also make sure that Docker forwards
+    # the host ports 80 and 443 to the web server.
+    auto_https off
+
+    email webmaster@example.com
+
+    log {
+        level WARN
+    }
+}
+
+# Remove port number in production to allow HTTPS, too
+localhost:80 {
+        encode zstd gzip
+        reverse_proxy openbook-server:8000
+
+        handle_path /static/* {
+            file_server
+            root /srv/www/static.volume
+        }
+
+        handle_path /media/* {
+            file_server
+            root /srv/www/media.volume
+        }
+}
+
+# # Remove www. prefix
+# www.example.com {
+#         redir https://example.com{uri}
+# }

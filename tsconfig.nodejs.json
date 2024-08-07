@@ -1,0 +1,16 @@
+{
+    // Overrides for Node.js executables, not using esbuild
+    "compilerOptions": {
+        "lib": ["ESNext"],
+        "module": "nodenext",
+        "moduleResolution": "NodeNext",
+        "noEmit": false,
+        "declaration": true,
+        "sourceMap": true,
+        "declarationMap": true,
+        "moduleResolution": "NodeNext"
+
+        // // Values to set in the project tsconfig.json
+        // "outDir": "./dist",
+    }
+}

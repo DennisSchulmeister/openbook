@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0" version="24.7.6">
+  <diagram name="Seite-1" id="w_m7BjCKqZNsTvvnKteF">
+    <mxGraphModel dx="1834" dy="1166" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="GJldR5To6ET6LhqnBBBu-1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-120" y="100" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-23" value="" style="group;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="-330" y="100" width="190" height="116" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-11" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.web_server;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-23" vertex="1">
+          <mxGeometry width="76.5" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-15" value="&lt;div&gt;&lt;b&gt;Webserver&lt;/b&gt;&lt;/div&gt;&lt;div&gt;(e.g. Apache or Caddy)&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;editable=1;movable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-23" vertex="1">
+          <mxGeometry x="40" y="76" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-24" value="" style="group;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="190" y="280" width="210" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-10" value="&lt;div&gt;&lt;b&gt;Redis&lt;/b&gt;&lt;/div&gt;&lt;div&gt;(for Django Channel Layers)&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;editable=1;movable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-24" vertex="1">
+          <mxGeometry x="30" y="80" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-14" value="" style="group;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-24" vertex="1" connectable="0">
+          <mxGeometry width="95" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-13" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.license_server;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-14" vertex="1">
+          <mxGeometry width="65" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-3" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-14" vertex="1">
+          <mxGeometry x="45" y="52" width="50" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-25" value="" style="group;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="190" y="-70" width="170" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-22" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.database_server;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-25" vertex="1">
+          <mxGeometry width="80" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-2" value="&lt;div&gt;&lt;b&gt;Database&lt;/b&gt;&lt;/div&gt;&lt;div&gt;(e.g. Postgres)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;editable=1;movable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-25" vertex="1">
+          <mxGeometry x="70" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-35" value="" style="group;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="-80" y="128" width="197" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-27" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.netscaler_vpx;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-35" vertex="1">
+          <mxGeometry width="97" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-29" value="&lt;div&gt;&lt;b&gt;ASGI-Server&lt;/b&gt;&lt;/div&gt;&lt;div&gt;(e.g. Daphne)&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;editable=1;movable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="oOWXR82EzIr8iiE3WwQx-35" vertex="1">
+          <mxGeometry x="97" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-36" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;shadow=0;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-250" y="150" as="sourcePoint" />
+            <mxPoint x="-90" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-38" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;shadow=0;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="20" y="176" as="sourcePoint" />
+            <mxPoint x="180" y="308" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oOWXR82EzIr8iiE3WwQx-37" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;shadow=0;editable=1;movable=1;resizable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="20" y="120" as="sourcePoint" />
+            <mxPoint x="180" y="-10" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GJldR5To6ET6LhqnBBBu-3" value="OpenBook Server" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#666666;spacing=0;editable=1;movable=1;rotatable=1;deletable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-125" y="180" width="120" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

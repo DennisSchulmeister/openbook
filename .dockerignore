@@ -1,0 +1,6 @@
+**/_media
+**/_static
+**/__pycache__
+**/*.template
+
+openbook_server/frontend

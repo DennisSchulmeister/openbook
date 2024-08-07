@@ -1,0 +1,98 @@
+# OpenBook Studio: Interactive Online Textbooks - Docker Compose Example
+# © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+services:
+    #---------------------------------------------------------------------------
+    # Postgres Database
+    # https://github.com/docker-library/docs/blob/master/postgres/README.md
+    # https://postgrest.org/en/v12/explanations/install.html#install
+    #---------------------------------------------------------------------------
+    postgres:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        shm_size: 256mb
+        environment:
+            # NOTE: Delete the postgres volume, when you are changing the superuser
+            # credentials here. Otherwise the change has no effect, if the service
+            # has been started before.
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: lernspiel
+        volumes:
+          - postgres:/var/lib/postgresql/data
+    
+    #---------------------------------------------------------------------------
+    # Redis Key/Value Storage - Used by Django Channels
+    # https://hub.docker.com/_/redis
+    #---------------------------------------------------------------------------
+    redis:
+        image: redis:alpine
+        restart: unless-stopped
+        volumes:
+            - redis:/data
+
+    #---------------------------------------------------------------------------
+    # OpenBook Server
+    #---------------------------------------------------------------------------
+    openbook-server:
+        build:
+            context: ".."
+            dockerfile: _docker/Dockerfile
+        restart: unless-stopped
+        #ports:
+        #    - 127.0.0.1:8888:8000
+        depends_on:
+            - postgres
+            - redis
+        volumes:
+            - ./openbook_server.local_settings.py:/app/openbook_server/openbook_server/local_settings.py
+            - openbook_static:/app/openbook_server/_static.volume
+            - openbook_media:/app/openbook_server/_media.volume
+        environment:
+            DJANGO_SETTINGS_MODULE: openbook_server.settings
+            LS_LOAD_INITIAL_DATA: 1
+    
+    #---------------------------------------------------------------------------
+    # Caddy Frontend Web Server - Serves static files and media uploads and
+    # forwards everything else to the OpenBook server.
+    #
+    # https://hub.docker.com/_/caddy
+    #
+    # NOTE: You might want to run your own frontend server not in Docker, e.g.
+    # when deploying on a host that already has a frontend web server running.
+    # In that case create a volume that maps the following directories to the
+    # host filesystem and serve them with your web server.
+    #
+    #   - /openbook_server/_static.volume
+    #   - /openbook_server/_media.volume
+    #
+    # Make sure to forward all other HTTP requests to the OpenBook server.
+    #---------------------------------------------------------------------------
+    webserver:
+        image: caddy:latest
+        restart: unless-stopped
+        cap_add:
+            - NET_ADMIN
+        ports:
+            - 127.0.0.1:8080:80
+            #- 127.0.0.1:443:443
+            #- 127.0.0.1:443:443/udp
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile
+            - caddy_config:/config
+            - caddy_data:/data
+            - openbook_static:/srv/www/static.volume
+            - openbook_media:/srv/www/media.volume
+
+volumes:
+    postgres:
+    redis:
+    openbook_static:
+    openbook_media:
+    caddy_config:
+    caddy_data:

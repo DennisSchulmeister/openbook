@@ -1,0 +1,36 @@
+{
+    "name": "@openbook-studio/workspace",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "openbook_server/frontend",
+        "libraries/*"
+    ],
+    "scripts": {
+        "redis": "redis-server",
+        "runserver": "openbook_server/manage.py runserver",
+        "maildev": "maildev -s 1025 -w 8887",
+        "frontend": "cd openbook_server/frontend; npm run watch",
+        "start": "conc -n redis,django,fake-smtp,frontend -c auto \"npm run redis\" \"npm run runserver\" \"npm run maildev\" \"npm run frontend\""
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.8",
+        "@typescript-eslint/eslint-plugin": "^7.13.1",
+        "conc": "^0.0.3",
+        "concurrently": "^8.2.2",
+        "esbuild": "^0.21.5",
+        "esbuild-plugin-less": "^1.3.5",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-import-resolver-typescript": "^3.6.1",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-prettier": "^5.1.3",
+        "eslint-plugin-unused-imports": "^3.2.0",
+        "maildev": "^2.1.0",
+        "prettier": "^3.3.2",
+        "rimraf": "^5.0.7",
+        "tsx": "^4.15.7",
+        "typescript": "^5.5.2"
+    }
+}

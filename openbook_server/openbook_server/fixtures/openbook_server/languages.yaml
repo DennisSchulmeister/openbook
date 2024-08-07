@@ -1,0 +1,9 @@
+- model: openbook_server.Language
+  pk: de
+  fields:
+    name: Deutsch
+
+- model: openbook_server.Language
+  pk: en
+  fields:
+    name: English
