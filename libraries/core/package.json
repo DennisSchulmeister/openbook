@@ -1,0 +1,17 @@
+{
+  "name": "@openbook-studio/core",
+  "version": "1.0.0",
+  "description": "OpenBook Studio: Core Library for Textbooks",
+  "author": "Dennis Schulmeister-Zimolong",
+  "type": "module",
+  "scripts": {
+    "clean": "node ../../_scripts/library/clean.js",
+    "watch": "node ../../_scripts/library/watch.js",
+    "build": "node ../../_scripts/library/build.js",
+    "lint": "eslint --ext .ts,.tsx ./",
+    "lintfix": "eslint --fix --ext .ts,.tsx ./",
+    "prettier": "prettier --ignore-path ../../.gitignore \"**/*.+(ts|tsx)\"",
+    "format": "npm run prettier -- --write",
+    "check": "npm run lint && tsc"
+  }
+}
