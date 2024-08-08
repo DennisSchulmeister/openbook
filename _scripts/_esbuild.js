@@ -26,11 +26,11 @@ import shelljs      from "shelljs";
  *
  * @param infile {string} Full path of the main source file
  * @param outfiles {string[]} Full path of all bundle files to be created
- * @param staticdir {string} Path with static files to be copied (optional)
+ * @param staticdirs {string[]} Paths with static files to be copied (optional)
  * @param watch {bool} Keep running and rebuild on file changes (optional)
  * @param plug-in {object[]} Additional esbuild plug-ins (optional)
  */
-export async function runEsbuild({infile, outfiles, staticdir, watch, plugins} = {}) {
+export async function runEsbuild({infile, outfiles, staticdirs, watch, plugins} = {}) {
     plugins = plugins || [];
 
     let ctx = await esbuild.context({
@@ -43,7 +43,7 @@ export async function runEsbuild({infile, outfiles, staticdir, watch, plugins} =
         plugins: [
             lessLoader(),
             additionalOutfilesPlugin(outfiles),
-            staticFilesPlugin(outfiles, staticdir),
+            staticFilesPlugin(outfiles, staticdirs),
             ...plugins
         ],
 
@@ -77,7 +77,7 @@ export async function runEsbuild({infile, outfiles, staticdir, watch, plugins} =
  * the build.
  *
  * @param outfiles {string[]} Full path of bundle files to be created
- * @param staticdir {string} Path with static files to be copied (optional)
+ * @param staticdirs {string[]} Path with static files to be copied (optional)
  * @returns esbuild plug-in instance
  */
 function additionalOutfilesPlugin(outfiles) {
@@ -104,23 +104,24 @@ function additionalOutfilesPlugin(outfiles) {
  * Internal plug-in that copies additional static files
  *
  * @param outfiles {string[]} Full path of all bundle files to be created
- * @param staticdir {string} Path with static files to be copied (optional)
+ * @param staticdirs {string[]} Paths with static files to be copied (optional)
  * @returns esbuild plug-in instance
  */
-function staticFilesPlugin(outfiles, staticdir) {
+function staticFilesPlugin(outfiles, staticdirs) {
     return {
         name: "staticFilesPlugin",
         setup(build) {
-            if (!outfiles || outfiles.length < 1) return;
-            if (!staticdir) return;
+            if (!outfiles   || outfiles.length   < 1) return;
+            if (!staticdirs || staticdirs.length < 1) return;
 
-            let src = path.join(staticdir, "*");
-
+            
             build.onEnd(result => {
-                for (let outfile of outfiles) {
-                    let dst = path.dirname(outfile);
-                    shelljs.mkdir("-p", dst);
-                    shelljs.cp("-R", src, dst);
+                for (let staticdir of staticdirs) {    
+                    for (let outfile of outfiles) {
+                        let dst = path.dirname(outfile);
+                        shelljs.mkdir("-p", dst);
+                        shelljs.cp("-R", staticdir, dst);
+                    }
                 }
             });
         },

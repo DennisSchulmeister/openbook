@@ -12,4 +12,4 @@ distribution bundle. The source code is split between two distinct directories:
 The admin bundle is used in a few templates that extend the Django Admin. It is separate from
 the rest of the website as the Django Admin evolves independently of our public website.
 
-For the single page app, see the [libraries](../../libraries) directory.
+For the single page app, see the [libraries](../../../libraries) directory.

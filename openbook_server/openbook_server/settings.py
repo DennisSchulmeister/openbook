@@ -27,6 +27,7 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     # OpenBook Server
     "openbook_server",
+    "ob_library_manager",
 
     # 3rd-party reusable apps
     "daphne",

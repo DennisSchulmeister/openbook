@@ -19,13 +19,18 @@ export function getOptions() {
     const name = path.basename(cwd);
 
     return {
-        infile:    path.join(cwd, "src", "index.ts"),
-        staticdir: path.join(cwd, "static"),
-        watch:     process.argv[2] === "--watch",
+        infile: path.join(cwd, "src", "index.ts"),
+        watch:  process.argv[2] === "--watch",
+
+        staticdirs: [
+            path.join(cwd, "components"),
+            path.join(cwd, "static"),
+            path.join(cwd, "library.yml"),
+        ],
 
         outfiles:  [
-            path.join(cwd, "dist", "bundle.js"),
-            path.join(cwd, "..", "..", "openbook_server", "_media", "openbook_server", "library", name, "bundle.js"),
+            path.join(cwd, "dist", "library.js"),
+            path.join(cwd, "..", "..", "openbook_server", "_media", "lib", name, "library.js"),
         ],
     };
 }

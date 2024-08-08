@@ -12,3 +12,6 @@ import {getOptions} from "./_options.js";
 import {runEsbuild} from "../_esbuild.js";
 
 await runEsbuild(getOptions());
+
+// TODO: Add name and version from package.json to library.yml
+// TODO: Create ZIP file in "zip" directory

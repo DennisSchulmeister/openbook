@@ -15,5 +15,5 @@ import shelljs      from "shelljs";
 const options = getOptions();
 
 for (let outfile of options.outfiles) {
-    shelljs.rm("-R", path.dirname(outfile));
+    shelljs.rm("-R", path.join(path.dirname(outfile), "library.*"));
 }
