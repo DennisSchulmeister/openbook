@@ -14,7 +14,7 @@ from ..validators             import validate_library_name, validate_version_num
 class Library(db_utils.UUIDMixin, db_utils.CreatedModifiedByMixin):
     """
     Textbooks are basically static HTML pages that embed the OpenBook JavaScript libraries to render
-    the user interface and custom components. This works without the server simply be downloading the
+    the user interface and custom components. This works without the server simply by downloading the
     distribution bundle of each library (either manually or with a bundler) and adding the corresponding
     `<script>` and `<link rel="stylesheet">` tags to the main HTML page.
 
