@@ -13,7 +13,7 @@
     "check": "npm run lint && tsc"
   },
   "dependencies": {
-    "ckeditor5": "^42.0.1",
+    "ckeditor5": "^44.1.0",
     "tiny-markdown-editor": "^0.1.23"
   }
 }
