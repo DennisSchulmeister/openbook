@@ -26,8 +26,8 @@ In no particular order:
 -[ ] Frontend projects
   -[X] Scaffold frontend SPA (svelte + routing)
   -[ ] Scaffold core component library (svelte web components)
-  -[ ] Fix: esbuild build errors for the frontend/admin package
-  -[ ] Fix: esbuild watch mode not watching static files
+  -[X] Fix: esbuild build errors for the frontend/admin package
+  -[X] Fix: esbuild watch mode not watching static files
 
 -[ ] Library manager
   -[ ] Finish data model

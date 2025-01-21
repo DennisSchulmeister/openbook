@@ -89,6 +89,7 @@ function additionalOutfilesPlugin(outfiles) {
         name: "additionalOutfilesPlugin",
         setup(build) {
             if (outfiles.length < 2) return;
+            console.log(">>> CREATE ADDITIONAL OUTPUT FILES <<<");
 
             let bundle = path.parse(outfiles[0]);
             let src = path.join(bundle.dir, `${bundle.name}.*`);
@@ -117,8 +118,37 @@ function staticFilesPlugin(outfiles, staticdirs) {
         setup(build) {
             if (!outfiles   || outfiles.length   < 1) return;
             if (!staticdirs || staticdirs.length < 1) return;
+            let watchDirsAdded = false;
 
-            build.onEnd(() => {
+            build.onLoad({filter: /.*/}, () => {
+                // Dirty-Hack: We must add ourselves to the file loading handlers of esbuild,
+                // without actually loading a file (then the next plugin is tried), just to
+                // tell esbuild about additional files to watch in watch mode.
+                let watchDirs  = [];    // Directories to watch for wew or deleted files or sub-directories
+                let watchFiles = [];    // Files to watch for modifications
+
+                if (!watchDirsAdded) {
+                    for (let staticdir of staticdirs) {
+                        if (staticdir.endsWith("*")) staticdir = path.dirname(staticdir);
+                        watchDirs.push(staticdir);
+
+                        for (let entry of shelljs.ls("-lR", staticdir)) {
+                            let fullname = path.join(staticdir, entry.name);
+
+                            if (entry.isDirectory()) watchDirs.push(fullname);
+                            else watchFiles.push(fullname);
+                        }
+                    }
+
+                    watchDirsAdded = true;
+                }
+
+                return {watchDirs, watchFiles};
+            });
+
+            build.onEnd(build => {
+                console.log(">>> COPY STATIC FILES <<<");
+
                 for (let staticdir of staticdirs) {    
                     for (let outfile of outfiles) {
                         let dst = path.dirname(outfile);
@@ -126,6 +156,8 @@ function staticFilesPlugin(outfiles, staticdirs) {
                         shelljs.cp("-R", staticdir, dst);
                     }
                 }
+
+                watchDirsAdded = false;
             });
         },
     };

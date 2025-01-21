@@ -14,9 +14,8 @@ Root component of the application which defines the global application UI.
 -->
 
 <script lang="ts">
-    import Placeholder from "./app-frame/Placeholder.svelte";
-    import Router      from 'svelte-spa-router'
-    import routes      from "./routes.js";
+    import Router from 'svelte-spa-router'
+    import routes from "./routes.js";
 </script>
 
 <main>
