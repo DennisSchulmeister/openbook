@@ -55,7 +55,7 @@ MIDDLEWARE = [
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
 
     # OpenBook
-    "openbook.middleware.CurrentUserMiddleware",
+    "openbook.core.middleware.CurrentUserMiddleware",
 ]
 
 ROOT_URLCONF = "openbook.urls"
@@ -71,7 +71,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "openbook.context_processors.site",
+                "openbook.core.context_processors.site",
             ],
         },
     },
@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "openbook.User"
+AUTH_USER_MODEL = "openbook_core.User"
 
 # E-Mail Settings
 # See: https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-EMAIL_BACKEND

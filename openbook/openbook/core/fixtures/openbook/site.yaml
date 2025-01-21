@@ -1,4 +1,4 @@
-- model: openbook.Site
+- model: openbook_core.Site
   pk: 1
   fields:
     domain:     openbook.studio

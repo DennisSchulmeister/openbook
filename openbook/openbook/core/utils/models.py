@@ -97,7 +97,7 @@ def LanguageField():
     A special model field for language codes. Technically this is a simple foreign key to
     the `Language` model of the core app.
     """
-    return models.ForeignKey("openbook.Language", on_delete=models.CASCADE)
+    return models.ForeignKey("openbook_core.Language", on_delete=models.CASCADE)
 
 class TranslatableMixin(models.Model):
     """

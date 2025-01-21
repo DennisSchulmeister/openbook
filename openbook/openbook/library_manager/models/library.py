@@ -8,7 +8,7 @@
 
 from django.db                import models
 from django.utils.translation import gettext_lazy as _
-from openbook.utils    import models as db_utils
+from openbook.core.utils      import models as db_utils
 from ..validators             import validate_library_name, validate_version_number
 
 class Library(db_utils.UUIDMixin, db_utils.CreatedModifiedByMixin):

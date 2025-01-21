@@ -10,5 +10,6 @@ from django.apps              import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 class LibraryManagerConfig(AppConfig):
-    name         = "ob_library_manager"
+    name         = "openbook.library_manager"
+    label        = "openbook_library_manager"
     verbose_name = _("Library Manager")

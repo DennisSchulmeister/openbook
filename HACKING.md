@@ -111,6 +111,10 @@ plus it fully automates the usage of virtual environments. The most important co
 * `poetry show --tree` - Show all direct and indirect dependencies
 * `poetry shell` - Start a new shell with the Python environment enabled
 * `poetry run xyz` - Run console command `xyz` in the Python environment
+* `poetry list` - Show all available sub-commands
+* `poetry env use $(which python)` - Create new virtual Python environment
+* `peotry env list` - List available environments
+* `poetry env remove xyz` - Delete environment
 
 Django Web Framework
 --------------------
