@@ -32,7 +32,7 @@ export function getOptions() {
 
         outfiles:  [
             path.join(cwd, "dist", "library.js"),
-            path.join(cwd, "..", "..", "openbook", "_media", "lib", name, "library.js"),
+            path.join(cwd, "..", "..", "_media", "lib", name, "library.js"),
         ],
 
         plugins: [

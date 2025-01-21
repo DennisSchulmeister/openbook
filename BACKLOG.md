@@ -1,5 +1,5 @@
 OpenBook: Development Backlog
-====================================
+=============================
 
 1. [Short-Term TODOs](#short-term-todos)
 1. [General Ideas](#general-ideas)
@@ -10,10 +10,18 @@ Short-Term TODOs
 In no particular order:
 
 -[ ] Additional Django packages
-  -[ ] Integrate Django REST API
-  -[ ] Integrate Django Vector DB
-  -[ ] Integrate Unfold Admin
-  -[ ] Integrate Django SAML2
+  -[ ] [Integrate Django REST Framework](https://www.django-rest-framework.org/)
+  -[ ] [Integrate Django Vector DB](https://pkavumba.github.io/django-vectordb/)
+  -[ ] [Django Image Uploader Widget](https://github.com/inventare/django-image-uploader-widget)
+  -[ ] [Django Import Export](https://github.com/django-import-export/django-import-export)
+  -[ ] [Django Color Field](https://github.com/fabiocaccamo/django-colorfield)
+  -[ ] [Django Tree Node](https://github.com/fabiocaccamo/django-treenode)
+  -[ ] [Django Env Notice](https://github.com/dizballanze/django-admin-env-notice)
+  -[ ] [Django QL](https://github.com/ivelum/djangoql)
+  -[ ] [Integrate Unfold Admin](https://unfoldadmin.com/) or
+       [Django Admin Volt](https://github.com/app-generator/django-admin-volt) or
+       [Django Jet Reboot](https://github.com/assem-ch/django-jet-reboot?tab=readme-ov-file)
+  -[ ] [Integrate Django SAML2 Auth](https://github.com/grafana/django-saml2-auth)
 
 -[ ] Frontend projects
   -[ ] Scaffold frontend SPA (svelte + routing)

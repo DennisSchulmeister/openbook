@@ -4,18 +4,18 @@
     "private": true,
     "type": "module",
     "workspaces": [
-        "openbook/openbook/frontend/*",
-        "libraries/*"
+        "openbook/frontend/*",
+        "openbook/libraries/*"
     ],
     "scripts": {
         "redis": "redis-server",
-        "runserver": "openbook/manage.py runserver",
+        "runserver": "src/manage.py runserver",
         "maildev": "maildev -s 1025 -w 8887",
-        "frontend": "cd openbook/openbook/frontend && npm run watch",
-        "libraries": "cd libraries && npm run watch",
+        "frontend": "cd src/frontend && npm run watch",
+        "libraries": "cd src/libraries && npm run watch",
         "start": "conc -n redis,django,fake-smtp,frontend,libraries -c auto \"npm run redis\" \"npm run runserver\" \"npm run maildev\" \"npm run frontend\" \"npm run libraries\"",
-        "build:frontend": "cd libraries && npm run build",
-        "build:libraries": "cd openbook/openbook/frontend && npm run build",
+        "build:frontend": "cd src/libraries && npm run build",
+        "build:libraries": "cd src/frontend && npm run build",
         "build": "npm run build:frontend && npm run build:libraries"
     },
     "devDependencies": {

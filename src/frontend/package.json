@@ -1,0 +1,9 @@
+{
+  "name": "@openbook-studio/frontend",
+  "private": true,
+  "scripts": {
+    "clean": "node ../../_scripts/all.js frontend/clean.js",
+    "watch": "node ../../_scripts/all.js frontend/watch.js",
+    "build": "node ../../_scripts/all.js frontend/build.js"
+  }
+}

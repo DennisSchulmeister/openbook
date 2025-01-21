@@ -20,7 +20,7 @@ export function getOptions() {
 
     return {
         infile:   path.join(cwd, "src", "index.ts"),
-        outfiles: [path.join(cwd, "..", "..", "static", "openbook", name, "bundle.js")],
+        outfiles: [path.join(cwd, "..", "..", "_static", "openbook", name, "bundle.js")],
         watch:    process.argv[2] === "--watch",
     };
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@openbook-studio/libraries",
+  "private": true,
+  "scripts": {
+    "clean": "node ../../_scripts/all.js library/clean.js",
+    "watch": "node ../../_scripts/all.js library/watch.js",
+    "build": "node ../../_scripts/all.js library/build.js"
+  }
+}
