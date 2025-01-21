@@ -1,5 +1,5 @@
 /*
- * OpenBook Studio: Interactive Online Textbooks
+ * OpenBook: Interactive Online Textbooks
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,6 @@
  */
 
 import concurrently from "concurrently";
-//import fs           from "node:fs/promises";
 import {glob}       from "glob";
 import path         from "node:path";
 import url          from "node:url";

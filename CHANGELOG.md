@@ -1,4 +1,4 @@
-OpenBook Studio: Changelog
+OpenBook: Changelog
 ==========================
 
 2024-08-06: Development started

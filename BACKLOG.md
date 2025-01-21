@@ -1,4 +1,4 @@
-OpenBook Studio: Development Backlog
+OpenBook: Development Backlog
 ====================================
 
 1. [Didactic Considerations](#didactic-considerations)
@@ -110,7 +110,7 @@ progress is explicitly addressed.
 General Ideas
 -------------
 
-Even though the precursor to OpenBook Studio - lecture-slides.js - has been around
+Even though the precursor to OpenBook - lecture-slides.js - has been around
 since 2017, development of this successor is still in the very early stages.
 The following list contains a few very high-level ideas on what we want to work
 in the future in no particular order.

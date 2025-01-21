@@ -1,7 +1,7 @@
 {
   "name": "@openbook-studio/core",
   "version": "1.0.0",
-  "description": "OpenBook Studio: Core Library for Textbooks",
+  "description": "OpenBook: Core Library for Textbooks",
   "author": "Dennis Schulmeister-Zimolong",
   "type": "module",
   "scripts": {

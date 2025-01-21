@@ -1,4 +1,4 @@
-Developer Notes for OpenBook Studio
+Developer Notes for OpenBook
 ===================================
 
 This document serves as a cheat sheet for developers to get started quickly. There are no
@@ -80,8 +80,8 @@ Here are a few important directories and files that you might want to know about
 
 ```text
 .                                       Root directory with this file
-├── openbook_server                     The server application
-│   ├── openbook_server
+├── openbook                     The server application
+│   ├── openbook
 │   │   ├── local_settings.py           Use this for your own server configuration
 │   │   ├── settings.py                 Internal settings of the server
 │   │   └── ...
@@ -152,23 +152,23 @@ Python modules with certain required source files. Though the whole source code 
 live inside the project module, the Django developers recommend splitting the project into
 multiple apps to foster separation of concerns and code re-use.
 
-When you have a project like `openbook_server` the Django Admin command created a top-level
+When you have a project like `openbook` the Django Admin command created a top-level
 directory of that name, containing a sub-directory of the same name. Next to it the Django
 applications will be created:
 
 ```text
 .                                       Root directory with this file
-└── openbook_server                     Django project top-level
-    ├── openbook_server                 Django project python package
+└── openbook                     Django project top-level
+    ├── openbook                 Django project python package
     │   │   └── settings.py             Configuration file
     │   └── ...
     ├── manage.py                       Django CLI for the server
     │
-    ├── tb_app_1                        Django Application
+    ├── ob_app_1                        Django Application
     │   └── ...
-    ├── tb_app_2                        Django Application
+    ├── ob_app_2                        Django Application
     │   └── ...
-    └── tb_app_3                        Django Application
+    └── ob_app_3                        Django Application
         └── ...
 ```
 
@@ -191,7 +191,7 @@ the OpenBook server. Here are a few hints on what to consider:
   that would most-likely not reference the model we want during import of the fixture.
 
 * **Load Initial Data:** Once your new fixture is working, consider adding it to the `load_initial_data`
-  management command. The source code is in the `openbook_server` project directory. This allows other
+  management command. The source code is in the `openbook` project directory. This allows other
   developers and users to import a complete set of initial data with only one command.
 
 **Natural keys, part II:** Why are we not using natural keys for our models? After writing the lines
@@ -239,7 +239,7 @@ Make sure to use an extra wide terminal window, as the lines are still unreadebl
 NPM and esbuild
 ---------------
 
-OpenBook Studio uses a mixture of traditional server-side rendering and more modern client-side rendering.
+OpenBook uses a mixture of traditional server-side rendering and more modern client-side rendering.
 Server-side rendering using Django views and templates is used for server-provided pages like the admin
 panel, WYSIWYG editor and server-controlled content that can be embedded into textbooks (e.g. surveys).
 The textbooks, on the other hand, are displayed in a single page app, that can also be used without the

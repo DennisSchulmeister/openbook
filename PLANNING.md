@@ -1,4 +1,4 @@
-OpenBook Studio: Development Plan
+OpenBook: Development Plan
 =================================
 
 This living document briefly lists the topics that are currently being worked on

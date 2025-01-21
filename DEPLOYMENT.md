@@ -37,7 +37,7 @@ for all details. Below is a quick summary including a few notable considerations
   Daphne is already a dependency, in practice this simply means:
 
   ```sh
-  daphne -p 8000 -b 0.0.0.0 openbook_server.asgi:application 
+  daphne -p 8000 -b 0.0.0.0 openbook.asgi:application 
   ```
 
 * __Redis:__ This is not yet needed. But in future we will likely rely on websockets for real-time
@@ -80,8 +80,8 @@ Since this project also uses Django Channels for websocket support, we need an A
 Django Channels already comes with the Daphne server. You can run it like this:
 
 ```sh
-cd openbook_server
-daphne -p 8000 -b 0.0.0.0 openbook_server.asgi:application
+cd openbook
+daphne -p 8000 -b 0.0.0.0 openbook.asgi:application
 ```
 
 On your local development machine you might need to use `poetry run` to run Daphne from within the
@@ -91,8 +91,8 @@ When running behind a reverse proxy (e.g. because you host multiple apps and/or 
 machine), you usually want to bind to localhost only:
 
 ```sh
-cd openbook_server
-daphne -p 8000 openbook_server.asgi:application
+cd openbook
+daphne -p 8000 openbook.asgi:application
 ```
 
 If you are still looking for a good reverse proxy (or webserver in general), try out [Caddy](https://caddyserver.com/).

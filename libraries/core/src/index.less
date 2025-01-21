@@ -1,5 +1,5 @@
 /*
- * OpenBook Studio: Interactive Online Textbooks - Core Library
+ * OpenBook: Interactive Online Textbooks - Core Library
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify

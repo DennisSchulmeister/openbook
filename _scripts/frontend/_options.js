@@ -1,5 +1,5 @@
 /*
- * OpenBook Studio: Interactive Online Textbooks
+ * OpenBook: Interactive Online Textbooks
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ export function getOptions() {
 
     return {
         infile:   path.join(cwd, "src", "index.ts"),
-        outfiles: [path.join(cwd, "..", "..", "static", "openbook_server", name, "bundle.js")],
+        outfiles: [path.join(cwd, "..", "..", "static", "openbook", name, "bundle.js")],
         watch:    process.argv[2] === "--watch",
     };
 }

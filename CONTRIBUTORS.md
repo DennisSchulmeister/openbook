@@ -1,4 +1,4 @@
-OpenBook Studio: Contributors
+OpenBook: Contributors
 =============================
 
 This document lists notable contributions to the platform. Patches welcome. 🤠

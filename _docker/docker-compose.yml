@@ -1,4 +1,4 @@
-# OpenBook Studio: Interactive Online Textbooks - Docker Compose Example
+# OpenBook: Interactive Online Textbooks - Docker Compose Example
 # © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ services:
     #---------------------------------------------------------------------------
     # OpenBook Server
     #---------------------------------------------------------------------------
-    openbook-server:
+    openbook:
         build:
             context: ".."
             dockerfile: _docker/Dockerfile
@@ -50,11 +50,11 @@ services:
             - postgres
             - redis
         volumes:
-            - ./openbook_server.local_settings.py:/app/openbook_server/openbook_server/local_settings.py
-            - openbook_static:/app/openbook_server/_static.volume
-            - openbook_media:/app/openbook_server/_media.volume
+            - ./openbook.local_settings.py:/app/openbook/openbook/local_settings.py
+            - openbook_static:/app/openbook/_static.volume
+            - openbook_media:/app/openbook/_media.volume
         environment:
-            DJANGO_SETTINGS_MODULE: openbook_server.settings
+            DJANGO_SETTINGS_MODULE: openbook.settings
             LS_LOAD_INITIAL_DATA: 1
     
     #---------------------------------------------------------------------------
@@ -68,8 +68,8 @@ services:
     # In that case create a volume that maps the following directories to the
     # host filesystem and serve them with your web server.
     #
-    #   - /openbook_server/_static.volume
-    #   - /openbook_server/_media.volume
+    #   - /openbook/_static.volume
+    #   - /openbook/_media.volume
     #
     # Make sure to forward all other HTTP requests to the OpenBook server.
     #---------------------------------------------------------------------------

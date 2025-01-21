@@ -1,5 +1,5 @@
 /*
- * OpenBook Studio: Interactive Online Textbooks
+ * OpenBook: Interactive Online Textbooks
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,11 +24,11 @@ import shelljs      from "shelljs";
  * at different locations. Bundles always consist of a *.js and *.css file
  * plus copied over static files.
  *
- * @param infile {string} Full path of the main source file
- * @param outfiles {string[]} Full path of all bundle files to be created
- * @param staticdirs {string[]} Paths with static files to be copied (optional)
- * @param watch {bool} Keep running and rebuild on file changes (optional)
- * @param plug-in {object[]} Additional esbuild plug-ins (optional)
+ * @param {string} infile Full path of the main source file
+ * @param {string[]} outfiles Full path of all bundle files to be created
+ * @param {string[]} staticdirs Paths with static files to be copied (optional)
+ * @param {bool} watch Keep running and rebuild on file changes (optional)
+ * @param {object[]} plug-in Additional esbuild plug-ins (optional)
  */
 export async function runEsbuild({infile, outfiles, staticdirs, watch, plugins} = {}) {
     plugins = plugins || [];
@@ -76,8 +76,8 @@ export async function runEsbuild({infile, outfiles, staticdirs, watch, plugins} 
  * anyway. The plug-in just copies this file to the other locations after
  * the build.
  *
- * @param outfiles {string[]} Full path of bundle files to be created
- * @param staticdirs {string[]} Path with static files to be copied (optional)
+ * @param {string[]} outfiles Full path of bundle files to be created
+ * @param {string[]} staticdirs Path with static files to be copied (optional)
  * @returns esbuild plug-in instance
  */
 function additionalOutfilesPlugin(outfiles) {
@@ -89,7 +89,7 @@ function additionalOutfilesPlugin(outfiles) {
             let bundle = path.parse(outfiles[0]);
             let src = path.join(bundle.dir, `${bundle.name}.*`);
 
-            build.onEnd(result => {
+            build.onEnd(() => {
                 for (let outfile of outfiles.slice(1)) {
                     let dst = path.dirname(outfile);
                     shelljs.mkdir("-p", dst);
@@ -103,8 +103,8 @@ function additionalOutfilesPlugin(outfiles) {
 /**
  * Internal plug-in that copies additional static files
  *
- * @param outfiles {string[]} Full path of all bundle files to be created
- * @param staticdirs {string[]} Paths with static files to be copied (optional)
+ * @param {string[]} outfiles Full path of all bundle files to be created
+ * @param {string[]} staticdirs Paths with static files to be copied (optional)
  * @returns esbuild plug-in instance
  */
 function staticFilesPlugin(outfiles, staticdirs) {
@@ -115,7 +115,7 @@ function staticFilesPlugin(outfiles, staticdirs) {
             if (!staticdirs || staticdirs.length < 1) return;
 
             
-            build.onEnd(result => {
+            build.onEnd(() => {
                 for (let staticdir of staticdirs) {    
                     for (let outfile of outfiles) {
                         let dst = path.dirname(outfile);

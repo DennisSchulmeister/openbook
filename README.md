@@ -1,4 +1,4 @@
-OpenBook Studio: Interactive Online Textbooks
+OpenBook: Interactive Online Textbooks
 =============================================
 
 1. [Description](#description)
@@ -16,7 +16,7 @@ OpenBook Studio: Interactive Online Textbooks
 Description
 -----------
 
-OpenBook Studio is the successor to [lecture-slide.js](https://www.npmjs.com/package/@dschulmeis/lecture-slides.js)
+OpenBook is the successor to [lecture-slide.js](https://www.npmjs.com/package/@dschulmeis/lecture-slides.js)
 which as been in development since 2017. The main idea is still to create beautiful and engaging
 online course materials for my students in the form of interactive online textbooks. Because this
 is the form that the previous "lecture slides" have taken now. Instead of "interactive slides with
@@ -29,7 +29,7 @@ It is also great for version control (just use git) and free/libre release of th
 Educational Resources with permissive licences. Still it hinders wide adoption of the application as
 most teachers and course developers prefer a more accessible WYSIWYG user interface.
 
-So that's the product idea of OpenBook Studio. To provide a modern web application and platform that
+So that's the product idea of OpenBook. To provide a modern web application and platform that
 is easy to use, easy to deploy and easy to create interactive textbooks with. At the same time it
 must still be possible to export textbooks as static HTML files for easy deployment on any server or
 Learning Management System, versioning with Git and development in source form. Also richer and more
@@ -52,7 +52,7 @@ most important points for different target groups:
 Copyright
 ---------
 
-OpenBook Studio: Interactive Online Textbooks <br/>
+OpenBook: Interactive Online Textbooks <br/>
 © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de> <br>
 
 This program is free software: you can redistribute it and/or modify

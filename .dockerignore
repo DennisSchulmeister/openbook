@@ -3,4 +3,4 @@
 **/__pycache__
 **/*.template
 
-openbook_server/frontend
+openbook/frontend
