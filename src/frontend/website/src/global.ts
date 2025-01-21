@@ -8,10 +8,20 @@
  * License, or (at your option) any later version.
  */
 
-import "./index.css";
-import "./global.js";
+import * as i18n from "./stores/i18n.js";
 
-import ApplicationFrame from "./components/ApplicationFrame.svelte";
-import {mount}          from 'svelte';
+declare global {
+    interface Window {
+        /**
+         * Public exports for usage in the study books
+         */
+        OpenBook: {
+            /**
+             * Get translated texts or customize the translations
+             */
+            i18n: typeof i18n;
+        }
+    }
+}
 
-mount(ApplicationFrame, {target: document.body});
+window.OpenBook = {i18n};

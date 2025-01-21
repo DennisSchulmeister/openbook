@@ -4,8 +4,8 @@
     "private": true,
     "type": "module",
     "workspaces": [
-        "openbook/frontend/*",
-        "openbook/libraries/*"
+        "src/frontend/*",
+        "src/libraries/*"
     ],
     "scripts": {
         "redis": "redis-server",
@@ -19,25 +19,29 @@
         "build": "npm run build:frontend && npm run build:libraries"
     },
     "devDependencies": {
-        "@types/node": "^20.14.8",
-        "@typescript-eslint/eslint-plugin": "^7.13.1",
+        "@tsconfig/svelte": "^5.0.4",
+        "@types/node": "^22.10.7",
+        "@typescript-eslint/eslint-plugin": "^8.21.0",
         "conc": "^0.0.3",
-        "concurrently": "^8.2.2",
-        "esbuild": "^0.21.5",
-        "esbuild-plugin-less": "^1.3.5",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-import-resolver-typescript": "^3.6.1",
-        "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-prettier": "^5.1.3",
-        "eslint-plugin-unused-imports": "^3.2.0",
-        "glob": "^11.0.0",
+        "concurrently": "^9.1.2",
+        "esbuild": "^0.24.2",
+        "esbuild-svelte": "^0.9.0",
+        "eslint": "^9.18.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-import-resolver-typescript": "^3.7.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.3",
+        "eslint-plugin-unused-imports": "^4.1.4",
+        "glob": "^11.0.1",
         "jszip": "^3.10.1",
-        "maildev": "^2.1.0",
-        "prettier": "^3.3.2",
+        "maildev": "^2.2.1",
+        "prettier": "^3.4.2",
         "shelljs": "^0.8.5",
-        "tsx": "^4.15.7",
-        "typescript": "^5.5.2",
+        "sv": "^0.6.13",
+        "svelte": "^5.19.1",
+        "svelte-check": "^4.1.4",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.3",
         "yaml": "^2.7.0"
     }
 }

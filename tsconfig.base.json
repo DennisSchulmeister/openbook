@@ -23,6 +23,11 @@
 
         // Where to find external type declarations
         "typeRoots": ["node_modules/@types"],
+
+        // Specify type package names to be included without being referenced in a source file
+        "types": [
+            "svelte"
+        ]
     },
 
     // // Values to set in the project tsconfig.json

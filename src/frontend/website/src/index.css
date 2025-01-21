@@ -8,3 +8,28 @@
  * License, or (at your option) any later version.
  */
 
+ @font-face {
+    /* roboto-regular - latin */
+    font-display: swap;
+    font-family: "normaltext";
+    font-style: normal;
+    font-weight: 400;
+    src: url("fonts/roboto-v30-latin-regular.woff2") format("woff2");
+}
+
+/* Global settings */
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+html {
+    font-family: "normaltext";
+    font-size: 12pt;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}

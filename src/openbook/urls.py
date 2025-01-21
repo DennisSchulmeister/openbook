@@ -9,6 +9,7 @@
 from django.conf                     import settings
 from django.conf.urls.static         import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic.base       import RedirectView
 from django.urls                     import include, path
 
 from .admin                          import admin_site
@@ -21,5 +22,10 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    # Static files and media files
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # Frontend SPA
+    urlpatterns += static("website/", document_root=f"{settings.STATIC_ROOT}/openbook/website")
+    urlpatterns += path("", RedirectView.as_view(url="/website/index.html")),

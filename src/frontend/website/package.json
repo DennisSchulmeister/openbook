@@ -11,5 +11,8 @@
     "prettier": "prettier --ignore-path ../../.gitignore \"**/*.+(ts|tsx)\"",
     "format": "npm run prettier -- --write",
     "check": "npm run lint && tsc"
+  },
+  "devDependencies": {
+    "svelte-spa-router": "^4.0.1"
   }
 }

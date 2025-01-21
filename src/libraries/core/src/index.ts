@@ -8,7 +8,7 @@
  * License, or (at your option) any later version.
  */
 
-import "./index.less";
+import "./index.css";
 
 // Implement your library here
 console.log("Library loaded ...");

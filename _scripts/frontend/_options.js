@@ -19,8 +19,9 @@ export function getOptions() {
     const name = path.basename(cwd);
 
     return {
-        infile:   path.join(cwd, "src", "index.ts"),
-        outfiles: [path.join(cwd, "..", "..", "_static", "openbook", name, "bundle.js")],
-        watch:    process.argv[2] === "--watch",
+        infile:     path.join(cwd, "src", "index.ts"),
+        staticdirs: [path.join(cwd, "static", "*")],
+        outfiles:   [path.join(cwd, "..", "..", "_static", "openbook", name, "bundle.js")],
+        watch:      process.argv[2] === "--watch",
     };
 }

@@ -9,9 +9,9 @@
  */
 
 import * as esbuild from "esbuild";
-import {lessLoader} from "esbuild-plugin-less";
 import path         from "node:path";
 import shelljs      from "shelljs";
+import sveltePlugin from "esbuild-svelte";
 
 /**
  * Centralized esbuild configuration to build JavaScript assets. This is used
@@ -39,9 +39,13 @@ export async function runEsbuild({infile, outfiles, staticdirs, watch, plugins} 
         minify:      true,
         outfile:     outfiles[0],
         sourcemap:   true,
+        format:      "esm",
+
+        mainFields: ["svelte", "browser", "module", "main"],
+        conditions: ["svelte", "browser"],
 
         plugins: [
-            lessLoader(),
+            sveltePlugin(),
             additionalOutfilesPlugin(outfiles),
             staticFilesPlugin(outfiles, staticdirs),
             ...plugins
@@ -114,7 +118,6 @@ function staticFilesPlugin(outfiles, staticdirs) {
             if (!outfiles   || outfiles.length   < 1) return;
             if (!staticdirs || staticdirs.length < 1) return;
 
-            
             build.onEnd(() => {
                 for (let staticdir of staticdirs) {    
                     for (let outfile of outfiles) {
