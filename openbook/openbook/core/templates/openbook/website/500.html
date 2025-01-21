@@ -1,0 +1,13 @@
+{# OpenBook: Interactive Online Textbooks - Server               #}
+{# © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>                 #}
+{#                                                                      #}
+{# This program is free software: you can redistribute it and/or modify #}
+{# it under the terms of the GNU Affero General Public License as       #}
+{# published by the Free Software Foundation, either version 3 of the   #}
+{# License, or (at your option) any later version.                      #}
+{% extends "openbook/website/error.html" %}
+{% load i18n %}
+
+{% block error-title %}{% trans "Error" %} 500 - {% trans "Internal server error" %}{% endblock %}
+{% block error-number %}{% trans "Error" %} 500{% endblock %}
+{% block error-description %}{% trans "A severe technical error has occured. An emergency call has been made to our webmaster." %}{% endblock %}

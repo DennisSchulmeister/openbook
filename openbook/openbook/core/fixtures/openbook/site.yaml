@@ -1,0 +1,18 @@
+- model: openbook.Site
+  pk: 1
+  fields:
+    domain:     openbook.studio
+    name:       OpenBook
+    favicon:    default_favicon.png
+    
+    header_bg:  "#f5f5f5"
+    header_fg:  black
+    header_link: black;
+
+    main_bg: none
+    main_fg: black
+    main_link: rgb(10, 88, 102)
+
+    footer_bg: none
+    footer_fg: black
+    footer_link: rgb(10, 88, 102)

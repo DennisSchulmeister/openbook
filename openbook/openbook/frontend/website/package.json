@@ -1,0 +1,15 @@
+{
+  "name": "@openbook-studio/frontend-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "node ../../../../_scripts/frontend/clean.js",
+    "watch": "node ../../../../_scripts/frontend/watch.js",
+    "build": "node ../../../../_scripts/frontend/build.js",
+    "lint": "eslint --ext .ts,.tsx ./",
+    "lintfix": "eslint --fix --ext .ts,.tsx ./",
+    "prettier": "prettier --ignore-path ../../.gitignore \"**/*.+(ts|tsx)\"",
+    "format": "npm run prettier -- --write",
+    "check": "npm run lint && tsc"
+  }
+}
