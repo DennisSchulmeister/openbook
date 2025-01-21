@@ -13,8 +13,8 @@ class Command(BaseCommand):
     help = "Load fixtures will initial data for the OpenBook Server"
 
     FIXTURES = [
-        "openbook/site",
-        "openbook/languages",
+        "openbook_core/site",
+        "openbook_core/languages",
     ]
 
     def handle(self, *args, **options):

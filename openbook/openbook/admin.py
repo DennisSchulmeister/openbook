@@ -89,3 +89,5 @@ class CustomAdminSite(admin.AdminSite):
                 del model["_index_"]
 
         return app_list
+
+admin_site = CustomAdminSite()

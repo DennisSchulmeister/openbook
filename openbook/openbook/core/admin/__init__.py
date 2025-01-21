@@ -7,14 +7,13 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.admin import GroupAdmin
-from .custom_site              import *
+from openbook.admin            import admin_site
 from .file_uploads             import *
 from .language                 import *
 from .site                     import *
 from .user                     import *
 from ..                        import models
 
-admin_site = CustomAdminSite()
 
 admin_site.register(models.Site, SiteAdmin)
 admin_site.register(models.Language, LanguageAdmin)

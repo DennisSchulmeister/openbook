@@ -6,8 +6,8 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-#from .library           import *
-from openbook.core.admin import admin_site
-from ..                  import models
+#from .library      import *
+from openbook.admin import admin_site
+from ..             import models
 
 #admin_site.register(models.Library, LibraryAdmin)
