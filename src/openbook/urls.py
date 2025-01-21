@@ -15,10 +15,8 @@ from django.urls                     import include, path
 from .admin                          import admin_site
 
 urlpatterns = [
-    # TODO: Single Page App
-
-    ## path("example/", include("ob_example.urls")),
-    path("admin/",  admin_site.urls),
+    path("core/",  include("openbook.core.urls")),
+    path("admin/", admin_site.urls),
 ]
 
 if settings.DEBUG:

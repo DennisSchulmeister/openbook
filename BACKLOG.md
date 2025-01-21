@@ -10,7 +10,10 @@ Short-Term TODOs
 In no particular order:
 
 -[ ] Additional Django packages
-  -[ ] [Integrate Django REST Framework](https://www.django-rest-framework.org/)
+  -[-] [Integrate Django REST Framework](https://www.django-rest-framework.org/)
+    -[ ] Basic integration with the core app
+    -[ ] Pass the API URL to the single page app, show healths status there
+    -[ ] Object-level permissions, e.g. only owner can change media files
   -[ ] [Integrate Django Vector DB](https://pkavumba.github.io/django-vectordb/)
   -[ ] [Django Image Uploader Widget](https://github.com/inventare/django-image-uploader-widget)
   -[ ] [Django Import Export](https://github.com/django-import-export/django-import-export)

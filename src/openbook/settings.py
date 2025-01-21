@@ -33,6 +33,12 @@ INSTALLED_APPS = [
     "daphne",
     "channels",
 
+    # Django REST framework
+    "drf_redesign",
+    "rest_framework",
+    "django_filters",
+    "guardian",
+
     # Django built-in apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -104,6 +110,17 @@ CHANNEL_LAYERS = {
     },
 }
 
+# Django REST framework
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
+
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+    ],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -123,6 +140,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "openbook_core.User"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
+)
 
 # E-Mail Settings
 # See: https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-EMAIL_BACKEND
