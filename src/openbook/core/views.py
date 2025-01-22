@@ -34,7 +34,7 @@ class SiteViewSet(viewsets.ReadOnlyModelViewSet):
     Read-only view set to access basic site information and the API health.
     """
     queryset         = models.Site.objects.all()
-    serializer_class = serializers.MediaFileSerializer
+    serializer_class = serializers.SiteSerializer
 
     @action(detail=False, methods=["get"])
     def health(self, request):

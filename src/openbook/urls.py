@@ -11,11 +11,17 @@ from django.conf.urls.static         import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base       import RedirectView
 from django.urls                     import include, path
+from rest_framework.routers          import DefaultRouter
+import openbook.core.urls as openbook_core_urls
 
 from .admin                          import admin_site
 
+router = DefaultRouter()
+openbook_core_urls.register_api_routes(router, "/core")
+
 urlpatterns = [
-    path("core/",  include("openbook.core.urls")),
+    path("api", include(router.urls)),
+    path('api-auth/', include('rest_framework.urls')),
     path("admin/", admin_site.urls),
 ]
 

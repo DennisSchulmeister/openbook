@@ -12,32 +12,18 @@ from ..utils.models           import calc_file_path
 
 class Site(models.Model):
     """
-    Extended version of Django's built-in Site model that additionally allows to
-    set a few theme parameters.
+    Custom version of Django's built-in Site model with some custom fields.
     """
     # Basic site data
-    id     = models.PositiveIntegerField(verbose_name=_("Id"), primary_key=True, editable=True)
-    domain = models.CharField(verbose_name=_("Domain Name"), max_length=100)
-    name   = models.CharField(verbose_name=_("Display Name"), max_length=255)
+    id         = models.PositiveIntegerField(verbose_name=_("Id"), primary_key=True, editable=True)
+    domain     = models.CharField(verbose_name=_("Domain Name"), max_length=100)
+    name       = models.CharField(verbose_name=_("Display Name"), max_length=255)
+    short_name = models.CharField(verbose_name=_("Short Name"), max_length=50)
+    about_url  = models.URLField(verbose_name=_("Information Website"), help_text=_("URL of your website with information for your users"))
 
     # Icon
     def _calc_file_path(self, filename):
         return calc_file_path(self._meta, self.id, filename)
-
-    favicon = models.FileField(verbose_name=_("Website Icon"), upload_to=_calc_file_path)
-
-    # Theming values
-    header_bg   = models.CharField(verbose_name=_("Header Background"), max_length=100, default="#234769")
-    header_fg   = models.CharField(verbose_name=_("Header Foreground"), max_length=100, default="white")
-    header_link = models.CharField(verbose_name=_("Header Link Color"), max_length=20, default="crimson")
-
-    main_bg   = models.CharField(verbose_name=_("Main Background"), max_length=100, default="white")
-    main_fg   = models.CharField(verbose_name=_("Main Foreground"), max_length=100, default="rgb(10, 10, 10)")
-    main_link = models.CharField(verbose_name=_("Main Link Color"), max_length=20, default="crimson")
-
-    footer_bg   = models.CharField(verbose_name=_("Footer Background"), max_length=100, default="rgb(25, 25, 25)")
-    footer_fg   = models.CharField(verbose_name=_("Footer Foreground"), max_length=100, default="lightgrey")
-    footer_link = models.CharField(verbose_name=_("Footer Link Color"), max_length=20, default="lightgrey")
 
     # Django meta information
     class Meta:

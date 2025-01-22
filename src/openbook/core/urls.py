@@ -6,17 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.urls            import path, include
-from rest_framework.routers import DefaultRouter
-
 from . import views
 
-router = DefaultRouter()
-router.register(r"languages", views.LanguageViewSet, basename="language")
-router.register(r"media-files", views.MediaFileViewSet, basename="media-file")
-router.register(r"sites", views.SiteViewSet, basename="site")
-router.register(r"users", views.UserViewSet, basename="user")
-
-urlpatterns = [
-    path('', include(router.urls)),
-]
+def register_api_routes(router, prefix):
+    router.register(f"{prefix}/languages",   views.LanguageViewSet,  basename="language")
+    router.register(f"{prefix}/media-files", views.MediaFileViewSet, basename="media-file")
+    router.register(f"{prefix}/sites",       views.SiteViewSet,      basename="site")
+    router.register(f"{prefix}/users",       views.UserViewSet,      basename="user")

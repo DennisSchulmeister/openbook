@@ -1,0 +1,33 @@
+{# Browse-able API documentation: Custom nav items in the navigation bar. #}
+{% load i18n static rest_framework rest_framework_redesign %}
+
+<li class="nav-item">
+    <a href="/" class="nav-link d-flex align-items-center gap-3">
+      <i class="bi bi-house-fill"></i>
+      {% translate "Home" %}
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a href="/admin" class="nav-link d-flex align-items-center gap-3">
+      <i class="bi bi-gear-fill"></i>
+      {% translate "Admin" %}
+    </a>
+  </li>
+
+  {# TODO: Replace with proper documentation link in future #}
+  <li class="nav-item">
+    <a href="https://github.com/DennisSchulmeister/openbook/blob/main/README.md#further-documentation"
+      class="nav-link d-flex align-items-center gap-3">
+      <i class="bi bi-journal-code"></i>
+      {% translate "Documentation" %}
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a href="https://github.com/DennisSchulmeister/openbook/"
+      class="nav-link d-flex align-items-center gap-3">
+      <i class="bi bi-github"></i>
+      {% translate "Github" %}
+    </a>
+  </li>

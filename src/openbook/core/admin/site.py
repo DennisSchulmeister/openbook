@@ -12,22 +12,12 @@ from ..                       import models
 
 class SiteAdmin(admin.ModelAdmin):
     model              = models.Site
-    list_display       = ["id", "domain", "name"]
+    list_display       = ["id", "domain", "name", "short_name"]
     list_display_links = ["id", "domain"]
-    search_fields      = ["domain", "name"]
+    search_fields      = ["domain", "name", "short_name"]
 
     fieldsets = (
         (None, {
-            "fields": ["id", "domain", "name"]
+            "fields": ["id", "domain", "name", "short_name", "about_url"]
         }),
-        (_("Icon"), {
-            "fields": ["favicon"]
-        }),
-        (_("Theme Parameters (CSS)"), {
-            "fields": [
-                "header_bg", "header_fg", "header_link",
-                "main_bg",   "main_fg",   "main_link",
-                "footer_bg", "footer_fg", "footer_link",
-            ]
-        })
     )

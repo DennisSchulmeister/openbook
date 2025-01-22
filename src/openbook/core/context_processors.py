@@ -19,13 +19,9 @@ def site(request: HttpRequest = None) -> dict:
     try:
         site_id   = settings.SITE_ID or 1
         site_obj  = Site.objects.get(pk=site_id)
-        site_logo = site_obj.logo if hasattr(site_obj, "logo") else None
-        favicon   = site_obj.favicon if hasattr(site_obj, "favicon") else None
 
         return {
-            "site":      site_obj,
-            "site_logo": site_logo,
-            "favicon":   favicon,
+            "site": site_obj,
         }
     except Site.DoesNotExist:
         warning = _("WARNING: Website %s is not customized. Please login to the Admin and maintain its data.") % site_id
