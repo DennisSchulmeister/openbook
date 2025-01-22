@@ -8,7 +8,7 @@
 
 from . import views
 
-def register_api_routes(router, prefix):
+def register(router, prefix):
     router.register(f"{prefix}/languages",   views.LanguageViewSet,  basename="language")
     router.register(f"{prefix}/media-files", views.MediaFileViewSet, basename="media-file")
     router.register(f"{prefix}/sites",       views.SiteViewSet,      basename="site")
