@@ -15,8 +15,14 @@ else
 
     ../.env/bin/python ./manage.py migrate
 
-    if [ -n "$LS_LOAD_INITIAL_DATA" ]; then
+    if [ -n "$OB_LOAD_INITIAL_DATA" ]; then
         ../.env/bin/python ./manage.py load_initial_data
+    fi
+
+    if [! -z "$OB_SERVER_URL"]; then
+        echo ">>> Using server URL: $OB_SERVER_URL <<<"
+        echo ">>> Please make sure this URL can be accessed from the browser. <<<"
+        echo "$OB_SERVER_URL" > _static.volume/openbook/website/server.url
     fi
 
     exec ../.env/bin/daphne -p 8000 -b 0.0.0.0 openbook.asgi:application

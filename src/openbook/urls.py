@@ -31,5 +31,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     # Frontend SPA
-    urlpatterns += static("website/", document_root=f"{settings.STATIC_ROOT}/openbook/website")
-    urlpatterns += path("", RedirectView.as_view(url="/website/index.html")),
+    urlpatterns += static("app/", document_root=f"{settings.STATIC_ROOT}/openbook/app")
+    urlpatterns += path("", RedirectView.as_view(url="/app/index.html")),

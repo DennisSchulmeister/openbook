@@ -13,6 +13,12 @@ export default {
     Placeholder: {
         Title: "OpenBook",
         Text:  "Under Construction!",
+
+        BackendStatus: {
+            Checking: "Checking Now …",
+            Online:   "Online",
+            Offline:  "Offline",
+        },
     },
 
     Error404: {

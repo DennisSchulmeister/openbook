@@ -24,6 +24,14 @@ localhost:80 {
             file_server
             root /srv/www/media.volume
         }
+
+        handle_path /app/* {
+            file_server
+            root /srv/www/static.volume/openbook/app
+            try_files {path} /index.html
+        }
+
+        redir / /app
 }
 
 # # Remove www. prefix

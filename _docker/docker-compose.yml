@@ -44,8 +44,8 @@ services:
             context: ".."
             dockerfile: _docker/Dockerfile
         restart: unless-stopped
-        #ports:
-        #    - 127.0.0.1:8888:8000
+        ports:
+            - 127.0.0.1:8000:8000
         depends_on:
             - postgres
             - redis
@@ -55,7 +55,7 @@ services:
             - openbook_media:/app/openbook/_media.volume
         environment:
             DJANGO_SETTINGS_MODULE: openbook.settings
-            LS_LOAD_INITIAL_DATA: 1
+            OB_LOAD_INITIAL_DATA: 1
     
     #---------------------------------------------------------------------------
     # Caddy Frontend Web Server - Serves static files and media uploads and
@@ -88,6 +88,8 @@ services:
             - caddy_data:/data
             - openbook_static:/srv/www/static.volume
             - openbook_media:/srv/www/media.volume
+        environment:
+            OB_SERVER_URL: http://localhost:8000
 
 volumes:
     postgres:

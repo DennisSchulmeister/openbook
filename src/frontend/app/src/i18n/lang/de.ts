@@ -14,6 +14,12 @@ const i18n: I18N = {
     Placeholder: {
         Title: "OpenBook",
         Text:  "Achtung, Baustelle!",
+
+        BackendStatus: {
+            Checking: "Wird geprüft …",
+            Online:   "Online",
+            Offline:  "Offline",
+        },
     },
 
     Error404: {
