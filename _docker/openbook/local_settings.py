@@ -10,10 +10,13 @@ SECRET_KEY = "django-insecure-jeo+.}_}9(Q.t_IU$WJ!%eL=b:MDbAL.~NY_=a:>D@:W[XPh4[
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
+# Also configured in ../webserver/Caddyfile, but actually only needed in one place.
+OB_ROOT_REDIRECT = "/api/"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "lernspiel",
+        "NAME": "openbook",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "postgres",
@@ -32,11 +35,11 @@ CHANNEL_LAYERS = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-STATIC_DIR = "/app/openbook/_static.volume"
-STATIC_URL = "static/"
+STATIC_DIR = "/app/src/_static.volume"
+STATIC_URL = "/static/"
 
-MEDIA_DIR = "/app/openbook/_media.volume"
-MEDIA_URL = "media/"
+MEDIA_DIR = "/app/src/_media.volume"
+MEDIA_URL = "/media/"
 
 USE_TZ = True
 TIME_ZONE = "Europe/Berlin"

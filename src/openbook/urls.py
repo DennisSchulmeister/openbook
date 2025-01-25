@@ -23,6 +23,8 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path('api-auth/', include('rest_framework.urls')),
     path("admin/", admin_site.urls),
+
+    path("", RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),
 ]
 
 if settings.DEBUG:
@@ -32,4 +34,3 @@ if settings.DEBUG:
 
     # Frontend SPA
     urlpatterns += static("app/", document_root=f"{settings.STATIC_ROOT}/openbook/app")
-    urlpatterns += path("", RedirectView.as_view(url="/app/index.html")),

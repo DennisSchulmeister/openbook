@@ -20,6 +20,8 @@ SECRET_KEY = "django-insecure-jeo+.}_}9(Q.t_IU$WJ!%eL=b:MDbAL.~NY_=a:>D@:W[XPh4[
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
+OB_ROOT_REDIRECT = "/app/index.html"
+
 # Application definition
 #
 # NOTE: Sort the apps in the order they should appear in the Admin Dashboard.

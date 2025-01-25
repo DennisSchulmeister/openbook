@@ -14,8 +14,8 @@
         "frontend": "cd src/frontend && npm run watch",
         "libraries": "cd src/libraries && npm run watch",
         "start": "conc -n redis,django,fake-smtp,frontend,libraries -c auto \"npm run redis\" \"npm run runserver\" \"npm run maildev\" \"npm run frontend\" \"npm run libraries\"",
-        "build:frontend": "cd src/libraries && npm run build",
-        "build:libraries": "cd src/frontend && npm run build",
+        "build:libraries": "cd src/libraries && npm run build",
+        "build:frontend": "cd src/frontend && npm run build",
         "build": "npm run build:frontend && npm run build:libraries"
     },
     "devDependencies": {

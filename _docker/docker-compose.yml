@@ -10,10 +10,9 @@ services:
     #---------------------------------------------------------------------------
     # Postgres Database
     # https://github.com/docker-library/docs/blob/master/postgres/README.md
-    # https://postgrest.org/en/v12/explanations/install.html#install
     #---------------------------------------------------------------------------
     postgres:
-        image: postgres:16-alpine
+        image: postgres:alpine
         restart: unless-stopped
         shm_size: 256mb
         environment:
@@ -22,9 +21,9 @@ services:
             # has been started before.
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: lernspiel
+            POSTGRES_DB: openbook
         volumes:
-          - postgres:/var/lib/postgresql/data
+          - openbook_postgres:/var/lib/postgresql/data
     
     #---------------------------------------------------------------------------
     # Redis Key/Value Storage - Used by Django Channels
@@ -34,7 +33,7 @@ services:
         image: redis:alpine
         restart: unless-stopped
         volumes:
-            - redis:/data
+            - openbook_redis:/data
 
     #---------------------------------------------------------------------------
     # OpenBook Server
@@ -42,17 +41,17 @@ services:
     openbook:
         build:
             context: ".."
-            dockerfile: _docker/Dockerfile
+            dockerfile: _docker/openbook/Dockerfile
         restart: unless-stopped
-        ports:
-            - 127.0.0.1:8000:8000
+        #ports:
+        #    - 127.0.0.1:8000:8000
         depends_on:
             - postgres
             - redis
         volumes:
-            - ./openbook.local_settings.py:/app/openbook/openbook/local_settings.py
-            - openbook_static:/app/openbook/_static.volume
-            - openbook_media:/app/openbook/_media.volume
+            - ./openbook/local_settings.py:/app/src/openbook/local_settings.py
+            - openbook_static:/app/src/_static.volume
+            - openbook_media:/app/src/_media.volume
         environment:
             DJANGO_SETTINGS_MODULE: openbook.settings
             OB_LOAD_INITIAL_DATA: 1
@@ -79,22 +78,21 @@ services:
         cap_add:
             - NET_ADMIN
         ports:
-            - 127.0.0.1:8080:80
+            - 127.0.0.1:8000:80
             #- 127.0.0.1:443:443
             #- 127.0.0.1:443:443/udp
         volumes:
-            - ./Caddyfile:/etc/caddy/Caddyfile
-            - caddy_config:/config
-            - caddy_data:/data
+            - ./webserver/Caddyfile:/etc/caddy/Caddyfile
+            - openbook_caddy_config:/config
+            - openbook_caddy_data:/data
             - openbook_static:/srv/www/static.volume
             - openbook_media:/srv/www/media.volume
-        environment:
-            OB_SERVER_URL: http://localhost:8000
+            - ./webserver/server.url:/srv/www/static.volume/openbook/app/server.url
 
 volumes:
-    postgres:
-    redis:
+    openbook_postgres:
+    openbook_redis:
     openbook_static:
     openbook_media:
-    caddy_config:
-    caddy_data:
+    openbook_caddy_config:
+    openbook_caddy_data:

@@ -1,0 +1,12 @@
+{
+    "name": "@openbook-studio/docker",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "build": "docker compose build",
+        "start": "docker compose up",
+        "shell:openbook": "docker exec -it docker-openbook-1 bash",
+        "shell:webserver": "docker exec -it docker-webserver-1 sh",
+        "prune": "docker system prune"
+    }
+}

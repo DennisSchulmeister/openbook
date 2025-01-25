@@ -12,7 +12,7 @@ In no particular order:
 -[ ] Additional Django packages
   -[-] [Integrate Django REST Framework](https://www.django-rest-framework.org/)
     -[X] Basic integration with the core app
-    -[ ] Pass the API URL to the single page app, show healths status there
+    -[X] Pass the API URL to the single page app, show healths status there
     -[ ] Object-level permissions, e.g. only owner can change media files
     -[ ] Fix: Redirect to unknwon URL after api-auth login
   -[ ] [Integrate Django Vector DB](https://pkavumba.github.io/django-vectordb/)
