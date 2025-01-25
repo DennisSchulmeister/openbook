@@ -7,7 +7,7 @@
 # License, or (at your option) any later version.
 
 from rest_framework import permissions
-from .models        import User
+from ..models.user  import User
 
 class IsSameUserOrAdmin(permissions.BasePermission):
     """
