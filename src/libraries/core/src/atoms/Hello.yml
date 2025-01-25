@@ -1,0 +1,39 @@
+# ========================================== #
+# Element description for the WYSIWYG editor #
+# ========================================== #
+
+# HTML tag name
+tagname: ob-hello
+
+# Short description in mulitple languages
+description:
+  en: A simple Hello World custom element
+  de: Eine einfaches Hallo Welt Custom Element
+
+# Whether the element may contain text content
+text-allowed: false
+
+# Whether normal HTML child nodes are allowed
+html-allowed: false
+
+# Names of the allowed HTML children, if html-allowed is false
+allowed-children: []
+
+# HTML attributes and their allowed values
+attributes:
+  name:
+    description:
+      en: Name of the person or thing to greet
+      de: Name der zu grüßenden Person oder Sache
+      
+    # Optional: Regular expression to check property values
+    # regex: .*
+
+    # Optional: Enumerated list of allowed property values
+    # enum: []
+
+# Names of the events raised by the element
+events:
+  - mouseover
+  - mouseleave
+  - focus

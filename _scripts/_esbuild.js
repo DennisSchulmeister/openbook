@@ -45,7 +45,14 @@ export async function runEsbuild({infile, outfiles, staticdirs, watch, plugins} 
         conditions: ["svelte", "browser"],
 
         plugins: [
-            sveltePlugin(),
+            sveltePlugin({
+                compilerOptions: {
+                    compatibility: {
+                        componentApi: 4
+                    },
+                    customElement: true
+                }
+            }),
             additionalOutfilesPlugin(outfiles),
             staticFilesPlugin(outfiles, staticdirs),
             ...plugins

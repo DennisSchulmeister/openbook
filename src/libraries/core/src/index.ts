@@ -1,5 +1,5 @@
 /*
- * OpenBook: Interactive Online Textbooks - Core Library
+ * OpenBook: Interactive Online Textbooks
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -8,7 +8,5 @@
  * License, or (at your option) any later version.
  */
 
-import "./index.css";
-
-// Implement your library here
-console.log("Library loaded ...");
+// Only imported components will be built!
+import "./atoms/Hello.svelte";

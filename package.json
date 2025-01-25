@@ -20,8 +20,10 @@
     },
     "devDependencies": {
         "@tsconfig/svelte": "^5.0.4",
+        "@types/glob": "^8.1.0",
         "@types/node": "^22.10.7",
         "@typescript-eslint/eslint-plugin": "^8.21.0",
+        "ajv": "^8.17.1",
         "conc": "^0.0.3",
         "concurrently": "^9.1.2",
         "esbuild": "^0.24.2",

@@ -11,8 +11,12 @@
 import fs      from "node:fs/promises";
 import path    from "node:path";
 import process from "node:process";
-import yaml    from "yaml";
+
+import {Ajv}   from "ajv";
+import {glob}  from "glob";
 import JSZip   from "jszip";
+import shelljs from "shelljs";
+import yaml    from "yaml";
 
 /**
  * Shared logic for all scripts to determine the build options.
@@ -25,20 +29,53 @@ export function getOptions() {
         infile: path.join(cwd, "src", "index.ts"),
         watch:  process.argv[2] === "--watch",
 
-        staticdirs: [
-            path.join(cwd, "components"),
-            path.join(cwd, "static"),
-        ],
-
         outfiles:  [
             path.join(cwd, "dist", "library.js"),
             path.join(cwd, "..", "..", "_media", "lib", name, "library.js"),
         ],
 
         plugins: [
+            validateAndCopyElementYml(cwd, path.join(cwd, "dist")),
             createLibraryYml(cwd, path.join(cwd, "dist", "library.yml")),
             createLibraryZip(path.join(cwd, "dist"), path.join(cwd, "zip", "library.zip")),
         ],
+    };
+}
+
+/**
+ * Copy YML files describing the custom elements to the WYSIWYG editor to a
+ * new directory called `elements`. Also validates the YML files and raises
+ * an error when validation fails.
+ * 
+ * @param {string} cwd Root directory of the library
+ * @param {string} outdir Build output directory
+ * @returns esbuild plug-in instance
+ */
+function validateAndCopyElementYml(cwd, outdir) {
+    return {
+        name: "copyElementYml",
+        setup(build) {
+            build.onEnd(async () => {
+                let srcDir            = path.join(cwd, "src");
+                let elementSchemaFile = await fs.readFile(path.join(import.meta.dirname, "element-schema.yml"), "utf-8");
+                let elementSchemaYml  = yaml.parse(elementSchemaFile);
+                let ajv = new Ajv();
+
+                for (let srcFile of await glob([path.join(srcDir, "**", "*.yml")])) {
+                    // Validate file
+                    let elementFile = await fs.readFile(path.join(srcFile), "utf-8");
+                    let elementYml  = yaml.parse(elementFile);
+
+                    await ajv.validate(elementSchemaYml, elementYml);
+                    if (ajv.errors) throw ajv.errors;
+
+                    // Copy file
+                    srcFile = path.relative(srcDir, srcFile);
+                    shelljs.mkdir("-p", path.join(outdir, "elements", path.dirname(srcFile)));
+                    shelljs.cp("-R", path.join("src", srcFile), path.join(outdir, "elements", srcFile));
+                }
+            });
+        },
     };
 }
 

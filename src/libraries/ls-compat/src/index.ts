@@ -1,5 +1,5 @@
 /*
- * OpenBook: Interactive Online Textbooks - Core Library
+ * OpenBook: Interactive Online Textbooks
  * © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -8,7 +8,4 @@
  * License, or (at your option) any later version.
  */
 
-/*
- * Add global styles here. But be careful not to mess the textbook content!
- * Please consider prefixing your class and id names for this.
- */
+// Only imported components will be built!

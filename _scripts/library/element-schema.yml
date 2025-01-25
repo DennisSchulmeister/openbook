@@ -1,0 +1,69 @@
+# JSON Schema to validate custom element descriptors for the WYSIWYG editor
+type: object
+
+properties:
+    tagname:
+        description: The HTML tag name
+        type: string
+  
+    description:
+        description: Short description in multiple languages
+        type: object
+        additionalProperties: false
+        patternProperties:
+            # Language Code
+            "^[a-z]{2}(-[A-Z]{2})?$":
+                type: string
+
+    text-allowed:
+        description: Whether the element may contain text content
+        type: boolean
+  
+    html-allowed:
+        description: Whether normal HTML child nodes are allowed
+        type: boolean
+  
+    allowed-children:
+        description: Names of the allowed HTML children if html-allowed is false
+        type: array
+        items:
+            type: string
+  
+    attributes:
+        description: HTML attributes and their allowed values
+        type: object
+
+    additionalProperties:
+        type: object
+
+        properties:
+            description:
+                description: Description of the property in multiple languages
+                type: object
+                additionalProperties: false
+                patternProperties:
+                    # Language code
+                    "^[a-z]{2}(-[A-Z]{2})?$":
+                        type: string
+
+            regex:
+                type: string
+                description: Optional regular expression to check property values
+
+            enum:
+                description: Optional enumerated list of allowed property values
+                type: array
+                items:
+                    type: string
+
+        additionalProperties: false
+  
+    events:
+        description: Names of the events raised by the element
+        type: array
+        items:
+            type: string
+
+required: [tagname]
+
+additionalProperties: false

@@ -27,9 +27,9 @@ In no particular order:
        [Django Jet Reboot](https://github.com/assem-ch/django-jet-reboot?tab=readme-ov-file)
   -[ ] [Integrate Django SAML2 Auth](https://github.com/grafana/django-saml2-auth)
 
--[ ] Frontend projects
+-[X] Frontend projects
   -[X] Scaffold frontend SPA (svelte + routing)
-  -[ ] Scaffold core component library (svelte web components)
+  -[X] Scaffold core component library (svelte web components)
   -[X] Fix: esbuild build errors for the frontend/admin package
   -[X] Fix: esbuild watch mode not watching static files
 
