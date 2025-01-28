@@ -13,6 +13,7 @@ tries to summarize the most important things.
 1. [Poetry Package Management](#poetry-package-management)
 1. [Django Web Framework](#django-web-framework)
 1. [Django Project vs. App](#django-project-vs-app)
+1. [Permissions](#permissions)
 1. [Creating Fixtures](#creating-fixtures)
 1. [SQLite Shell](#sqlite-shell)
 1. [NPM and esbuild](#npm-and-esbuild)
@@ -57,6 +58,7 @@ The OpenBook Server is built with the following technology:
 * Python
 * Poetry - Package Management
 * Django Web Framework - Core Server Framework
+* Django REST Framework - API Endpoints for the frontend and external clients
 * Django Channels - Websocket Support
 
 The idea is to keep the technical requirements lean to enable easy deployment in custom environments.
@@ -107,21 +109,20 @@ Here are a few important directories and files that you might want to know about
 
 ```text
 .                                       Root directory with this file
-├── openbook                     The server application
-│   ├── openbook
+├── src                                 Main source directory
+│   ├── openbook                        The server application built with Django
 │   │   ├── local_settings.py           Use this for your own server configuration
 │   │   ├── settings.py                 Internal settings of the server
 │   │   └── ...
 │   └── manage.py                       Django CLI for the server
-├── frontend                            JavaScript code for the server UI
 │
-└── libraries                           Stand-Alone single page app libraries
+├── frontend
+│   ├── admin                           Static files and browser code for the Django admin
+│   └── app                             Single page app for the actual frontend built with Svelte
+│
+└── libraries                           Custom element libraries built with Svelte for textbook content
+│   └── ...
 ```
-
-The directories `frontend` and `libraries` might be confusing at first. The first one is meant to
-collect all JavaScript code, that is needed by the OpenBook Server's user interface. The latter
-contains the core single page app, that actually renders the course materials and can also run
-stand-alone in a static deployment without backend server.
 
 Poetry Package Management
 -------------------------
@@ -184,24 +185,65 @@ live inside the project module, the Django developers recommend splitting the pr
 multiple apps to foster separation of concerns and code re-use.
 
 When you have a project like `openbook` the Django Admin command created a top-level
-directory of that name, containing a sub-directory of the same name. Next to it the Django
-applications will be created:
+directory of that name, containing a sub-directory of the same name. But to avoid having
+three nested directories of the same name, that directory was renamed to `src`, inside
+which the `openbook` Django project lives, inside which several apps live. Technically
+the apps could also live a siblings to the project, but allos us to use the sibling
+directories for other things.
+
 
 ```text
-.                                       Root directory with this file
-└── openbook                     Django project top-level
-    ├── openbook                 Django project python package
-    │   │   └── settings.py             Configuration file
-    │   └── ...
-    ├── manage.py                       Django CLI for the server
-    │
-    ├── ob_app_1                        Django Application
-    │   └── ...
-    ├── ob_app_2                        Django Application
-    │   └── ...
-    └── ob_app_3                        Django Application
-        └── ...
+.                                 Root directory with this file
+└── src                           Main source directory
+    ├── manage.py                 Django CLI
+    └── openbook                  Django project
+        ├── settings.py           Django configuration
+        ├── app_1                 Django Application
+        │   └── ...
+        ├── app_2                 Django Application
+        │   └── ...
+        └── ...                   Django Application
 ```
+
+Permissions
+-----------
+
+TODO:
+
+ - Caveat: Django model layer intentionaly checks no permissions
+ - Django Contrib Auth (Object-Level Permissions)
+    - What is it?
+    - Where is it being used?
+    - How does it work?
+      - What "is" a permission in Django Contrib Auth?
+      - Users vs. Groups
+    - How to create custom permissions?
+    - When to create custom permissions and when not?
+ - Permission checks in Django Admin vs. Django REST Framework
+ - Default policy in settings.py: rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly
+    - When does it apply? When does it not apply?
+    - What to consider, when creating custom permission for a REST view?
+ - View level permissions in the REST views
+    - Property permission_classes of the REST Framework generic viewsets
+    - Often-needed permission classes in Django REST Framework
+      - IsAuthenticated
+      - IsAuthenticatedOrReadOnly
+    - When are they checked? (at the beginning before the view body is executed)
+ - Object level permissions in the REST views
+    - Often-needed permission classes in Django REST Framework
+      - DjangoObjectPermissions
+      - DjangoModelPermissionsOrAnonReadOnly
+    - When are they checked?
+      - in method `get_object()`
+      - If `get_object()` is replaced with a custom version (or the generic views are not used), `check_object_permissions(request, obj)` must be manually called
+      - Limitations of object level permissions (from https://www.django-rest-framework.org/api-guide/permissions/):
+        - For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.
+
+        - Often when you're using object level permissions you'll also want to filter the queryset appropriately, to ensure that users only have visibility onto instances that they are permitted to view.
+
+        - Because the get_object() method is not called, object level permissions from the has_object_permission() method are not applied when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the perform_create() method of your ViewSet class.
+
+ - Sharing permissions between the admin and REST API
 
 Creating Fixtures
 -----------------

@@ -354,20 +354,6 @@ files = [
 Django = ">=4.2"
 
 [[package]]
-name = "django-guardian"
-version = "2.4.0"
-description = "Implementation of per object permissions for Django."
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "django-guardian-2.4.0.tar.gz", hash = "sha256:c58a68ae76922d33e6bdc0e69af1892097838de56e93e78a8361090bcd9f89a0"},
-    {file = "django_guardian-2.4.0-py3-none-any.whl", hash = "sha256:440ca61358427e575323648b25f8384739e54c38b3d655c81d75e0cd0d61b697"},
-]
-
-[package.dependencies]
-Django = ">=2.2"
-
-[[package]]
 name = "djangorestframework"
 version = "3.15.2"
 description = "Web APIs for Django, made easy."
@@ -1128,4 +1114,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1b2b25b9c07afc416ef78b13281e123dee65eac39de1dd53d753a40132cc31d9"
+content-hash = "bc5c602cc52b7bdba2d7701ed95f8f33b1f63209de9fa418fbfd40e0b3fb9d14"

@@ -14,6 +14,7 @@ In no particular order:
     -[X] Basic integration with the core app
     -[X] Pass the API URL to the single page app, show healths status there
     -[ ] Object-level permissions, e.g. only owner can change media files
+    -[ ] Generally check the existing permissions for completeness
     -[ ] Fix: Redirect to unknwon URL after api-auth login
   -[ ] [Integrate Django Vector DB](https://pkavumba.github.io/django-vectordb/)
   -[ ] [Django Image Uploader Widget](https://github.com/inventare/django-image-uploader-widget)
@@ -46,6 +47,9 @@ In no particular order:
   -[ ] HTML rendering
 
 -[ ] Define other core apps and data model
+-[ ] Check existing models with generic relationships: Generic relationships are not automatically deleted with the object!
+      -[ ] Signal handlers
+      -[ ] Management commands to cleanup dangling relationships
 
 General Ideas
 -------------

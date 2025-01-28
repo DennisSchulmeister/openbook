@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "drf_redesign",
     "rest_framework",
     "django_filters",
-    "guardian",
 
     # Django built-in apps
     "django.contrib.admin",
@@ -145,7 +144,6 @@ AUTH_USER_MODEL = "openbook_core.User"
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "guardian.backends.ObjectPermissionBackend",
 )
 
 # E-Mail Settings
