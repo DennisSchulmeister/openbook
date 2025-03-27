@@ -44,8 +44,8 @@ class CreatedModifiedByMixin(models.Model):
     def save(self, *args, **kwargs):
         """
         Automatically populate the `created_by` and `modified_by` fields. Care must be taken
-        to this method from the mixin class, if the `save()` method is overwritten by another
-        mixin class or the model itself.
+        to call this method, if the `save()` method is overwritten by another mixin class or
+        the model itself.
         """
         user = get_current_user()
 
@@ -172,7 +172,7 @@ def get_translations(object: models.Model, language: str = "",
 
 class TranslationMissing(Exception):
     """
-    An exception that can be throws, when a translation for something is missing.
+    An exception that can be thrown, when a translation for something is missing.
     Note, that the `get_translations()` function doesn't throw this exception but
     rather returns `None`.
     """

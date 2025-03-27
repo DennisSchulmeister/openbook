@@ -141,7 +141,7 @@ plus it fully automates the usage of virtual environments. The most important co
 * `poetry run xyz` - Run console command `xyz` in the Python environment
 * `poetry list` - Show all available sub-commands
 * `poetry env use $(which python)` - Create new virtual Python environment
-* `peotry env list` - List available environments
+* `poetry env list` - List available environments
 * `poetry env remove xyz` - Delete environment
 
 Django Web Framework
@@ -211,6 +211,7 @@ Permissions
 TODO:
 
  - Caveat: Django model layer intentionaly checks no permissions
+
  - Django Contrib Auth (Object-Level Permissions)
     - What is it?
     - Where is it being used?
@@ -219,16 +220,20 @@ TODO:
       - Users vs. Groups
     - How to create custom permissions?
     - When to create custom permissions and when not?
+ 
  - Permission checks in Django Admin vs. Django REST Framework
+ 
  - Default policy in settings.py: rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly
     - When does it apply? When does it not apply?
     - What to consider, when creating custom permission for a REST view?
+ 
  - View level permissions in the REST views
     - Property permission_classes of the REST Framework generic viewsets
     - Often-needed permission classes in Django REST Framework
       - IsAuthenticated
       - IsAuthenticatedOrReadOnly
     - When are they checked? (at the beginning before the view body is executed)
+ 
  - Object level permissions in the REST views
     - Often-needed permission classes in Django REST Framework
       - DjangoObjectPermissions
@@ -243,7 +248,7 @@ TODO:
 
         - Because the get_object() method is not called, object level permissions from the has_object_permission() method are not applied when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the perform_create() method of your ViewSet class.
 
- - Sharing permissions between the admin and REST API
+ - Strategies for sharing permissions between the admin and REST API
 
 Creating Fixtures
 -----------------
