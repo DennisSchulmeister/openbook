@@ -13,7 +13,7 @@ tries to summarize the most important things.
 1. [Poetry Package Management](#poetry-package-management)
 1. [Django Web Framework](#django-web-framework)
 1. [Django Project vs. App](#django-project-vs-app)
-1. [Permissions](#permissions)
+1. [Core Data Model and Permissions](#core-data-model-and-permissions)
 1. [Creating Fixtures](#creating-fixtures)
 1. [SQLite Shell](#sqlite-shell)
 1. [NPM and esbuild](#npm-and-esbuild)
@@ -205,50 +205,110 @@ directories for other things.
         └── ...                   Django Application
 ```
 
-Permissions
------------
+Core Data Model and Permissions
+-------------------------------
 
-TODO:
+The foundational data model fulfills the following requirements:
 
- - Caveat: Django model layer intentionaly checks no permissions
+* Learning content is organized into thematic courses such as "Web Development", "Python I", etc.
+* Courses have teachers and students who access and edit the course content.
+* Permissions depend on the role a user has within a course (e.g., teacher, student).
+* Roles should be course-specific to allow custom role definitions.
+* The course owner always has full permissions, regardless of their assigned role.
+* Courses are structured in a hierarchical directory (e.g., study program / semester / courses).
+* Multiple teachers must be able to distinguish their own students from others.
 
- - Django Contrib Auth (Object-Level Permissions)
-    - What is it?
-    - Where is it being used?
-    - How does it work?
-      - What "is" a permission in Django Contrib Auth?
-      - Users vs. Groups
-    - How to create custom permissions?
-    - When to create custom permissions and when not?
- 
- - Permission checks in Django Admin vs. Django REST Framework
- 
- - Default policy in settings.py: rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly
-    - When does it apply? When does it not apply?
-    - What to consider, when creating custom permission for a REST view?
- 
- - View level permissions in the REST views
-    - Property permission_classes of the REST Framework generic viewsets
-    - Often-needed permission classes in Django REST Framework
-      - IsAuthenticated
-      - IsAuthenticatedOrReadOnly
-    - When are they checked? (at the beginning before the view body is executed)
- 
- - Object level permissions in the REST views
-    - Often-needed permission classes in Django REST Framework
-      - DjangoObjectPermissions
-      - DjangoModelPermissionsOrAnonReadOnly
-    - When are they checked?
-      - in method `get_object()`
-      - If `get_object()` is replaced with a custom version (or the generic views are not used), `check_object_permissions(request, obj)` must be manually called
-      - Limitations of object level permissions (from https://www.django-rest-framework.org/api-guide/permissions/):
-        - For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.
+We handle as much of the permission logic as possible within the Django permissions system and
+minimize custom logic in the REST layer. This means favoring `DjangoObjectPermissions` and related
+classes when defining REST endpoints. Note that `DjangoModelPermissionsOrAnonReadOnly` is the
+default defined in `settings.py`, giving anonymous users read-access by default.
 
-        - Often when you're using object level permissions you'll also want to filter the queryset appropriately, to ensure that users only have visibility onto instances that they are permitted to view.
+We provide our own implementation of Django's object-level permission hooks, as it appears simpler
+than reusing existing third-party libraries.
 
-        - Because the get_object() method is not called, object level permissions from the has_object_permission() method are not applied when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the perform_create() method of your ViewSet class.
+#### Django User Models
 
- - Strategies for sharing permissions between the admin and REST API
+We use Django's built-in `User`, `Group`, and `Permission` models as follows:
+
+* `User` (Django): Represents any authenticated person using the system.
+* `Permission` (Django): Represents an action, e.g., "Create course", "Edit course".
+* `Group` (Django): Optionally groups users to assign global permissions.
+
+#### Additional Custom Models
+
+On top of the default Django models, we define our own models to represent the course structure:
+
+* `Organization`: Represents a hierarchical structure (e.g., study programs, cohorts).
+    * An organization can have multiple child organizations (1:n relationship).
+    * Users can belong to multiple organizations (n:m relationship).
+    * Courses can be assigned to multiple organizations (n:m relationship).
+
+* `Course`: The primary unit containing learning targets, activities, and content.
+    * Users can be assigned to courses, but this is optional (n:m relationship).
+    * Users directly assigned to a course are assigned one or more roles.
+    * Each course defines a default role for users who are not explicitly assigned.
+
+* `Role`: A collection of permissions specific to a course.
+    * Each role belongs to exactly one course (1:n relationship).
+    * A role aggregates Django permissions (n:m relationship).
+
+**Note**: While users and courses typically belong to a single organization (e.g., a degree program),
+the model allows multiple memberships to support cross-program collaborations (e.g., when a teacher
+offers the same course across different programs).
+
+#### Permission Handling
+
+When users sign up, they are placed in a default group (e.g., "students") that provides limited
+permissions, such as browsing the course directory.
+
+The standard method for gaining additional permissions is through roles assigned within specific
+courses. Our object-level permission logic determines access based on:
+
+1. The course to which the object belongs,
+2. The user's roles in that course,
+3. The permissions attached to those roles.
+
+To simplify management, users are generally assigned to organizations, not individual courses.
+This allows them to access all courses linked (directly or through child organizations) to their
+organizations. In these cases, users assume the default role of the course. Users requiring
+additional permissions (e.g., teaching privileges) can be assigned directly to a course.
+
+Administrators (via the Django admin) may grant permissions directly to users or through groups.
+These global permissions override object-level checks. If a permission is granted globally,
+object-level evaluation is skipped.
+
+#### Alternatives Considered
+
+* [Django REST - Access Policy](https://rsinger86.github.io/drf-access-policy/)
+* [FJNR-inc/dry-rest-permissions](https://github.com/FJNR-inc/dry-rest-permissions)
+* [Django Guardian](https://github.com/django-guardian/django-guardian)
+
+It seems best to directly use the mechanisms in Django to build a custom implementation, because
+all other alternatives would require custom code anyway to map our internal data model to permission
+rules. With Django Guardian we would have the extra complexity to keep the individual permission
+assignments in sync with our own data, e.g. when a course is assigned to a new organization to
+reflect this change in the permissions etc.
+
+#### Caveats
+
+* The Django model layer intentionaly checks no permissions. Permissions checking must be handled
+  by higher levels like Django Admin or the REST layer.
+
+* Django REST Framework checks permissions on the `get_object()` method. It may be necessary to
+  manually call the inherited method, when it is replaced with a custom implementation or the
+  generic REST views are not used.
+
+* Limitations of object level permissions in Django REST Framework: ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
+  * For performance reasons the generic views will not automatically apply object level permissions
+    to each instance in a queryset when returning a list of objects.
+
+  * Often when you're using object level permissions you'll also want to filter the queryset appropriately,
+    to ensure that users only have visibility onto instances that they are permitted to view.
+
+  * Because the `get_object()` method is not called, object level permissions from the `has_object_permission()`
+    method are not applied when creating objects. In order to restrict object creation you need to implement
+    the permission check either in your `Serializer` class or override the `perform_create()` method of your
+    `ViewSet` class.
 
 Creating Fixtures
 -----------------

@@ -11,6 +11,7 @@ import uuid
 from typing                    import Optional
 from django.conf               import settings
 from django.contrib            import admin
+from django.core.exceptions    import ValidationError
 from django.db                 import models
 from django.db.models          import Q
 from django.utils.translation  import gettext_lazy as _, get_language
@@ -28,6 +29,54 @@ class UUIDMixin(models.Model):
     class Meta:
         abstract = True
 
+class NonUniqueSlugMixin(models.Model):
+    """
+    Mixin for models with a non-unique slug field. This is usually used, if the slug
+    itself cannot be unique but must be unique in combination with other fields. In
+    that case, the child class can define a constraint like so:
+
+    ```python
+    class MyModel(models.Model, NonUniqueSlugMixin):
+        ...
+        class Meta:
+            constraints = [
+                models.UniqueConstraint(fields=["course", "slug"], name="unique_course_slug")
+            ]
+    ```
+    """
+    slug = models.SlugField(verbose_name=_("Slug"))
+
+    class Meta:
+        abstract = True
+    
+    def __str__(self):
+        return self.name
+
+class UniqueSlugMixin(models.Model):
+    """
+    Mixin for models with a unique slug field.
+    """
+    slug = models.SlugField(verbose_name=_("Slug"), unique=True)
+
+    class Meta:
+        abstract = True
+    
+    def __str__(self):
+        return self.name
+
+class NameDescriptionMixin(models.Model):
+    """
+    Mixin for models with a clear-text short name and long description.
+    """
+    name        = models.CharField(verbose_name=_("Name"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"), blank=True)
+
+    class Meta:
+        abstract = True
+    
+    def __str__(self):
+        return self.name
+
 class CreatedModifiedByMixin(models.Model):
     """
     Mixin class for models that shall record the time and user of creation as well as
@@ -43,9 +92,10 @@ class CreatedModifiedByMixin(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Automatically populate the `created_by` and `modified_by` fields. Care must be taken
-        to call this method, if the `save()` method is overwritten by another mixin class or
-        the model itself.
+        Automatically populate the `created_by` and `modified_by` fields.
+        
+        Care must be taken to call this method, if the `save()` method is overwritten by another
+        mixin class or the model itself.
         """
         user = get_current_user()
 
@@ -91,6 +141,47 @@ class CreatedModifiedByMixin(models.Model):
             return modified
         else:
             return ""
+
+class ValidityTimeSpanMixin(models.Model):
+    """
+    Mixin class for models that have a validity optionally starting at a certain point
+    in time and optionally ending at a later point in time.
+    """
+    has_start_date = models.BooleanField(verbose_name=_("Has start date"), default=False)
+    start_date = models.DateTimeField(verbose_name=_("Start date and time"), blank=True, null=True)
+    has_end_date = models.BooleanField(verbose_name=_("Has end date"), default=False)
+    end_date = models.DateTimeField(verbose_name=_("End date and time"), blank=True, null=True)
+
+    def clean(self):
+        """
+        Custom check when the model is saved that the end date must be later then the
+        start date, if both respective flags are set. If one of the two flags is unset
+        the check will be skipped.
+
+        Care must be taken to call this method, if the `clean()` method is overwritten by another
+        mixin class or the model itself.
+        """
+        if self.has_start_date and self.has_end_date and self.start_date >= self.end_date:
+            raise ValidationError(_("End date must be later than start date"))
+
+    @property
+    @admin.display(description=_("Limited Validity"))
+    def validity_time_span(self):
+        """
+        Get formatted string to display in the Admin or on the website.
+        """
+        time_span = []
+
+        if self.has_start_date and self.start_date:
+            time_span.append(_("Start: {start_date}").format(start_date=self.start_date.strftime("%x %X")))
+
+        if self.has_end_date and self.end_date:
+            time_span.append(_("End: {end_date}").format(end_date=self.end_date.strftime("%x %X")))
+
+        return " - ".join(time_span) if time_span else _("No validity period specified")
+
+    class Meta:
+        abstract = True
 
 def LanguageField():
     """
