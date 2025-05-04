@@ -13,7 +13,7 @@ tries to summarize the most important things.
 1. [Poetry Package Management](#poetry-package-management)
 1. [Django Web Framework](#django-web-framework)
 1. [Django Project vs. App](#django-project-vs-app)
-1. [Core Data Model and Permissions](#core-data-model-and-permissions)
+1. [Core Data Model and Object Permissions](#core-data-model-and-object-permissions)
 1. [Creating Fixtures](#creating-fixtures)
 1. [SQLite Shell](#sqlite-shell)
 1. [NPM and esbuild](#npm-and-esbuild)
@@ -205,18 +205,36 @@ directories for other things.
         └── ...                   Django Application
 ```
 
-Core Data Model and Permissions
--------------------------------
+Core Data Model and Object Permissions
+--------------------------------------
 
 The foundational data model fulfills the following requirements:
 
-* Learning content is organized into thematic courses such as "Web Development", "Python I", etc.
-* Courses have teachers and students who access and edit the course content.
+* Learning content is organized into textbooks such as "Web Development", "Python I", etc.
+* Textbooks have teachers and students who access and edit its content.
+* Books are placed in a hierarchical ordered library (e.g., study program / subject area).
+* Books can have more than one location in the library (e.g. two different study programs)
+* Users with different roles like (e.g., author, reviewer) work on the books.
+
+Note that we use some slightly different words than in a traditional LMS. Here we split learning
+content (textbooks) from its usage (courses):
+
+* Courses can marked as template courses that are only used to create new identical courses.
+* Courses are held and supported by teachers.
+* Courses use one or more textbooks for their learning content.
+* Courses are also structured in a hierarchical way (e.g., study program).
+* Courses have students assigned.
+* Thus persons in a course have different roles (e.g, teacher, student).
 * Permissions depend on the role a user has within a course (e.g., teacher, student).
-* Roles should be course-specific to allow custom role definitions.
-* The course owner always has full permissions, regardless of their assigned role.
-* Courses are structured in a hierarchical directory (e.g., study program / semester / courses).
-* Multiple teachers must be able to distinguish their own students from others.
+* Roles exist only within their respecitve scope (textbook or course).
+* The scope owner always has full permissions, regardless of their assigned role.
+
+To better understand where we are coming from, consider the module "Distributed System Development"
+(Entwicklung verteilter Systeme) in the "Business Informatics" (Wirtschaftsinformatik) degree programme
+at DHBW Karlsruhe. The module comprises the two lectures "Web Programming" and "Distributed Systems",
+which are held in parallel by different lecturers in up to five cohorts. Each cohort is a "course" in
+which the students and teachers are enrolled, and each lecture is a "textbook" used within the course.
+The textbooks are further developed and reused a year later in the new courses.
 
 We handle as much of the permission logic as possible within the Django permissions system and
 minimize custom logic in the REST layer. This means favoring `DjangoObjectPermissions` and related
@@ -225,69 +243,6 @@ default defined in `settings.py`, giving anonymous users read-access by default.
 
 We provide our own implementation of Django's object-level permission hooks, as it appears simpler
 than reusing existing third-party libraries.
-
-#### Django User Models
-
-We use Django's built-in `User`, `Group`, and `Permission` models as follows:
-
-* `User` (Django): Represents any authenticated person using the system.
-* `Permission` (Django): Represents an action, e.g., "Create course", "Edit course".
-* `Group` (Django): Optionally groups users to assign global permissions.
-
-#### Additional Custom Models
-
-On top of the default Django models, we define our own models to represent the course structure:
-
-* `Organization`: Represents a hierarchical structure (e.g., study programs, cohorts).
-    * An organization can have multiple child organizations (1:n relationship).
-    * Users can belong to multiple organizations (n:m relationship).
-    * Courses can be assigned to multiple organizations (n:m relationship).
-
-* `Course`: The primary unit containing learning targets, activities, and content.
-    * Users can be assigned to courses, but this is optional (n:m relationship).
-    * Users directly assigned to a course are assigned one or more roles.
-    * Each course defines a default role for users who are not explicitly assigned.
-
-* `Role`: A collection of permissions specific to a course.
-    * Each role belongs to exactly one course (1:n relationship).
-    * A role aggregates Django permissions (n:m relationship).
-
-**Note**: While users and courses typically belong to a single organization (e.g., a degree program),
-the model allows multiple memberships to support cross-program collaborations (e.g., when a teacher
-offers the same course across different programs).
-
-#### Permission Handling
-
-When users sign up, they are placed in a default group (e.g., "students") that provides limited
-permissions, such as browsing the course directory.
-
-The standard method for gaining additional permissions is through roles assigned within specific
-courses. Our object-level permission logic determines access based on:
-
-1. The course to which the object belongs,
-2. The user's roles in that course,
-3. The permissions attached to those roles.
-
-To simplify management, users are generally assigned to organizations, not individual courses.
-This allows them to access all courses linked (directly or through child organizations) to their
-organizations. In these cases, users assume the default role of the course. Users requiring
-additional permissions (e.g., teaching privileges) can be assigned directly to a course.
-
-Administrators (via the Django admin) may grant permissions directly to users or through groups.
-These global permissions override object-level checks. If a permission is granted globally,
-object-level evaluation is skipped.
-
-#### Alternatives Considered
-
-* [Django REST - Access Policy](https://rsinger86.github.io/drf-access-policy/)
-* [FJNR-inc/dry-rest-permissions](https://github.com/FJNR-inc/dry-rest-permissions)
-* [Django Guardian](https://github.com/django-guardian/django-guardian)
-
-It seems best to directly use the mechanisms in Django to build a custom implementation, because
-all other alternatives would require custom code anyway to map our internal data model to permission
-rules. With Django Guardian we would have the extra complexity to keep the individual permission
-assignments in sync with our own data, e.g. when a course is assigned to a new organization to
-reflect this change in the permissions etc.
 
 #### Caveats
 
@@ -298,7 +253,7 @@ reflect this change in the permissions etc.
   manually call the inherited method, when it is replaced with a custom implementation or the
   generic REST views are not used.
 
-* Limitations of object level permissions in Django REST Framework: ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
+* Limitations of object permissions in Django REST Framework: ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
   * For performance reasons the generic views will not automatically apply object level permissions
     to each instance in a queryset when returning a list of objects.
 

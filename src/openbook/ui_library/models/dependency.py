@@ -6,13 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.db                import models
-from django.utils.translation import gettext_lazy as _
-from openbook.core.utils      import models as db_utils
-from .library                 import Library
-from ..validators             import validate_library_name
+from django.db                        import models
+from django.utils.translation         import gettext_lazy as _
+from openbook.core.models.mixins.uuid import UUIDMixin
+from .library                         import Library
+from ..validators                     import validate_library_name
 
-class Dependency(db_utils.UUIDMixin):
+class Dependency(UUIDMixin):
     """
     Just like Node.js packages (which the OpenBook libraries usually are), libraries may depend
     on other libraries without which they cannot be used. Unfortunately we cannot use the declared

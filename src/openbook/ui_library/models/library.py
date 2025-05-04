@@ -6,12 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.db                import models
-from django.utils.translation import gettext_lazy as _
-from openbook.core.utils      import models as db_utils
-from ..validators             import validate_library_name, validate_version_number
+from django.db                         import models
+from django.utils.translation          import gettext_lazy as _
+from openbook.core.models.mixins.audit import CreatedModifiedByMixin
+from openbook.core.models.mixins.i18n  import TranslatableMixin
+from openbook.core.models.mixins.uuid  import UUIDMixin
+from ..validators                      import validate_library_name, validate_version_number
 
-class Library(db_utils.UUIDMixin, db_utils.CreatedModifiedByMixin):
+class Library(UUIDMixin, CreatedModifiedByMixin):
     """
     Textbooks are basically static HTML pages that embed the OpenBook JavaScript libraries to render
     the user interface and custom components. This works without the server simply by downloading the
@@ -39,10 +41,10 @@ class Library(db_utils.UUIDMixin, db_utils.CreatedModifiedByMixin):
     def __str__(self):
         return self.name
 
-class Library_T(db_utils.UUIDMixin, db_utils.TranslatableMixin):
+class Library_T(UUIDMixin, TranslatableMixin):
     parent      = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="translations")
     label       = models.CharField(verbose_name=_("Label"), max_length=255)
     description = models.TextField(verbose_name=_("Description"), blank=True)
 
-    class Meta(db_utils.TranslatableMixin.Meta):
+    class Meta(TranslatableMixin.Meta):
         pass

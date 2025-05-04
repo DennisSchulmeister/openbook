@@ -29,7 +29,9 @@ OB_ROOT_REDIRECT = "/app/index.html"
 INSTALLED_APPS = [
     # OpenBook Server
     "openbook.core",
-    "openbook.library_manager",
+    "openbook.course",
+    "openbook.textbook",
+    "openbook.ui_library",
 
     # 3rd-party reusable apps
     "daphne",
@@ -143,6 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "openbook_core.User"
 
 AUTHENTICATION_BACKENDS = (
+    "openbook.core.auth.RoleBasedObjectPermissionsBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
 

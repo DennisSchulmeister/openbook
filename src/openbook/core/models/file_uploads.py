@@ -12,9 +12,11 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db                          import models
 from django.utils.translation           import gettext_lazy as _
-from ..utils                            import models as db_utils
 
-class AbstractFileModel(db_utils.UUIDMixin):
+from .mixins.uuid                       import UUIDMixin
+from .utils.file                        import calc_file_path
+
+class AbstractFileModel(UUIDMixin):
     """
     Abstract base class for the generic file upload models below. Contains the common
     fields and functionality like a generic relation to the owner model and fields for
@@ -22,7 +24,7 @@ class AbstractFileModel(db_utils.UUIDMixin):
     """
     # Link to related model
     def _calc_file_path(self, filename):
-        return db_utils.calc_file_path(self.content_type, self.id, filename)
+        return calc_file_path(self.content_type, self.id, filename)
 
     content_type   = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id      = models.UUIDField()

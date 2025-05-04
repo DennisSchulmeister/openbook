@@ -6,12 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.db                import models
-from django.utils.translation import gettext_lazy as _
-from openbook.core.utils      import models as db_utils
-from .library                 import Library
+from django.db                         import models
+from django.utils.translation          import gettext_lazy as _
+from openbook.core.models.mixins.audit import CreatedModifiedByMixin
+from openbook.core.models.mixins.uuid  import UUIDMixin
+from .library                          import Library
 
-class Publication(db_utils.UUIDMixin, db_utils.CreatedModifiedByMixin):
+class Publication(UUIDMixin, CreatedModifiedByMixin):
     """
     To allow upgrading the installed libraries without modifying the server installation and also
     to allow 3rd-parties to provide additional libraries the server provides a "library repository"
