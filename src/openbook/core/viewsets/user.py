@@ -6,23 +6,26 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from ..drf                      import ModelViewSetMixin, ModelSerializer
+from ..models.user              import User
+
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.decorators  import action
 from rest_framework.response    import Response
 
-from ..drf                      import ImprovedModelViewSet
-from ..models.user              import User
-from ..serializers.user         import UserSerializer
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model  = User
+        fields = ["username", "first_name", "last_name", "is_staff"]
 
-class UserViewSet(ImprovedModelViewSet):
+class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users. The serializer makes sure that only
     basic information is returned. Authenticated users only as we don't want the
-    world to scrap our user list. Only admins and the user itself are allowed to
-    change the data.
+    world to scrap our user list.
     """
-    queryset           = User.objects.filter(is_active = True)
-    serializer_class   = UserSerializer
+    queryset         = User.objects.filter(is_active = True)
+    serializer_class = UserSerializer
 
     @action(detail=False, permission_classes=[])
     def current(self, request):

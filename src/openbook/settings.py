@@ -121,7 +121,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+        "openbook.core.drf.AllowNone"
     ],
 }
 
@@ -146,7 +146,6 @@ AUTH_USER_MODEL = "openbook_core.User"
 
 AUTHENTICATION_BACKENDS = (
     "openbook.core.auth.RoleBasedObjectPermissionsBackend",
-    "django.contrib.auth.backends.ModelBackend",
 )
 
 # E-Mail Settings

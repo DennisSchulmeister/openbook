@@ -6,12 +6,17 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.viewsets   import ReadOnlyModelViewSet
-from rest_framework.decorators import action
-from rest_framework.response   import Response
+from ..models.site              import Site
 
-from ..models.site             import Site
-from ..serializers.site        import SiteSerializer
+from rest_framework.viewsets    import ReadOnlyModelViewSet
+from rest_framework.decorators  import action
+from rest_framework.response    import Response
+from rest_framework.serializers import ModelSerializer
+
+class SiteSerializer(ModelSerializer):
+    class Meta:
+        model  = Site
+        fields = "__all__"
 
 class SiteViewSet(ReadOnlyModelViewSet):
     """

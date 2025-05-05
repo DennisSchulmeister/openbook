@@ -14,7 +14,6 @@ from django.core.exceptions             import ValidationError
 from django.db                          import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.utils.text                  import format_lazy
 from django.utils.translation           import gettext_lazy as _
 
 from .mixins.active                     import ActiveInactiveMixin
@@ -101,7 +100,7 @@ class Role(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, Na
     Roles bundle one or more permissions granted to all users assigned to them. For example
     textbooks and courses use roles to restrict who can use them how.
     """
-    priority    = models.PositiveSmallIntegerField(verbose_name=_("Priority"), help=_("Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation."))
+    priority    = models.PositiveSmallIntegerField(verbose_name=_("Priority"), help_text=_("Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation."))
     permissions = models.ManyToManyField(Permission, verbose_name=_("Permissions"), blank=True, related_name="roles")
 
     class Meta:
@@ -113,7 +112,7 @@ class Role(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, Na
         ]
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "slug"], name="scope_slug_idx"),
+            models.Index(fields=["scope_type", "scope_uuid", "slug"]),
         ]
     
     def __str__(self):
@@ -127,9 +126,10 @@ class Role(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, Na
 
         for permission in self.permissions:
             if not allowed_permissions.contains(permission):
-                perm    = f"{permission.content_type.app_label}.{permission.codename}"
-                message = format_lazy(_("Permission {perm} is not allowed in role {role}"), perm=perm, role=self.name)
-                raise ValidationError(message)
+                raise ValidationError(_("Permission %(perm)s is not allowed in role %(role)s"), params={
+                    "perm": f"{permission.content_type.app_label}.{permission.codename}",
+                    "role": self.name,
+                })
 
 class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin):
     """
@@ -155,7 +155,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin
         verbose_name_plural = _("Access Requests")
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role"], name="scope_role_idx"),
+            models.Index(fields=["scope_type", "scope_uuid", "role"]),
             models.Index(fields=["user"], name="user_idx"),
         ]
     
@@ -227,7 +227,7 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NameDescri
         verbose_name_plural = _("Enrollment Methods")
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role"], name="scope_role_idx"),
+            models.Index(fields=["scope_type", "scope_uuid", "role"]),
         ]
     
     def __str__(self):
@@ -283,8 +283,8 @@ class RoleAssignment(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, ActiveInacti
         ]
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role", "user"], name="role_assignment_idx"),
-            models.Index(fields=["user"], name="user_idx"),
+            models.Index(fields=["scope_type", "scope_uuid", "role", "user"]),
+            models.Index(fields=["user"]),
         ]
 
     def __str__(self):
@@ -385,7 +385,7 @@ class AllowedRolePermission(UUIDMixin):
         verbose_name_plural = _("Allowed Role Permissions")
 
         indexes = [
-            models.Index(fields=["scope_type"], name="scope_type_idx"),
+            models.Index(fields=["scope_type"]),
         ]
 
     def __str__(self):

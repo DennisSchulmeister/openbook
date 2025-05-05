@@ -6,10 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from ..models.language          import Language
 
-from ..models.language       import Language
-from ..serializers.language  import LanguageSerializer
+from rest_framework.viewsets    import ReadOnlyModelViewSet
+from rest_framework.serializers import ModelSerializer
+
+class LanguageSerializer(ModelSerializer):
+    class Meta:
+        model  = Language
+        fields = "__all__"
 
 class LanguageViewSet(ReadOnlyModelViewSet):
     """

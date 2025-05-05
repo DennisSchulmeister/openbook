@@ -64,7 +64,7 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name = _("Owner"),
-        help         = _("The owner always has full permissions"),
+        help_text    = _("The owner always has full permissions"),
         on_delete    = models.SET_DEFAULT,
         default      = "",
         blank        = True,
@@ -79,7 +79,7 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
     public_permissions = models.ManyToManyField(
         Permission,
         verbose_name = _("Public Permissions"),
-        help         = _("Permissions available to logged-out users and all logged-in users independent of their role"),
+        help_text    = _("Permissions available to logged-out users and all logged-in users independent of their role"),
         blank        = True,
         related_name = "+",
     )
