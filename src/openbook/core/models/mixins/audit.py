@@ -28,9 +28,7 @@ class CreatedModifiedByMixin(models.Model):
     def save(self, *args, **kwargs):
         """
         Automatically populate the `created_by` and `modified_by` fields.
-        
-        Care must be taken to call this method, if the `save()` method is overwritten by another
-        mixin class or the model itself.
+        Care must be taken to call `super().save(*args, **kwargs)` when this method is overridden.
         """
         user = get_current_user()
 

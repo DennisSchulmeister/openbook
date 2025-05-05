@@ -28,9 +28,9 @@ class TranslatableMixin(models.Model):
     class Example_T(models.Model, TranslatableMixin):
         parent = models.ForeignKey(Example, on_delete=models.CASCADE, related_name="translations")
 
-        text1  = models.CharField(verbose_name=_("Some Text 1"), max_length=255)
-        text2  = models.CharField(verbose_name=_("Some Text 2"), max_length=255)
-        text3  = models.CharField(verbose_name=_("Some Text 3"), max_length=255)
+        text1  = models.CharField(verbose_name=_("Some Text 1"), max_length=255, null=False, blank=False)
+        text2  = models.CharField(verbose_name=_("Some Text 2"), max_length=255, null=False, blank=False)
+        text3  = models.CharField(verbose_name=_("Some Text 3"), max_length=255, null=False, blank=False)
 
         class Meta(TranslatableMixin.Meta):
             pass

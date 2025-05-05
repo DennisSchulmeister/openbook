@@ -277,14 +277,14 @@ the OpenBook server. Here are a few hints on what to consider:
   bring all entries in logical order, remove unneeded `null` properties and add comments.
 
 * **Natural Keys:** When using the `dumpdata` command make sure to enable natural keys. Thus the
-  full command becomes: `python manage.py dumpdata --format yaml--natural-foreign --natural-primary myapp`.
+  full command becomes: `python manage.py dumpdata --format yaml --natural-foreign --natural-primary myapp`.
   This avoids a problem with generic relations: Each model with a generic relation must have a foreign
   key on the `ContentType` model that contains a list of all known models. This uses an auto-incremented
   ID that is not stable. Without natural keys the fixtures would contain the raw ID of the content type,
   that would most-likely not reference the model we want during import of the fixture.
 
 * **Load Initial Data:** Once your new fixture is working, consider adding it to the `load_initial_data`
-  management command. The source code is in the `openbook` project directory. This allows other
+  management command. The source code is in the `openbook/core/management` directory. This allows other
   developers and users to import a complete set of initial data with only one command.
 
 **Natural keys, part II:** Why are we not using natural keys for our models? After writing the lines

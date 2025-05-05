@@ -11,12 +11,16 @@ from django.contrib.auth.models   import AbstractUser
 
 class RoleBasedObjectPermissionsBackend(BaseBackend):
     """
-    Custom authentication backend for object permissions via scoped roles.
+    Custom authentication backend for object permissions via scoped roles. Checks whether
+    the user is the scope owner or has a role with the required permission.
     """
     def has_perm(self, user_obj: AbstractUser, perm: str, obj=None) -> bool:
-        if obj is not None and hasattr(obj, "has_perm"):
-            return obj.has_perm(user_obj, perm)
+        if obj is not None:
+            if hasattr(obj, "owner") and obj.owner == user_obj:
+                return True
+            elif hasattr(obj, "has_perm"):
+                return obj.has_perm(user_obj, perm)
         
         return False
 
-# TODO: Unit tests
+# TODO: Unit tests, including all special cases in DRF

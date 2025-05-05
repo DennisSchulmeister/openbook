@@ -9,13 +9,13 @@
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+from ..drf                      import ImprovedModelViewSet
 from ..models.file_uploads      import MediaFile
 from ..serializers.file_uploads import MediaFileSerializer
 
-class MediaFileViewSet(ModelViewSet):
+class MediaFileViewSet(ImprovedModelViewSet):
     """
     Read/write view set to access media files.
     """
-    queryset           = MediaFile.objects.all()
-    serializer_class   = MediaFileSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset         = MediaFile.objects.all()
+    serializer_class = MediaFileSerializer

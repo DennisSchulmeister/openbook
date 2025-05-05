@@ -6,10 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import views
+from . import viewsets
 
 def register(router, prefix):
-    router.register(f"{prefix}/languages",   views.LanguageViewSet,  basename="language")
-    router.register(f"{prefix}/media-files", views.MediaFileViewSet, basename="media-file")
-    router.register(f"{prefix}/sites",       views.SiteViewSet,      basename="site")
-    router.register(f"{prefix}/users",       views.UserViewSet,      basename="user")
+    router.register(f"{prefix}/languages",   viewsets.LanguageViewSet,  basename="language")
+    router.register(f"{prefix}/media-files", viewsets.MediaFileViewSet, basename="media-file")
+    router.register(f"{prefix}/sites",       viewsets.SiteViewSet,      basename="site")
+    router.register(f"{prefix}/users",       viewsets.UserViewSet,      basename="user")

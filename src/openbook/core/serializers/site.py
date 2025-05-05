@@ -6,10 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework import serializers
-from ..             import models
+from ..drf    import ImprovedModelSerializer
+from ..models import Site
 
-class SiteSerializer(serializers.ModelSerializer):
+class SiteSerializer(ImprovedModelSerializer):
     class Meta:
-        model  = models.Site
+        model  = Site
         fields = "__all__"

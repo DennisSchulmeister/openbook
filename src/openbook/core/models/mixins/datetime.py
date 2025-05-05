@@ -20,10 +20,8 @@ class ValidityTimeSpanMixin(models.Model):
     Mixin class for models that have a validity optionally starting at a certain point
     in time and optionally ending at a later point in time.
     """
-    has_start_date = models.BooleanField(verbose_name=_("Has start date"), default=False)
-    start_date     = models.DateTimeField(verbose_name=_("Start date and time"), blank=True, null=True)
-    has_end_date   = models.BooleanField(verbose_name=_("Has end date"), default=False)
-    end_date       = models.DateTimeField(verbose_name=_("End date and time"), blank=True, null=True)
+    start_date = models.DateTimeField(verbose_name=_("Start date and time"), blank=True, null=True)
+    end_date   = models.DateTimeField(verbose_name=_("End date and time"), blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -37,8 +35,8 @@ class ValidityTimeSpanMixin(models.Model):
         Care must be taken to call this method, if the `clean()` method is overwritten by another
         mixin class or the model itself.
         """
-        if self.has_start_date and self.has_end_date and self.start_date >= self.end_date:
-            raise ValidationError(_("End date must be later than start date"))
+        if self.start_date is not None and self.end_date is not None and self.start_date >= self.end_date:
+            raise ValidationError(_("End date must be later than start date."))
 
     @property
     @admin.display(description=_("Limited Validity"))
@@ -48,13 +46,13 @@ class ValidityTimeSpanMixin(models.Model):
         """
         time_span = []
 
-        if self.has_start_date and self.start_date:
+        if self.start_date is not None:
             time_span.append(_("Start: {start_date}").format(start_date=self.start_date.strftime("%x %X")))
 
-        if self.has_end_date and self.end_date:
+        if self.end_date is not None:
             time_span.append(_("End: {end_date}").format(end_date=self.end_date.strftime("%x %X")))
 
-        return " - ".join(time_span) if time_span else _("No validity period specified")
+        return " - ".join(time_span) if time_span else ""
 
 class DurationMixin(models.Model):
     """
@@ -68,11 +66,25 @@ class DurationMixin(models.Model):
         MONTHS  = "months",  _("Months")
         YEARS   = "years",   _("Years")
 
-    duration_period = models.CharField(verbose_name=_("Duration Period"), max_length=10, choices=DurationPeriod, null=False, blank=False)
-    duration_value = models.FloatField(verbose_name=_("Duration Value"), null=False, blank=False)
+    duration_period = models.CharField(verbose_name=_("Duration Period"), max_length=10, choices=DurationPeriod, null=False, blank=True)
+    duration_value = models.FloatField(verbose_name=_("Duration Value"), null=False, blank=True)
 
     class Meta:
         abstract = True
+    
+    @property
+    @admin.display(description=_("Duration"))
+    def duration(self):
+        """
+        Get formatted string to display in the Admin or on the website.
+        """
+        if self.duration_value and self.duration_period:
+            try:
+                return f"{self.duration_value} {self.DurationPeriod(self.duration_period).label}"
+            except ValueError:
+                return f"{self.duration_value} {self.duration_period}"
+        else:
+            return ""
 
     def add_duration_to(self, timestamp: datetime) -> datetime:
         """

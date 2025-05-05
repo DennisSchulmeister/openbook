@@ -8,14 +8,13 @@
 
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.decorators  import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response    import Response
 
+from ..drf                      import ImprovedModelViewSet
 from ..models.user              import User
 from ..serializers.user         import UserSerializer
-from ..permissions.user         import IsSameUserOrAdmin
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(ImprovedModelViewSet):
     """
     Read/write view set to query active users. The serializer makes sure that only
     basic information is returned. Authenticated users only as we don't want the
@@ -24,12 +23,11 @@ class UserViewSet(ModelViewSet):
     """
     queryset           = User.objects.filter(is_active = True)
     serializer_class   = UserSerializer
-    permission_classes = [IsAuthenticated, IsSameUserOrAdmin]
 
     @action(detail=False, permission_classes=[])
     def current(self, request):
         """
-        Return information about the currently logged in user or a sentinal response,
+        Return information about the currently logged in user or a sentinel response,
         when the user is not logged in.
         """
         return Response({
