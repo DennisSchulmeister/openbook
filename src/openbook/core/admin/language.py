@@ -6,11 +6,11 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib           import admin
 from django.utils.translation import gettext_lazy as _
+from unfold.admin             import ModelAdmin
 from ..models.language        import Language
 
-class LanguageAdmin(admin.ModelAdmin):
+class LanguageAdmin(ModelAdmin):
     model              = Language
     list_display       = ["language", "name"]
     list_display_links = ["language", "name"]

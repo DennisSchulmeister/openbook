@@ -13,7 +13,8 @@ tries to summarize the most important things.
 1. [Poetry Package Management](#poetry-package-management)
 1. [Django Web Framework](#django-web-framework)
 1. [Django Project vs. App](#django-project-vs-app)
-1. [Core Data Model and Object Permissions](#core-data-model-and-object-permissions)
+1. [Permission Handling](#permission-handling)
+1. [Core Data Model](#core-data-model)
 1. [Creating Fixtures](#creating-fixtures)
 1. [SQLite Shell](#sqlite-shell)
 1. [NPM and esbuild](#npm-and-esbuild)
@@ -205,8 +206,180 @@ directories for other things.
         └── ...                   Django Application
 ```
 
-Core Data Model and Object Permissions
---------------------------------------
+Permission Handling
+-------------------
+
+This section described the permission handling in Django and how it is used in the application.
+It explains the implementation strategy to make regular model-based permissions (e.g. "Can create
+textbook") co-exist with object-level permissions (e.g. "Can change THIS textbook").
+
+#### Default Permissions for Each Model
+
+When the app `django.contrib.auth` is installed, Django automatically creates four permission objects
+the database for each model:
+
+ * `{app_label}.add_{model}`: Add new objects
+ * `{app_label}.view_{model}`: Search and display objects
+ * `{app_label}.change_{model}`: Modify existing objects
+ * `{app_label}.delete_{model}`: Delete existing objects
+
+`{app_label}` is the owning app's label (as defined in the `App` class) and `{model}` the name of the
+model in lower-case (no other transformation done).
+
+#### How Permissions are Checked (on Model Level)
+
+**Django Admin:**
+By default the model permissions are checked in the Django Admin (in the `ModelAdmin` class, methods
+`has_…_permission(self, request)`) to check, if a user is allowed to perform the correspinding action.
+
+**Own Code:**
+No permissions check is done when directly accessing the database with the Django ORM. Permission checks
+must be performed in the higher-levels (views) of which the Django Admin happens to be one. The easiest way
+to check a permission is to call `has_perm()` on the user object, e.g. `user.has_perm("myapp.view_model").
+This in turn iteratores over the installed authentication backends and calls `has_perm(user_obj, perm)`
+until one backend grants the permission.
+
+**Django REST Framework:**
+Django REST Framework doesn't do permission checks, unless specifically asked in the `ViewSet`s. Permission checks
+are encapsulated in `permission_classes` that may implement arbitrary logic. These classes inherit from a
+`BasePermission` that defines the method `has_permission(self, request, view)`. Most implementations don't
+use the `django.contrib.auth` permissions but rahter implement simpler checks like `IsAuthenticated` or `AllowAny`.
+`DjangoModelPermissions` applies similar permission checks as Django Admin's `ModelAdmin`, though they are
+not sharing any code.
+
+When a `ViewSet` contains multiple permission classes as a list, the permission is only granted if all of them
+return `True`:
+
+```python
+class MyModelViewSet(ModelViewSet):
+    queryset           = MyModel.objects.all()
+    serializer_class   = MyModelSerializer
+    permission_classes = [IsAuthenticated, IsStaff, IsOwner]
+```
+
+However, permissions can also be combined using logic operators, e.g.:
+
+```python
+class MyModelViewSet(ModelViewSet):
+    #...
+    permission_classes = IsAuthenticated & (IsStaff | IsOwner)
+```
+
+#### How Object-Level Permissions are Checked
+
+Object-level permissions always require a custom authentication backend, as Django only includes the API.
+The API is a compatible extension to the regular API:
+
+* `User.has_perm(self, perm, obj=None)` (Django User)
+* `has_perm(user_obj, perm, obj=None)` (Authentication Backend)
+* `ModelAdmin.has_…_permission(self, request, obj=None)` (Django Admin) 
+* `BasePermission.has_object_permission(self, request, view, obj)` (Django REST Framework)
+
+However, there are some oddities:
+
+* Neither Django, Django Admin nor Django REST Framework apply object permissions to query sets.
+  This means, users can always query objects and read all data even when they lack "view" permissions.
+
+* Django's default `ModelBackend` always returns `False` when object-level permissions are checked,
+  even when the user has the permission.
+
+* `ModelAdmin` ignores the `obj` parameter and always checks for model permissions.
+
+* Django REST Framework checks object-level permissions only in class `DjangoObjectPermissions`, but despite
+  the documentaiton it seems the the add permission is not checked (because the new object is not yet existing).
+
+* Django REST Framework checks object permissions on the `get_object()` method. It may be necessary to
+  manually call the inherited method, when it is replaced with a custom implementation or the generic
+  REST views are not used. Limitations of object permissions in Django REST Framework
+  ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
+  
+  * For performance reasons the generic views will not automatically apply object level permissions
+    to each instance in a queryset when returning a list of objects.
+
+  * Often when you're using object level permissions you'll also want to filter the queryset appropriately,
+    to ensure that users only have visibility onto instances that they are permitted to view.
+
+  * Because the `get_object()` method is not called, object level permissions from the `has_object_permission()`
+    method are not applied when creating objects. In order to restrict object creation you need to implement
+    the permission check either in your `Serializer` class or override the `perform_create()` method of your
+    `ViewSet` class.
+
+#### How our Custom Authentication Backend is Implemented
+
+**Adding Roles to Models:**
+Our permission system is built around the premise that some models support object-permissions and
+others don't. Models supporting object-permissions implement the `ScopedRolesMixin` to become a
+scope for user roles and related objects:
+
+ * Roles: Exist within the scope and collect Django `Permission`s.
+ * Allowed Permissions: Define which permissions can be added to the roles of a scope
+ * Role Assignments: Assign roles to users within the scope
+ * Access Requests: Can be created by users to request a role within a scope
+ * Enrollment Methods: Allow users to self-enroll to get a role within a scope
+ * Public Permissions: Are permissions for non-enrolled and anonymous users within a scope
+
+Typical scopes are courses and textbooks. They often contain related objects (e.g. course materials
+or textbook pages) that also support object-permissions but share the scope of their parent object.
+This allows to express permissions like "In this course (scope object) teachers (role) can create
+materials (related object)". For this the related objects must inherit `RoleBasedObjectPermissionsMixin`
+and override the `get_scope()` method. In both cases (scope objects and related objects) the method
+`has_perm()` can be overriden to implement additional custom-checks.
+
+**Authentication Backend:**
+We provide a custom authentication backend in class `openbook.core.RoleBasedObjectPermissionsBackend`
+as it appears simpler than reusing third-party libraries. Especially libraries like Django Guardian
+which requires to explicitely persist and keep in sync who can do what for which single object.
+
+`RoleBasedObjectPermissionsBackend` inherits from the stock `ModelBackend` and changes its behaviour
+as follows- For normal permission checks without an object it behaves exactly the same. Object permissions
+are checked in the following order, stopping at the first match:
+
+1. The user is a superuser
+1. The user and the object are the same
+1. The user is the object's `owner` (optional).
+1. The object's `has_perm()` method (via mixins, optional).
+    1. Public permissions of the scope
+    1. Roles assigned to the user
+1. Regular non-object permissions
+
+Superusers can do anything. Users can change their own data. The owner is always authorized. Otherwise role-based
+permissions are checked. If this is not supported by the object or fails, it falls back to regular user permissions.
+Thus, the `ModelBackend` doesn't need to be included in the Django settings, as its function is already covered.
+
+The Django Admin first checks "view" than "change" permissions when a single object should be displayed.
+This logic has been moved to our `RoleBasedObjectPermissionsBackend` to unify the behaviour in all parts
+of the application.
+
+#### How we Iron out the Inconsistencies
+
+**Querying and Filtering:**
+No deliberate attempt is done on the technical level to restrict query results to objects where the user
+has view permissions. Applying several database joins this would in theory be possible, but it seems not
+worth the effort or performance loss. Instead, we should be cautios to return as little fields as possible
+when models are searched and queried, always assuming that the returned values could be visible to anyone.
+
+**Django Admin:**
+Use `openbook.core.admin.utils.model.ModelAdmin` instead of the stock `ModelAdmin` to make sure that
+object-level permissions are checked for displaying, changing and deleting single objects. Unlike the
+stock class, this version applies a hack to check object-permissions also for new objects ("add").
+
+**Django REST Framework:**
+We set our own `AllowNone` default permission in `settings.py` to enforce a deliberate decission for
+each view set and prevent unprotected REST endpoints by accident.
+
+The module `openbook.core.drf` contains specialized `ModelSerializer` and `ModelViewSet` classes that
+use `DjangoObjectPermissionsOnly` by default, run a `full_clean()` on the object before it is saved
+(to run validations implemented in the model layer) and checks object-permissions also when new objects
+are created (POST).
+
+These two classes also employ a hack to check object-permissions also for new objects ("add").
+
+`DjangoObjectPermissionsOnly` is a specialized version of the stock `DjangoObjectPermissions` that
+respects the logic in our authentication backend (model-permission is not required but overrides
+object-permission, view permission is checked, too).
+
+Core Data Model
+---------------
 
 The foundational data model fulfills the following requirements:
 
@@ -235,35 +408,6 @@ at DHBW Karlsruhe. The module comprises the two lectures "Web Programming" and "
 which are held in parallel by different lecturers in up to five cohorts. Each cohort is a "course" in
 which the students and teachers are enrolled, and each lecture is a "textbook" used within the course.
 The textbooks are further developed and reused a year later in the new courses.
-
-We handle as much of the permission logic as possible within the Django permissions system and
-minimize custom logic in the REST layer. This means favoring `DjangoObjectPermissions` and related
-classes when defining REST endpoints. Note that `DjangoModelPermissionsOrAnonReadOnly` is the
-default defined in `settings.py`, giving anonymous users read-access by default.
-
-We provide our own implementation of Django's object-level permission hooks, as it appears simpler
-than reusing existing third-party libraries.
-
-#### Caveats
-
-* The Django model layer intentionaly checks no permissions. Permissions checking must be handled
-  by higher levels like Django Admin or the REST layer.
-
-* Django REST Framework checks permissions on the `get_object()` method. It may be necessary to
-  manually call the inherited method, when it is replaced with a custom implementation or the
-  generic REST views are not used.
-
-* Limitations of object permissions in Django REST Framework: ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
-  * For performance reasons the generic views will not automatically apply object level permissions
-    to each instance in a queryset when returning a list of objects.
-
-  * Often when you're using object level permissions you'll also want to filter the queryset appropriately,
-    to ensure that users only have visibility onto instances that they are permitted to view.
-
-  * Because the `get_object()` method is not called, object level permissions from the `has_object_permission()`
-    method are not applied when creating objects. In order to restrict object creation you need to implement
-    the permission check either in your `Serializer` class or override the `perform_create()` method of your
-    `ViewSet` class.
 
 Creating Fixtures
 -----------------

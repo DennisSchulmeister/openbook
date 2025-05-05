@@ -42,6 +42,15 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
 
+    # Django Unfold (Modern Admin)
+    "unfold",                            # before django.contrib.admin
+    "unfold.contrib.filters",            # optional, if special filters are needed
+    "unfold.contrib.forms",              # optional, if special form elements are needed
+    "unfold.contrib.inlines",            # optional, if special inlines are needed
+    #"unfold.contrib.import_export",     # optional, if django-import-export package is used
+    #"unfold.contrib.guardian",          # optional, if django-guardian package is used
+    #"unfold.contrib.simple_history",    # optional, if django-simple-history package is used
+    
     # Django built-in apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -163,6 +172,7 @@ EMAIL_PORT          = 1025
 
 # Website information
 SITE_ID = 1
+LOGIN_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

@@ -12,7 +12,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base       import RedirectView
 from django.urls                     import include, path
 from rest_framework.routers          import DefaultRouter
-from .admin                          import admin_site
+from django.contrib import admin
 
 import openbook.core.routes as openbook_core_routes
 
@@ -20,9 +20,9 @@ router = DefaultRouter()
 openbook_core_routes.register(router, "core")
 
 urlpatterns = [
-    path("api/", include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-    path("admin/", admin_site.urls),
+    path("api/",      include(router.urls)),
+    path("api-auth/", include("rest_framework.urls")),
+    path("admin/",    admin.site.urls),
 
     path("", RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),
 ]

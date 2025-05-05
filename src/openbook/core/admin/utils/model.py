@@ -6,13 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.admin   import ModelAdmin as DjangoModelAdmin
 from django.contrib.auth    import get_permission_codename
 from django.core.exceptions import PermissionDenied
 from django.db.models       import Model
 from django.http            import HttpRequest
 
-class ModelAdmin(DjangoModelAdmin):
+from unfold.admin           import ModelAdmin as UnfoldModelAdmin
+
+class ModelAdmin(UnfoldModelAdmin):
     """
     Improved version of the stock `ModelAdmin` that checks object-permissions instead of
     the regular model-permissions. The only difference is, that `obj` will be set to the
