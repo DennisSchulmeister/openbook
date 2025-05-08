@@ -5,6 +5,7 @@ Installation Notes for Administrators
 1. [Local Settings](#local-settings)
 1. [Web Server](#web-server)
 1. [Docker Compose](#docker-compose)
+1. [Periodic Jobs](#periodic-jobs)
 
 System Overview
 ---------------
@@ -134,3 +135,20 @@ and adapt it to your needs.
 
 Get in touch with us, if you like to work on an official Docker image, once the platform is
 sufficiently mature enough.
+
+Periodic Jobs
+=============
+
+There are a few Django management commands that should be periodically called to keep the database clean.
+They are usually invoked with:
+
+```bash
+src$ ./manage.py command --options
+```
+
+The most important ones are:
+
+| **Management Command**      | **Options**  | **Description**                                                       |
+|-----------------------------|--------------|-----------------------------------------------------------------------|
+| `clearsessions`             |              | Clean out expired sessions                                            |
+| `remove_stale_contenttypes` | `--no-input` | Remove stale content types when models are removed from the codebase. |
