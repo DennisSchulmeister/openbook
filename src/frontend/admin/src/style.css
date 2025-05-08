@@ -8,14 +8,13 @@
  * License, or (at your option) any later version.
  */
 
-// @ts-ignore: Could not find a declaration file
-import TinyMDE from "tiny-markdown-editor/dist/tiny-mde.js";
-import "tiny-markdown-editor/dist/tiny-mde.css";
+/* Adopt styling of DjangoQL Searchbar for Django Unfold Admin */
+#searchbar {
+    height: auto !important;
+    padding: 0.5em;
+    outline: none;
+}
 
-import * as ckeditor from 'ckeditor5';
-import "ckeditor5/ckeditor5.css";
-
-import "./style.css";
-
-(window as any).TinyMDE  = TinyMDE;
-(window as any).ckeditor = ckeditor;
+.djangoql-toggle {
+    margin-left: 10px;
+}

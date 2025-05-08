@@ -6,18 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation import gettext_lazy as _
-from import_export.admin      import ImportExportModelAdmin
-from unfold.admin             import ModelAdmin
-
-from ..models.language        import Language
-from ...admin                 import ImportExportModelResource
+from ..models.language import Language
+from ...admin          import CustomModelAdmin
+from ...admin          import ImportExportModelResource
 
 class LanguageResource(ImportExportModelResource):
     class Meta:
         model = Language
 
-class LanguageAdmin(ModelAdmin, ImportExportModelAdmin):
+class LanguageAdmin(CustomModelAdmin):
     model              = Language
     resource_classes   = [LanguageResource]
     list_display       = ["language", "name"]

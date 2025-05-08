@@ -7,17 +7,16 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.admin import GroupAdmin
-from import_export.admin       import ImportExportModelAdmin
-from unfold.admin              import ModelAdmin
 
 from ..models.user             import Group
+from ...admin                  import CustomModelAdmin
 from ...admin                  import ImportExportModelResource
 
 class GroupResource(ImportExportModelResource):
     class Meta:
         model = Group
 
-class CustomGroupAdmin(GroupAdmin, ModelAdmin, ImportExportModelAdmin):
+class CustomGroupAdmin(GroupAdmin, CustomModelAdmin):
     """
     Sub-class of Django's Group Admin to allow importing and exporting groups.
     """

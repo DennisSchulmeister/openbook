@@ -9,8 +9,11 @@
 from django.apps              import apps
 from django.conf              import settings
 from django.utils.translation import gettext_lazy as _
+from djangoql.admin           import DjangoQLSearchMixin
 from import_export.resources  import ModelResource
+from import_export.admin      import ImportExportModelAdmin
 from unfold.sites             import UnfoldAdminSite
+from unfold.admin             import ModelAdmin as UnfoldModelAdmin
 
 class ImportExportModelResource(ModelResource):
     """
@@ -20,6 +23,13 @@ class ImportExportModelResource(ModelResource):
     """
     def for_delete(self, row, instance):
         return "delete" in row and row["delete"].upper() in ["1", "X", "YES", "TRUE"]
+
+class CustomModelAdmin(DjangoQLSearchMixin, UnfoldModelAdmin, ImportExportModelAdmin):
+    """
+    Custom `ModelAdmin` to combines several mixins from Django Unfold, Django QL and
+    Django Import/Export into on common base-class.
+    """
+    pass
 
 class CustomAdminSite(UnfoldAdminSite):
     """
