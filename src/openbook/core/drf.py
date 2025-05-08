@@ -6,7 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-
 from django.core.exceptions     import ValidationError as DjangoValidationError
 from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.permissions import BasePermission, DjangoObjectPermissions

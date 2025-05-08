@@ -6,10 +6,11 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.viewsets    import ModelViewSet
+from rest_framework.viewsets  import ModelViewSet
 
-from ..drf                      import ModelViewSetMixin, ModelSerializer, ListSerializer
-from ..models.file_uploads      import MediaFile
+from django.utils.translation import gettext_lazy as _
+from ..drf                    import ModelViewSetMixin, ModelSerializer, ListSerializer
+from ..models.file_uploads    import MediaFile
 
 class MediaFileListSerializer(ListSerializer):
     class Meta:
@@ -26,6 +27,7 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to access media files.
     """
+    __doc__ = _("Attached Media Files")
+
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
-    # TODO: Show less fields for list query then for get details

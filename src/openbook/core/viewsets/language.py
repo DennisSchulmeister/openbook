@@ -8,6 +8,7 @@
 
 from ..models.language          import Language
 
+from django.utils.translation   import gettext_lazy as _
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.serializers import ModelSerializer
@@ -21,6 +22,8 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     """
     Read-only view set to access language codes.
     """
+    ___doc__ = _("Available Languages")
+
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]

@@ -16,10 +16,11 @@ const __dirname = url.fileURLToPath(new url.URL(".", import.meta.url));
 
 concurrently([{
     name: "build",
-    command: `node ${path.join(__dirname, "build.js")} --watch`
+    //command: `node ${path.join(__dirname, "build.js")} --watch`
+    command: "npm run build",
 }, {
     name: "tsc",
-    command: "tsc -w --preserveWatchOutput"
+    command: "tsc -w --preserveWatchOutput",
 }], {
     raw: true,
     prefixColors: ["auto"],

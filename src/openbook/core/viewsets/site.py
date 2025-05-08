@@ -8,10 +8,14 @@
 
 from ..models.site              import Site
 
+from django.utils.translation   import gettext_lazy as _
+from drf_spectacular.utils      import extend_schema
+from drf_spectacular.utils      import inline_serializer
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.decorators  import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response    import Response
+from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
 
 class SiteSerializer(ModelSerializer):
@@ -23,10 +27,17 @@ class SiteViewSet(ReadOnlyModelViewSet):
     """
     Read-only view set to access basic site information and the API health.
     """
+    __doc__ = _("General Website Settings")
+
     queryset         = Site.objects.all()
     serializer_class = SiteSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
+    
+    @extend_schema(
+        responses = inline_serializer(name="health-response", fields={
+            "status": CharField(help_text=_("Status of the API server"))
+        }),
+    )
     @action(detail=False)
     def health(self, request):
         """

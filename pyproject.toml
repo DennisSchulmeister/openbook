@@ -34,6 +34,7 @@ django-import-export = {extras = ["all"], version = "^4.3.7"}
 djangoql = "^0.18.1"
 django-colorfield = "^0.14.0"
 drf-restwind = "^0.1.6"
+drf-spectacular = {extras = ["sidecar"], version = "^0.28.0"}
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.15.1"

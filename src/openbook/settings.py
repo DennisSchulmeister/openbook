@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "rest_wind",
     "rest_framework",
     "django_filters",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 
     # Django Unfold (Modern Admin)
     "unfold.apps.BasicAppConfig",        # before django.contrib.admin
@@ -133,6 +135,7 @@ CHANNEL_LAYERS = {
 
 # Django REST framework
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 
@@ -141,6 +144,19 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "openbook.core.drf.AllowNone"
     ],
+}
+
+# See: https://drf-spectacular.readthedocs.io/
+SPECTACULAR_SETTINGS = {
+    "TITLE": "OpenBook API",
+    "DESCRIPTION": "Beautiful and Engaging Learning Materials",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+
+    # Self-serve Swagger and Redoc instead of loading from CDN
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 # Password validation

@@ -13,8 +13,8 @@ License, or (at your option) any later version.
 Placeholder for the start page until we have proper content to show.
  -->
 <script lang="ts">
-    import {i18n}  from "../../stores/i18n.js";    
-    import backend from "../../backend.js";
+    import {i18n}    from "../../stores/i18n.js";    
+    import backend   from "../../backend.js";
 
     // Check backend status every three seconds
     let backendStatusText  = $state(i18n.value.Placeholder.BackendStatus.Checking);
@@ -22,8 +22,8 @@ Placeholder for the start page until we have proper content to show.
 
     async function checkBackendStatus() {
         try {
-            let status = await backend.fetch("GET", "/api/core/sites/health/");
-            console.log("Received backend health status", status);
+            let health = await backend.core.coreSitesHealthRetrieve();
+            console.log("Received backend health status", health.status);
     
             backendStatusText  = i18n.value.Placeholder.BackendStatus.Online;
             backendStatusColor = "green";

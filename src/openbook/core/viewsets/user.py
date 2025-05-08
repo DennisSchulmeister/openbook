@@ -6,13 +6,18 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from ..drf                      import ModelViewSetMixin, ModelSerializer
-from ..models.user              import User
+from ..drf                               import ModelViewSetMixin, ModelSerializer
+from ..models.user                       import User
 
-from rest_framework.viewsets    import ModelViewSet
-from rest_framework.decorators  import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response    import Response
+from drf_spectacular.utils               import extend_schema
+from drf_spectacular.utils               import inline_serializer
+from django.utils.translation            import gettext_lazy as _
+from rest_framework.viewsets             import ModelViewSet
+from rest_framework.decorators           import action
+from rest_framework.permissions          import IsAuthenticated
+from rest_framework.response             import Response
+from rest_framework.serializers          import BooleanField
+from rest_framework.serializers          import CharField
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -25,10 +30,21 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     basic information is returned. Authenticated users only as we don't want the
     world to scrap our user list.
     """
+    __doc__ = _("""User Profiles""")
+
     queryset           = User.objects.filter(is_active = True)
     serializer_class   = UserSerializer
     permission_classes = [IsAuthenticated, *ModelViewSetMixin.permission_classes]
 
+    @extend_schema(
+        responses = inline_serializer(name="current-user-response", fields={
+            "username":         CharField(help_text=_("Username")),
+            "first_name":       CharField(help_text=_("First Name")),
+            "last_name":        CharField(help_text=_("Last Name")),
+            "is_staff":         BooleanField(help_text=_("Administrative User")),
+            "is_authenticated": BooleanField(help_text=_("Logged-in User")),
+        }),
+    )
     @action(detail=False, permission_classes=[])
     def current(self, request):
         """
