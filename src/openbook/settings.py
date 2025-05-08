@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "channels",
 
     # Django REST framework
-    "drf_redesign",
+    "rest_wind",
     "rest_framework",
     "django_filters",
 

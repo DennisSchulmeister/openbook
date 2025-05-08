@@ -346,17 +346,17 @@ files = [
 
 [[package]]
 name = "django"
-version = "5.0.8"
+version = "5.2.1"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "Django-5.0.8-py3-none-any.whl", hash = "sha256:333a7988f7ca4bc14d360d3d8f6b793704517761ae3813b95432043daec22a45"},
-    {file = "Django-5.0.8.tar.gz", hash = "sha256:ebe859c9da6fead9c9ee6dbfa4943b04f41342f4cea2c4d8c978ef0d10694f2b"},
+    {file = "django-5.2.1-py3-none-any.whl", hash = "sha256:a9b680e84f9a0e71da83e399f1e922e1ab37b2173ced046b541c72e1589a5961"},
+    {file = "django-5.2.1.tar.gz", hash = "sha256:57fe1f1b59462caed092c80b3dd324fd92161b620d59a9ba9181c34746c97284"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.7.0,<4"
+asgiref = ">=3.8.1"
 sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
@@ -493,19 +493,19 @@ files = [
 django = ">=4.2"
 
 [[package]]
-name = "drf-redesign"
-version = "0.4.0"
-description = "Redesign of the browse-able api of Django REST Framework with Bootstrap 5"
+name = "drf-restwind"
+version = "0.1.6"
+description = "drf-restwind, a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort."
 optional = false
-python-versions = ">=3.7"
+python-versions = "<4.0,>=3.10"
 files = [
-    {file = "drf_redesign-0.4.0-py3-none-any.whl", hash = "sha256:87e6b9084c4945b7ed7c73602fe3becd85915e98bef41aeb4bda8f8c762acf57"},
-    {file = "drf_redesign-0.4.0.tar.gz", hash = "sha256:6906f4af72baf941aac7f637abb1a858356ca782cadda58edf41e2e67b9550ad"},
+    {file = "drf_restwind-0.1.6-py3-none-any.whl", hash = "sha256:bc9f179f8061e5947a76da6dc317c4bced2b2e038939dbbc69f08fc96735a487"},
+    {file = "drf_restwind-0.1.6.tar.gz", hash = "sha256:7c1fb5cb43f8140ea153ba2120819ee15f178bd23341f122ab65eac45be95600"},
 ]
 
 [package.dependencies]
-django = ">=3.0"
-djangorestframework = ">=3.14"
+django = ">=5.1.5,<6.0.0"
+djangorestframework = ">=3.15.2,<4.0.0"
 
 [[package]]
 name = "et-xmlfile"
@@ -1540,4 +1540,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "5ca849dcfeb9a8edb8efff64a51db931611cbbc2b1c0bc0173fd1db3dfccbcc2"
+content-hash = "d2db0fdfd1c825614eb0dc1a7ce89b4f91ac08d920d1968e894baa399b2208c4"
