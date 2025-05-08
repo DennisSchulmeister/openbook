@@ -52,6 +52,7 @@ services:
             - ./openbook/local_settings.py:/app/src/openbook/local_settings.py
             - openbook_static:/app/src/_static.volume
             - openbook_media:/app/src/_media.volume
+            - openbook_backup:/app/src/_backup.volume
         environment:
             DJANGO_SETTINGS_MODULE: openbook.settings
             OB_LOAD_INITIAL_DATA: 1
@@ -94,5 +95,6 @@ volumes:
     openbook_redis:
     openbook_static:
     openbook_media:
+    openbook_backup:
     openbook_caddy_config:
     openbook_caddy_data:

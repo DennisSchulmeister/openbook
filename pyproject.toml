@@ -30,6 +30,7 @@ daphne = "^4.1.2"
 twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
 django-unfold = "^0.56.0"
 django-extensions = "^4.1"
+django-dbbackup = "^4.2.1"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.15.1"

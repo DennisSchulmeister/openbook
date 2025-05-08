@@ -41,6 +41,9 @@ STATIC_URL = "/static/"
 MEDIA_DIR = "/app/src/_media.volume"
 MEDIA_URL = "/media/"
 
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": "/app/src/_backup.volume"}
+
 USE_TZ = True
 TIME_ZONE = "Europe/Berlin"
 

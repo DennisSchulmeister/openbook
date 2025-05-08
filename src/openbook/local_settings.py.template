@@ -9,6 +9,9 @@
 #
 # Below are a few suggestions of which settings you should change.
 
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # Replace with your own secret key !!
 SECRET_KEY = "django-insecure-jeo+.}_}9(Q.t_IU$WJ!%eL=b:MDbAL.~NY_=a:>D@:W[XPh4["
 DEBUG = False
@@ -72,3 +75,8 @@ LANGUAGE_CODE = "de-de"
 USE_THOUSAND_SEPARATOR = True
 
 SITE_ID = 1
+
+# Database and media files backups
+# See: https://django-dbbackup.readthedocs.io/en/stable/configuration.html
+#DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+#DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "_backup"}

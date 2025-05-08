@@ -52,9 +52,6 @@ INSTALLED_APPS = [
     #"unfold.contrib.import_export",     # optional, if django-import-export package is used
     #"unfold.contrib.guardian",          # optional, if django-guardian package is used
     #"unfold.contrib.simple_history",    # optional, if django-simple-history package is used
-    
-    # Django Extensions (additional management commands)
-    "django_extensions",
 
     # Django built-in apps
     "openbook.apps.OpenBookAdmin",
@@ -64,6 +61,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+
+    # Other useful apps
+    "django_extensions",                # Django Extensions (additional management commands)
+    "dbbackup",                         # Django DBBackup: Database and Media Files Backups
 ]
 
 MIDDLEWARE = [
@@ -214,6 +215,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/topics/files/
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "_media"
+
+# Database and media files backups
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "_backup"}
 
 # Import deployment-specific local settings which can override single values here
 try:

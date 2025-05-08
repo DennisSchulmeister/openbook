@@ -340,6 +340,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-dbbackup"
+version = "4.2.1"
+description = "Management commands to help backup and restore a project database and media."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django_dbbackup-4.2.1-py3-none-any.whl", hash = "sha256:b23265600ead0780ca781b1b4b594949aaa8a20d74f08701f91ee9d7eb1f08cd"},
+    {file = "django_dbbackup-4.2.1.tar.gz", hash = "sha256:157a2ec10d482345cd75092e510ac40d6e2ee6084604a1d17abe178c2f06bc69"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+pytz = "*"
+
+[[package]]
 name = "django-extensions"
 version = "4.1"
 description = "Extensions for Django"
@@ -822,6 +837,17 @@ docs = ["furo (>=2024.5.6)", "sphinx-autodoc-typehints (>=2.2.1)"]
 testing = ["covdefaults (>=2.3)", "pytest (>=8.2.2)", "pytest-cov (>=5)", "pytest-mock (>=3.14)", "setuptools (>=70.1)"]
 
 [[package]]
+name = "pytz"
+version = "2025.2"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"},
+    {file = "pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -1142,4 +1168,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cac394c47280806bc1f2a0ab8e237e18b74e72d45bfff350e73f2b50dc5b571d"
+content-hash = "822c14af6932c4bee0b246506664160d0a8f36372fe02f572101ba0ec49f9d3a"

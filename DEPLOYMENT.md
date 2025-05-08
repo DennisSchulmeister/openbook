@@ -6,6 +6,7 @@ Installation Notes for Administrators
 1. [Web Server](#web-server)
 1. [Docker Compose](#docker-compose)
 1. [Periodic Jobs](#periodic-jobs)
+1. [Backups](#backups)
 
 System Overview
 ---------------
@@ -148,7 +149,27 @@ src$ ./manage.py command --options
 
 The most important ones are:
 
-| **Management Command**      | **Options**  | **Description**                                                       |
-|-----------------------------|--------------|-----------------------------------------------------------------------|
-| `clearsessions`             |              | Clean out expired sessions                                            |
-| `remove_stale_contenttypes` | `--no-input` | Remove stale content types when models are removed from the codebase. |
+| **Management Command**                 | **Description**                                                       |
+|----------------------------------------|-----------------------------------------------------------------------|
+| `clearsessions`                        | Clean out expired sessions                                            |
+| `remove_stale_contenttypes --no-input` | Remove stale content types when models are removed from the codebase. |
+
+Backups
+=======
+
+This project includes [Django DBBackups](https://django-dbbackup.readthedocs.io/) for easy database and
+media files backups. The backups can be saved to local files or remote storage like AWS S3 or Dropbox.
+See the linked documentation for configuration details. Here's a quick summary:
+
+| **Management Command** | **Description**                              |
+|------------------------|----------------------------------------------|
+| `dbbackup`             | Create new database backup                   |
+| `dbrestore`            | Import database backup (into empty database) |
+| `listbackups`          | List available backups                       |
+| `mediabackup`          | Backup media files                           |
+| `mediarestore`         | Import backedup media files                  |
+
+Note, to avoid errors the database should be empty when backups are imported.
+
+The Django DBBackups documentation recommends for larger installations to setup a database replica on
+the database level and use the replica to create the backups, to avoid performance impacts.
