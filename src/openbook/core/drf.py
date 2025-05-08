@@ -76,6 +76,10 @@ class ModelSerializer(DRFModelSerializer):
         return getattr(self, '_instance', None)
 
 class ListSerializer(DRFListSerializer):
+    """
+    Base-class for list-serializes, in case we need to patch them, too for object
+    permission checks.
+    """
     pass
 
 class ModelViewSetMixin:
