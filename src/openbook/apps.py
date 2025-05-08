@@ -6,10 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.apps               import AppConfig
-from django.utils.translation  import gettext_lazy as _
+from django.contrib.admin.apps import AdminConfig
 
-class OpenBookServerConfig(AppConfig):
-    name         = "openbook.core"
-    label        = "openbook_core"
-    verbose_name = _("OpenBook Server")
+class OpenBookAdmin(AdminConfig):
+    default_site = "openbook.admin.CustomAdminSite"

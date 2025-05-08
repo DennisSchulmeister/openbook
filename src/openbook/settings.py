@@ -6,7 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from pathlib import Path
+from django.utils.translation   import gettext_lazy as _
+from django.templatetags.static import static
+from pathlib                    import Path
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     "django_filters",
 
     # Django Unfold (Modern Admin)
-    "unfold",                            # before django.contrib.admin
+    "unfold.apps.BasicAppConfig",        # before django.contrib.admin
     "unfold.contrib.filters",            # optional, if special filters are needed
     "unfold.contrib.forms",              # optional, if special form elements are needed
     "unfold.contrib.inlines",            # optional, if special inlines are needed
@@ -51,8 +53,11 @@ INSTALLED_APPS = [
     #"unfold.contrib.guardian",          # optional, if django-guardian package is used
     #"unfold.contrib.simple_history",    # optional, if django-simple-history package is used
     
+    # Django Extensions (additional management commands)
+    "django_extensions",
+
     # Django built-in apps
-    "django.contrib.admin",
+    "openbook.apps.OpenBookAdmin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -157,6 +162,17 @@ AUTHENTICATION_BACKENDS = (
     "openbook.core.auth.RoleBasedObjectPermissionsBackend",
 )
 
+UNFOLD = {
+    "SITE_TITLE":  _("OpenBook: Admin"),
+    "SITE_HEADER": _("OpenBook: Admin"),
+    "STYLES": [
+        lambda request: static("openbook/admin/bundle.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("openbook/admin/bundle.js"),
+    ]
+}
+
 # E-Mail Settings
 # See: https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-EMAIL_BACKEND
 # The values below assume you started maildev with "npm start" at the root directory.
@@ -188,6 +204,11 @@ USE_THOUSAND_SEPARATOR = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "_static"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "frontend" / "admin" / "dist",
+    BASE_DIR / "frontend" / "app" / "dist",
+]
 
 # Uploaded media files
 # https://docs.djangoproject.com/en/5.0/topics/files/

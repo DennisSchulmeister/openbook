@@ -8,19 +8,20 @@
 
 from django.apps              import apps
 from django.conf              import settings
-from django.contrib           import admin
 from django.utils.translation import gettext_lazy as _
+from unfold.sites             import UnfoldAdminSite
 
-class CustomAdminSite(admin.AdminSite):
+class CustomAdminSite(UnfoldAdminSite):
     """
     Custom `AdminSite` class that allows us to override the default alphabetical
     order of apps and models on the dashboard. Instead apps will be sorted in the
     order they are liste in `settings.INSTALLED_APPS`. And models will be sorted
     in the order they are registered with the admin site.
     """
-    site_title  = _("OpenBook: Admin")
-    site_header = _("OpenBook: Admin")
-    index_title = _("Administration")
+    # Not used by Unfold Admin, but set in settings.py
+    # site_title  = _("OpenBook: Admin")
+    # site_header = _("OpenBook: Admin")
+    # index_title = _("Administration")
 
     def __init__(self):
         """
