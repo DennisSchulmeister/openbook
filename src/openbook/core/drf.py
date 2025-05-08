@@ -6,8 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
 from rest_framework.exceptions  import ValidationError as DRFValidationError
+from rest_framework.pagination  import PageNumberPagination as DRFPageNumberPagination
 from rest_framework.permissions import BasePermission, DjangoObjectPermissions
 from rest_framework.response    import Response
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
@@ -20,6 +22,14 @@ class AllowNone(BasePermission):
     """
     def has_permission(self, request, view):
         return False
+
+class PageNumberPagination(DRFPageNumberPagination):
+    """
+    Custom pagination class that allows changing the query parameters used for pagination
+    in the Django config, following the same style the DRF uses for the filter backends.
+    """
+    page_query_param      = settings.REST_FRAMEWORK.get("PAGE_PARAM", "_page")
+    page_size_query_param = settings.REST_FRAMEWORK.get("PAGE_SIZE_PARAM", "_page_size")
 
 class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
     """

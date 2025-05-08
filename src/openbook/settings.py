@@ -136,7 +136,7 @@ CHANNEL_LAYERS = {
 # Django REST framework
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "openbook.core.drf.PageNumberPagination",
     "PAGE_SIZE": 100,
 
     # Use Django's standard `django.contrib.auth` permissions,
@@ -153,6 +153,8 @@ REST_FRAMEWORK = {
 
     "SEARCH_PARAM": "_search",
     "ORDERING_PARAM": "_sort",
+    "PAGE_PARAM": "_page",
+    "PAGE_SIZE_PARAM": "_page_size",
 }
 
 # See: https://drf-spectacular.readthedocs.io/

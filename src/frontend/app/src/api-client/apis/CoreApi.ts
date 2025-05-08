@@ -56,6 +56,10 @@ import {
 } from '../models/index';
 
 export interface CoreLanguagesListRequest {
+    search?: string;
+    sort?: string;
+    language?: string;
+    name?: string;
     page?: number;
 }
 
@@ -72,6 +76,12 @@ export interface CoreMediaFilesDestroyRequest {
 }
 
 export interface CoreMediaFilesListRequest {
+    search?: string;
+    sort?: string;
+    contentType?: number;
+    fileName?: string;
+    mimeType?: string;
+    objectId?: string;
     page?: number;
 }
 
@@ -90,6 +100,10 @@ export interface CoreMediaFilesUpdateRequest {
 }
 
 export interface CoreSitesListRequest {
+    search?: string;
+    sort?: string;
+    domain?: string;
+    id?: number;
     page?: number;
 }
 
@@ -106,7 +120,13 @@ export interface CoreUsersDestroyRequest {
 }
 
 export interface CoreUsersListRequest {
+    search?: string;
+    sort?: string;
+    firstName?: string;
+    isStaff?: boolean;
+    lastName?: string;
     page?: number;
+    username?: string;
 }
 
 export interface CoreUsersPartialUpdateRequest {
@@ -133,6 +153,22 @@ export class CoreApi extends runtime.BaseAPI {
      */
     async coreLanguagesListRaw(requestParameters: CoreLanguagesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedLanguageList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['language'] != null) {
+            queryParameters['language'] = requestParameters['language'];
+        }
+
+        if (requestParameters['name'] != null) {
+            queryParameters['name'] = requestParameters['name'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['page'] = requestParameters['page'];
@@ -276,6 +312,30 @@ export class CoreApi extends runtime.BaseAPI {
      */
     async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['contentType'] != null) {
+            queryParameters['content_type'] = requestParameters['contentType'];
+        }
+
+        if (requestParameters['fileName'] != null) {
+            queryParameters['file_name'] = requestParameters['fileName'];
+        }
+
+        if (requestParameters['mimeType'] != null) {
+            queryParameters['mime_type'] = requestParameters['mimeType'];
+        }
+
+        if (requestParameters['objectId'] != null) {
+            queryParameters['object_id'] = requestParameters['objectId'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['page'] = requestParameters['page'];
@@ -460,6 +520,22 @@ export class CoreApi extends runtime.BaseAPI {
     async coreSitesListRaw(requestParameters: CoreSitesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedSiteList>> {
         const queryParameters: any = {};
 
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['domain'] != null) {
+            queryParameters['domain'] = requestParameters['domain'];
+        }
+
+        if (requestParameters['id'] != null) {
+            queryParameters['id'] = requestParameters['id'];
+        }
+
         if (requestParameters['page'] != null) {
             queryParameters['page'] = requestParameters['page'];
         }
@@ -632,8 +708,32 @@ export class CoreApi extends runtime.BaseAPI {
     async coreUsersListRaw(requestParameters: CoreUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserList>> {
         const queryParameters: any = {};
 
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['firstName'] != null) {
+            queryParameters['first_name'] = requestParameters['firstName'];
+        }
+
+        if (requestParameters['isStaff'] != null) {
+            queryParameters['is_staff'] = requestParameters['isStaff'];
+        }
+
+        if (requestParameters['lastName'] != null) {
+            queryParameters['last_name'] = requestParameters['lastName'];
+        }
+
         if (requestParameters['page'] != null) {
             queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['username'] != null) {
+            queryParameters['username'] = requestParameters['username'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
