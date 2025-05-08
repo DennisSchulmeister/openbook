@@ -16,7 +16,7 @@ from rest_framework.serializers import ModelSerializer
 class LanguageSerializer(ModelSerializer):
     class Meta:
         model  = Language
-        fields = "__all__"
+        fields = ["language", "name"]
 
 class LanguageViewSet(ReadOnlyModelViewSet):
     """
@@ -27,3 +27,5 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filterset_fields   = ["language", "name"]
+    search_fields      = ["language", "name"]

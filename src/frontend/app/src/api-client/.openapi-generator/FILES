@@ -1,6 +1,7 @@
 apis/CoreApi.ts
 apis/index.ts
 index.ts
+models/CurrentUserResponse.ts
 models/HealthResponse.ts
 models/Language.ts
 models/MediaFile.ts

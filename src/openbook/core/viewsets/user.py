@@ -35,6 +35,8 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     queryset           = User.objects.filter(is_active = True)
     serializer_class   = UserSerializer
     permission_classes = [IsAuthenticated, *ModelViewSetMixin.permission_classes]
+    filterset_fields   = ["username", "first_name", "last_name", "is_staff"]
+    search_fields      = ["username", "first_name", "last_name"]
 
     @extend_schema(
         responses = inline_serializer(name="current-user-response", fields={

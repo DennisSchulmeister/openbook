@@ -144,6 +144,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "openbook.core.drf.AllowNone"
     ],
+
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ),
+
+    "SEARCH_PARAM": "_search",
+    "ORDERING_PARAM": "_sort",
 }
 
 # See: https://drf-spectacular.readthedocs.io/

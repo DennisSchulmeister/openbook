@@ -31,3 +31,5 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
+    filterset_fields = ["content_type", "object_id", "file_name", "mime_type"]
+    search_fields    = ["file_name"]

@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  CurrentUserResponse,
   HealthResponse,
   Language,
   MediaFile,
@@ -28,6 +29,8 @@ import type {
   User,
 } from '../models/index';
 import {
+    CurrentUserResponseFromJSON,
+    CurrentUserResponseToJSON,
     HealthResponseFromJSON,
     HealthResponseToJSON,
     LanguageFromJSON,
@@ -562,7 +565,7 @@ export class CoreApi extends runtime.BaseAPI {
     /**
      * Return information about the currently logged in user or a sentinel response, when the user is not logged in.
      */
-    async coreUsersCurrentRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async coreUsersCurrentRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CurrentUserResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -577,13 +580,13 @@ export class CoreApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CurrentUserResponseFromJSON(jsonValue));
     }
 
     /**
      * Return information about the currently logged in user or a sentinel response, when the user is not logged in.
      */
-    async coreUsersCurrentRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async coreUsersCurrentRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CurrentUserResponse> {
         const response = await this.coreUsersCurrentRetrieveRaw(initOverrides);
         return await response.value();
     }

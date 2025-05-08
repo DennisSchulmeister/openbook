@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './CurrentUserResponse';
 export * from './HealthResponse';
 export * from './Language';
 export * from './MediaFile';

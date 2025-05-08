@@ -21,7 +21,7 @@ from rest_framework.serializers import ModelSerializer
 class SiteSerializer(ModelSerializer):
     class Meta:
         model  = Site
-        fields = "__all__"
+        fields = ["id", "domain", "name", "short_name", "about_url", "brand_color"]
 
 class SiteViewSet(ReadOnlyModelViewSet):
     """
@@ -29,9 +29,11 @@ class SiteViewSet(ReadOnlyModelViewSet):
     """
     __doc__ = _("General Website Settings")
 
-    queryset         = Site.objects.all()
-    serializer_class = SiteSerializer
+    queryset           = Site.objects.all()
+    serializer_class   = SiteSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filterset_fields   = ["id", "domain"]
+    search_fields      = ["domain", "name", "short_name"]
     
     @extend_schema(
         responses = inline_serializer(name="health-response", fields={
