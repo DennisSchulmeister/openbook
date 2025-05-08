@@ -9,7 +9,17 @@
 from django.apps              import apps
 from django.conf              import settings
 from django.utils.translation import gettext_lazy as _
+from import_export.resources  import ModelResource
 from unfold.sites             import UnfoldAdminSite
+
+class ImportExportModelResource(ModelResource):
+    """
+    Custom `ModelResource` that allows to delete entries when importing model data
+    in the Admin from CSV, YML, XLSX, … files. For this the files may include a row
+    called `delete` with a boolean value to indicate the rows to be deleted.
+    """
+    def for_delete(self, row, instance):
+        return "delete" in row and row["delete"].upper() in ["1", "X", "YES", "TRUE"]
 
 class CustomAdminSite(UnfoldAdminSite):
     """

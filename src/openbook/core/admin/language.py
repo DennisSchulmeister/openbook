@@ -7,11 +7,19 @@
 # License, or (at your option) any later version.
 
 from django.utils.translation import gettext_lazy as _
+from import_export.admin      import ImportExportModelAdmin
 from unfold.admin             import ModelAdmin
-from ..models.language        import Language
 
-class LanguageAdmin(ModelAdmin):
+from ..models.language        import Language
+from ...admin                 import ImportExportModelResource
+
+class LanguageResource(ImportExportModelResource):
+    class Meta:
+        model = Language
+
+class LanguageAdmin(ModelAdmin, ImportExportModelAdmin):
     model              = Language
+    resource_classes   = [LanguageResource]
     list_display       = ["language", "name"]
     list_display_links = ["language", "name"]
     search_fields      = ["language", "name"]

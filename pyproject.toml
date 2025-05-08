@@ -31,6 +31,7 @@ twisted = {extras = ["http2", "tls"], version = "^24.11.0"}
 django-unfold = "^0.56.0"
 django-extensions = "^4.1"
 django-dbbackup = "^4.2.1"
+django-import-export = {extras = ["all"], version = "^4.3.7"}
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.15.1"

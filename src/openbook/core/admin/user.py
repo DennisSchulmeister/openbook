@@ -7,11 +7,19 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.admin import UserAdmin
+from import_export.admin       import ImportExportModelAdmin
 from unfold.admin              import ModelAdmin
 
-class CustomUserAdmin(UserAdmin, ModelAdmin):
+from ..models.user             import User
+from ...admin                  import ImportExportModelResource
+
+class UserResource(ImportExportModelResource):
+    class Meta:
+        model = User
+
+class CustomUserAdmin(UserAdmin, ModelAdmin, ImportExportModelAdmin):
     """
     Sub-class of Django's User Admin to integrate the additional fields of
     Application Users.
     """
-    pass
+    resource_classes = [UserResource]
