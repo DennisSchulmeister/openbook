@@ -365,6 +365,20 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-colorfield"
+version = "0.14.0"
+description = "color field for django models with a nice color-picker in the admin."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django_colorfield-0.14.0-py3-none-any.whl", hash = "sha256:f169c4e7ad8f336e51d4ea81f866346e7d4f336f3766e54e144cd16ea7d84a0e"},
+    {file = "django_colorfield-0.14.0.tar.gz", hash = "sha256:478dbd3975a88f2ea2a9afc325faaca05c54ebf04ec985ce130f6dea39dfb899"},
+]
+
+[package.dependencies]
+Pillow = ">=9.0.0"
+
+[[package]]
 name = "django-dbbackup"
 version = "4.2.1"
 description = "Management commands to help backup and restore a project database and media."
@@ -1526,4 +1540,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e42faa0ad6ac234f8c914c7f7a84d9220aeb8a1e880048619190e686ded9c6fe"
+content-hash = "5ca849dcfeb9a8edb8efff64a51db931611cbbc2b1c0bc0173fd1db3dfccbcc2"

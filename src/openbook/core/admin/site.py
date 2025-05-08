@@ -23,6 +23,6 @@ class SiteAdmin(CustomModelAdmin):
 
     fieldsets = (
         (None, {
-            "fields": ["id", "domain", "name", "short_name", "about_url"]
+            "fields": ["id", "domain", "name", "short_name", "about_url", "brand_color"]
         }),
     )

@@ -18,3 +18,18 @@
 .djangoql-toggle {
     margin-left: 10px;
 }
+
+/* Adopt styling of Django Color for Django Unfold Admin */
+.clr-field {
+    border: 1px var(--tw-border-style) rgb(var(--color-base-200));
+    padding: 0.5em;
+    border-radius: var(--border-radius, 6px);
+
+    button {
+        border-top-right-radius: var(--border-radius, 6px);
+        border-bottom-right-radius: var(--border-radius, 6px);
+    }
+
+    --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color,#0000000d);
+    box-shadow: var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);
+}

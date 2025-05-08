@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from colorfield.fields        import ColorField
 from django.db                import models
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +19,7 @@ class Site(models.Model):
     name = models.CharField(verbose_name=_("Display Name"), max_length=255, null=False, blank=False)
     short_name = models.CharField(verbose_name=_("Short Name"), max_length=50, null=False, blank=False)
     about_url = models.URLField(verbose_name=_("Information Website"), help_text=_("URL of your website with information for your users"))
+    brand_color = ColorField(verbose_name=_("Brand Color"), default="#e2001a")
 
     class Meta:
         verbose_name        = _("Website")

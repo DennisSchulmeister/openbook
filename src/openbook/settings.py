@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "dbbackup",                         # Django DBBackup: Database and Media Files Backups
     "import_export",                    # Django Import/Export: Import and export data in the Django Admin
     "djangoql",                         # Django QL: Advanced search language for Django
+    "colorfield",                       # Django Color Field: Color field for models with color-picker in the admin
 ]
 
 MIDDLEWARE = [
