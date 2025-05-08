@@ -76,11 +76,11 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         """
         return self.scope_object
 
-    def has_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
         The referenced role must be of lower or equal priority than any of the user's roles.
         """
-        principally_allowed = super().has_perm(user_obj, perm)
+        principally_allowed = super().has_obj_perm(user_obj, perm)
 
         if not principally_allowed:
             return False
@@ -162,7 +162,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin
     def __str__(self):
         return f"{self.user.username}: {self.role.name}"
 
-    def has_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
         Always allow to view or delete own access requests, as well as to create new pending requests for
         the own user. Otherwise use inherited object permission, that the target role's priority must be
@@ -174,7 +174,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin
             if ".add_" in perm and self.decision == self.Decision.PENDING:
                 return True
 
-        return super().has_perm(user_obj, perm)
+        return super().has_obj_perm(user_obj, perm)
 
     def save(self, *args, **kwargs):
         """
@@ -233,13 +233,13 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NameDescri
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
 
-    def has_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
         A user can only add/change/delete enrollment methods with lower or equal priority to his/her own roles.
 
         **Caveat:** Take care to not reveal the passphrase when enrollment methods are queried or viewed.
         """
-        principally_allowed = super().has_perm(user_obj, perm)
+        principally_allowed = super().has_obj_perm(user_obj, perm)
 
         if not principally_allowed:
             return False

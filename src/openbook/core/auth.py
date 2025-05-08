@@ -18,7 +18,7 @@ class RoleBasedObjectPermissionsBackend(ModelBackend):
     1. The user is a superuser
     2. The user and the object are the same
     3. The user is the object's `owner` (optional).
-    4. The object's `has_perm()` method (optional).
+    4. The object's `has_obj_perm()` method (optional).
     5. Regular non-object permissions
     
     Superusers can do anything. Users can change their own data. The owner is always authorized.
@@ -37,8 +37,8 @@ class RoleBasedObjectPermissionsBackend(ModelBackend):
                 result = True
             if hasattr(obj, "owner") and obj.owner == user_obj:
                 result = True
-            elif hasattr(obj, "has_perm"):
-                result = obj.has_perm(user_obj, perm)
+            elif hasattr(obj, "has_obj_perm"):
+                result = obj.has_obj_perm(user_obj, perm)
         
         if not result:
             # Fallback to regular permission check

@@ -8,13 +8,19 @@
 
 from rest_framework.viewsets    import ModelViewSet
 
-from ..drf                      import ModelViewSetMixin, ModelSerializer
+from ..drf                      import ModelViewSetMixin, ModelSerializer, ListSerializer
 from ..models.file_uploads      import MediaFile
+
+class MediaFileListSerializer(ListSerializer):
+    class Meta:
+        model  = MediaFile
+        fields = ["content_type", "object_id", "file_name", "file_size", "mime_type"]
 
 class MediaFileSerializer(ModelSerializer):
     class Meta:
         model  = MediaFile
-        fields = "__all__"
+        fields = ["content_type", "object_id", "file_name", "file_size", "mime_type", "file_data"]
+        list_serializer_class = MediaFileListSerializer
 
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     """
@@ -22,3 +28,4 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     """
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
+    # TODO: Show less fields for list query then for get details

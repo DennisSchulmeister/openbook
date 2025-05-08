@@ -9,6 +9,7 @@
 from ..models.language          import Language
 
 from rest_framework.viewsets    import ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.serializers import ModelSerializer
 
 class LanguageSerializer(ModelSerializer):
@@ -20,5 +21,6 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     """
     Read-only view set to access language codes.
     """
-    queryset         = Language.objects.all()
-    serializer_class = LanguageSerializer
+    queryset           = Language.objects.all()
+    serializer_class   = LanguageSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]

@@ -10,6 +10,7 @@ from ..models.site              import Site
 
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.decorators  import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response    import Response
 from rest_framework.serializers import ModelSerializer
 
@@ -24,6 +25,7 @@ class SiteViewSet(ReadOnlyModelViewSet):
     """
     queryset         = Site.objects.all()
     serializer_class = SiteSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @action(detail=False)
     def health(self, request):

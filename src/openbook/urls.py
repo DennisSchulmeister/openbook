@@ -10,13 +10,17 @@ import openbook.core.routes as openbook_core_routes
 
 from django.conf                     import settings
 from django.conf.urls.static         import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base       import RedirectView
 from django.urls                     import include, path
-from rest_framework.routers          import DefaultRouter
+from rest_framework.permissions      import IsAuthenticatedOrReadOnly
+from rest_framework.routers          import DefaultRouter as DRFDefaultRouter
+
 from .admin                          import admin_site
 
-router = DefaultRouter()
+# Overwrite permission class for API root view, since it uses the default from settings.py,
+# where we set AllowNone.
+DRFDefaultRouter.APIRootView.permission_classes = [IsAuthenticatedOrReadOnly]
+router = DRFDefaultRouter()
 openbook_core_routes.register(router, "core")
 
 urlpatterns = [

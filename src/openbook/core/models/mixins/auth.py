@@ -24,13 +24,16 @@ class RoleBasedObjectPermissionsMixin(models.Model):
     class Meta:
         abstract = True
 
-    def has_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
         Check if the given user has the given permission on the object. This always checks the public
         permissions of the scope and all role assignments, if the user is authenticated. But it can be
         overridden to implement custom checks like "the owner is always authorized".
 
-        Usually `super().has_perm(user_obj, perm)` should still be called, when this method is overridden.
+        Usually `super().has_obj_perm(user_obj, perm)` should still be called, when this method is overridden.
+
+        Note, this method is called `has_obj_perm()` instead of `has_perm()` because the Django user model
+        already has a method `has_perm()`.
         """
         scope = self.get_scope()
         app_label, codename = perm.split(".")

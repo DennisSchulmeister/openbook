@@ -11,6 +11,7 @@ from ..models.user              import User
 
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.decorators  import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response    import Response
 
 class UserSerializer(ModelSerializer):
@@ -24,8 +25,9 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     basic information is returned. Authenticated users only as we don't want the
     world to scrap our user list.
     """
-    queryset         = User.objects.filter(is_active = True)
-    serializer_class = UserSerializer
+    queryset           = User.objects.filter(is_active = True)
+    serializer_class   = UserSerializer
+    permission_classes = [IsAuthenticated, *ModelViewSetMixin.permission_classes]
 
     @action(detail=False, permission_classes=[])
     def current(self, request):

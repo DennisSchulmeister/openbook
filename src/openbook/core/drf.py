@@ -12,6 +12,7 @@ from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.permissions import BasePermission, DjangoObjectPermissions
 from rest_framework.response    import Response
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
+from rest_framework.serializers import ListSerializer as DRFListSerializer
 
 class AllowNone(BasePermission):
     """
@@ -45,7 +46,7 @@ class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
     def has_permission(self, request, view):
         # Always True to avoid PermissionDenied.
         # Our authentication backend checks model-permissions as fallback, instead.
-        True
+        return True
 
 class ModelSerializer(DRFModelSerializer):
     """
@@ -73,6 +74,9 @@ class ModelSerializer(DRFModelSerializer):
         Method to access the pre-filled model instance in `ImprovedModelViewSet`.
         """
         return getattr(self, '_instance', None)
+
+class ListSerializer(DRFListSerializer):
+    pass
 
 class ModelViewSetMixin:
     """

@@ -337,7 +337,7 @@ are checked in the following order, stopping at the first match:
 1. The user is a superuser
 1. The user and the object are the same
 1. The user is the object's `owner` (optional).
-1. The object's `has_perm()` method (via mixins, optional).
+1. The object's `has_obj_perm()` method (via mixins, optional).
     1. Public permissions of the scope
     1. Roles assigned to the user
 1. Regular non-object permissions
