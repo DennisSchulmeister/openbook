@@ -57,7 +57,46 @@ class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
         # Our authentication backend checks model-permissions as fallback, instead.
         return True
 
-class ModelSerializer(DRFModelSerializer):
+class WritableNestedM2MSerializerMixin:
+    """
+    Mixin for serializers to support writable many-to-many fields using nested serializers
+    that return model instances (not just primary keys). Normally DRF expects the client to
+    send primary keys for related models. If the serializer is instead implementing the
+    method `to_internal_value(self, data)` to allow for other formats, DRF skips affected
+    fields when writing models, expecting the developer to manually handle fields in the
+    `create()` and `update()` methods.
+
+    This mixin automates the task. Simply define `writable_non_pk_m2m_fields` as a list of
+    field names to handle.
+    """
+    writable_non_pk_m2m_fields: list[str] = []
+
+    def create(self, validated_data):
+        """
+        Handle object creation to add M2M fields with custom deserialization logic.
+        """
+        m2m_data = {field: validated_data.pop(field, []) for field in self.writable_non_pk_m2m_fields}
+        instance = super().create(validated_data)
+        
+        for field, value in m2m_data.items():
+            getattr(instance, field).set(value)
+        
+        return instance
+
+    def update(self, instance, validated_data):
+        """
+        Handle object update to add M2M fields with custom deserialization logic.
+        """
+        m2m_data = {field: validated_data.pop(field, None) for field in self.writable_non_pk_m2m_fields}
+        instance = super().update(instance, validated_data)
+
+        for field, value in m2m_data.items():
+            if value is not None:
+                getattr(instance, field).set(value)
+        
+        return instance
+
+class ModelSerializer(WritableNestedM2MSerializerMixin, DRFModelSerializer):
     """
     Reuse full cleaning and validation logic on the model's in the REST API, including
     `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
@@ -83,13 +122,6 @@ class ModelSerializer(DRFModelSerializer):
         Method to access the pre-filled model instance in `ImprovedModelViewSet`.
         """
         return getattr(self, '_instance', None)
-
-class ListSerializer(DRFListSerializer):
-    """
-    Base-class for list-serializes, in case we need to patch them, too for object
-    permission checks.
-    """
-    pass
 
 class ModelViewSetMixin:
     """

@@ -16,68 +16,35 @@
 import * as runtime from '../runtime';
 import type {
   CurrentUserResponse,
-  PaginatedRoleList,
   PaginatedUserList,
-  PatchedRole,
   PatchedUser,
-  Role,
   User,
 } from '../models/index';
 import {
     CurrentUserResponseFromJSON,
     CurrentUserResponseToJSON,
-    PaginatedRoleListFromJSON,
-    PaginatedRoleListToJSON,
     PaginatedUserListFromJSON,
     PaginatedUserListToJSON,
-    PatchedRoleFromJSON,
-    PatchedRoleToJSON,
     PatchedUserFromJSON,
     PatchedUserToJSON,
-    RoleFromJSON,
-    RoleToJSON,
     UserFromJSON,
     UserToJSON,
 } from '../models/index';
-
-export interface AuthRolesCreateRequest {
-    role: Omit<Role, 'id'|'created_at'|'modified_at'>;
-}
 
 export interface AuthRolesDestroyRequest {
     id: string;
 }
 
-export interface AuthRolesListRequest {
-    page?: number;
-    pageSize?: number;
-    search?: string;
-    sort?: string;
-    createdAt?: Date;
-    createdBy?: number;
-    id?: string;
-    isActive?: boolean;
-    modifiedAt?: Date;
-    modifiedBy?: number;
-    name?: string;
-    priority?: number;
-    scopeType?: number;
-    scopeUuid?: string;
-    slug?: string;
-}
-
 export interface AuthRolesPartialUpdateRequest {
     id: string;
-    patchedRole?: Omit<PatchedRole, 'id'|'created_at'|'modified_at'>;
 }
 
-export interface AuthRolesRetrieveRequest {
+export interface AuthRolesRetrieve2Request {
     id: string;
 }
 
 export interface AuthRolesUpdateRequest {
     id: string;
-    role: Omit<Role, 'id'|'created_at'|'modified_at'>;
 }
 
 export interface AuthUsersCreateRequest {
@@ -121,19 +88,10 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Roles Within a Scope
      */
-    async authRolesCreateRaw(requestParameters: AuthRolesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
-        if (requestParameters['role'] == null) {
-            throw new runtime.RequiredError(
-                'role',
-                'Required parameter "role" was null or undefined when calling authRolesCreate().'
-            );
-        }
-
+    async authRolesCreateRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
             headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
@@ -143,18 +101,16 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: RoleToJSON(requestParameters['role']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesCreate(requestParameters: AuthRolesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
-        const response = await this.authRolesCreateRaw(requestParameters, initOverrides);
-        return await response.value();
+    async authRolesCreate(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authRolesCreateRaw(initOverrides);
     }
 
     /**
@@ -195,68 +151,43 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Roles Within a Scope
      */
-    async authRolesListRaw(requestParameters: AuthRolesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedRoleList>> {
+    async authRolesPartialUpdateRaw(requestParameters: AuthRolesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authRolesPartialUpdate().'
+            );
+        }
+
         const queryParameters: any = {};
 
-        if (requestParameters['page'] != null) {
-            queryParameters['_page'] = requestParameters['page'];
-        }
+        const headerParameters: runtime.HTTPHeaders = {};
 
-        if (requestParameters['pageSize'] != null) {
-            queryParameters['_page_size'] = requestParameters['pageSize'];
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
+        const response = await this.request({
+            path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
 
-        if (requestParameters['search'] != null) {
-            queryParameters['_search'] = requestParameters['search'];
-        }
+        return new runtime.VoidApiResponse(response);
+    }
 
-        if (requestParameters['sort'] != null) {
-            queryParameters['_sort'] = requestParameters['sort'];
-        }
+    /**
+     * User Roles Within a Scope
+     */
+    async authRolesPartialUpdate(requestParameters: AuthRolesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authRolesPartialUpdateRaw(requestParameters, initOverrides);
+    }
 
-        if (requestParameters['createdAt'] != null) {
-            queryParameters['created_at'] = (requestParameters['createdAt'] as any).toISOString();
-        }
-
-        if (requestParameters['createdBy'] != null) {
-            queryParameters['created_by'] = requestParameters['createdBy'];
-        }
-
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
-        }
-
-        if (requestParameters['isActive'] != null) {
-            queryParameters['is_active'] = requestParameters['isActive'];
-        }
-
-        if (requestParameters['modifiedAt'] != null) {
-            queryParameters['modified_at'] = (requestParameters['modifiedAt'] as any).toISOString();
-        }
-
-        if (requestParameters['modifiedBy'] != null) {
-            queryParameters['modified_by'] = requestParameters['modifiedBy'];
-        }
-
-        if (requestParameters['name'] != null) {
-            queryParameters['name'] = requestParameters['name'];
-        }
-
-        if (requestParameters['priority'] != null) {
-            queryParameters['priority'] = requestParameters['priority'];
-        }
-
-        if (requestParameters['scopeType'] != null) {
-            queryParameters['scope_type'] = requestParameters['scopeType'];
-        }
-
-        if (requestParameters['scopeUuid'] != null) {
-            queryParameters['scope_uuid'] = requestParameters['scopeUuid'];
-        }
-
-        if (requestParameters['slug'] != null) {
-            queryParameters['slug'] = requestParameters['slug'];
-        }
+    /**
+     * User Roles Within a Scope
+     */
+    async authRolesRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -270,64 +201,24 @@ export class AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedRoleListFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesList(requestParameters: AuthRolesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedRoleList> {
-        const response = await this.authRolesListRaw(requestParameters, initOverrides);
-        return await response.value();
+    async authRolesRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authRolesRetrieveRaw(initOverrides);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesPartialUpdateRaw(requestParameters: AuthRolesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
+    async authRolesRetrieve2Raw(requestParameters: AuthRolesRetrieve2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling authRolesPartialUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PatchedRoleToJSON(requestParameters['patchedRole']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
-    }
-
-    /**
-     * User Roles Within a Scope
-     */
-    async authRolesPartialUpdate(requestParameters: AuthRolesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
-        const response = await this.authRolesPartialUpdateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Roles Within a Scope
-     */
-    async authRolesRetrieveRaw(requestParameters: AuthRolesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling authRolesRetrieve().'
+                'Required parameter "id" was null or undefined when calling authRolesRetrieve2().'
             );
         }
 
@@ -345,21 +236,20 @@ export class AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesRetrieve(requestParameters: AuthRolesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
-        const response = await this.authRolesRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
+    async authRolesRetrieve2(requestParameters: AuthRolesRetrieve2Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authRolesRetrieve2Raw(requestParameters, initOverrides);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesUpdateRaw(requestParameters: AuthRolesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
+    async authRolesUpdateRaw(requestParameters: AuthRolesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -367,18 +257,9 @@ export class AuthApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['role'] == null) {
-            throw new runtime.RequiredError(
-                'role',
-                'Required parameter "role" was null or undefined when calling authRolesUpdate().'
-            );
-        }
-
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
             headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
@@ -388,18 +269,16 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: RoleToJSON(requestParameters['role']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * User Roles Within a Scope
      */
-    async authRolesUpdate(requestParameters: AuthRolesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
-        const response = await this.authRolesUpdateRaw(requestParameters, initOverrides);
-        return await response.value();
+    async authRolesUpdate(requestParameters: AuthRolesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authRolesUpdateRaw(requestParameters, initOverrides);
     }
 
     /**

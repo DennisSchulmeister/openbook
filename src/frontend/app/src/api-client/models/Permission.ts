@@ -14,7 +14,7 @@
 
 import { mapValues } from '../runtime';
 /**
- * Included permissions
+ * Permissions
  * @export
  * @interface Permission
  */

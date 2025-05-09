@@ -1,46 +1,31 @@
 # OpenBook: Interactive Online Textbooks - Server
-# © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+# © 2025 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models import Permission
 from django.utils.translation   import gettext_lazy as _
+from django_filters.filterset   import FilterSet
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.serializers import CharField
-from rest_framework.serializers import SerializerMethodField
 from rest_framework.viewsets    import ModelViewSet
 
 from openbook.drf               import ModelViewSetMixin
 from openbook.drf               import ModelSerializer
-from openbook.drf               import ListSerializer
 
+from ..filters.permission       import PermissionFilterMixin
 from ..models.role              import Role
+from ..serializers.permission   import PermissionSerializer
 
-# TODO: Use app_label, codename to add permissions when creating new roles.
-# TODO: Remove created_by, modified_by from create, update, partial_update.
-# TODO: Move PermissionSerializer into shared code file.
-# https://chatgpt.com/g/g-p-68128762bf848191860962c9aae6c388-openbook-development/c/681db450-d960-8007-afa9-c5dbbd0bc8ff
-class PermissionSerializer(ModelSerializer):
+# TODO: Test different serializers for different actions
+# TODO: Make drf-spectacular generate the correct OpenAPI for these serializers?
+# TODO: Test permission filter implementation (not showing up in API browser and OpenAPI so probably broken!)
+
+class RoleListSerializer(ModelSerializer):
     """
-    Included permissions
+    Reduced list of fields for filtering a list of roles.
     """
-    perm       = SerializerMethodField()
-    app_label  = CharField(source="content_type.app_label", read_only=True)
-    model_name = CharField(source="content_type.model", read_only=True)
-
-    def get_perm(self, obj):
-        ct = obj.content_type
-        return f"{ct.app_label}.{ct.model}_{obj.codename}"
-    
-    class Meta:
-        model  = Permission
-        fields = ["perm", "app_label", "model_name", "codename", "name"]
-
-# TODO: …list-operation shows not just these fields in OpenAPI??
-class RoleListSerializer(ListSerializer):
     class Meta:
         model = Role
         fields = [
@@ -52,7 +37,10 @@ class RoleListSerializer(ListSerializer):
             "created_by", "created_at", "modified_by", "modified_at",
         ]
 
-class RoleSerializer(ModelSerializer):
+class RoleRetrieveSerializer(ModelSerializer):
+    """
+    Full list of fields for retrieving a single role.
+    """
     permissions = PermissionSerializer()
 
     class Meta:
@@ -62,11 +50,37 @@ class RoleSerializer(ModelSerializer):
             "scope_type", "scope_uuid",
             "slug",
             "name", "description", "text_format",
-            "is_active",
-            "priority", "permissions",
+            "priority", "is_active",
+            "permissions",
             "created_by", "created_at", "modified_by", "modified_at",
         ]
-        list_serializer_class = RoleListSerializer
+
+
+class RoleWriteSerializer(ModelSerializer):
+    """
+    Reduced list of fields for creating and updating a role.
+    """
+    writable_non_pk_m2m_fields = ["permissions"]
+
+    permissions = PermissionSerializer(many=True)
+
+    class Meta:
+        model  = Role
+        fields = [
+            "scope_type", "scope_uuid",
+            "slug",
+            "name", "description", "text_format",
+            "priority", "is_active",
+            "permissions",
+        ]
+    
+    def to_representation(self, instance):
+        return RoleRetrieveSerializer(instance=instance, context=self.context).data
+
+class RoleFilter(PermissionFilterMixin, FilterSet):
+    class Meta:
+        model  = Role
+        fields = RoleListSerializer.Meta.fields
 
 class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     """
@@ -75,7 +89,23 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = _("User Roles Within a Scope")
 
     queryset           = Role.objects.all()
-    serializer_class   = RoleSerializer
     permission_classes = [IsAuthenticated, *ModelViewSetMixin.permission_classes]
-    filterset_fields   = RoleListSerializer.Meta.fields
+    filterset_class    = RoleFilter
     search_fields      = ["slug", "name", "description"]
+
+    serializer_classes = {
+        "list":           RoleListSerializer,
+        "retrieve":       RoleRetrieveSerializer,
+        "create":         RoleWriteSerializer,
+        "update":         RoleWriteSerializer,
+        "partial_update": RoleWriteSerializer,
+        "metadata":       RoleWriteSerializer,
+        "_default":       RoleListSerializer,
+    }
+
+    def get_serializer_class(self):
+        try:
+            return self.serializer_classes[self.action]
+        except KeyError:
+            return self.serializer_classes["_default"]
+    

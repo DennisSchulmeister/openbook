@@ -11,10 +11,9 @@ from rest_framework.viewsets  import ModelViewSet
 
 from openbook.drf             import ModelViewSetMixin
 from openbook.drf             import ModelSerializer
-from openbook.drf             import ListSerializer
 from ..models.file_uploads    import MediaFile
 
-class MediaFileListSerializer(ListSerializer):
+class MediaFileListSerializer(ModelSerializer):
     class Meta:
         model  = MediaFile
         fields = ["content_type", "object_id", "file_name", "file_size", "mime_type"]
@@ -32,3 +31,9 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     serializer_class = MediaFileSerializer
     filterset_fields = MediaFileListSerializer.Meta.fields
     search_fields    = ["file_name"]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return MediaFileListSerializer
+        else:
+            return MediaFileSerializer
