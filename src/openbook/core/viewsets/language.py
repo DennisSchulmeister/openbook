@@ -19,13 +19,10 @@ class LanguageSerializer(ModelSerializer):
         fields = ["language", "name"]
 
 class LanguageViewSet(ReadOnlyModelViewSet):
-    """
-    Read-only view set to access language codes.
-    """
     ___doc__ = _("Available Languages")
 
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filterset_fields   = ["language", "name"]
+    filterset_fields   = LanguageSerializer.Meta.fields
     search_fields      = ["language", "name"]

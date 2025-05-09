@@ -94,7 +94,7 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         count = scope.role_assignments.filter(user=user_obj, role__priority__gte=priority).count()
         return count > 0
 
-class Role(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, NameDescriptionMixin, ActiveInactiveMixin):
+class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, ActiveInactiveMixin, CreatedModifiedByMixin):
     """
     Object-based permissions are based on roles that users have in a given context (scope).
     Roles bundle one or more permissions granted to all users assigned to them. For example
@@ -131,7 +131,7 @@ class Role(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, Na
                     "role": self.name,
                 })
 
-class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin):
+class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin):
     """
     To gain access, users may send access requests to the owners of a given scope. This contains the
     scope and the requested role, so that the request can be converted into a role assignment, if th
@@ -210,7 +210,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, DurationMixin
         self.decision_date = timezone.now()
         self.save()
 
-class EnrollmentMethod(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NameDescriptionMixin, ActiveInactiveMixin, DurationMixin):
+class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInactiveMixin, DurationMixin, CreatedModifiedByMixin):
     """
     Enrollment methods all users to enroll themselves to get access. Enrollment is always bound to
     a role that will be assigned to the users and can optionally have a limited duration. Also the
@@ -258,7 +258,7 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, NameDescri
         """
         RoleAssignment.enroll(enrollment=self, user=user, passphrase=passphrase, check_passphrase=check_passphrase)
 
-class RoleAssignment(UUIDMixin, ScopeMixin, CreatedModifiedByMixin, ActiveInactiveMixin, ValidityTimeSpanMixin):
+class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpanMixin, CreatedModifiedByMixin):
     """
     Role assignments assign a given role (defined in a given scope) to user, effectively
     granting the object-level permissions associated with them.

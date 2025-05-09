@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "node ../../../_scripts/frontend/clean.js",
     "watch": "node ../../../_scripts/frontend/watch.js",
-    "build": "npm run build:api-client && npm build:webapp",
+    "build": "npm run build:api-client && npm run build:webapp",
     "build:api-client": "openapi-generator-cli generate -i http://localhost:8000/api/schema/ -g typescript-fetch -o ./src/api-client/",
     "build:webapp": "node ../../../_scripts/frontend/build.js",
     "lint": "eslint --ext .ts,.tsx ./",

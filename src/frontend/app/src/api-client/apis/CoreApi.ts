@@ -15,22 +15,16 @@
 
 import * as runtime from '../runtime';
 import type {
-  CurrentUserResponse,
   HealthResponse,
   Language,
   MediaFile,
   PaginatedLanguageList,
   PaginatedMediaFileList,
   PaginatedSiteList,
-  PaginatedUserList,
   PatchedMediaFile,
-  PatchedUser,
   Site,
-  User,
 } from '../models/index';
 import {
-    CurrentUserResponseFromJSON,
-    CurrentUserResponseToJSON,
     HealthResponseFromJSON,
     HealthResponseToJSON,
     LanguageFromJSON,
@@ -43,24 +37,19 @@ import {
     PaginatedMediaFileListToJSON,
     PaginatedSiteListFromJSON,
     PaginatedSiteListToJSON,
-    PaginatedUserListFromJSON,
-    PaginatedUserListToJSON,
     PatchedMediaFileFromJSON,
     PatchedMediaFileToJSON,
-    PatchedUserFromJSON,
-    PatchedUserToJSON,
     SiteFromJSON,
     SiteToJSON,
-    UserFromJSON,
-    UserToJSON,
 } from '../models/index';
 
 export interface CoreLanguagesListRequest {
+    page?: number;
+    pageSize?: number;
     search?: string;
     sort?: string;
     language?: string;
     name?: string;
-    page?: number;
 }
 
 export interface CoreLanguagesRetrieveRequest {
@@ -76,13 +65,15 @@ export interface CoreMediaFilesDestroyRequest {
 }
 
 export interface CoreMediaFilesListRequest {
+    page?: number;
+    pageSize?: number;
     search?: string;
     sort?: string;
     contentType?: number;
     fileName?: string;
+    fileSize?: number;
     mimeType?: string;
     objectId?: string;
-    page?: number;
 }
 
 export interface CoreMediaFilesPartialUpdateRequest {
@@ -100,47 +91,16 @@ export interface CoreMediaFilesUpdateRequest {
 }
 
 export interface CoreSitesListRequest {
+    page?: number;
+    pageSize?: number;
     search?: string;
     sort?: string;
     domain?: string;
     id?: number;
-    page?: number;
 }
 
 export interface CoreSitesRetrieveRequest {
     id: number;
-}
-
-export interface CoreUsersCreateRequest {
-    user: User;
-}
-
-export interface CoreUsersDestroyRequest {
-    id: number;
-}
-
-export interface CoreUsersListRequest {
-    search?: string;
-    sort?: string;
-    firstName?: string;
-    isStaff?: boolean;
-    lastName?: string;
-    page?: number;
-    username?: string;
-}
-
-export interface CoreUsersPartialUpdateRequest {
-    id: number;
-    patchedUser?: PatchedUser;
-}
-
-export interface CoreUsersRetrieveRequest {
-    id: number;
-}
-
-export interface CoreUsersUpdateRequest {
-    id: number;
-    user: User;
 }
 
 /**
@@ -149,10 +109,17 @@ export interface CoreUsersUpdateRequest {
 export class CoreApi extends runtime.BaseAPI {
 
     /**
-     * Read-only view set to access language codes.
      */
     async coreLanguagesListRaw(requestParameters: CoreLanguagesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedLanguageList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['_page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['_page_size'] = requestParameters['pageSize'];
+        }
 
         if (requestParameters['search'] != null) {
             queryParameters['_search'] = requestParameters['search'];
@@ -168,10 +135,6 @@ export class CoreApi extends runtime.BaseAPI {
 
         if (requestParameters['name'] != null) {
             queryParameters['name'] = requestParameters['name'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -190,7 +153,6 @@ export class CoreApi extends runtime.BaseAPI {
     }
 
     /**
-     * Read-only view set to access language codes.
      */
     async coreLanguagesList(requestParameters: CoreLanguagesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedLanguageList> {
         const response = await this.coreLanguagesListRaw(requestParameters, initOverrides);
@@ -198,7 +160,6 @@ export class CoreApi extends runtime.BaseAPI {
     }
 
     /**
-     * Read-only view set to access language codes.
      */
     async coreLanguagesRetrieveRaw(requestParameters: CoreLanguagesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Language>> {
         if (requestParameters['language'] == null) {
@@ -226,7 +187,6 @@ export class CoreApi extends runtime.BaseAPI {
     }
 
     /**
-     * Read-only view set to access language codes.
      */
     async coreLanguagesRetrieve(requestParameters: CoreLanguagesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Language> {
         const response = await this.coreLanguagesRetrieveRaw(requestParameters, initOverrides);
@@ -313,6 +273,14 @@ export class CoreApi extends runtime.BaseAPI {
     async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileList>> {
         const queryParameters: any = {};
 
+        if (requestParameters['page'] != null) {
+            queryParameters['_page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['_page_size'] = requestParameters['pageSize'];
+        }
+
         if (requestParameters['search'] != null) {
             queryParameters['_search'] = requestParameters['search'];
         }
@@ -329,16 +297,16 @@ export class CoreApi extends runtime.BaseAPI {
             queryParameters['file_name'] = requestParameters['fileName'];
         }
 
+        if (requestParameters['fileSize'] != null) {
+            queryParameters['file_size'] = requestParameters['fileSize'];
+        }
+
         if (requestParameters['mimeType'] != null) {
             queryParameters['mime_type'] = requestParameters['mimeType'];
         }
 
         if (requestParameters['objectId'] != null) {
             queryParameters['object_id'] = requestParameters['objectId'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -520,6 +488,14 @@ export class CoreApi extends runtime.BaseAPI {
     async coreSitesListRaw(requestParameters: CoreSitesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedSiteList>> {
         const queryParameters: any = {};
 
+        if (requestParameters['page'] != null) {
+            queryParameters['_page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['_page_size'] = requestParameters['pageSize'];
+        }
+
         if (requestParameters['search'] != null) {
             queryParameters['_search'] = requestParameters['search'];
         }
@@ -534,10 +510,6 @@ export class CoreApi extends runtime.BaseAPI {
 
         if (requestParameters['id'] != null) {
             queryParameters['id'] = requestParameters['id'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -596,287 +568,6 @@ export class CoreApi extends runtime.BaseAPI {
      */
     async coreSitesRetrieve(requestParameters: CoreSitesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Site> {
         const response = await this.coreSitesRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersCreateRaw(requestParameters: CoreUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters['user'] == null) {
-            throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling coreUsersCreate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersCreate(requestParameters: CoreUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.coreUsersCreateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Return information about the currently logged in user or a sentinel response, when the user is not logged in.
-     */
-    async coreUsersCurrentRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CurrentUserResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/current/`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CurrentUserResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Return information about the currently logged in user or a sentinel response, when the user is not logged in.
-     */
-    async coreUsersCurrentRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CurrentUserResponse> {
-        const response = await this.coreUsersCurrentRetrieveRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersDestroyRaw(requestParameters: CoreUsersDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreUsersDestroy().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersDestroy(requestParameters: CoreUsersDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.coreUsersDestroyRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersListRaw(requestParameters: CoreUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserList>> {
-        const queryParameters: any = {};
-
-        if (requestParameters['search'] != null) {
-            queryParameters['_search'] = requestParameters['search'];
-        }
-
-        if (requestParameters['sort'] != null) {
-            queryParameters['_sort'] = requestParameters['sort'];
-        }
-
-        if (requestParameters['firstName'] != null) {
-            queryParameters['first_name'] = requestParameters['firstName'];
-        }
-
-        if (requestParameters['isStaff'] != null) {
-            queryParameters['is_staff'] = requestParameters['isStaff'];
-        }
-
-        if (requestParameters['lastName'] != null) {
-            queryParameters['last_name'] = requestParameters['lastName'];
-        }
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['username'] != null) {
-            queryParameters['username'] = requestParameters['username'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedUserListFromJSON(jsonValue));
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersList(requestParameters: CoreUsersListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedUserList> {
-        const response = await this.coreUsersListRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersPartialUpdateRaw(requestParameters: CoreUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreUsersPartialUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PatchedUserToJSON(requestParameters['patchedUser']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersPartialUpdate(requestParameters: CoreUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.coreUsersPartialUpdateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersRetrieveRaw(requestParameters: CoreUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreUsersRetrieve().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersRetrieve(requestParameters: CoreUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.coreUsersRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersUpdateRaw(requestParameters: CoreUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreUsersUpdate().'
-            );
-        }
-
-        if (requestParameters['user'] == null) {
-            throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling coreUsersUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
-            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
-        }
-        const response = await this.request({
-            path: `/api/core/users/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
-    }
-
-    /**
-     * User Profiles
-     */
-    async coreUsersUpdate(requestParameters: CoreUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.coreUsersUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -1,3 +1,4 @@
+apis/AuthApi.ts
 apis/CoreApi.ts
 apis/index.ts
 index.ts
@@ -5,12 +6,17 @@ models/CurrentUserResponse.ts
 models/HealthResponse.ts
 models/Language.ts
 models/MediaFile.ts
+models/Nested.ts
 models/PaginatedLanguageList.ts
 models/PaginatedMediaFileList.ts
+models/PaginatedRoleList.ts
 models/PaginatedSiteList.ts
 models/PaginatedUserList.ts
 models/PatchedMediaFile.ts
+models/PatchedRole.ts
 models/PatchedUser.ts
+models/Permission.ts
+models/Role.ts
 models/Site.ts
 models/User.ts
 models/index.ts

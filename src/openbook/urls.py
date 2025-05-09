@@ -6,8 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-import openbook.core.routes as openbook_core_routes
-
 from django.conf                     import settings
 from django.conf.urls.static         import static
 from django.views.generic.base       import RedirectView
@@ -18,15 +16,19 @@ from rest_framework.permissions      import IsAuthenticatedOrReadOnly
 from rest_framework.routers          import DefaultRouter as DRFDefaultRouter
 
 from .admin                          import admin_site
+from .core.routes                    import register_core_api_routes
+from .core.routes                    import register_auth_api_routes
 
 # Overwrite permission class for API root view, since it uses the default from settings.py,
 # where we set AllowNone.
 DRFDefaultRouter.APIRootView.permission_classes = [IsAuthenticatedOrReadOnly]
-router = DRFDefaultRouter()
-openbook_core_routes.register(router, "core")
+api_router = DRFDefaultRouter()
+
+register_core_api_routes(api_router, "core")
+register_auth_api_routes(api_router, "auth")
 
 urlpatterns = [
-    path("api/",              include(router.urls)),
+    path("api/",              include(api_router.urls)),
     path("api-auth/",         include("rest_framework.urls")),
     path("api/schema/",       SpectacularAPIView.as_view(), name='schema'),
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

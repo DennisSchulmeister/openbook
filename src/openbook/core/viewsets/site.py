@@ -24,9 +24,6 @@ class SiteSerializer(ModelSerializer):
         fields = ["id", "domain", "name", "short_name", "about_url", "brand_color"]
 
 class SiteViewSet(ReadOnlyModelViewSet):
-    """
-    Read-only view set to access basic site information and the API health.
-    """
     __doc__ = _("General Website Settings")
 
     queryset           = Site.objects.all()
@@ -38,7 +35,7 @@ class SiteViewSet(ReadOnlyModelViewSet):
     @extend_schema(
         responses = inline_serializer(name="health-response", fields={
             "status": CharField(help_text=_("Status of the API server"))
-        }),
+        })
     )
     @action(detail=False)
     def health(self, request):

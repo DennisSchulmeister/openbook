@@ -24,12 +24,9 @@ class MediaFileSerializer(ModelSerializer):
         list_serializer_class = MediaFileListSerializer
 
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
-    """
-    Read/write view set to access media files.
-    """
     __doc__ = _("Attached Media Files")
 
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
-    filterset_fields = ["content_type", "object_id", "file_name", "mime_type"]
+    filterset_fields = MediaFileListSerializer.Meta.fields
     search_fields    = ["file_name"]

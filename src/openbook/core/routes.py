@@ -8,8 +8,11 @@
 
 from . import viewsets
 
-def register(router, prefix):
+def register_core_api_routes(router, prefix):
     router.register(f"{prefix}/languages",   viewsets.LanguageViewSet,  basename="language")
     router.register(f"{prefix}/media-files", viewsets.MediaFileViewSet, basename="media-file")
     router.register(f"{prefix}/sites",       viewsets.SiteViewSet,      basename="site")
-    router.register(f"{prefix}/users",       viewsets.UserViewSet,      basename="user")
+
+def register_auth_api_routes(router, prefix):
+    router.register(f"{prefix}/auth/users", viewsets.UserViewSet,      basename="user")
+    router.register(f"{prefix}/auth/roles", viewsets.role.RoleViewSet, basename="role")
