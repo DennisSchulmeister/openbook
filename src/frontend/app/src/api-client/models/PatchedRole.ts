@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Nested } from './Nested';
-import {
-    NestedFromJSON,
-    NestedFromJSONTyped,
-    NestedToJSON,
-    NestedToJSONTyped,
-} from './Nested';
 import type { Permission } from './Permission';
 import {
     PermissionFromJSON,
@@ -44,10 +37,10 @@ export interface PatchedRole {
     readonly id?: string;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof PatchedRole
      */
-    readonly scopeType?: Nested;
+    scopeType?: number;
     /**
      * 
      * @type {string}
@@ -98,10 +91,10 @@ export interface PatchedRole {
     permissions?: Permission;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof PatchedRole
      */
-    readonly createdBy?: Nested;
+    createdBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -110,10 +103,10 @@ export interface PatchedRole {
     readonly createdAt?: Date;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof PatchedRole
      */
-    readonly modifiedBy?: Nested;
+    modifiedBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -140,7 +133,7 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'id': json['id'] == null ? undefined : json['id'],
-        'scopeType': json['scope_type'] == null ? undefined : NestedFromJSON(json['scope_type']),
+        'scopeType': json['scope_type'] == null ? undefined : json['scope_type'],
         'scopeUuid': json['scope_uuid'] == null ? undefined : json['scope_uuid'],
         'slug': json['slug'] == null ? undefined : json['slug'],
         'name': json['name'] == null ? undefined : json['name'],
@@ -149,9 +142,9 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'priority': json['priority'] == null ? undefined : json['priority'],
         'permissions': json['permissions'] == null ? undefined : PermissionFromJSON(json['permissions']),
-        'createdBy': json['created_by'] == null ? undefined : NestedFromJSON(json['created_by']),
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : NestedFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': json['modified_at'] == null ? undefined : (new Date(json['modified_at'])),
     };
 }
@@ -160,13 +153,14 @@ export function PatchedRoleToJSON(json: any): PatchedRole {
     return PatchedRoleToJSONTyped(json, false);
 }
 
-export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'scope_type'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
+        'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
         'slug': value['slug'],
         'name': value['name'],
@@ -175,6 +169,8 @@ export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'scope_typ
         'is_active': value['isActive'],
         'priority': value['priority'],
         'permissions': PermissionToJSON(value['permissions']),
+        'created_by': value['createdBy'],
+        'modified_by': value['modifiedBy'],
     };
 }
 

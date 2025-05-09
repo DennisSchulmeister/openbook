@@ -14,9 +14,7 @@
 
 import { mapValues } from '../runtime';
 /**
- * Reuse full cleaning and validation logic on the model's in the REST API, including
- * `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
- * that the pre-filled model instance can be accessed in the DRF view.
+ * Included permissions
  * @export
  * @interface Permission
  */
@@ -26,28 +24,42 @@ export interface Permission {
      * @type {string}
      * @memberof Permission
      */
-    name: string;
+    readonly perm: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Permission
      */
-    contentType: number;
+    readonly appLabel: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly modelName: string;
     /**
      * 
      * @type {string}
      * @memberof Permission
      */
     codename: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    name: string;
 }
 
 /**
  * Check if a given object implements the Permission interface.
  */
 export function instanceOfPermission(value: object): value is Permission {
-    if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('contentType' in value) || value['contentType'] === undefined) return false;
+    if (!('perm' in value) || value['perm'] === undefined) return false;
+    if (!('appLabel' in value) || value['appLabel'] === undefined) return false;
+    if (!('modelName' in value) || value['modelName'] === undefined) return false;
     if (!('codename' in value) || value['codename'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
 
@@ -61,9 +73,11 @@ export function PermissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'name': json['name'],
-        'contentType': json['content_type'],
+        'perm': json['perm'],
+        'appLabel': json['app_label'],
+        'modelName': json['model_name'],
         'codename': json['codename'],
+        'name': json['name'],
     };
 }
 
@@ -71,16 +85,15 @@ export function PermissionToJSON(json: any): Permission {
     return PermissionToJSONTyped(json, false);
 }
 
-export function PermissionToJSONTyped(value?: Permission | null, ignoreDiscriminator: boolean = false): any {
+export function PermissionToJSONTyped(value?: Omit<Permission, 'perm'|'app_label'|'model_name'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'name': value['name'],
-        'content_type': value['contentType'],
         'codename': value['codename'],
+        'name': value['name'],
     };
 }
 

@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Nested } from './Nested';
-import {
-    NestedFromJSON,
-    NestedFromJSONTyped,
-    NestedToJSON,
-    NestedToJSONTyped,
-} from './Nested';
 import type { Permission } from './Permission';
 import {
     PermissionFromJSON,
@@ -44,10 +37,10 @@ export interface Role {
     readonly id: string;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof Role
      */
-    readonly scopeType: Nested;
+    scopeType: number;
     /**
      * 
      * @type {string}
@@ -98,10 +91,10 @@ export interface Role {
     permissions: Permission;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof Role
      */
-    readonly createdBy: Nested;
+    createdBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -110,10 +103,10 @@ export interface Role {
     readonly createdAt: Date;
     /**
      * 
-     * @type {Nested}
+     * @type {number}
      * @memberof Role
      */
-    readonly modifiedBy: Nested;
+    modifiedBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -133,9 +126,7 @@ export function instanceOfRole(value: object): value is Role {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('priority' in value) || value['priority'] === undefined) return false;
     if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
-    if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
     return true;
 }
@@ -151,7 +142,7 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
     return {
         
         'id': json['id'],
-        'scopeType': NestedFromJSON(json['scope_type']),
+        'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
         'slug': json['slug'],
         'name': json['name'],
@@ -160,9 +151,9 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'priority': json['priority'],
         'permissions': PermissionFromJSON(json['permissions']),
-        'createdBy': NestedFromJSON(json['created_by']),
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': (new Date(json['created_at'])),
-        'modifiedBy': NestedFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': (new Date(json['modified_at'])),
     };
 }
@@ -171,13 +162,14 @@ export function RoleToJSON(json: any): Role {
     return RoleToJSONTyped(json, false);
 }
 
-export function RoleToJSONTyped(value?: Omit<Role, 'id'|'scope_type'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function RoleToJSONTyped(value?: Omit<Role, 'id'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
+        'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
         'slug': value['slug'],
         'name': value['name'],
@@ -186,6 +178,8 @@ export function RoleToJSONTyped(value?: Omit<Role, 'id'|'scope_type'|'created_by
         'is_active': value['isActive'],
         'priority': value['priority'],
         'permissions': PermissionToJSON(value['permissions']),
+        'created_by': value['createdBy'],
+        'modified_by': value['modifiedBy'],
     };
 }
 

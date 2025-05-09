@@ -30,8 +30,10 @@ OB_ROOT_REDIRECT = "/app/index.html"
 # We override the default alphabetical order with the order defined here.
 INSTALLED_APPS = [
     # OpenBook Server
+    "openbook.auth",
     "openbook.core",
     "openbook.course",
+    "openbook.taxonomy",
     "openbook.textbook",
     "openbook.ui_library",
 

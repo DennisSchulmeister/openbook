@@ -4,7 +4,6 @@ export * from './CurrentUserResponse';
 export * from './HealthResponse';
 export * from './Language';
 export * from './MediaFile';
-export * from './Nested';
 export * from './PaginatedLanguageList';
 export * from './PaginatedMediaFileList';
 export * from './PaginatedRoleList';

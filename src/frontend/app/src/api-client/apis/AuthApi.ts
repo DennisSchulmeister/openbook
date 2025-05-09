@@ -41,7 +41,7 @@ import {
 } from '../models/index';
 
 export interface AuthAuthRolesCreateRequest {
-    role: Omit<Role, 'id'|'scope_type'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'created_at'|'modified_at'>;
 }
 
 export interface AuthAuthRolesDestroyRequest {
@@ -68,7 +68,7 @@ export interface AuthAuthRolesListRequest {
 
 export interface AuthAuthRolesPartialUpdateRequest {
     id: string;
-    patchedRole?: Omit<PatchedRole, 'id'|'scope_type'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    patchedRole?: Omit<PatchedRole, 'id'|'created_at'|'modified_at'>;
 }
 
 export interface AuthAuthRolesRetrieveRequest {
@@ -77,7 +77,7 @@ export interface AuthAuthRolesRetrieveRequest {
 
 export interface AuthAuthRolesUpdateRequest {
     id: string;
-    role: Omit<Role, 'id'|'scope_type'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'created_at'|'modified_at'>;
 }
 
 export interface AuthAuthUsersCreateRequest {

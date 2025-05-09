@@ -9,21 +9,34 @@
 from django.contrib.auth.models import Permission
 from django.utils.translation   import gettext_lazy as _
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import CharField
+from rest_framework.serializers import SerializerMethodField
 from rest_framework.viewsets    import ModelViewSet
 
-from ...drf                     import ModelViewSetMixin, ModelSerializer, ListSerializer
+from ...drf                     import ModelViewSetMixin
+from ...drf                     import ModelSerializer
+from ...drf                     import ListSerializer
 from ...models.role             import Role
 
-# TODO: Use app_label, codename to add permissions when creating new roles
-# TODO: Remove created_by, modified_by from create, update, partial_update
+# TODO: Use app_label, codename to add permissions when creating new roles.
+# TODO: Remove created_by, modified_by from create, update, partial_update.
+# TODO: Move PermissionSerializer into shared code file.
+# https://chatgpt.com/g/g-p-68128762bf848191860962c9aae6c388-openbook-development/c/681db450-d960-8007-afa9-c5dbbd0bc8ff
 class PermissionSerializer(ModelSerializer):
     """
     Included permissions
     """
+    perm       = SerializerMethodField()
+    app_label  = CharField(source="content_type.app_label", read_only=True)
+    model_name = CharField(source="content_type.model", read_only=True)
+
+    def get_perm(self, obj):
+        ct = obj.content_type
+        return f"{ct.app_label}.{ct.model}_{obj.codename}"
+    
     class Meta:
         model  = Permission
-        fields = ["name", "content_type", "codename"]
-        # TODO: Show app_label instead of content_type FK (how??)
+        fields = ["perm", "app_label", "model_name", "codename", "name"]
 
 # TODO: …list-operation shows not just these fields in OpenAPI??
 class RoleListSerializer(ListSerializer):
