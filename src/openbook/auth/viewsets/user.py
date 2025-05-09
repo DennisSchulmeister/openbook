@@ -6,9 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from ..drf                               import ModelViewSetMixin, ModelSerializer
-from ..models.user                       import User
-
 from drf_spectacular.utils               import extend_schema
 from drf_spectacular.utils               import inline_serializer
 from django.utils.translation            import gettext_lazy as _
@@ -18,6 +15,9 @@ from rest_framework.permissions          import IsAuthenticated
 from rest_framework.response             import Response
 from rest_framework.serializers          import BooleanField
 from rest_framework.serializers          import CharField
+
+from openbook.drf                        import ModelViewSetMixin, ModelSerializer
+from ..models.user                       import User
 
 class UserSerializer(ModelSerializer):
     class Meta:

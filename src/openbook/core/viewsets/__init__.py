@@ -9,6 +9,3 @@
 from .file_uploads import *
 from .language     import *
 from .site         import *
-from .user         import *
-
-from . import role

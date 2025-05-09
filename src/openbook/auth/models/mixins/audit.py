@@ -10,6 +10,7 @@ from django.conf                import settings
 from django.contrib             import admin
 from django.db                  import models
 from django.utils.translation   import gettext_lazy as _
+
 from ...middleware.current_user import get_current_user
 
 class CreatedModifiedByMixin(models.Model):

@@ -8,9 +8,11 @@
 
 from django.db                         import models
 from django.utils.translation          import gettext_lazy as _
-from openbook.core.models.mixins.audit import CreatedModifiedByMixin
+
+from openbook.auth.models.mixins.audit import CreatedModifiedByMixin
 from openbook.core.models.mixins.i18n  import TranslatableMixin
 from openbook.core.models.mixins.uuid  import UUIDMixin
+
 from ..validators                      import validate_library_name, validate_version_number
 
 class Library(UUIDMixin, CreatedModifiedByMixin):

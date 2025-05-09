@@ -6,9 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation   import gettext_lazy as _
 
-def register_api_routes(router, prefix):
-    router.register(f"{prefix}/languages",   viewsets.LanguageViewSet,  basename="language")
-    router.register(f"{prefix}/media-files", viewsets.MediaFileViewSet, basename="media-file")
-    router.register(f"{prefix}/sites",       viewsets.SiteViewSet,      basename="site")
+class User(AbstractUser):
+    """
+    As recommended by the Django documentation, custom auth user model just in
+    case we want to extend it later.
+    """
+    pass

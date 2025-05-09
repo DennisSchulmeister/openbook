@@ -29,13 +29,13 @@ OB_ROOT_REDIRECT = "/app/index.html"
 # NOTE: Sort the apps in the order they should appear in the Admin Dashboard.
 # We override the default alphabetical order with the order defined here.
 INSTALLED_APPS = [
-    # OpenBook Server
-    "openbook.auth",
+    # OpenBook Server (order determines order in the Django Admin)
     "openbook.core",
-    "openbook.course",
+    "openbook.auth",
+    "openbook.ui_library",
     "openbook.taxonomy",
     "openbook.textbook",
-    "openbook.ui_library",
+    "openbook.course",
 
     # 3rd-party reusable apps
     "daphne",
@@ -86,7 +86,7 @@ MIDDLEWARE = [
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
 
     # OpenBook
-    "openbook.core.middleware.CurrentUserMiddleware",
+    "openbook.auth.middleware.CurrentUserMiddleware",
 ]
 
 ROOT_URLCONF = "openbook.urls"
@@ -138,13 +138,13 @@ CHANNEL_LAYERS = {
 # Django REST framework
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": "openbook.core.drf.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "openbook.drf.PageNumberPagination",
     "PAGE_SIZE": 100,
 
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
-        "openbook.core.drf.AllowNone"
+        "openbook.drf.AllowNone"
     ],
 
     "DEFAULT_FILTER_BACKENDS": (
@@ -189,10 +189,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "openbook_core.User"
+AUTH_USER_MODEL = "openbook_auth.User"
 
 AUTHENTICATION_BACKENDS = (
-    "openbook.core.auth.RoleBasedObjectPermissionsBackend",
+    "openbook.auth.backends.RoleBasedObjectPermissionsBackend",
 )
 
 UNFOLD = {

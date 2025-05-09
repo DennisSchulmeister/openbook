@@ -13,10 +13,11 @@ from rest_framework.serializers import CharField
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.viewsets    import ModelViewSet
 
-from ...drf                     import ModelViewSetMixin
-from ...drf                     import ModelSerializer
-from ...drf                     import ListSerializer
-from ...models.role             import Role
+from openbook.drf               import ModelViewSetMixin
+from openbook.drf               import ModelSerializer
+from openbook.drf               import ListSerializer
+
+from ..models.role              import Role
 
 # TODO: Use app_label, codename to add permissions when creating new roles.
 # TODO: Remove created_by, modified_by from create, update, partial_update.

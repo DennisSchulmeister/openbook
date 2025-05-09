@@ -1,7 +1,17 @@
 # OpenBook: Interactive Online Textbooks - Server
-# © 2025 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+# © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
+
+from openbook.admin              import admin_site
+
+from .group                      import *
+from .user                       import *
+
+from ..                          import models
+
+admin_site.register(models.User, CustomUserAdmin)
+admin_site.register(models.UserGroup, CustomGroupAdmin)

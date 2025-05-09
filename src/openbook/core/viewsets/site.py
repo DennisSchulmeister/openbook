@@ -6,8 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from ..models.site              import Site
-
 from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema
 from drf_spectacular.utils      import inline_serializer
@@ -17,6 +15,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response    import Response
 from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
+
+from ..models.site              import Site
 
 class SiteSerializer(ModelSerializer):
     class Meta:

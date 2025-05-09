@@ -6,8 +6,5 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
-
-def register_api_routes(router, prefix):
-    router.register(f"{prefix}/users", viewsets.UserViewSet, basename="user")
-    router.register(f"{prefix}/roles", viewsets.RoleViewSet, basename="role")
+from .audit import *
+from .auth  import *

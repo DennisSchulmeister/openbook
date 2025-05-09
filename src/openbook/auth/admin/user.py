@@ -6,9 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from ..models.user import User
-from ...admin      import CustomModelAdmin
-from ...admin      import ImportExportModelResource
+from openbook.admin import CustomModelAdmin
+from openbook.admin import ImportExportModelResource
+from ..models.user  import User
 
 class UserResource(ImportExportModelResource):
     class Meta:

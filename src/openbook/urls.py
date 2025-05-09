@@ -16,16 +16,24 @@ from rest_framework.permissions      import IsAuthenticatedOrReadOnly
 from rest_framework.routers          import DefaultRouter as DRFDefaultRouter
 
 from .admin                          import admin_site
-from .core.routes                    import register_core_api_routes
-from .core.routes                    import register_auth_api_routes
+from .auth.routes                    import register_api_routes as register_auth_api_routes
+from .core.routes                    import register_api_routes as register_core_api_routes
+from .course.routes                  import register_api_routes as register_course_api_routes
+from .taxonomy.routes                import register_api_routes as register_taxonomy_api_routes
+from .textbook.routes                import register_api_routes as register_textbook_api_routes
+from .ui_library.routes              import register_api_routes as register_ui_library_api_routes
 
 # Overwrite permission class for API root view, since it uses the default from settings.py,
 # where we set AllowNone.
 DRFDefaultRouter.APIRootView.permission_classes = [IsAuthenticatedOrReadOnly]
 api_router = DRFDefaultRouter()
 
-register_core_api_routes(api_router, "core")
 register_auth_api_routes(api_router, "auth")
+register_core_api_routes(api_router, "core")
+register_course_api_routes(api_router, "course")
+register_taxonomy_api_routes(api_router, "taxonomy")
+register_textbook_api_routes(api_router, "textbook")
+register_ui_library_api_routes(api_router, "ui_library")
 
 urlpatterns = [
     path("api/",              include(api_router.urls)),

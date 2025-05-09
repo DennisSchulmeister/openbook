@@ -7,10 +7,10 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.admin import GroupAdmin
+from openbook.admin            import CustomModelAdmin
+from openbook.admin            import ImportExportModelResource
 
-from ..models.user             import Group
-from ...admin                  import CustomModelAdmin
-from ...admin                  import ImportExportModelResource
+from ..models.group            import Group
 
 class GroupResource(ImportExportModelResource):
     class Meta:

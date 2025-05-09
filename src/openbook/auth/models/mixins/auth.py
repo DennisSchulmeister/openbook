@@ -8,7 +8,10 @@
 
 from django.conf                        import settings
 from django.contrib.auth.models         import AbstractUser, Permission
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions             import ValidationError
 from django.db                          import models
 from django.utils.translation           import gettext_lazy as _
 
@@ -102,3 +105,70 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
                 self.owner = user
 
         super().save(*args, **kwargs)
+
+class ScopeMixin(RoleBasedObjectPermissionsMixin):
+    """
+    Abstract mixin for models that are linked to a scope via a generic relation. The scope will be
+    used for role assignments to assign scoped roles to users.
+    """
+    scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE)
+    scope_uuid   = models.UUIDField(verbose_name=_("Scope UUID"))
+    scope_object = GenericForeignKey("scope_type", "scope_uuid")
+
+    class Meta:
+        abstract = True
+    
+    @classmethod
+    def from_obj(cls, other_obj: "ScopeMixin") -> "ScopeMixin":
+        """
+        Create a new instance from another scope-related model instance, copying over the
+        scope reference and optionally the role.
+        """
+        obj = cls()
+        obj.scope_type = other_obj.scope_type
+        obj.scope_uuid = other_obj.scope_uuid
+
+        if hasattr(obj, "role"):
+            if hasattr(other_obj, "role"):
+                obj.role = other_obj.role
+            elif isinstance(other_obj, Role):
+                obj.role = other_obj
+
+        return obj
+
+    def clean(self):
+        """
+        Validate that role and this object refer to the same scope (if `role` field exists).
+        """
+        if not hasattr(self, "role"):
+            return
+        
+        if not self.role:
+            return
+    
+        if self.scope_type != self.role.scope_type or self.scope_uuid != self.role.scope_uuid:
+            raise ValidationError(_("The scopes of the role and this object don't match."))
+
+    def get_scope(self) -> models.Model:
+        """
+        Access management requires appropriate permissions in the referenced scope.
+        """
+        return self.scope_object
+
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+        """
+        The referenced role must be of lower or equal priority than any of the user's roles.
+        """
+        principally_allowed = super().has_obj_perm(user_obj, perm)
+
+        if not principally_allowed:
+            return False
+        
+        if ".view_" in perm:
+            return True
+        
+        priority = self.priority if hasattr(self, "priority") else self.role.priority
+
+        scope = self.get_scope()
+        count = scope.role_assignments.filter(user=user_obj, role__priority__gte=priority).count()
+        return count > 0

@@ -6,15 +6,8 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import Group
 from django.utils.translation   import gettext_lazy as _
-
-class User(AbstractUser):
-    """
-    As recommended by the Django documentation, custom auth user model just in
-    case we want to extend it later.
-    """
-    pass
 
 class UserGroup(Group):
     """

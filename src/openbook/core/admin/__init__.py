@@ -9,14 +9,10 @@
 from openbook.admin              import admin_site
 
 from .file_uploads               import *
-from .group                      import *
 from .language                   import *
 from .site                       import *
-from .user                       import *
 
 from ..                          import models
 
 admin_site.register(models.Site, SiteAdmin)
 admin_site.register(models.Language, LanguageAdmin)
-admin_site.register(models.User, CustomUserAdmin)
-admin_site.register(models.UserGroup, CustomGroupAdmin)

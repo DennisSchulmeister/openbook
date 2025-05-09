@@ -6,10 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework.viewsets  import ModelViewSet
 
-from django.utils.translation import gettext_lazy as _
-from ..drf                    import ModelViewSetMixin, ModelSerializer, ListSerializer
+from openbook.drf             import ModelViewSetMixin
+from openbook.drf             import ModelSerializer
+from openbook.drf             import ListSerializer
 from ..models.file_uploads    import MediaFile
 
 class MediaFileListSerializer(ListSerializer):
