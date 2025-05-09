@@ -8,7 +8,7 @@
 {% block branding %}
     {# Visit Homepage #}
     <li class="tooltip tooltip-right tooltip-primary" data-tip="{% translate 'Visit Homepage' %}">
-        <a href="/" class="btn btn-square btn-ghost">
+        <a href="/" target="_blank" class="btn btn-square btn-ghost">
             <img src="{% static 'openbook/app/favicon.svg' %}" alt="" class="h-full">
             <span class="sr-only">{% translate "Visit Homepage" %}</span>
         </a>
@@ -19,8 +19,8 @@
     {# Information #}
     {% if site.about_url %}
     <li class="tooltip tooltip-right" data-tip="{% translate 'Information' %}">
-        <a href="{{ site.about_url }}" class="btn btn-square">
-            {# https://icons.getbootstrap.com/icons/info-lg/ #}
+        <a href="{{ site.about_url }}" target="_blank" class="btn btn-square">
+        {# https://icons.getbootstrap.com/icons/info-lg/ #}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
                 <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
             </svg>
@@ -31,7 +31,7 @@
 
     {# Documentation #}
     <li class="tooltip tooltip-right" data-tip="{% translate 'Documentation' %}">
-        <a href="https://github.com/DennisSchulmeister/openbook/blob/main/README.md" class="btn btn-square">
+        <a href="https://github.com/DennisSchulmeister/openbook/blob/main/README.md" target="_blank" class="btn btn-square">
             {# https://icons.getbootstrap.com/icons/book/ #}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
                 <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
@@ -40,9 +40,33 @@
         </a>
     </li>
 
+    {# API Documentation #}
+    <li class="tooltip tooltip-right" data-tip="{% translate 'API Description' %}">
+    <a href="schema/redoc/" target="_blank" class="btn btn-square">
+            {# https://icons.getbootstrap.com/icons/journal-text/ #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+                <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/>
+                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/>
+              </svg>
+            <span class="sr-only">{% translate "API Description" %}</span>
+        </a>
+    </li>
+
+    {## OpenAPI Download #}
+    <li class="tooltip tooltip-right" data-tip="{% translate 'OpenAPI Schema' %}">
+        <a href="schema/" class="btn btn-square">
+            {# https://icons.getbootstrap.com/icons/filetype-yml/ #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-yml" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM2.133 15.849v-1.535l1.339-2.464h-.856l-.855 1.696h-.032L.876 11.85H0l1.339 2.479v1.52zm2.287 0v-2.66h.038l.952 2.159h.516l.946-2.16h.038v2.661h.715V11.85h-.8l-1.14 2.596H5.66L4.52 11.85h-.805v3.999zm4.71-.674h1.696v.674H8.338V11.85h.791v3.325Z"/>
+            </svg>
+            <span class="sr-only">{% translate "OpenAPI Schema" %}</span>
+        </a>
+    </li>
+
     {# GitHub #}
     <li class="tooltip tooltip-right" data-tip="{% translate 'GitHub' %}">
-        <a href="https://github.com/DennisSchulmeister/openbook/" class="btn btn-square">
+        <a href="https://github.com/DennisSchulmeister/openbook/" target="_blank" class="btn btn-square">
             {# https://icons.getbootstrap.com/icons/github/ #}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
