@@ -6,25 +6,30 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.db                import models
-from django.utils.translation import gettext_lazy as _
+from django.db                   import models
+from django.utils.translation    import gettext_lazy as _
 
-# from ..utils.models           import UUIDMixin
-# from ..utils.models           import CreatedModifiedByMixin
-# from ..utils.models           import NonUniqueSlugMixin
-# from ..utils.models           import NameDescriptionMixin
-# 
-# class Course(models.Model, UUIDMixin, CreatedModifiedByMixin, NonUniqueSlugMixin, NameDescriptionMixin):
-#     """
-#     """
-#     organizations = models.ManyToManyField("Organization")
-#     is_template   = models.BooleanField(verbose_name=_("Is Template"), help=_("Flag indicating that this course is not used productively but rather is a template for creating similar courses."))
-#     # Owner
-#     # Default role
-#     # Course image
-# 
-#     class Meta():
-#         verbose_name        = _("Course")
-#         verbose_name_plural = _("Courses")
-# 
-# # Course user roles
+from openbook.auth.models.mixins import CreatedModifiedByMixin
+from openbook.auth.models.mixins import ScopedRolesMixin
+from openbook.core.models.mixins import UUIDMixin
+from openbook.core.models.mixins import NonUniqueSlugMixin
+from openbook.core.models.mixins import NameDescriptionMixin
+
+class Course(UUIDMixin, NonUniqueSlugMixin, NameDescriptionMixin, ScopedRolesMixin, CreatedModifiedByMixin):
+    """
+    Courses support the teachers in the execution of the teaching by bringing together teachers,
+    students, textbooks and other one-off materials.
+    """
+    # License (via new model in core)
+    # Image
+    # AI Notes (new mixin)
+    # Learning Target Taxonomy
+    # Activity Taxonomy
+    is_template = models.BooleanField(
+        verbose_name = _("Is Template"),
+        help_text    = _("Flag indicating that this course is not used productively but rather is a template for creating similar courses."),
+    )
+
+    class Meta():
+        verbose_name        = _("Course")
+        verbose_name_plural = _("Courses")

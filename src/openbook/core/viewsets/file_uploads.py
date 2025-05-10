@@ -16,12 +16,12 @@ from ..models.file_uploads    import MediaFile
 class MediaFileListSerializer(ModelSerializer):
     class Meta:
         model  = MediaFile
-        fields = ["content_type", "object_id", "file_name", "file_size", "mime_type"]
+        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type")
 
 class MediaFileSerializer(ModelSerializer):
     class Meta:
         model  = MediaFile
-        fields = ["content_type", "object_id", "file_name", "file_size", "mime_type", "file_data"]
+        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
         list_serializer_class = MediaFileListSerializer
 
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
@@ -30,7 +30,7 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
     filterset_fields = MediaFileListSerializer.Meta.fields
-    search_fields    = ["file_name"]
+    search_fields    = ("file_name",)
 
     def get_serializer_class(self):
         if self.action == "list":

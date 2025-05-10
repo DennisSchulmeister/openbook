@@ -44,8 +44,8 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         verbose_name_plural = _("Access Requests")
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role"]),
-            models.Index(fields=["user"], name="user_idx"),
+            models.Index(fields=("scope_type", "scope_uuid", "role")),
+            models.Index(fields=("user",), name="user_idx"),
         ]
     
     def __str__(self):

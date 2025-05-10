@@ -6,9 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from ..models.site import Site
-from ...admin      import CustomModelAdmin
-from ...admin      import ImportExportModelResource
+from openbook.admin import CustomModelAdmin
+from openbook.admin import ImportExportModelResource
+from ..models.site  import Site
 
 class SiteResource(ImportExportModelResource):
     class Meta:
@@ -16,13 +16,13 @@ class SiteResource(ImportExportModelResource):
 
 class SiteAdmin(CustomModelAdmin):
     model              = Site
-    resource_classes   = [SiteResource]
-    list_display       = ["id", "domain", "name", "short_name"]
-    list_display_links = ["id", "domain"]
-    search_fields      = ["domain", "name", "short_name"]
+    resource_classes   = (SiteResource,)
+    list_display       = ("id", "domain", "name", "short_name")
+    list_display_links = ("id", "domain")
+    search_fields      = ("domain", "name", "short_name")
 
     fieldsets = (
         (None, {
-            "fields": ["id", "domain", "name", "short_name", "about_url", "brand_color"]
+            "fields": ("id", "domain", "name", "short_name", "about_url", "brand_color")
         }),
     )

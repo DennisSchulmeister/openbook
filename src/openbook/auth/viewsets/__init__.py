@@ -6,10 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .access_request          import *
-from .allowed_role_permission import *
-from .enrollment_method       import *
-from .permission              import *
-from .role_assignment         import *
-from .role                    import *
-from .user                    import *
+# from .access_request          import AccessRequestViewSet
+# from .allowed_role_permission import AllowedRolePermissionViewSet
+# from .enrollment_method       import EnrollmentMethodViewSet
+# from .permission              import PermissionViewSet
+# from .role_assignment         import RoleAssignmentViewSet
+from .role                    import RoleViewSet
+from .user                    import UserViewSet

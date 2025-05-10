@@ -33,11 +33,11 @@ class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, Acti
         verbose_name_plural = _("Roles")
 
         constraints = [
-            models.UniqueConstraint(fields=["scope_type", "scope_uuid", "slug"], name="unique_scope_slug"),
+            models.UniqueConstraint(fields=("scope_type", "scope_uuid", "slug"), name="unique_scope_slug"),
         ]
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "slug"]),
+            models.Index(fields=("scope_type", "scope_uuid", "slug")),
         ]
     
     def __str__(self):
@@ -48,11 +48,13 @@ class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, Acti
         Validate that only allowed permissions are assigned to the role.
         """
         from .allowed_role_permission import AllowedRolePermission
-        allowed_permissions = AllowedRolePermission.objects.filter(scope_type=self.scope_type)
 
-        for permission in self.permissions:
-            if not allowed_permissions.contains(permission):
-                raise ValidationError(_("Permission %(perm)s is not allowed in role %(role)s"), params={
-                    "perm": f"{permission.content_type.app_label}.{permission.codename}",
-                    "role": self.name,
-                })
+        if self.scope_object and self.permissions:
+            allowed_permissions = AllowedRolePermission.objects.filter(scope_type=self.scope_type)
+
+            for permission in self.permissions.all():
+                if not allowed_permissions.contains(permission):
+                    raise ValidationError(_("Permission %(perm)s is not allowed in role %(role)s"), params={
+                        "perm": f"{permission.content_type.app_label}.{permission.codename}",
+                        "role": self.name,
+                    })

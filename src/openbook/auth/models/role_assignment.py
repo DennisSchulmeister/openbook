@@ -46,12 +46,12 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         verbose_name_plural = _("Role Assignments")
 
         constraints = [
-            models.UniqueConstraint(fields=["scope_type", "scope_uuid", "role", "user"], name="unique_role_assignment"),
+            models.UniqueConstraint(fields=("scope_type", "scope_uuid", "role", "user"), name="unique_role_assignment"),
         ]
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role", "user"]),
-            models.Index(fields=["user"]),
+            models.Index(fields=("scope_type", "scope_uuid", "role", "user")),
+            models.Index(fields=("user",)),
         ]
 
     def __str__(self):

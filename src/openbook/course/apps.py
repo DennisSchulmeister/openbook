@@ -9,7 +9,7 @@
 from django.apps              import AppConfig
 from django.utils.translation import gettext_lazy as _
 
-class CourseConfig(AppConfig):
+class CourseApp(AppConfig):
     name         = "openbook.course"
     label        = "openbook_course"
-    verbose_name = _("Course Library")
+    verbose_name = _("Courses")

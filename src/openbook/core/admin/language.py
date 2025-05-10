@@ -6,9 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from openbook.admin    import CustomModelAdmin
+from openbook.admin    import ImportExportModelResource
 from ..models.language import Language
-from ...admin          import CustomModelAdmin
-from ...admin          import ImportExportModelResource
 
 class LanguageResource(ImportExportModelResource):
     class Meta:
@@ -16,8 +16,8 @@ class LanguageResource(ImportExportModelResource):
 
 class LanguageAdmin(CustomModelAdmin):
     model              = Language
-    resource_classes   = [LanguageResource]
-    list_display       = ["language", "name"]
-    list_display_links = ["language", "name"]
-    search_fields      = ["language", "name"]
-    fields             = ["language", "name"]
+    resource_classes   = (LanguageResource,)
+    list_display       = ("language", "name")
+    list_display_links = ("language", "name")
+    search_fields      = ("language", "name")
+    fields             = ("language", "name")

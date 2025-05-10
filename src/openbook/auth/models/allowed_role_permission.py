@@ -26,7 +26,7 @@ class AllowedRolePermission(UUIDMixin):
         verbose_name_plural = _("Allowed Role Permissions")
 
         indexes = [
-            models.Index(fields=["scope_type"]),
+            models.Index(fields=("scope_type",)),
         ]
 
     def __str__(self):

@@ -19,7 +19,7 @@ import type {
   Language,
   MediaFile,
   PaginatedLanguageList,
-  PaginatedMediaFileList,
+  PaginatedMediaFileListList,
   PaginatedSiteList,
   PatchedMediaFile,
   Site,
@@ -33,8 +33,8 @@ import {
     MediaFileToJSON,
     PaginatedLanguageListFromJSON,
     PaginatedLanguageListToJSON,
-    PaginatedMediaFileListFromJSON,
-    PaginatedMediaFileListToJSON,
+    PaginatedMediaFileListListFromJSON,
+    PaginatedMediaFileListListToJSON,
     PaginatedSiteListFromJSON,
     PaginatedSiteListToJSON,
     PatchedMediaFileFromJSON,
@@ -270,7 +270,7 @@ export class CoreApi extends runtime.BaseAPI {
     /**
      * Attached Media Files
      */
-    async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileList>> {
+    async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileListList>> {
         const queryParameters: any = {};
 
         if (requestParameters['page'] != null) {
@@ -321,13 +321,13 @@ export class CoreApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedMediaFileListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedMediaFileListListFromJSON(jsonValue));
     }
 
     /**
      * Attached Media Files
      */
-    async coreMediaFilesList(requestParameters: CoreMediaFilesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedMediaFileList> {
+    async coreMediaFilesList(requestParameters: CoreMediaFilesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedMediaFileListList> {
         const response = await this.coreMediaFilesListRaw(requestParameters, initOverrides);
         return await response.value();
     }

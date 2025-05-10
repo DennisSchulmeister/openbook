@@ -16,8 +16,8 @@ class GroupResource(ImportExportModelResource):
     class Meta:
         model = Group
 
-class CustomGroupAdmin(GroupAdmin, CustomModelAdmin):
+class GroupAdmin(GroupAdmin, CustomModelAdmin):
     """
     Sub-class of Django's Group Admin to allow importing and exporting groups.
     """
-    resource_classes = [GroupResource]
+    resource_classes = (GroupResource,)

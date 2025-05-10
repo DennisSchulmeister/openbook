@@ -9,7 +9,7 @@
 from django.apps              import AppConfig
 from django.utils.translation import gettext_lazy as _
 
-class AuthConfig(AppConfig):
+class AuthApp(AppConfig):
     name         = "openbook.auth"
     label        = "openbook_auth"
-    verbose_name = _("Users and Permissions")
+    verbose_name = _("Authentication and Authorization")

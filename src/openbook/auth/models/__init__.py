@@ -6,13 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .access_request          import *
-from .allowed_role_permission import *
-from .enrollment_method       import *
-from .group                   import *
-from .permission              import *
-from .role_assignment         import *
-from .role                    import *
-from .user                    import *
+from .access_request          import AccessRequest
+from .allowed_role_permission import AllowedRolePermission
+from .enrollment_method       import EnrollmentMethod
+from .group                   import Group
+from .permission              import Permission_T
+from .role_assignment         import RoleAssignment
+from .role                    import Role
+from .user                    import User
+from .user_profile            import UserProfile
 
 from . import mixins

@@ -11,7 +11,7 @@ from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.i18n     import TranslatableMixin
-
+    
 class Permission_T(TranslatableMixin):
     """
     Translated permission name.
@@ -20,4 +20,5 @@ class Permission_T(TranslatableMixin):
     name   = models.CharField(verbose_name=_("Permission Name"), max_length=255, null=False, blank=False)
 
     class Meta(TranslatableMixin.Meta):
-        pass
+        verbose_name        = _("Translated Permission")
+        verbose_name_plural = _("Translated Permissions")

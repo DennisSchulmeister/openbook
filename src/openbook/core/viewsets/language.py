@@ -16,13 +16,13 @@ from ..models.language          import Language
 class LanguageSerializer(ModelSerializer):
     class Meta:
         model  = Language
-        fields = ["language", "name"]
+        fields = ("language", "name")
 
 class LanguageViewSet(ReadOnlyModelViewSet):
     ___doc__ = _("Available Languages")
 
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filterset_fields   = LanguageSerializer.Meta.fields
-    search_fields      = ["language", "name"]
+    search_fields      = ("language", "name")

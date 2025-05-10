@@ -35,7 +35,7 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         verbose_name_plural = _("Enrollment Methods")
 
         indexes = [
-            models.Index(fields=["scope_type", "scope_uuid", "role"]),
+            models.Index(fields=("scope_type", "scope_uuid", "role",)),
         ]
     
     def __str__(self):

@@ -6,9 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .active   import *
-from .datetime import *
-from .i18n     import *
-from .slug     import *
-from .text     import *
-from .uuid     import *
+from .active   import ActiveInactiveMixin
+from .datetime import DurationMixin
+from .datetime import ValidityTimeSpanMixin
+from .i18n     import LanguageField
+from .i18n     import TranslatableMixin
+from .i18n     import TranslationMissing
+from .slug     import NonUniqueSlugMixin
+from .slug     import UniqueSlugMixin
+from .text     import NameDescriptionMixin
+from .text     import TextFormatChoices
+from .uuid     import UUIDMixin

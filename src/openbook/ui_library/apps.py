@@ -9,7 +9,7 @@
 from django.apps              import AppConfig
 from django.utils.translation import gettext_lazy as _
 
-class UILibraryManagerConfig(AppConfig):
+class UILibraryManagerApp(AppConfig):
     name         = "openbook.ui_library"
     label        = "openbook_ui_library"
     verbose_name = _("UI Library Manager")

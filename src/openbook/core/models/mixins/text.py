@@ -26,7 +26,15 @@ class NameDescriptionMixin(models.Model):
     """
     name        = models.CharField(verbose_name=_("Name"), max_length=255, null=False, blank=False)
     description = models.TextField(verbose_name=_("Description"), null=False, blank=True)
-    text_format = models.CharField(verbose_name=_("Text Format"), max_length=10, null=False, blank=False, default=TextFormatChoices.MARKDOWN)
+
+    text_format = models.CharField(
+        verbose_name = _("Text Format"),
+        max_length   = 10,
+        choices      = TextFormatChoices,
+        null         = False,
+        blank        = False,
+        default      = TextFormatChoices.MARKDOWN,
+    )
 
     class Meta:
         abstract = True

@@ -7,11 +7,8 @@
 # License, or (at your option) any later version.
 
 from openbook.admin              import admin_site
-
-from .file_uploads               import *
-from .language                   import *
-from .site                       import *
-
+from .language                   import LanguageAdmin
+from .site                       import SiteAdmin
 from ..                          import models
 
 admin_site.register(models.Site, SiteAdmin)

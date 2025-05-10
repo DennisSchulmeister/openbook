@@ -6,10 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group as DjangoGroup
 from django.utils.translation   import gettext_lazy as _
 
-class UserGroup(Group):
+class Group(DjangoGroup):
     """
     Dummy class to move the Group model from `django.contrib.auth` into our own app,
     so that users and groups stand together in the Admin.

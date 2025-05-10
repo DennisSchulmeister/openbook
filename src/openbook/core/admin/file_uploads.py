@@ -12,6 +12,6 @@ from ..models.file_uploads             import MediaFile
 class MediaFileInline(GenericTabularInline):
     model           = MediaFile
     extra           = 1
-    fields          = ["file_data", "file_name", "file_size", "mime_type"]
-    readonly_fields = ["file_size", "mime_type"]
-    classes         = ["collapse"]
+    fields          = ("file_data", "file_name", "file_size", "mime_type")
+    readonly_fields = ("file_size", "mime_type")
+    classes         = ("collapse",)

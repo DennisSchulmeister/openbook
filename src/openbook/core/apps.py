@@ -9,7 +9,7 @@
 from django.apps               import AppConfig
 from django.utils.translation  import gettext_lazy as _
 
-class OpenBookServerConfig(AppConfig):
+class OpenBookServerApp(AppConfig):
     name         = "openbook.core"
     label        = "openbook_core"
     verbose_name = _("OpenBook Server")

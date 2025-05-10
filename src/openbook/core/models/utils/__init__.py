@@ -6,4 +6,4 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .file import *
+from .file import calc_file_path

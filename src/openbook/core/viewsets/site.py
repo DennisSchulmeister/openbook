@@ -21,16 +21,16 @@ from ..models.site              import Site
 class SiteSerializer(ModelSerializer):
     class Meta:
         model  = Site
-        fields = ["id", "domain", "name", "short_name", "about_url", "brand_color"]
+        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
 
 class SiteViewSet(ReadOnlyModelViewSet):
     __doc__ = _("General Website Settings")
 
     queryset           = Site.objects.all()
     serializer_class   = SiteSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filterset_fields   = ["id", "domain"]
-    search_fields      = ["domain", "name", "short_name"]
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    filterset_fields   = ("id", "domain")
+    search_fields      = ("domain", "name", "short_name")
     
     @extend_schema(
         responses = inline_serializer(name="health-response", fields={

@@ -72,15 +72,16 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
         verbose_name = _("Owner"),
         help_text    = _("The owner always has full permissions"),
         on_delete    = models.SET_DEFAULT,
+        related_name = "+",
         default      = "",
         blank        = True,
         null         = True
     )
 
-    roles              = GenericRelation("Role")
-    access_requests    = GenericRelation("AccessRequest")
-    enrollment_methods = GenericRelation("EnrollmentMethod")
-    role_assignments   = GenericRelation("RoleAssignment")
+    roles              = GenericRelation("openbook_auth.Role")
+    access_requests    = GenericRelation("openbook_auth.AccessRequest")
+    enrollment_methods = GenericRelation("openbook_auth.EnrollmentMethod")
+    role_assignments   = GenericRelation("openbook_auth.RoleAssignment")
 
     public_permissions = models.ManyToManyField(
         Permission,
@@ -111,7 +112,7 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
     Abstract mixin for models that are linked to a scope via a generic relation. The scope will be
     used for role assignments to assign scoped roles to users.
     """
-    scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE)
+    scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE, related_name = "+")
     scope_uuid   = models.UUIDField(verbose_name=_("Scope UUID"))
     scope_object = GenericForeignKey("scope_type", "scope_uuid")
 
@@ -124,6 +125,8 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         Create a new instance from another scope-related model instance, copying over the
         scope reference and optionally the role.
         """
+        from ..role import Role
+        
         obj = cls()
         obj.scope_type = other_obj.scope_type
         obj.scope_uuid = other_obj.scope_uuid

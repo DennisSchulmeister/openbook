@@ -18,24 +18,20 @@ from ..filters.permission       import PermissionFilterMixin
 from ..models.role              import Role
 from ..serializers.permission   import PermissionSerializer
 
-# TODO: Test different serializers for different actions
-# TODO: Make drf-spectacular generate the correct OpenAPI for these serializers?
-# TODO: Test permission filter implementation (not showing up in API browser and OpenAPI so probably broken!)
-
 class RoleListSerializer(ModelSerializer):
     """
     Reduced list of fields for filtering a list of roles.
     """
     class Meta:
         model = Role
-        fields = [
+        fields = (
             "id",
             "scope_type", "scope_uuid",
             "slug",
             "name",
             "priority", "is_active",
             "created_by", "created_at", "modified_by", "modified_at",
-        ]
+        )
 
 class RoleRetrieveSerializer(ModelSerializer):
     """
@@ -45,7 +41,7 @@ class RoleRetrieveSerializer(ModelSerializer):
 
     class Meta:
         model  = Role
-        fields = [
+        fields = (
             "id",
             "scope_type", "scope_uuid",
             "slug",
@@ -53,7 +49,7 @@ class RoleRetrieveSerializer(ModelSerializer):
             "priority", "is_active",
             "permissions",
             "created_by", "created_at", "modified_by", "modified_at",
-        ]
+        )
 
 
 class RoleWriteSerializer(ModelSerializer):
@@ -66,13 +62,13 @@ class RoleWriteSerializer(ModelSerializer):
 
     class Meta:
         model  = Role
-        fields = [
+        fields = (
             "scope_type", "scope_uuid",
             "slug",
             "name", "description", "text_format",
             "priority", "is_active",
             "permissions",
-        ]
+        )
     
     def to_representation(self, instance):
         return RoleRetrieveSerializer(instance=instance, context=self.context).data
@@ -89,9 +85,9 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = _("User Roles Within a Scope")
 
     queryset           = Role.objects.all()
-    permission_classes = [IsAuthenticated, *ModelViewSetMixin.permission_classes]
+    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
     filterset_class    = RoleFilter
-    search_fields      = ["slug", "name", "description"]
+    search_fields      = ("slug", "name", "description")
 
     serializer_classes = {
         "list":           RoleListSerializer,

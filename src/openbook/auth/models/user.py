@@ -7,11 +7,18 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.models import AbstractUser
+from django.core.validators     import EmailValidator
+from django.db                  import models
 from django.utils.translation   import gettext_lazy as _
 
 class User(AbstractUser):
     """
-    As recommended by the Django documentation, custom auth user model just in
-    case we want to extend it later.
+    Extension to Django's core user model to distinguish different user types. Not that other
+    additional fields are stored in a separate `UserProfile` model with a 1:1 relationship.
     """
-    pass
+    class UserType(models.TextChoices):
+        HUMAN = "human",  _("Human User")
+        APP   = "app",    _("App User")
+    
+    user_type = models.CharField(verbose_name=_("User Type"), choices=UserType, default=UserType.HUMAN)
+    email     = models.EmailField(_("E-Mail Address"), blank=False, null=False, validators=[EmailValidator])
