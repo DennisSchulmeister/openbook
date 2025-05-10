@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { TextFormatEnum } from './TextFormatEnum';
+import {
+    TextFormatEnumFromJSON,
+    TextFormatEnumFromJSONTyped,
+    TextFormatEnumToJSON,
+    TextFormatEnumToJSONTyped,
+} from './TextFormatEnum';
 import type { Permission } from './Permission';
 import {
     PermissionFromJSON,
@@ -59,10 +66,10 @@ export interface PatchedRoleWrite {
     description?: string;
     /**
      * 
-     * @type {string}
+     * @type {TextFormatEnum}
      * @memberof PatchedRoleWrite
      */
-    textFormat?: string;
+    textFormat?: TextFormatEnum;
     /**
      * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
      * @type {number}
@@ -82,6 +89,8 @@ export interface PatchedRoleWrite {
      */
     permissions?: Array<Permission>;
 }
+
+
 
 /**
  * Check if a given object implements the PatchedRoleWrite interface.
@@ -105,7 +114,7 @@ export function PatchedRoleWriteFromJSONTyped(json: any, ignoreDiscriminator: bo
         'slug': json['slug'] == null ? undefined : json['slug'],
         'name': json['name'] == null ? undefined : json['name'],
         'description': json['description'] == null ? undefined : json['description'],
-        'textFormat': json['text_format'] == null ? undefined : json['text_format'],
+        'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
         'priority': json['priority'] == null ? undefined : json['priority'],
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'permissions': json['permissions'] == null ? undefined : ((json['permissions'] as Array<any>).map(PermissionFromJSON)),
@@ -128,7 +137,7 @@ export function PatchedRoleWriteToJSONTyped(value?: PatchedRoleWrite | null, ign
         'slug': value['slug'],
         'name': value['name'],
         'description': value['description'],
-        'text_format': value['textFormat'],
+        'text_format': TextFormatEnumToJSON(value['textFormat']),
         'priority': value['priority'],
         'is_active': value['isActive'],
         'permissions': value['permissions'] == null ? undefined : ((value['permissions'] as Array<any>).map(PermissionToJSON)),

@@ -18,4 +18,5 @@ export * from './RoleList';
 export * from './RoleRetrieve';
 export * from './RoleWrite';
 export * from './Site';
+export * from './TextFormatEnum';
 export * from './User';

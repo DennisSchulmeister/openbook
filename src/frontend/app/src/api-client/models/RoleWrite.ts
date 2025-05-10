@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { TextFormatEnum } from './TextFormatEnum';
+import {
+    TextFormatEnumFromJSON,
+    TextFormatEnumFromJSONTyped,
+    TextFormatEnumToJSON,
+    TextFormatEnumToJSONTyped,
+} from './TextFormatEnum';
 import type { Permission } from './Permission';
 import {
     PermissionFromJSON,
@@ -59,10 +66,10 @@ export interface RoleWrite {
     description?: string;
     /**
      * 
-     * @type {string}
+     * @type {TextFormatEnum}
      * @memberof RoleWrite
      */
-    textFormat?: string;
+    textFormat?: TextFormatEnum;
     /**
      * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
      * @type {number}
@@ -82,6 +89,8 @@ export interface RoleWrite {
      */
     permissions: Array<Permission>;
 }
+
+
 
 /**
  * Check if a given object implements the RoleWrite interface.
@@ -111,7 +120,7 @@ export function RoleWriteFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'slug': json['slug'],
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
-        'textFormat': json['text_format'] == null ? undefined : json['text_format'],
+        'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
         'priority': json['priority'],
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'permissions': ((json['permissions'] as Array<any>).map(PermissionFromJSON)),
@@ -134,7 +143,7 @@ export function RoleWriteToJSONTyped(value?: RoleWrite | null, ignoreDiscriminat
         'slug': value['slug'],
         'name': value['name'],
         'description': value['description'],
-        'text_format': value['textFormat'],
+        'text_format': TextFormatEnumToJSON(value['textFormat']),
         'priority': value['priority'],
         'is_active': value['isActive'],
         'permissions': ((value['permissions'] as Array<any>).map(PermissionToJSON)),

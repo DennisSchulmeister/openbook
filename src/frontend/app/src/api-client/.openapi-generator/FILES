@@ -20,6 +20,7 @@ models/RoleList.ts
 models/RoleRetrieve.ts
 models/RoleWrite.ts
 models/Site.ts
+models/TextFormatEnum.ts
 models/User.ts
 models/index.ts
 runtime.ts
