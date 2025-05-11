@@ -12,6 +12,9 @@ from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.i18n     import TranslatableMixin
+from ..utils                              import app_name_for_permission
+from ..utils                              import perm_name_for_permission
+from ..utils                              import perm_string_for_permission
     
 class Permission_T(TranslatableMixin):
     """
@@ -26,22 +29,12 @@ class Permission_T(TranslatableMixin):
     
     @admin.display(description=_("Application"))
     def appname(self, obj=None):
-        if not self.parent:
-            return ""
-    
-        model = self.parent.content_type.model_class()
-        return model._meta.app_config.verbose_name or self.parent.content_type.app_label
+        return app_name_for_permission(self.parent)
     
     @admin.display(description=_("Permission"))
-    def codename(self, obj=None):
-        if not self.parent:
-            return ""
-    
-        return self.parent.name
+    def perm_name(self, obj=None):
+        return perm_name_for_permission(self.parent)
 
     @admin.display(description=_("Code"))
     def perm(self, obj=None):
-        if not self.parent:
-            return ""
-        
-        return f"{self.parent.content_type.app_label}.{self.parent.codename}"
+        return perm_string_for_permission(self.parent)

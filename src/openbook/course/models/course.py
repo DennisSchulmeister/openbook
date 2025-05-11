@@ -27,7 +27,7 @@ class Course(UUIDMixin, NonUniqueSlugMixin, NameDescriptionMixin, ScopedRolesMix
     # Activity Taxonomy
     is_template = models.BooleanField(
         verbose_name = _("Is Template"),
-        help_text    = _("Flag indicating that this course is not used productively but rather is a template for creating similar courses."),
+        help_text    = _("Flag that this course is only used for creating other courses."),
         default      = False,
     )
 

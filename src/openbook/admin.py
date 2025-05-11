@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from djangoql.admin           import DjangoQLSearchMixin
 from import_export.resources  import ModelResource
 from import_export.admin      import ImportExportModelAdmin
+from import_export.fields     import Field
 from unfold.sites             import UnfoldAdminSite
 from unfold.admin             import ModelAdmin as UnfoldModelAdmin
 
@@ -21,6 +22,11 @@ class ImportExportModelResource(ModelResource):
     in the Admin from CSV, YML, XLSX, … files. For this the files may include a row
     called `delete` with a boolean value to indicate the rows to be deleted.
     """
+    delete = Field(column_name="delete")
+
+    def dehydrate_delete(self, obj):
+        return "false"
+    
     def for_delete(self, row, instance):
         return "delete" in row and row["delete"].upper() in ["1", "X", "YES", "TRUE"]
 

@@ -22,6 +22,9 @@ from rest_framework.viewsets            import ViewSet
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..models.permission                import Permission_T
 from ..models.mixins.auth               import ScopedRolesMixin
+from ..utils                            import perm_string_for_permission
+from ..utils                            import content_type_for_model_string
+from ..utils                            import model_string_for_content_type
 
 class AllowedPermissionSerializer(Serializer):
     id   = IntegerField()
@@ -68,7 +71,7 @@ class ScopeViewSet(ViewSet):
         for content_type in ScopedRolesMixin.get_scope_model_content_types():
             result.append({
                 "pk":    content_type.pk,
-                "id":    f"{content_type.app_label}.{content_type.name}".lower(),
+                "id":    model_string_for_content_type(content_type),
                 "label": content_type.name,
             })
 
@@ -98,8 +101,7 @@ class ScopeViewSet(ViewSet):
             try:
                 content_type = ContentType.objects.get(pk=int(scope_type))
             except ValueError:
-                app_label, model = scope_type.split(".", 1)
-                content_type = ContentType.objects.get(app_label=app_label, model=model)
+                content_type = content_type_for_model_string(scope_type)
         except:
             pass
 
@@ -114,7 +116,7 @@ class ScopeViewSet(ViewSet):
         
         result = {
             "pk":                  content_type.pk,
-            "id":                  f"{content_type.app_label}.{content_type.model}",
+            "id":                  model_string_for_content_type(content_type),
             "label":               content_type.name,
             "objects":             [],
             "allowed_permissions": [],
@@ -146,7 +148,7 @@ class ScopeViewSet(ViewSet):
 
             result["allowed_permissions"].append({
                 "id":   permission.pk,
-                "perm": f"{permission.content_type.app_name}.{permission.codename}",
+                "perm": perm_string_for_permission(permission),
                 "app":  model._meta.app_config.verbose_name,
                 "name": translation.name if translation else permission.name,
             })

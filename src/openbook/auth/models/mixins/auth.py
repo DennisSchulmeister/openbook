@@ -71,7 +71,7 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name = _("Owner"),
-        help_text    = _("The owner always has full permissions"),
+        help_text    = _("The owner always has full permissions."),
         on_delete    = models.SET_DEFAULT,
         related_name = "+",
         default      = "",
@@ -79,15 +79,15 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
         null         = True
     )
 
-    roles              = GenericRelation("openbook_auth.Role")
-    access_requests    = GenericRelation("openbook_auth.AccessRequest")
-    enrollment_methods = GenericRelation("openbook_auth.EnrollmentMethod")
-    role_assignments   = GenericRelation("openbook_auth.RoleAssignment")
+    roles              = GenericRelation("openbook_auth.Role", content_type_field="scope_type", object_id_field="scope_uuid")
+    access_requests    = GenericRelation("openbook_auth.AccessRequest", content_type_field="scope_type", object_id_field="scope_uuid")
+    enrollment_methods = GenericRelation("openbook_auth.EnrollmentMethod", content_type_field="scope_type", object_id_field="scope_uuid")
+    role_assignments   = GenericRelation("openbook_auth.RoleAssignment", content_type_field="scope_type", object_id_field="scope_uuid")
 
     public_permissions = models.ManyToManyField(
         Permission,
         verbose_name = _("Public Permissions"),
-        help_text    = _("Permissions available to logged-out users and all logged-in users independent of their role"),
+        help_text    = _("Permissions available to logged-out users and all logged-in users independent of their role."),
         blank        = True,
         related_name = "+",
     )
@@ -144,7 +144,7 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
         user = get_current_user()
 
         if user and user.is_authenticated:
-            if not self.pk:
+            if not self.owner:
                 self.owner = user
 
         super().save(*args, **kwargs)
