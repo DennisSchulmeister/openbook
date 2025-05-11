@@ -6,18 +6,17 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models           import Permission
-from django.core.exceptions               import ValidationError
-from django.db                            import models
-from django.utils.translation             import gettext_lazy as _
+from django.contrib.auth.models         import Permission
+from django.db                          import models
+from django.utils.translation           import gettext_lazy as _
 
-from openbook.core.models.mixins.active   import ActiveInactiveMixin
-from openbook.core.models.mixins.slug     import NonUniqueSlugMixin
-from openbook.core.models.mixins.text     import NameDescriptionMixin
-from openbook.core.models.mixins.uuid     import UUIDMixin
+from openbook.core.models.mixins.active import ActiveInactiveMixin
+from openbook.core.models.mixins.slug   import NonUniqueSlugMixin
+from openbook.core.models.mixins.text   import NameDescriptionMixin
+from openbook.core.models.mixins.uuid   import UUIDMixin
 
-from .mixins.audit                        import CreatedModifiedByMixin
-from .mixins.auth                         import ScopeMixin
+from .mixins.audit                      import CreatedModifiedByMixin
+from .mixins.auth                       import ScopeMixin
 
 class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, ActiveInactiveMixin, CreatedModifiedByMixin):
     """
@@ -42,19 +41,3 @@ class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, Acti
     
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
-    
-    def clean(self):
-        """
-        Validate that only allowed permissions are assigned to the role.
-        """
-        from .allowed_role_permission import AllowedRolePermission
-
-        if self.scope_object and self.permissions:
-            allowed_permissions = AllowedRolePermission.objects.filter(scope_type=self.scope_type)
-
-            for permission in self.permissions.all():
-                if not allowed_permissions.contains(permission):
-                    raise ValidationError(_("Permission %(perm)s is not allowed in role %(role)s"), params={
-                        "perm": f"{permission.content_type.app_label}.{permission.codename}",
-                        "role": self.name,
-                    })

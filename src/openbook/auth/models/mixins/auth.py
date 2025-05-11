@@ -11,6 +11,7 @@ from django.contrib.auth.models         import AbstractUser, Permission
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache                  import cache
 from django.core.exceptions             import ValidationError
 from django.db                          import models
 from django.utils.translation           import gettext_lazy as _
@@ -93,6 +94,47 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
 
     class Meta:
         abstract = True
+    
+    @staticmethod
+    def content_type_is_scope(content_type: ContentType) -> bool:
+        """
+        Check whether the given content type implements `ScopedRolesMixin` and therefor acts as
+        a permission scope for user roles.
+        """
+        model = content_type.model_class()
+        return not model is None and issubclass(model, ScopedRolesMixin)
+
+    @classmethod
+    def get_scope_model_content_types(cls) -> list[ContentType]:
+        """
+        Get a filtered list of content types (models) that implement the scoped roles mixin and
+        therefor act as a permission scope for user roles. Since this is a somewhat expensive
+        operation, the result will be cached using the Django cache mechanism.
+        """
+        cache_key = "openbook_auth:scoped_roles_mixin:scope_models"
+        result: list[models.Model] = cache.get(cache_key, [])
+
+        if len(result) > 0:
+            return result
+
+        for content_type in ContentType.objects.all():
+            if cls.content_type_is_scope(content_type):
+                result.append(content_type)
+        
+        cache.set(cache_key, result)
+        return result
+
+    @classmethod
+    def get_scope_model_content_type_ids(cls) -> list[int]:
+        """
+        Get content type ids of models that are permission scopes for user roles.
+        """
+        result: list[int] = []
+
+        for content_type in cls.get_scope_model_content_types():
+            result.append(content_type.pk)
+        
+        return result
 
     def save(self, *args, **kwargs):
         """
@@ -110,7 +152,8 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
 class ScopeMixin(RoleBasedObjectPermissionsMixin):
     """
     Abstract mixin for models that are linked to a scope via a generic relation. The scope will be
-    used for role assignments to assign scoped roles to users.
+    used for role assignments to assign scoped roles to users. This is used internally to add a
+    generic relation for the scope to models like `AccessRequest` or `EnrollmentMethod`.
     """
     scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE, related_name = "+")
     scope_uuid   = models.UUIDField(verbose_name=_("Scope UUID"))
@@ -118,7 +161,7 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
 
     class Meta:
         abstract = True
-    
+
     @classmethod
     def from_obj(cls, other_obj: "ScopeMixin") -> "ScopeMixin":
         """

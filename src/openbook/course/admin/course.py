@@ -31,9 +31,9 @@ class CourseAdmin(CustomModelAdmin):
 
     fieldsets = (
         (None, {
-            "fields": ("name", "slug") # License, Image
+            "fields": (("name", "slug"),) # License, Image
         }),
-        (_("Course Description"), {
+        (_("Description"), {
             "classes": ("tab",),
             "fields": ("description", "text_format"), # Description, Text Format, AI Notes
         }),
@@ -42,9 +42,9 @@ class CourseAdmin(CustomModelAdmin):
 
     add_fieldsets = (
         (None, {
-            "fields": ("name", "slug") # License, Image
+            "fields": (("name", "slug"),) # License, Image
         }),
-        (_("Course Description"), {
+        (_("Description"), {
             "classes": ("tab",),
             "fields": ("description", "text_format"), # Description, Text Format, AI Notes
         }),

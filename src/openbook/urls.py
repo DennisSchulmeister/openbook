@@ -38,8 +38,8 @@ register_ui_library_api_routes(api_router, "ui_library")
 urlpatterns = [
     path("api/",              include(api_router.urls)),
     path("api-auth/",         include("rest_framework.urls")),
-    path("api/schema/",       SpectacularAPIView.as_view(), name='schema'),
-    path("api/schema/redoc/", SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path("api/schema/",       SpectacularAPIView.as_view(), name="api-schema"),
+    path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="api-schema"), name="api-redoc"),
     path("admin/",            admin_site.urls),
 
     path("", RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),

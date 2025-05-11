@@ -14,6 +14,8 @@ from openbook.admin           import CustomModelAdmin
 from openbook.admin           import ImportExportModelResource
 from .mixins                  import audit_fields
 from .mixins                  import audit_fieldset
+from .mixins                  import scope_type_filter
+from ..forms.role             import RoleForm
 from ..models.role            import Role
 
 class RoleResource(ImportExportModelResource):
@@ -24,7 +26,8 @@ class RoleInline(GenericTabularInline, TabularInline):
     model               = Role
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    fields              = ("name", "slug", "priority", "is_active", *audit_fields)
+    fields              = ("priority", "name", "slug", "is_active", *audit_fields)
+    ordering            = ("priority", "name")
     readonly_fields     = (*audit_fields,)
     prepopulated_fields = {"slug": ["name"]}
     show_change_link    = True
@@ -32,18 +35,42 @@ class RoleInline(GenericTabularInline, TabularInline):
 
 class RoleAdmin(CustomModelAdmin):
     model               = Role
+    form                = RoleForm
     resource_classes    = (RoleResource,)
-    list_display        = ("scope_type", "scope_object", "name", "slug", "priority", "is_active", *audit_fields)
-    list_display_links  = ("scope_type", "scope_object", "name", "slug")
-    list_filter         = ("scope_type", "name", "slug", *audit_fields)
+    list_display        = ("scope_type", "scope_object", "priority", "name", "slug", "is_active", *audit_fields)
+    list_display_links  = ("scope_type", "scope_object", "priority", "name", "slug")
+    list_filter         = (scope_type_filter, "name", "slug", *audit_fields)
+    ordering            = ("scope_type", "scope_uuid", "priority", "name")
     search_fields       = ("name", "slug", "description")
     readonly_fields     = (*audit_fields,)
     prepopulated_fields = {"slug": ["name"]}
+    filter_horizontal   = ("permissions",)
 
-    # TODO: Filter scope_type: https://chatgpt.com/g/g-p-68128762bf848191860962c9aae6c388-openbook-development/c/681f4187-4e28-8007-99b6-7308e6d54c1f
+    fieldsets = (
+        (None, {
+            "fields": (("scope_type", "scope_uuid"), ("name", "slug"), ("priority", "is_active")),
+        }),
+        (_("Description"), {
+            "classes": ("tab",),
+            "fields": ("description", "text_format"),
+        }),
+        (_("Permissions"), {
+            "classes": ("tab",),
+            "fields": ("permissions",),
+        }),
+        audit_fieldset,
+    )
 
-#     fieldsets = (
-#         (None, {
-#             "fields": ("id", "domain", "name", "short_name", "about_url", "brand_color")
-#         }),
-#     )
+    add_fieldsets = (
+        (None, {
+            "fields": (("scope_type", "scope_uuid"), ("name", "slug"), ("priority", "is_active")),
+        }),
+        (_("Description"), {
+            "classes": ("tab",),
+            "fields": ("description", "text_format"),
+        }),
+        (_("Permissions"), {
+            "classes": ("tab",),
+            "fields": ("permissions",),
+        }),
+    )

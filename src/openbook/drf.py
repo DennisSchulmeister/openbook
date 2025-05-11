@@ -10,10 +10,10 @@ from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
 from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.pagination  import PageNumberPagination as DRFPageNumberPagination
-from rest_framework.permissions import BasePermission, DjangoObjectPermissions
+from rest_framework.permissions import BasePermission
+from rest_framework.permissions import DjangoObjectPermissions
 from rest_framework.response    import Response
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
-from rest_framework.serializers import ListSerializer as DRFListSerializer
 
 class AllowNone(BasePermission):
     """

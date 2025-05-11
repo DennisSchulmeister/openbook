@@ -13,3 +13,14 @@ class OpenBookServerApp(AppConfig):
     name         = "openbook.core"
     label        = "openbook_core"
     verbose_name = _("OpenBook Server")
+
+    def ready(self):
+        """
+        Patch `ContentType.__str__` to return the model only, without prefixing it
+        with the app name.
+        """
+        def content_type_str(self):
+            return self.name
+
+        from django.contrib.contenttypes.models import ContentType
+        ContentType.__str__ = content_type_str

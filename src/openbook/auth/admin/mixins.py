@@ -6,11 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.contrib.admin     import RelatedOnlyFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
 audit_fields = ("created_by", "created_at", "modified_by", "modified_at")
 
 audit_fieldset = (_("Audit Trail"), {
     "classes": ("tab",),
-    "fields": ("created_by", "created_at", "modified_by", "modified_at"),
+    "fields": (("created_by", "created_at"), ("modified_by", "modified_at")),
 })
+
+scope_type_filter = ("scope_type", RelatedOnlyFieldListFilter)

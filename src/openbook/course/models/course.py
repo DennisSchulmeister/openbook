@@ -28,6 +28,7 @@ class Course(UUIDMixin, NonUniqueSlugMixin, NameDescriptionMixin, ScopedRolesMix
     is_template = models.BooleanField(
         verbose_name = _("Is Template"),
         help_text    = _("Flag indicating that this course is not used productively but rather is a template for creating similar courses."),
+        default      = False,
     )
 
     class Meta():

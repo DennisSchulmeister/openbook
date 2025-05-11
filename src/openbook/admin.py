@@ -29,7 +29,7 @@ class CustomModelAdmin(DjangoQLSearchMixin, UnfoldModelAdmin, ImportExportModelA
     Custom `ModelAdmin` to combines several mixins from Django Unfold, Django QL and
     Django Import/Export into on common base-class.
     """
-    pass
+    save_as = True
 
 class CustomAdminSite(UnfoldAdminSite):
     """

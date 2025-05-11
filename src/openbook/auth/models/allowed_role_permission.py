@@ -31,3 +31,10 @@ class AllowedRolePermission(UUIDMixin):
 
     def __str__(self):
         return self.scope_type
+
+    @classmethod
+    def get_for_scope_type(cls, scope_type: ContentType) -> "list[AllowedRolePermission]":
+        """
+        Get a list of allowed permissions for the given scope type.
+        """
+        return cls.objects.filter(scope_type=scope_type)

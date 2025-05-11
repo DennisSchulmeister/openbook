@@ -6,17 +6,19 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation   import gettext_lazy as _
-from django_filters.filterset   import FilterSet
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets    import ModelViewSet
+from django.core.exceptions           import ValidationError
+from django.utils.translation         import gettext_lazy as _
+from django_filters.filterset         import FilterSet
+from rest_framework.permissions       import IsAuthenticated
+from rest_framework.viewsets          import ModelViewSet
 
-from openbook.drf               import ModelViewSetMixin
-from openbook.drf               import ModelSerializer
+from openbook.drf                     import ModelViewSetMixin
+from openbook.drf                     import ModelSerializer
 
-from ..filters.permission       import PermissionFilterMixin
-from ..models.role              import Role
-from ..serializers.permission   import PermissionSerializer
+from ..filters.permission             import PermissionFilterMixin
+from ..models.allowed_role_permission import AllowedRolePermission
+from ..models.role                    import Role
+from ..serializers.permission         import PermissionSerializer
 
 class RoleListSerializer(ModelSerializer):
     """
@@ -33,7 +35,7 @@ class RoleListSerializer(ModelSerializer):
             "created_by", "created_at", "modified_by", "modified_at",
         )
 
-class RoleRetrieveSerializer(ModelSerializer):
+class RoleSerializer(ModelSerializer):
     """
     Full list of fields for retrieving a single role.
     """
@@ -51,27 +53,30 @@ class RoleRetrieveSerializer(ModelSerializer):
             "created_by", "created_at", "modified_by", "modified_at",
         )
 
-
-class RoleWriteSerializer(ModelSerializer):
-    """
-    Reduced list of fields for creating and updating a role.
-    """
-    writable_non_pk_m2m_fields = ["permissions"]
-
-    permissions = PermissionSerializer(many=True)
-
-    class Meta:
-        model  = Role
-        fields = (
-            "scope_type", "scope_uuid",
-            "slug",
-            "name", "description", "text_format",
-            "priority", "is_active",
-            "permissions",
+        read_only_fields = (
+            "id",
+            "created_by", "created_at", "modified_by", "modified_at",
         )
-    
-    def to_representation(self, instance):
-        return RoleRetrieveSerializer(instance=instance, context=self.context).data
+
+    def validate(self, attributes):
+        """
+        Check that only allowed permissions are assigned.
+        """
+        scope_type = attributes.get("scope_type", None)
+        permissions = attributes.get("permissions", None)
+
+        if not scope_type or not permissions:
+            return attributes
+        
+        allowed_permissions = AllowedRolePermission.get_for_scope_type(scope_type)
+
+        for permission in permissions:
+            if not permission in allowed_permissions:
+                raise ValidationError(_("Permission %(perm)s cannot be assigned in this scope"), params={
+                    "perm": f"{permission}",
+                })
+            
+        return attributes
 
 class RoleFilter(PermissionFilterMixin, FilterSet):
     class Meta:
@@ -89,19 +94,8 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class    = RoleFilter
     search_fields      = ("slug", "name", "description")
 
-    serializer_classes = {
-        "list":           RoleListSerializer,
-        "retrieve":       RoleRetrieveSerializer,
-        "create":         RoleWriteSerializer,
-        "update":         RoleWriteSerializer,
-        "partial_update": RoleWriteSerializer,
-        "metadata":       RoleWriteSerializer,
-        "_default":       RoleListSerializer,
-    }
-
     def get_serializer_class(self):
-        try:
-            return self.serializer_classes[self.action]
-        except KeyError:
-            return self.serializer_classes["_default"]
-    
+        if self.action == "list":
+            return RoleListSerializer
+        else:
+            return RoleSerializer
