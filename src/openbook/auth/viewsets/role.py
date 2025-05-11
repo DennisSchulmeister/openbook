@@ -68,10 +68,11 @@ class RoleSerializer(ModelSerializer):
         if not scope_type or not permissions:
             return attributes
         
-        allowed_permissions = AllowedRolePermission.get_for_scope_type(scope_type)
+        allowed_permissions = AllowedRolePermission.get_for_scope_type(scope_type).all()
+        allowed_permission_objects = [allowed_permission.permission for allowed_permission in allowed_permissions]
 
         for permission in permissions:
-            if not permission in allowed_permissions:
+            if not permission in allowed_permission_objects:
                 raise ValidationError(_("Permission %(perm)s cannot be assigned in this scope"), params={
                     "perm": f"{permission}",
                 })

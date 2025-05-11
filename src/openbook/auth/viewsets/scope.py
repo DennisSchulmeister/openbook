@@ -7,51 +7,95 @@
 # License, or (at your option) any later version.
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions             import FieldError
 from drf_spectacular.utils              import extend_schema
 from drf_spectacular.utils              import OpenApiParameter
 from drf_spectacular.utils              import OpenApiTypes
+from rest_framework                     import status
 from rest_framework.fields              import CharField
+from rest_framework.fields              import IntegerField
 from rest_framework.fields              import UUIDField
 from rest_framework.mixins              import ListModelMixin
+from rest_framework.mixins              import RetrieveModelMixin
 from rest_framework.permissions         import IsAuthenticated
+from rest_framework.response            import Response
 from rest_framework.serializers         import Serializer
-from rest_framework.viewsets            import GenericViewSet
+from rest_framework.viewsets            import ViewSet
 
+from ..models.allowed_role_permission   import AllowedRolePermission
+from ..models.permission                import Permission_T
 from ..models.mixins.auth               import ScopedRolesMixin
 
-class ScopeSerializer(Serializer):
-    scope_type  = CharField()
-    scope_label = CharField()
-    scope_uuid  = UUIDField(required=False)
-    scope_name  = CharField(required=False)
+class AllowedPermissionSerializer(Serializer):
+    id   = IntegerField()
+    perm = CharField()
+    name = CharField()
 
-class ScopeViewSet(ListModelMixin, GenericViewSet):
+class ScopeObjectSerializer(Serializer):
+    uuid = UUIDField()
+    name = CharField()
+
+class ScopeTypeRetrieveSerializer(Serializer):
+    pk            = IntegerField()
+    id            = CharField()
+    label         = CharField()
+    objects       = ScopeObjectSerializer(many=True, required=False)
+    allowed_permissions = AllowedPermissionSerializer(many=True, required=False)
+
+class ScopeTypeListSerializer(Serializer):
+    pk    = IntegerField()
+    id    = CharField()
+    label = CharField()
+
+class ScopeViewSet(ViewSet):
     """
-    List of permission scopes, filterable by scope type. Returns the scope types when no
-    query parameter is given and the actual scopes, when `scope_type` is sent.
+    Permission scopes. When a list is requested, a flat list of scope types will be returned.
+    If a single object is requested, full details including all scopes and allowed permissions
+    will be returned.
     """
     permission_classes = [IsAuthenticated]
-    serializer_class   = ScopeSerializer
     pagination_class   = None
     filter_backends    = []
+    queryset           = ContentType.objects.all()
+    lookup_field       = "id"
+    lookup_value_regex = '[^/]+'
 
-    def get_queryset(self):
+    @extend_schema(responses=ScopeTypeListSerializer)
+    def list(self, request, *args, **kwargs):
         """
-        Return query set for the selected scope type.
+        GET List: Return a flat list of scope types.
         """
-        scope_type = self.request.query_params.get("scope_type", "").lower()
+        result = []
 
-        if not scope_type:
-            result = []
+        for content_type in ScopedRolesMixin.get_scope_model_content_types():
+            result.append({
+                "pk":    content_type.pk,
+                "id":    f"{content_type.app_label}.{content_type.name}".lower(),
+                "label": content_type.name,
+            })
 
-            for content_type in ScopedRolesMixin.get_scope_model_content_types():
-                result.append({
-                    "scope_type":  f"{content_type.app_label}.{content_type.name}".lower(),
-                    "scope_label": content_type.name,
-                })
+        serializer = ScopeTypeListSerializer(data=result, many=True)
+        serializer.is_valid()
+        return Response(serializer.data)
 
-            return result
-        
+    @extend_schema(
+            parameters=[
+                OpenApiParameter(
+                    name        = "id",
+                    type        = str,
+                    location    = OpenApiParameter.PATH,
+                    description = "Unique identifier for the scope (id or pk)",
+                ),
+            ],
+            responses=ScopeTypeRetrieveSerializer,
+        )
+    def retrieve(self, request, *args, **kwargs):
+        """
+        GET Scope Type: Return an object with all scopes and allowed permissions.
+        """
+        scope_type   = self.request.parser_context["kwargs"].get("id")
+        content_type = None
+
         try:
             try:
                 content_type = ContentType.objects.get(pk=int(scope_type))
@@ -59,35 +103,54 @@ class ScopeViewSet(ListModelMixin, GenericViewSet):
                 app_label, model = scope_type.split(".", 1)
                 content_type = ContentType.objects.get(app_label=app_label, model=model)
         except:
-            return []
+            pass
 
-        if not ScopedRolesMixin.content_type_is_scope(content_type):
-            return []
+        if not content_type:
+            return Response(status=status.HTTP_404_NOT_FOUND, data=[])
+
+        try:
+            query_set = content_type.get_all_objects_for_this_type().only("id", "name").order_by("name")
+        except FieldError:
+            # PK references content type without id or name field
+            return Response(status=status.HTTP_404_NOT_FOUND, data=[])
         
-
-        query_set = content_type.get_all_objects_for_this_type().only("id", "name").order_by("name")
-        result = []
+        result = {
+            "pk":                  content_type.pk,
+            "id":                  f"{content_type.app_label}.{content_type.model}",
+            "label":               content_type.name,
+            "objects":             [],
+            "allowed_permissions": [],
+        }
         
         for scope in query_set.all():
-            result.append({
-                "scope_type":  f"{content_type.app_label}.{content_type.model}",
-                "scope_label": content_type.name,
-                "scope_uuid":  scope.id,
-                "scope_name":  scope.name if hasattr(scope, "name") else scope.id,
+            result["objects"].append({    
+                "uuid":  scope.id,
+                "name":  scope.name if hasattr(scope, "name") else scope.id,
+            })
+
+        allowed_role_permissions = AllowedRolePermission.get_for_scope_type(content_type).all()
+        allowed_permissions = []
+
+        for allowed_role_permission in allowed_role_permissions:
+            if allowed_role_permission.permission:
+                allowed_permissions.append(allowed_role_permission.permission)
+        
+        translations = Permission_T.objects.filter(parent__in=allowed_permissions).all()
+
+        for allowed_role_permission in allowed_role_permissions:
+            permission = allowed_role_permission.permission
+
+            if not permission:
+                continue
+
+            translation = next((t for t in translations if t.parent == permission), None)
+
+            result["allowed_permissions"].append({
+                "id":   permission.pk,
+                "perm": f"{permission.content_type.app_name}.{permission.codename}",
+                "name": translation.name if translation else permission.name,
             })
         
-        return result
-
-    @extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name        = "scope_type",
-                required    = False,
-                type        = OpenApiTypes.STR,
-                location    = OpenApiParameter.QUERY,
-                description = "Get scopes for a scope type (if empty only the types will be returned)",
-            ),
-        ]
-    )
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        serializer = ScopeTypeRetrieveSerializer(data=result)
+        serializer.is_valid()
+        return Response(serializer.data)

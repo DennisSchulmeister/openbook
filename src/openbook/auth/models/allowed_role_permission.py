@@ -18,8 +18,8 @@ class AllowedRolePermission(UUIDMixin):
     Allowed permission to be used in scoped roles. This is used to restrict the list of available
     permissions when defining roles.
     """
-    scope_type  = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE)
-    permissions = models.ManyToManyField(Permission, verbose_name=_("Permissions"), blank=True, related_name="scope_types")
+    scope_type = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE, related_name="+")
+    permission = models.ForeignKey(Permission, verbose_name=_("Permission"), on_delete=models.CASCADE, related_name="+")
 
     class Meta:
         verbose_name        = _("Allowed Role Permission")

@@ -12,35 +12,48 @@
  * Update scope uuid choices according to the selected scope type.
  * The choices are fetched via the API.
  */
-document.addEventListener("DOMContentLoaded", () => {
-    let scopeTypeField = document.querySelector("#id_scope_type");
-    let scopeUuidField = document.querySelector("#id_scope_uuid");
+document.addEventListener("DOMContentLoaded", async () => {
+    let scopeTypeField;
+    let scopeUuidField;
+    let permissionsFromField;
+    let count = 0;
 
-    if (!scopeTypeField || !scopeUuidField) return;
+    while (!permissionsFromField && count < 100) {
+        await new Promise(resolve => window.setTimeout(resolve, 250));
+        count++;
+
+        scopeTypeField       = document.querySelector("#id_scope_type");
+        scopeUuidField       = document.querySelector("#id_scope_uuid");
+        permissionsFromField = document.querySelector("#id_permissions_from");
+    }
+
+    if (!permissionsFromField) {
+        console.error("Field #id_permissions_from is still not available. Aborting!");
+        return;
+    }
 
     async function updateScopeUuidChoices(scopeType) {
         try {
-            let results = [];
+            let result = {};
 
             if (scopeType) {
-                let url = `/api/auth/scopes/?scope_type=${scopeType}`;
+                let url = `/api/auth/scopes/${scopeType}`;
                 let response = await fetch(url);
     
                 if (!response.ok) {
                     throw new Error(await response.text());
                 }
     
-                results = (await response.json()) || [];
+                result = (await response.json()) || {};
             }
 
             // Clear and repopulate scopeUuidField
-            debugger;
             selectedValue = scopeUuidField.querySelector("[selected]")?.value || "";
             scopeUuidField.innerHTML = "";
 
-            for (let result of results) {
-                let option = new Option(result.scope_name, result.scope_uuid);
-                if (result.scope_uuid === selectedValue) option.selected = true;
+            for (let scope_object of result.objects || []) {
+                let option = new Option(scope_object.name, scope_object.uuid);
+                if (scope_object.uuid === selectedValue) option.selected = true;
                 scopeUuidField.appendChild(option);
             }
 
@@ -48,6 +61,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 let option = new Option("", "");
                 option.setAttribute("selected", "");
                 scopeUuidField.appendChild(option);
+            }
+
+            // Hide disallowed permissions from the permission filter
+            if (!result.allowed_permissions) result.allowed_permissions = [];
+
+            for (let option of permissionsFromField.querySelectorAll("option")) {
+                option.style.display = "None";
+                
+                let allowed_permission = result.allowed_permissions?.find(entry => entry.id == option.value);
+                if (!allowed_permission) continue;
+                delete option.style.display;
             }
         } catch (err) {
             console.error("Failed to load scope UUIDs:", err);

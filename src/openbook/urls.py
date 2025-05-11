@@ -48,7 +48,7 @@ urlpatterns = [
 if settings.DEBUG:
     # NOTE: Static files are automatically served by runserver from the configured
     # static dirs (usually inside each application)
-
+    
     # Media files
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
