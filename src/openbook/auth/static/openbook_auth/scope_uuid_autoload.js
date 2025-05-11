@@ -71,7 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 let allowed_permission = result.allowed_permissions?.find(entry => entry.id == option.value);
                 if (!allowed_permission) continue;
+
                 delete option.style.display;
+                option.setAttribute("title", `${allowed_permission.app} | ${allowed_permission.name}`);
             }
         } catch (err) {
             console.error("Failed to load scope UUIDs:", err);

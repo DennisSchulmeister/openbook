@@ -10,13 +10,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions             import FieldError
 from drf_spectacular.utils              import extend_schema
 from drf_spectacular.utils              import OpenApiParameter
-from drf_spectacular.utils              import OpenApiTypes
 from rest_framework                     import status
 from rest_framework.fields              import CharField
 from rest_framework.fields              import IntegerField
 from rest_framework.fields              import UUIDField
-from rest_framework.mixins              import ListModelMixin
-from rest_framework.mixins              import RetrieveModelMixin
 from rest_framework.permissions         import IsAuthenticated
 from rest_framework.response            import Response
 from rest_framework.serializers         import Serializer
@@ -29,6 +26,7 @@ from ..models.mixins.auth               import ScopedRolesMixin
 class AllowedPermissionSerializer(Serializer):
     id   = IntegerField()
     perm = CharField()
+    app  = CharField()
     name = CharField()
 
 class ScopeObjectSerializer(Serializer):
@@ -144,10 +142,12 @@ class ScopeViewSet(ViewSet):
                 continue
 
             translation = next((t for t in translations if t.parent == permission), None)
+            model = permission.content_type.model_class()
 
             result["allowed_permissions"].append({
                 "id":   permission.pk,
                 "perm": f"{permission.content_type.app_name}.{permission.codename}",
+                "app":  model._meta.app_config.verbose_name,
                 "name": translation.name if translation else permission.name,
             })
         

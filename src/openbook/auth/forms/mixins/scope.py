@@ -8,7 +8,6 @@
 
 from unfold.contrib.forms.widgets import UnfoldAdminSelectWidget
 from django.forms                 import ModelForm
-from django.forms.fields          import ChoiceField
 from django.utils.translation     import gettext_lazy as _
 from ...models.mixins             import ScopedRolesMixin
 
