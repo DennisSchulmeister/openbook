@@ -6,15 +6,28 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models         import Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models                import Permission
+from django.contrib.contenttypes.models        import ContentType
+from openbook.core.middleware.current_language import get_current_language
 
 def perm_name_for_permission(permission: "Permission") -> str:
     """
-    Get clear-text, untranslated permission name from permission object.
+    Get clear-text, translated permission name from permission object.
     """
-    return permission.name if permission else ""
+    from .models.permission import Permission_T
+    language = get_current_language()
 
+    if not permission:
+        return ""
+
+    if language:
+        translation = Permission_T.objects.get(parent = permission, language = language)
+
+        if translation and translation.name:
+            return translation.name
+    
+    return permission.name
+    
 def perm_string_for_permission(permission: "Permission") -> str:
     """
     Serialize permission object into permission string as used by Django:
@@ -37,6 +50,23 @@ def app_name_for_permission(permission: "Permission") -> str:
     
     model = permission.content_type.model_class()
     return model._meta.app_config.verbose_name or permission.content_type.app_label
+
+def model_for_permission(permission: "Permission") -> str:
+    """
+    Get modal label from permission object.
+    """
+    return permission.content_type.model
+
+def model_name_for_permission(permission: "Permission") -> str:
+    """
+    Get translated modal name from permission object.
+    """
+    model = permission.content_type.model_class()
+
+    if not model:
+        return ""
+
+    return model._meta.verbose_name
 
 def permission_for_perm_string(perm: str) -> "Permission":
     """

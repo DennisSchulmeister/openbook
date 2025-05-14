@@ -87,6 +87,7 @@ MIDDLEWARE = [
 
     # OpenBook
     "openbook.auth.middleware.current_user.CurrentUserMiddleware",
+    "openbook.core.middleware.current_language.CurrentLanguageMiddleware",
 ]
 
 ROOT_URLCONF = "openbook.urls"

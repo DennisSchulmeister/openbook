@@ -15,9 +15,12 @@ from openbook.drf                     import ModelSerializer
 
 from ..filters.mixins.permission      import PermissionFilterMixin
 from ..models.role                    import Role
-from ..serializers.permission         import PermissionSerializer
+from ..serializers.permission         import PermissionListReadField
+from ..serializers.permission         import PermissionListWriteField
 from ..serializers.user               import UserReadField
 from ..validators                     import validate_permissions
+
+## TODO: Refactor similar to CourseViewSet
 
 class RoleListSerializer(ModelSerializer):
     """
@@ -41,9 +44,10 @@ class RoleSerializer(ModelSerializer):
     """
     Full list of fields for retrieving a single role.
     """
-    permissions = PermissionSerializer()
-    created_by  = UserReadField(read_only=True)
-    modified_by = UserReadField(read_only=True)
+    created_by         = UserReadField(read_only=True)
+    modified_by        = UserReadField(read_only=True)
+    permissions        = PermissionListReadField(read_only=True)
+    permission_strings = PermissionListWriteField(write_only=True)
 
     class Meta:
         model  = Role
@@ -53,7 +57,7 @@ class RoleSerializer(ModelSerializer):
             "slug",
             "name", "description", "text_format",
             "priority", "is_active",
-            "permissions",
+            "permissions", "permission_strings",
             "created_by", "created_at", "modified_by", "modified_at",
         )
 

@@ -12,7 +12,8 @@ from rest_framework.serializers         import ModelSerializer
 from openbook.auth.validators           import validate_permissions
 from ..user                             import UserReadField
 from ..user                             import UserWriteField
-from ..permission                       import PermissionSerializer
+from ..permission                       import PermissionListReadField
+from ..permission                       import PermissionListWriteField
 
 class ScopedRolesListSerializerMixin(ModelSerializer):
     """
@@ -29,19 +30,19 @@ class ScopedRolesSerializerMixin(ModelSerializer):
     Mixin class for model serializers whose model implement the `ScopedRolesMixin` and as such
     act as permission scope for user roles. Default serializer, that adds all scope fields.
     """
-    owner              = UserReadField(read_only=True)
-    owner_username     = UserWriteField(write_only=True)
-    public_permissions = PermissionSerializer(many=True)
+    owner                     = UserReadField(read_only=True)
+    owner_username            = UserWriteField(write_only=True)
+    public_permissions        = PermissionListReadField(read_only=True)
+    public_permission_strings = PermissionListWriteField(write_only=True)
 
     class Meta:
         fields = (
             "owner", "owner_username",
-            "public_permissions",
+            "public_permissions", "public_permission_strings",
         )
 
         read_only_fields = ()
 
-    # TODO: Move into new permission field?
     def validate(self, attributes):
         """
         Check that only allowed permissions are assigned.

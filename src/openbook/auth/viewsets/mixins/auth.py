@@ -8,13 +8,16 @@
 
 class ScopedRolesViewSetMixin:
     """
-    DRF view set for classes that have a read-only `owner` and a write-only `owner_username`
-    field, usually because the models implement the `ScopedRolesMixin`.
+    DRF view set for classes whose model implements the `ScopedRolesMixin` and therefor
+    acts as a permission scope for user roles. This maps the reduced write-fields for
+    the `owner` and `public_permissions` when an entry is created or updated.
     """
     def create(self, validated_data):
         validated_data["owner"] = validated_data.pop("owner_username", None)
+        validated_data["public_permissions"] = validated_data.pop("public_permission_strings", None)
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         instance.owner = validated_data.pop("owner_username", instance.owner)
+        instance.public_permissions = validated_data.pop("public_permission_strings", instance.public_permissions)
         return super().update(instance, validated_data)

@@ -5,60 +5,96 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-#from django.contrib.auth.models import Permission
 
 from django.contrib.auth.models import Permission
-from django.core.exceptions     import ValidationError
 from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
+from rest_framework.serializers import Serializer
+from rest_framework.serializers import Field
 from rest_framework.serializers import CharField
-from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import ListField
 
-from openbook.drf               import ModelSerializer
+from ..utils                    import app_label_for_permission
+from ..utils                    import app_name_for_permission
+from ..utils                    import model_for_permission
+from ..utils                    import model_name_for_permission
+from ..utils                    import perm_name_for_permission
 from ..utils                    import perm_string_for_permission
+from ..utils                    import permission_for_perm_string
 
-class PermissionSerializer(ModelSerializer):
+## TODO: ManyRelatedManager' object is not iterable
+
+class PermissionReadSerializer(Serializer):
     """
-    Custom serializer for nested permission objects. Resolved all foreign keys so
-    that the actual app label, model name and full permission string are included.
+    Serializer for permission objects.
     """
     __doc__ = "Permission"
 
-    perm       = SerializerMethodField()    # For reading
-    app_label  = CharField(source="content_type.app_label", read_only=True)
-    model_name = CharField(source="content_type.model", read_only=True)
-    
+    perm_string        = CharField()
+    perm_display_name  = CharField()
+    app                = CharField()
+    app_display_name   = CharField()
+    model              = CharField()
+    model_display_name = CharField()
+    codename           = CharField()
+
     class Meta:
-        model  = Permission
-        fields = ["perm", "app_label", "model_name", "codename", "name"]
-    
-    @extend_schema_field(str)
-    def get_perm(self, obj):
-        """
-        Permission string
-        """
-        return perm_string_for_permission(obj)
+        fields   = ("perm_string", "perm_display_name", "app", "app_display_name", "model", "model_display_name", "codename")
+        read_only_fields = fields
+
+@extend_schema_field(PermissionReadSerializer)
+class PermissionReadField(Field):
+    """
+    Serializer field for reading a permission. Use this to output a nice structure with
+    permission data in your response.
+    """
+    def to_internal_value(self, data):
+        raise RuntimeError("PermissionReadField to write data. Use PermissionWriteField, instead.")
+
+    def to_representation(self, obj):
+        return PermissionReadSerializer({
+            "perm_string":        perm_string_for_permission(obj),
+            "perm_display_name":  perm_name_for_permission(obj),
+            "app":                app_label_for_permission(obj),
+            "app_display_name":   app_name_for_permission(obj),
+            "model":              model_for_permission(obj),
+            "model_display_name": model_name_for_permission(obj),
+            "codename":           obj.codename,
+        }).data
+
+@extend_schema_field({"description": "Permissions"})
+class PermissionListReadField(ListField):
+    """
+    Serializer field for reading multiple permissions.
+    """
+    child = PermissionReadField()
+
+@extend_schema_field({"type": "string", "description": "Permission string"})
+class PermissionWriteField(Field):
+    """
+    Serializer field for writing permissions. Use this to accept a permission string
+    in the request that will be looked up in the database.
+    """
+    default_error_messages = {
+        "not_found": _("Permission '{value}' not found."),
+        "invalid":   _("Invalid format: Expected a permission string.")
+    }
 
     def to_internal_value(self, data):
-        """
-        Accepts a permission string (e.g. "app.model_codename")
-        """
         if not isinstance(data, str):
-            raise ValidationError(_("Invalid format: Expected a permission string."))
-        
-        try:
-            app_label, rest = data.split(".", 1)
-            model_name, codename = rest.split("_", 1)
-        except ValueError:
-            raise ValidationError(_("Permission string must be in the format 'app.model_codename'"))
-        
-        try:
-            permission = Permission.objects.select_related("content_type").get(
-                content_type__app_label=app_label,
-                content_type__model=model_name,
-                codename=codename,
-            )
+            self.fail("invalid")
 
-            return permission
+        try:
+            return permission_for_perm_string(data)
         except Permission.DoesNotExist:
-            raise ValidationError(_("Permission '%(data)s' not found.") % {'data': data})
+            self.fail("not_found", value=data)
+    
+    def to_representation(self, obj):
+        raise RuntimeError("PermissionWriteField used to deserialize data. Use PermissionReadField, instead.")
+
+@extend_schema_field({"description": "Permission names"})
+class PermissionListWriteField(ListField):
+    """
+    Serializer field for writing multiple permissions.
+    """
+    child = PermissionWriteField()

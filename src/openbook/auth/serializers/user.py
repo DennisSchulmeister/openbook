@@ -26,7 +26,7 @@ class UserReadSerializer(ModelSerializer):
     class Meta:
         model    = User
         fields   = ("username", "display_name", "first_name", "last_name", "is_staff")
-        filterset_fields = ("username", "first_name", "last_name", "is_staff")
+        filterset_fields = ("first_name", "last_name", "is_staff")
     
     @extend_schema_field(str)
     def get_display_name(self, obj):
