@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let scopeTypeField;
     let scopeUuidField;
     let permissionsFromField;
+    let permissionsToField;
+    let allPermissionOptions = [];
+    let permissionsFromMutationObserver;
     let count = 0;
 
     while (!permissionsFromField && count < 100) {
@@ -25,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         scopeTypeField       = document.querySelector("#id_scope_type");
         scopeUuidField       = document.querySelector("#id_scope_uuid");
         permissionsFromField = document.querySelector("#id_permissions_from");
+        permissionsToField   = document.querySelector("#id_permissions_to");
     }
 
     if (!permissionsFromField) {
@@ -32,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    async function updateScopeUuidChoices(scopeType) {
+    async function updateScopeUuidChoices(scopeType, newValue) {
         try {
             let result = {};
 
@@ -49,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Clear and repopulate scopeUuidField
             selectedValue = scopeUuidField.querySelector("[selected]")?.value || "";
-            scopeUuidField.innerHTML = "";
+            if (newValue) scopeUuidField.innerHTML = "";
 
             for (let scope_object of result.objects || []) {
                 let option = new Option(scope_object.name, scope_object.uuid);
@@ -65,15 +69,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Hide disallowed permissions from the permission filter
             if (!result.allowed_permissions) result.allowed_permissions = [];
+            permissionsFromMutationObserver._mutex = true;
+            allPermissionOptions = [];
+            
+            for (let option of permissionsFromField.querySelectorAll("option")) {                
+                option.classList.remove("_visible");
+                allPermissionOptions.push(option);
+                option.remove();
+            }
 
-            for (let option of permissionsFromField.querySelectorAll("option")) {
-                option.style.display = "None";
-                
-                let allowed_permission = result.allowed_permissions?.find(entry => entry.id == option.value);
-                if (!allowed_permission) continue;
+            for (let allowedPermission of result.allowed_permissions) {
+                let toPermission = permissionsToField.querySelector(`option[value="${allowedPermission.id}"]`);
 
-                delete option.style.display;
-                option.setAttribute("title", `${allowed_permission.app} | ${allowed_permission.name}`);
+                allPermissionOptions.filter(option => {
+                    if (option.value == allowedPermission.id && !toPermission) {
+                        //option.setAttribute("title", `${allowedPermission.model} | ${allowedPermission.name}`);
+                        option.classList.add("_visible");
+                        permissionsFromField.appendChild(option);
+                        return false;
+                    }
+
+                    return true;
+                });
             }
         } catch (err) {
             console.error("Failed to load scope UUIDs:", err);
@@ -82,9 +99,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     scopeTypeField.addEventListener("change", () => {
         let selected = scopeTypeField.value || "";
-        updateScopeUuidChoices(selected);
+        updateScopeUuidChoices(selected, true);
     });
 
+    permissionsFromMutationObserver = new MutationObserver(() => {
+        // Django Unfold (or Django Admin) rebuilds the M2M from list each time, an entry is
+        // moved between the from and to list. So we need to hide the disallowed options again.
+        if (permissionsFromMutationObserver._mutex) {
+            permissionsFromMutationObserver._mutex = false;
+            return;
+        }
+
+        updateScopeUuidChoices(scopeTypeField.value || "", false);
+    });
+
+    permissionsFromMutationObserver.observe(permissionsFromField, {childList: true});
+    
     // Load initial data if editing an existing instances
-    updateScopeUuidChoices(scopeTypeField.value || "");
+    updateScopeUuidChoices(scopeTypeField.value || "", false);
 });

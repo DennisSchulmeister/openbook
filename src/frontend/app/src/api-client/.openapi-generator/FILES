@@ -2,6 +2,7 @@ apis/AuthApi.ts
 apis/CoreApi.ts
 apis/index.ts
 index.ts
+models/AllowedPermission.ts
 models/CurrentUserResponse.ts
 models/HealthResponse.ts
 models/Language.ts
@@ -13,12 +14,14 @@ models/PaginatedRoleListList.ts
 models/PaginatedSiteList.ts
 models/PaginatedUserList.ts
 models/PatchedMediaFile.ts
-models/PatchedRoleWrite.ts
+models/PatchedRole.ts
 models/PatchedUser.ts
 models/Permission.ts
+models/Role.ts
 models/RoleList.ts
-models/RoleRetrieve.ts
-models/RoleWrite.ts
+models/ScopeObject.ts
+models/ScopeTypeList.ts
+models/ScopeTypeRetrieve.ts
 models/Site.ts
 models/TextFormatEnum.ts
 models/User.ts

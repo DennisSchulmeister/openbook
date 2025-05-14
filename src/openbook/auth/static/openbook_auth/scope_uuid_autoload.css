@@ -1,0 +1,15 @@
+/**
+ * Prevent flickering when the permission from-list is mutated. This occurs
+ * because Django Unfold (or Django Admin) always rebuilds the full list,
+ * when permissions are moved between to from/to lists and we then hide all
+ * permissions, that are not allowed. Here we make sure that the options are
+ * initially invisible unless explicitly made visible by us.
+ */
+#id_permissions_from option {
+    display: none;
+
+    &._visible {
+        display: block !important;
+    }
+}
+

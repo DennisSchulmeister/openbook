@@ -86,7 +86,7 @@ MIDDLEWARE = [
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
 
     # OpenBook
-    "openbook.auth.middleware.CurrentUserMiddleware",
+    "openbook.auth.middleware.current_user.CurrentUserMiddleware",
 ]
 
 ROOT_URLCONF = "openbook.urls"

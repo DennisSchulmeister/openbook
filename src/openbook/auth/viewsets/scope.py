@@ -27,10 +27,11 @@ from ..utils                            import content_type_for_model_string
 from ..utils                            import model_string_for_content_type
 
 class AllowedPermissionSerializer(Serializer):
-    id   = IntegerField()
-    perm = CharField()
-    app  = CharField()
-    name = CharField()
+    id    = IntegerField()
+    perm  = CharField()
+    app   = CharField()
+    model = CharField()
+    name  = CharField()
 
 class ScopeObjectSerializer(Serializer):
     uuid = UUIDField()
@@ -147,10 +148,11 @@ class ScopeViewSet(ViewSet):
             model = permission.content_type.model_class()
 
             result["allowed_permissions"].append({
-                "id":   permission.pk,
-                "perm": perm_string_for_permission(permission),
-                "app":  model._meta.app_config.verbose_name,
-                "name": translation.name if translation else permission.name,
+                "id":    permission.pk,
+                "perm":  perm_string_for_permission(permission),
+                "app":   model._meta.app_config.verbose_name,
+                "model": model._meta.verbose_name,
+                "name":  translation.name if translation else permission.name,
             })
         
         serializer = ScopeTypeRetrieveSerializer(data=result)

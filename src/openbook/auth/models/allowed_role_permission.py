@@ -30,7 +30,9 @@ class AllowedRolePermission(UUIDMixin):
         ]
 
     def __str__(self):
-        return self.scope_type
+        scope_name = f"{self.scope_type.name} |" if self.scope_type else ""
+        perm_name  = f"{self.permission}" if self.permission else ""
+        return f"{scope_name} {perm_name}".strip()
 
     @classmethod
     def get_for_scope_type(cls, scope_type: ContentType) -> "list[AllowedRolePermission]":

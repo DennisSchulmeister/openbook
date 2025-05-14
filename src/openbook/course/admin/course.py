@@ -14,6 +14,8 @@ from openbook.auth.admin.role         import RoleInline
 from openbook.auth.admin.mixins.audit import audit_fields
 from openbook.auth.admin.mixins.audit import audit_fieldset
 from openbook.auth.admin.mixins.auth  import ScopedRolesResourceMixin
+from openbook.auth.admin.mixins.auth  import permissions_fieldset
+from ..forms.course                   import CourseForm
 from ..models.course                  import Course
 
 class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
@@ -32,11 +34,12 @@ class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
 
 class CourseAdmin(CustomModelAdmin):
     model               = Course
+    form                = CourseForm
     resource_classes    = (CourseResource,)
-    list_display        = ("name", "slug", "is_template", *audit_fields)
-    list_display_links  = ("name", "slug")
-    list_filter         = ("name", "is_template", *audit_fields)
-    search_fields       = ("name", "slug", "description")
+    list_display        = ("name", "slug", "is_template", "owner", *audit_fields)
+    list_display_links  = ("name", "slug", "owner")
+    list_filter         = ("name", "is_template", "owner", *audit_fields)
+    search_fields       = ("name", "slug", "owner", "description")
     readonly_fields     = (*audit_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("public_permissions",)
@@ -50,10 +53,7 @@ class CourseAdmin(CustomModelAdmin):
             "classes": ("tab",),
             "fields": ("description", "text_format"), # Description, Text Format, AI Notes
         }),
-        (_("Permissions"), {
-            "classes": ("tab",),
-            "fields": ("owner", "public_permissions"),
-        }),
+        permissions_fieldset,
         audit_fieldset,
     )
 
@@ -65,8 +65,5 @@ class CourseAdmin(CustomModelAdmin):
             "classes": ("tab",),
             "fields": ("description", "text_format"), # Description, Text Format, AI Notes
         }),
-        (_("Permissions"), {
-            "classes": ("tab",),
-            "fields": ("owner", "public_permissions"),
-        }),
+        permissions_fieldset,
     )

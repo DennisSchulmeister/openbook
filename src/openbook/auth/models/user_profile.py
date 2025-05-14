@@ -6,13 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.conf                import settings
-from django.db                  import models
-from django.db.models.signals   import post_save
-from django.dispatch            import receiver
-from django.utils.translation   import gettext_lazy as _
+from django.conf                     import settings
+from django.db                       import models
+from django.db.models.signals        import post_save
+from django.dispatch                 import receiver
+from django.utils.translation        import gettext_lazy as _
 
-from openbook.core.models.utils import calc_file_path
+from openbook.core.models.utils.file import calc_file_path
 
 class UserProfile(models.Model):
     """

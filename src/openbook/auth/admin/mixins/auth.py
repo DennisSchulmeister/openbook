@@ -6,14 +6,22 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth        import get_user_model
-from django.contrib.auth.models import Permission
-from django.utils.translation   import gettext_lazy as _
-from import_export.fields       import Field
+from django.contrib.admin               import RelatedOnlyFieldListFilter
+from django.contrib.auth                import get_user_model
+from django.contrib.auth.models         import Permission
+from django.utils.translation           import gettext_lazy as _
+from import_export.fields               import Field
 
-from openbook.admin             import ImportExportModelResource
-from openbook.auth.utils        import perm_string_for_permission
-from openbook.auth.utils        import permission_for_perm_string
+from openbook.admin                     import ImportExportModelResource
+from openbook.auth.utils                import perm_string_for_permission
+from openbook.auth.utils                import permission_for_perm_string
+
+scope_type_filter = ("scope_type", RelatedOnlyFieldListFilter)
+
+permissions_fieldset = (_("Permissions"), {
+    "classes": ("tab",),
+    "fields": ("owner", "public_permissions"),
+})
 
 class ScopedRolesResourceMixin(ImportExportModelResource):
     """

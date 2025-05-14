@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { TextFormatEnum } from './TextFormatEnum';
+import {
+    TextFormatEnumFromJSON,
+    TextFormatEnumFromJSONTyped,
+    TextFormatEnumToJSON,
+    TextFormatEnumToJSONTyped,
+} from './TextFormatEnum';
 import type { Permission } from './Permission';
 import {
     PermissionFromJSON,
@@ -22,9 +29,7 @@ import {
 } from './Permission';
 
 /**
- * Reuse full cleaning and validation logic on the model's in the REST API, including
- * `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
- * that the pre-filled model instance can be accessed in the DRF view.
+ * Full list of fields for retrieving a single role.
  * @export
  * @interface PatchedRole
  */
@@ -67,22 +72,22 @@ export interface PatchedRole {
     description?: string;
     /**
      * 
-     * @type {string}
+     * @type {TextFormatEnum}
      * @memberof PatchedRole
      */
-    textFormat?: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PatchedRole
-     */
-    isActive?: boolean;
+    textFormat?: TextFormatEnum;
     /**
      * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
      * @type {number}
      * @memberof PatchedRole
      */
     priority?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PatchedRole
+     */
+    isActive?: boolean;
     /**
      * 
      * @type {Permission}
@@ -94,7 +99,7 @@ export interface PatchedRole {
      * @type {number}
      * @memberof PatchedRole
      */
-    createdBy?: number | null;
+    readonly createdBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -106,7 +111,7 @@ export interface PatchedRole {
      * @type {number}
      * @memberof PatchedRole
      */
-    modifiedBy?: number | null;
+    readonly modifiedBy?: number | null;
     /**
      * 
      * @type {Date}
@@ -114,6 +119,8 @@ export interface PatchedRole {
      */
     readonly modifiedAt?: Date;
 }
+
+
 
 /**
  * Check if a given object implements the PatchedRole interface.
@@ -138,9 +145,9 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'slug': json['slug'] == null ? undefined : json['slug'],
         'name': json['name'] == null ? undefined : json['name'],
         'description': json['description'] == null ? undefined : json['description'],
-        'textFormat': json['text_format'] == null ? undefined : json['text_format'],
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
+        'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
         'priority': json['priority'] == null ? undefined : json['priority'],
+        'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'permissions': json['permissions'] == null ? undefined : PermissionFromJSON(json['permissions']),
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
@@ -153,7 +160,7 @@ export function PatchedRoleToJSON(json: any): PatchedRole {
     return PatchedRoleToJSONTyped(json, false);
 }
 
-export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -165,12 +172,10 @@ export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'created_a
         'slug': value['slug'],
         'name': value['name'],
         'description': value['description'],
-        'text_format': value['textFormat'],
-        'is_active': value['isActive'],
+        'text_format': TextFormatEnumToJSON(value['textFormat']),
         'priority': value['priority'],
+        'is_active': value['isActive'],
         'permissions': PermissionToJSON(value['permissions']),
-        'created_by': value['createdBy'],
-        'modified_by': value['modifiedBy'],
     };
 }
 

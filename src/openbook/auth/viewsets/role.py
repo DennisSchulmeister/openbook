@@ -6,7 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.core.exceptions           import ValidationError
 from django.utils.translation         import gettext_lazy as _
 from django_filters.filterset         import FilterSet
 from rest_framework.permissions       import IsAuthenticated
@@ -16,9 +15,9 @@ from openbook.drf                     import ModelViewSetMixin
 from openbook.drf                     import ModelSerializer
 
 from ..filters.permission             import PermissionFilterMixin
-from ..models.allowed_role_permission import AllowedRolePermission
 from ..models.role                    import Role
 from ..serializers.permission         import PermissionSerializer
+from ..validators                     import validate_permissions
 
 class RoleListSerializer(ModelSerializer):
     """
@@ -62,21 +61,10 @@ class RoleSerializer(ModelSerializer):
         """
         Check that only allowed permissions are assigned.
         """
-        scope_type = attributes.get("scope_type", None)
+        scope_type  = attributes.get("scope_type", None)
         permissions = attributes.get("permissions", None)
 
-        if not scope_type or not permissions:
-            return attributes
-        
-        allowed_permissions = AllowedRolePermission.get_for_scope_type(scope_type).all()
-        allowed_permission_objects = [allowed_permission.permission for allowed_permission in allowed_permissions]
-
-        for permission in permissions:
-            if not permission in allowed_permission_objects:
-                raise ValidationError(_("Permission %(perm)s cannot be assigned in this scope"), params={
-                    "perm": f"{permission}",
-                })
-            
+        validate_permissions(scope_type, permissions)
         return attributes
 
 class RoleFilter(PermissionFilterMixin, FilterSet):

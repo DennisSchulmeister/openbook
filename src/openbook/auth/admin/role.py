@@ -12,9 +12,9 @@ from unfold.admin             import TabularInline
 
 from openbook.admin           import CustomModelAdmin
 from openbook.admin           import ImportExportModelResource
-from .mixins                  import audit_fields
-from .mixins                  import audit_fieldset
-from .mixins                  import scope_type_filter
+from .mixins.audit            import audit_fields
+from .mixins.audit            import audit_fieldset
+from .mixins.auth             import scope_type_filter
 from ..forms.role             import RoleForm
 from ..models.role            import Role
 
