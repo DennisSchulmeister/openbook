@@ -11,8 +11,8 @@ from django.utils.translation         import gettext_lazy as _
 from openbook.admin                   import CustomModelAdmin
 from openbook.admin                   import ImportExportModelResource
 from openbook.auth.admin.role         import RoleInline
-from openbook.auth.admin.mixins.audit import audit_fields
-from openbook.auth.admin.mixins.audit import audit_fieldset
+from openbook.auth.admin.mixins.audit import created_modified_by_fields
+from openbook.auth.admin.mixins.audit import created_modified_by_fieldset
 from openbook.auth.admin.mixins.auth  import ScopedRolesResourceMixin
 from openbook.auth.admin.mixins.auth  import permissions_fieldset
 from ..forms.course                   import CourseForm
@@ -36,11 +36,11 @@ class CourseAdmin(CustomModelAdmin):
     model               = Course
     form                = CourseForm
     resource_classes    = (CourseResource,)
-    list_display        = ("name", "slug", "is_template", "owner", *audit_fields)
+    list_display        = ("name", "slug", "is_template", "owner", *created_modified_by_fields)
     list_display_links  = ("name", "slug", "owner")
-    list_filter         = ("name", "is_template", "owner", *audit_fields)
+    list_filter         = ("name", "is_template", "owner", *created_modified_by_fields)
     search_fields       = ("name", "slug", "owner", "description")
-    readonly_fields     = (*audit_fields,)
+    readonly_fields     = (*created_modified_by_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("public_permissions",)
     inlines             = (RoleInline,)
@@ -54,7 +54,7 @@ class CourseAdmin(CustomModelAdmin):
             "fields": ("description", "text_format"), # Description, Text Format, AI Notes
         }),
         permissions_fieldset,
-        audit_fieldset,
+        created_modified_by_fieldset,
     )
 
     add_fieldsets = (

@@ -15,6 +15,7 @@ from rest_framework.serializers import CharField
 from rest_framework.serializers import SerializerMethodField
 
 from openbook.drf               import ModelSerializer
+from ..utils                    import perm_string_for_permission
 
 class PermissionSerializer(ModelSerializer):
     """
@@ -36,8 +37,7 @@ class PermissionSerializer(ModelSerializer):
         """
         Permission string
         """
-        ct = obj.content_type
-        return f"{ct.app_label}.{ct.model}_{obj.codename}"
+        return perm_string_for_permission(obj)
 
     def to_internal_value(self, data):
         """

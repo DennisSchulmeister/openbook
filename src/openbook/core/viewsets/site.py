@@ -31,7 +31,7 @@ class SiteFilter(FilterSet):
 
     class Meta:
         model = Site
-        fields = ("id", "domain", "name", "short_name")
+        fields = ("domain", "name", "short_name")
 
 class SiteViewSet(ReadOnlyModelViewSet):
     __doc__ = "General Website Settings"

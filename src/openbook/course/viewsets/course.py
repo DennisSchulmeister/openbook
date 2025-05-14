@@ -6,97 +6,71 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.contenttypes.models   import ContentType
-from django_filters.filters               import CharFilter
-from rest_framework.viewsets              import ModelViewSet
+from rest_framework.viewsets                import ModelViewSet
 
-from openbook.drf                         import ModelViewSetMixin
-from openbook.drf                         import ModelSerializer
-from openbook.auth.filters.audit          import CreatedModifiedByFilterMixin
-from openbook.auth.serializers.permission import PermissionSerializer
-from openbook.auth.validators             import validate_permissions
-from openbook.auth.serializers.user       import UserReadField
-from openbook.auth.serializers.user       import UserWriteField
+from openbook.drf                           import ModelViewSetMixin
+from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
+from openbook.auth.filters.mixins.auth      import ScopedRolesFilterMixin
+from openbook.auth.viewsets.mixins.auth     import ScopedRolesViewSetMixin
+from openbook.auth.serializers.mixins.audit import CreatedModifiedBySerializerMixin
+from openbook.auth.serializers.mixins.auth  import ScopedRolesSerializerMixin
+from openbook.auth.serializers.mixins.auth  import ScopedRolesListSerializerMixin
+from openbook.core.filters.mixins.text      import NameDescriptionFilterMixin
+from openbook.core.viewsets.mixins.text     import name_description_fields
+from openbook.core.viewsets.mixins.text     import name_description_list_fields
 
-from ..models.course                      import Course
+from ..models.course                        import Course
 
-## TODO: ScopedRolesXXXMixin classes
-
-class CourseListSerializer(ModelSerializer):
+class CourseListSerializer(ScopedRolesListSerializerMixin, CreatedModifiedBySerializerMixin):
     """
     Reduced list of fields for filtering a list of courses.
     """
-    created_by  = UserReadField(read_only=True)
-    modified_by = UserReadField(read_only=True)
-    owner       = UserReadField(read_only=True)
-
     class Meta:
         model = Course
         fields = (
             "id",
             "slug",
-            "name",
-            "is_template", "owner",
-            "created_by", "created_at", "modified_by", "modified_at",
+            *name_description_list_fields,
+            "is_template",
+            *ScopedRolesListSerializerMixin.Meta.fields,
+            *CreatedModifiedBySerializerMixin.Meta.fields,
         )
+        read_only_fields = fields
 
-class CourseSerializer(ModelSerializer):
+class CourseSerializer(ScopedRolesSerializerMixin, CreatedModifiedBySerializerMixin):
     """
     Full list of fields for retrieving a single course.
     """
-    owner              = UserReadField(read_only=True)
-    owner_username     = UserWriteField(write_only=True)
-
-    public_permissions = PermissionSerializer(many=True)
-    created_by         = UserReadField(read_only=True)
-    modified_by        = UserReadField(read_only=True)
-
     class Meta:
         model  = Course
         fields = (
             "id",
             "slug",
-            "name", "description", "text_format",
+            *name_description_fields,
             "is_template",
-            "owner", "owner_username",
-            "public_permissions",
-            "created_by", "created_at", "modified_by", "modified_at",
+            *ScopedRolesSerializerMixin.Meta.fields,
+            *CreatedModifiedBySerializerMixin.Meta.fields,
         )
 
         read_only_fields = (
             "id",
-            "created_at", "modified_at",
+            *ScopedRolesSerializerMixin.Meta.read_only_fields,
+            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
         )
 
-    def validate(self, attributes):
-        """
-        Check that only allowed permissions are assigned.
-        """
-        scope_type = ContentType.objects.get_for_model(self.Meta.model)
-        public_permissions = attributes.get("public_permissions", None)
-
-        validate_permissions(scope_type, public_permissions)
-        return attributes
-
-class CourseFilter(CreatedModifiedByFilterMixin):
-    owner = CharFilter(method="owner_filter")
-
+class CourseFilter(NameDescriptionFilterMixin, CreatedModifiedByFilterMixin, ScopedRolesFilterMixin):
     class Meta:
         model  = Course
         fields = {
-            "id":          ("exact",),
             "slug":        ("exact",),
-            "name":        ("exact",),
+            **NameDescriptionFilterMixin.Meta.fields,
             "is_template": ("exact",),
-            "owner":       ("exact",),
+            **ScopedRolesFilterMixin.Meta.fields,
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
         permission_field = "public_permissions"
 
-    def owner_filter(self, queryset, name, value):
-        return queryset.filter(owner__username=value)
-
-class CourseViewSet(ModelViewSetMixin, ModelViewSet):
+class CourseViewSet(ScopedRolesViewSetMixin, ModelViewSetMixin, ModelViewSet):
     __doc__ = "Courses"
 
     queryset         = Course.objects.all()
@@ -108,11 +82,3 @@ class CourseViewSet(ModelViewSetMixin, ModelViewSet):
             return CourseListSerializer
         else:
             return CourseSerializer
-
-    def create(self, validated_data):
-        validated_data["owner"] = validated_data.pop("owner_username", None)
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        instance.owner = validated_data.pop("owner_username", instance.owner)
-        return super().update(instance, validated_data)

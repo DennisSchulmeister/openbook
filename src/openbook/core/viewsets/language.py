@@ -24,7 +24,8 @@ class LanguageFilter(FilterSet):
 
     class Meta:
         model  = Language
-        fields = LanguageSerializer.Meta.fields
+        fields = ("name",)
+
 class LanguageViewSet(ReadOnlyModelViewSet):
     ___doc__ = "Available Languages"
 

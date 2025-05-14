@@ -8,9 +8,9 @@
 
 from django.utils.translation import gettext_lazy as _
 
-audit_fields = ("created_by", "created_at", "modified_by", "modified_at")
+created_modified_by_fields = ("created_by", "created_at", "modified_by", "modified_at")
 
-audit_fieldset = (_("Audit Trail"), {
+created_modified_by_fieldset = (_("Audit Trail"), {
     "classes": ("tab",),
     "fields": (("created_by", "created_at"), ("modified_by", "modified_at")),
 })

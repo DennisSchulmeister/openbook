@@ -13,11 +13,10 @@ from rest_framework.viewsets          import ModelViewSet
 from openbook.drf                     import ModelViewSetMixin
 from openbook.drf                     import ModelSerializer
 
-from ..filters.permission             import PermissionFilterMixin
+from ..filters.mixins.permission      import PermissionFilterMixin
 from ..models.role                    import Role
 from ..serializers.permission         import PermissionSerializer
 from ..serializers.user               import UserReadField
-from ..serializers.user               import UserWriteField
 from ..validators                     import validate_permissions
 
 class RoleListSerializer(ModelSerializer):
