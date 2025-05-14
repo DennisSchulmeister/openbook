@@ -10,6 +10,7 @@
 from django.contrib.auth.models import Permission
 from django.core.exceptions     import ValidationError
 from django.utils.translation   import gettext_lazy as _
+from drf_spectacular.utils      import extend_schema_field
 from rest_framework.serializers import CharField
 from rest_framework.serializers import SerializerMethodField
 
@@ -20,7 +21,7 @@ class PermissionSerializer(ModelSerializer):
     Custom serializer for nested permission objects. Resolved all foreign keys so
     that the actual app label, model name and full permission string are included.
     """
-    __doc__ = _("Permissions")
+    __doc__ = "Permission"
 
     perm       = SerializerMethodField()    # For reading
     app_label  = CharField(source="content_type.app_label", read_only=True)
@@ -30,6 +31,7 @@ class PermissionSerializer(ModelSerializer):
         model  = Permission
         fields = ["perm", "app_label", "model_name", "codename", "name"]
     
+    @extend_schema_field(str)
     def get_perm(self, obj):
         """
         Permission string
@@ -39,17 +41,16 @@ class PermissionSerializer(ModelSerializer):
 
     def to_internal_value(self, data):
         """
-        Accepts either a permission string (e.g. "app.model_codename")
-        or a full dict with perm field.
+        Accepts a permission string (e.g. "app.model_codename")
         """
         if not isinstance(data, str):
-            raise ValidationError("Invalid format: expected a permission string.")
+            raise ValidationError(_("Invalid format: Expected a permission string."))
         
         try:
             app_label, rest = data.split(".", 1)
             model_name, codename = rest.split("_", 1)
         except ValueError:
-            raise ValidationError("Permission string must be in the format 'app.model_codename'")
+            raise ValidationError(_("Permission string must be in the format 'app.model_codename'"))
         
         try:
             permission = Permission.objects.select_related("content_type").get(
@@ -60,4 +61,4 @@ class PermissionSerializer(ModelSerializer):
 
             return permission
         except Permission.DoesNotExist:
-            raise ValidationError(f"Permission '{data}' not found.")
+            raise ValidationError(_("Permission '%(data)s' not found.") % {'data': data})

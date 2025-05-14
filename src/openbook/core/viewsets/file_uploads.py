@@ -6,11 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation import gettext_lazy as _
+from django_filters.filters   import CharFilter
+from django_filters.filterset import FilterSet
 from rest_framework.viewsets  import ModelViewSet
 
 from openbook.drf             import ModelViewSetMixin
 from openbook.drf             import ModelSerializer
+
 from ..models.file_uploads    import MediaFile
 
 class MediaFileListSerializer(ModelSerializer):
@@ -24,12 +26,19 @@ class MediaFileSerializer(ModelSerializer):
         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
         list_serializer_class = MediaFileListSerializer
 
+class MediaFileFilter(FilterSet):
+    file_name = CharFilter(lookup_expr="icontains")
+
+    class Meta:
+        model  = MediaFile
+        fields = MediaFileListSerializer.Meta.fields
+
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
-    __doc__ = _("Attached Media Files")
+    __doc__ = "Attached Media Files"
 
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
-    filterset_fields = MediaFileListSerializer.Meta.fields
+    filterset_class  = MediaFileFilter
     search_fields    = ("file_name",)
 
     def get_serializer_class(self):

@@ -6,7 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation         import gettext_lazy as _
 from django_filters.filterset         import FilterSet
 from rest_framework.permissions       import IsAuthenticated
 from rest_framework.viewsets          import ModelViewSet
@@ -17,12 +16,17 @@ from openbook.drf                     import ModelSerializer
 from ..filters.permission             import PermissionFilterMixin
 from ..models.role                    import Role
 from ..serializers.permission         import PermissionSerializer
+from ..serializers.user               import UserReadField
+from ..serializers.user               import UserWriteField
 from ..validators                     import validate_permissions
 
 class RoleListSerializer(ModelSerializer):
     """
     Reduced list of fields for filtering a list of roles.
     """
+    created_by  = UserReadField(read_only=True)
+    modified_by = UserReadField(read_only=True)
+
     class Meta:
         model = Role
         fields = (
@@ -39,6 +43,8 @@ class RoleSerializer(ModelSerializer):
     Full list of fields for retrieving a single role.
     """
     permissions = PermissionSerializer()
+    created_by  = UserReadField(read_only=True)
+    modified_by = UserReadField(read_only=True)
 
     class Meta:
         model  = Role
@@ -54,7 +60,7 @@ class RoleSerializer(ModelSerializer):
 
         read_only_fields = (
             "id",
-            "created_by", "created_at", "modified_by", "modified_at",
+            "created_at", "modified_at",
         )
 
     def validate(self, attributes):
@@ -76,7 +82,7 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Authenticated users only as we don't want the world to scrap our role list.
     """
-    __doc__ = _("User Roles Within a Scope")
+    __doc__ = "User Roles Within a Scope"
 
     queryset           = Role.objects.all()
     permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)

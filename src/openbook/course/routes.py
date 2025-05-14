@@ -9,5 +9,4 @@
 from . import viewsets
 
 def register_api_routes(router, prefix):
-    pass
-    # router.register(f"{prefix}/xyz", viewsets.XyzViewSet, basename="role")
+    router.register(f"{prefix}/courses", viewsets.CourseViewSet, basename="course")
