@@ -20,7 +20,7 @@ from ..serializers.permission         import PermissionListWriteField
 from ..serializers.user               import UserReadField
 from ..validators                     import validate_permissions
 
-## TODO: Refactor similar to CourseViewSet
+## TODO: Refactor similar to CourseViewSet (using existing mixins)
 
 class RoleListSerializer(ModelSerializer):
     """
@@ -97,3 +97,13 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
             return RoleListSerializer
         else:
             return RoleSerializer
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        instance.permissions.set(validated_data.pop("permission_strings", []))
+        return instance
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        instance.permissions.set(validated_data.pop("permission_strings", []))
+        return instance

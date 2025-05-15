@@ -14,10 +14,14 @@ class ScopedRolesViewSetMixin:
     """
     def create(self, validated_data):
         validated_data["owner"] = validated_data.pop("owner_username", None)
-        validated_data["public_permissions"] = validated_data.pop("public_permission_strings", None)
-        return super().create(validated_data)
+
+        instance = super().create(validated_data)
+        instance.public_permissions.set(validated_data.pop("public_permission_strings", []))
+        return instance
 
     def update(self, instance, validated_data):
         instance.owner = validated_data.pop("owner_username", instance.owner)
-        instance.public_permissions = validated_data.pop("public_permission_strings", instance.public_permissions)
-        return super().update(instance, validated_data)
+
+        instance = super().update(instance, validated_data)
+        instance.public_permissions.set(validated_data.pop("public_permission_strings", []))
+        return instance

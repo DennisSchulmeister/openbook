@@ -10,7 +10,9 @@ from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
 from rest_framework.serializers import Field
 from rest_framework.serializers import ListField
+from rest_framework.serializers import ListSerializer
 from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import ValidationError
 
 from openbook.drf               import ModelSerializer
 from ..models.user              import User
@@ -50,12 +52,17 @@ class UserReadField(Field):
     def to_representation(self, obj):
         return UserReadSerializer(obj).data
 
-@extend_schema_field({"description": "Users"})
+@extend_schema_field(ListSerializer(child=UserReadSerializer()))
 class UserListReadField(ListField):
     """
     Serializer field for reading multiple users.
     """
-    child = UserReadField()
+    def __init__(self, **kwargs):
+        self.child = UserReadField()
+        super().__init__(**kwargs)
+
+    def to_representation(self, value):
+        return [self.child.to_representation(item) for item in value.all()]
 
 @extend_schema_field({"type": "string", "description": "User name"})
 class UserWriteField(Field):
@@ -80,9 +87,21 @@ class UserWriteField(Field):
     def to_representation(self, obj):
         raise RuntimeError("UserWriteField used to deserialize data. Use UserReadField, instead.")
 
-@extend_schema_field({"description": "User names"})
+@extend_schema_field({
+    "type": "array",
+    "items": {"type": "string"},
+    "description": "List of user names"
+})
 class UserWriteListField(ListField):
     """
     Serializer field for writing multiple users.
     """
-    child = UserWriteField()
+    def __init__(self, **kwargs):
+        self.child = UserWriteField()
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if not isinstance(data, list):
+            raise ValidationError(_("Invalid format: Expected a list of user names."))
+
+        return [self.child.to_internal_value(item) for item in data]

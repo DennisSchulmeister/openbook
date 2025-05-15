@@ -21,10 +21,13 @@ def perm_name_for_permission(permission: "Permission") -> str:
         return ""
 
     if language:
-        translation = Permission_T.objects.get(parent = permission, language = language)
+        try:
+            translation = Permission_T.objects.get(parent = permission, language = language)
 
-        if translation and translation.name:
-            return translation.name
+            if translation.name:
+                return translation.name
+        except Permission_T.DoesNotExist:
+            pass
     
     return permission.name
     
@@ -39,7 +42,7 @@ def app_label_for_permission(permission: "Permission") -> str:
     """
     Get app label from permission object.
     """
-    permission.content_type.app_label if permission else ""
+    return permission.content_type.app_label if permission else ""
 
 def app_name_for_permission(permission: "Permission") -> str:
     """
