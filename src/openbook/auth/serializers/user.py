@@ -102,6 +102,6 @@ class UserWriteListField(ListField):
 
     def to_internal_value(self, data):
         if not isinstance(data, list):
-            raise ValidationError(_("Invalid format: Expected a list of user names."))
+            raise ValidationError(_("Invalid format: Expected a list of username strings."))
 
         return [self.child.to_internal_value(item) for item in data]

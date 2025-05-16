@@ -12,6 +12,17 @@ from django.core.exceptions             import ValidationError
 from django.db.models                   import QuerySet
 
 from .models.allowed_role_permission    import AllowedRolePermission
+from .models.mixins.auth                import ScopedRolesMixin
+
+def validate_scope_type(scope_type: ContentType):
+    """
+    Check that only valid scope types are assigned where the model class implements
+    the `ScopedRolesMixin`.
+    """
+    if not isinstance(scope_type.model_class(), ScopedRolesMixin):
+        raise ValidationError(_("Scope type %(scope_type)s is not valid."), params={
+            "scope_type": scope_type.model_class()._meta.verbose_name
+        })
 
 def validate_permissions(scope_type: ContentType, permissions: QuerySet):
     """

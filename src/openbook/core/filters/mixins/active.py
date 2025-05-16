@@ -6,6 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-name_description_list_fields = ("name",)
+from django_filters.filterset import FilterSet
+from django_filters.filters   import CharFilter
 
-name_description_fields = ("name", "description", "text_format")
+class ActiveInactiveFilterMixin(FilterSet):
+    """
+    Mixin filter class for any model that implements the `ActiveInactveMixin` and as such
+    has an `is_active` field.
+    """
+    class Meta:
+        fields = {"is_active": ("exact",)}

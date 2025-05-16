@@ -6,69 +6,85 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.viewsets                import ModelViewSet
+from rest_framework.viewsets                 import ModelViewSet
 
-from openbook.drf                           import ModelViewSetMixin
-from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
-from openbook.auth.filters.mixins.auth      import ScopedRolesFilterMixin
-from openbook.auth.viewsets.mixins.auth     import ScopedRolesViewSetMixin
-from openbook.auth.serializers.mixins.audit import CreatedModifiedBySerializerMixin
-from openbook.auth.serializers.mixins.auth  import ScopedRolesSerializerMixin
-from openbook.auth.serializers.mixins.auth  import ScopedRolesListSerializerMixin
-from openbook.core.filters.mixins.text      import NameDescriptionFilterMixin
-from openbook.core.viewsets.mixins.text     import name_description_fields
-from openbook.core.viewsets.mixins.text     import name_description_list_fields
+from openbook.drf                            import ModelViewSetMixin
+from openbook.auth.filters.mixins.audit      import CreatedModifiedByFilterMixin
+from openbook.auth.filters.mixins.auth       import ScopedRolesFilterMixin
+from openbook.auth.viewsets.mixins.auth      import ScopedRolesViewSetMixin
+from openbook.auth.serializers.mixins.audit  import CreatedModifiedBySerializerMixin
+from openbook.auth.serializers.mixins.auth   import ScopedRolesSerializerMixin
+from openbook.auth.serializers.mixins.auth   import ScopedRolesListSerializerMixin
+from openbook.core.filters.mixins.slug       import SlugFilterMixin
+from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
+from openbook.core.serializers.mixins.slug   import SlugSerializerMixin
+from openbook.core.serializers.mixins.text   import NameDescriptionListSerializerMixin
+from openbook.core.serializers.mixins.text   import NameDescriptionSerializerMixin
+from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 
-from ..models.course                        import Course
+from ..models.course                         import Course
 
-class CourseListSerializer(ScopedRolesListSerializerMixin, CreatedModifiedBySerializerMixin):
+class CourseListSerializer(
+    UUIDSerializerMixin,
+    SlugSerializerMixin,
+    NameDescriptionListSerializerMixin,
+    ScopedRolesListSerializerMixin,
+    CreatedModifiedBySerializerMixin,
+):
     """
     Reduced list of fields for filtering a list of courses.
     """
     class Meta:
         model = Course
         fields = (
-            "id",
-            "slug",
-            *name_description_list_fields,
+            *UUIDSerializerMixin.Meta.fields,
+            *SlugSerializerMixin.Meta.fields,
+            *NameDescriptionListSerializerMixin.Meta.fields,
             "is_template",
             *ScopedRolesListSerializerMixin.Meta.fields,
             *CreatedModifiedBySerializerMixin.Meta.fields,
         )
         read_only_fields = fields
 
-class CourseSerializer(ScopedRolesSerializerMixin, CreatedModifiedBySerializerMixin):
+class CourseSerializer(
+    UUIDSerializerMixin,
+    SlugSerializerMixin,
+    NameDescriptionSerializerMixin,
+    ScopedRolesSerializerMixin,
+    CreatedModifiedBySerializerMixin
+):
     """
     Full list of fields for retrieving a single course.
     """
     class Meta:
         model  = Course
         fields = (
-            "id",
-            "slug",
-            *name_description_fields,
+            *UUIDSerializerMixin.Meta.fields,
+            *SlugSerializerMixin.Meta.fields,
+            *NameDescriptionSerializerMixin.Meta.fields,
             "is_template",
             *ScopedRolesSerializerMixin.Meta.fields,
             *CreatedModifiedBySerializerMixin.Meta.fields,
         )
 
         read_only_fields = (
-            "id",
+            *UUIDSerializerMixin.Meta.read_only_fields,
+            *SlugSerializerMixin.Meta.read_only_fields,
+            *NameDescriptionSerializerMixin.Meta.read_only_fields,
             *ScopedRolesSerializerMixin.Meta.read_only_fields,
             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
         )
 
-class CourseFilter(NameDescriptionFilterMixin, CreatedModifiedByFilterMixin, ScopedRolesFilterMixin):
+class CourseFilter(SlugFilterMixin, NameDescriptionFilterMixin, CreatedModifiedByFilterMixin, ScopedRolesFilterMixin):
     class Meta:
         model  = Course
         fields = {
-            "slug":        ("exact",),
+            **SlugFilterMixin.Meta.fields,
             **NameDescriptionFilterMixin.Meta.fields,
             "is_template": ("exact",),
             **ScopedRolesFilterMixin.Meta.fields,
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
-        permission_field = "public_permissions"
 
 class CourseViewSet(ScopedRolesViewSetMixin, ModelViewSetMixin, ModelViewSet):
     __doc__ = "Courses"

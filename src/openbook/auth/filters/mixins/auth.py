@@ -21,3 +21,24 @@ class ScopedRolesFilterMixin(FilterSet):
 
     def owner_filter(self, queryset, name, value):
         return queryset.filter(owner__username=value)
+
+class ScopeFilterMixin(FilterSet):
+    """
+    Mixin filter class for any model that implements the `ScopedMixin` and therefor has
+    a `scope_type` field.
+    """
+    scope_type = CharFilter(method="scope_type_filter")
+
+    class Meta:
+        fields = {
+            "scope_type": ("exact",),
+            "scope_uuid": ("exact",),
+        }
+    
+    def scope_type_filter(self, queryset, name, value):
+        app_label, model = value.split(".", 1)
+
+        return queryset.filter(
+            scope_type__app_label = app_label,
+            scope_type__model     = model,
+        )

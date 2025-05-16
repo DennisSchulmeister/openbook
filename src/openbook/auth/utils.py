@@ -83,7 +83,7 @@ def model_string_for_content_type(content_type: "ContentType") -> str:
     """
     Serialize content type objet into model string as used by Django: `{app_label}.{model}`
     """
-    return f"{content_type.app_label}.{content_type.name}".lower() if content_type else ""
+    return f"{content_type.app_label}.{content_type.model}".lower() if content_type else ""
 
 def content_type_for_model_string(model_string: str) -> "ContentType":
     """

@@ -11,6 +11,7 @@ from django.utils.translation         import gettext_lazy as _
 from .mixins.auth                     import ScopeFormMixin
 from ..models.role                    import Role
 from ..validators                     import validate_permissions
+from ..validators                     import validate_scope_type
 
 class RoleForm(ScopeFormMixin):
     """
@@ -25,11 +26,12 @@ class RoleForm(ScopeFormMixin):
     
     def clean(self):
         """
-        Check that only allowed permissions are assigned.
+        Check that only allowed scope types and permissions are assigned.
         """
         cleaned_data = super().clean()
         scope_type  = cleaned_data["scope_type"]
         permissions = cleaned_data["permissions"]
         
+        validate_scope_type(scope_type)
         validate_permissions(scope_type, permissions)
         return cleaned_data
