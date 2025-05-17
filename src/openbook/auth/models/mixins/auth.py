@@ -192,8 +192,13 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         if not self.role:
             return
     
-        if self.scope_type != self.role.scope_type or self.scope_uuid != self.role.scope_uuid:
+        if not self.scope_type or not self.scope_uuid:
+           self.scope_type = self.role.scope_type
+           self.scope_uuid = self.role.scope_uuid
+        elif self.scope_type != self.role.scope_type or self.scope_uuid != self.role.scope_uuid:
             raise ValidationError(_("The scopes of the role and this object don't match."))
+
+        super().clean()
 
     def get_scope(self) -> models.Model:
         """

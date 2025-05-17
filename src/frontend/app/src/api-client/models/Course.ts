@@ -36,99 +36,93 @@ import {
 } from './PermissionRead';
 
 /**
- * Full list of fields for retrieving a single role.
+ * Full list of fields for retrieving a single course.
  * @export
- * @interface Role
+ * @interface Course
  */
-export interface Role {
+export interface Course {
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof Course
      */
     readonly id: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof Course
      */
     slug: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
-     */
-    scopeType: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Role
-     */
-    scopeUuid: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Role
+     * @memberof Course
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof Course
      */
     description?: string;
     /**
      * 
      * @type {TextFormatEnum}
-     * @memberof Role
+     * @memberof Course
      */
     textFormat?: TextFormatEnum;
     /**
-     * 
+     * Flag that this course is only used for creating other courses.
      * @type {boolean}
-     * @memberof Role
+     * @memberof Course
      */
-    isActive?: boolean;
-    /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
-     * @type {number}
-     * @memberof Role
-     */
-    priority: number;
-    /**
-     * 
-     * @type {Array<PermissionRead>}
-     * @memberof Role
-     */
-    readonly permissions: Array<PermissionRead>;
-    /**
-     * List of permission strings in Django format
-     * @type {Array<string>}
-     * @memberof Role
-     */
-    permissionStrings: Array<string>;
+    isTemplate?: boolean;
     /**
      * 
      * @type {UserRead}
-     * @memberof Role
+     * @memberof Course
+     */
+    readonly owner: UserRead;
+    /**
+     * User name
+     * @type {string}
+     * @memberof Course
+     */
+    ownerUsername: string;
+    /**
+     * 
+     * @type {Array<PermissionRead>}
+     * @memberof Course
+     */
+    readonly publicPermissions: Array<PermissionRead>;
+    /**
+     * List of permission strings in Django format
+     * @type {Array<string>}
+     * @memberof Course
+     */
+    publicPermissionStrings: Array<string>;
+    /**
+     * 
+     * @type {UserRead}
+     * @memberof Course
      */
     readonly createdBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof Role
+     * @memberof Course
      */
     readonly createdAt: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof Role
+     * @memberof Course
      */
     readonly modifiedBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof Role
+     * @memberof Course
      */
     readonly modifiedAt: Date;
 }
@@ -136,17 +130,16 @@ export interface Role {
 
 
 /**
- * Check if a given object implements the Role interface.
+ * Check if a given object implements the Course interface.
  */
-export function instanceOfRole(value: object): value is Role {
+export function instanceOfCourse(value: object): value is Course {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('slug' in value) || value['slug'] === undefined) return false;
-    if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
-    if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('priority' in value) || value['priority'] === undefined) return false;
-    if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    if (!('permissionStrings' in value) || value['permissionStrings'] === undefined) return false;
+    if (!('owner' in value) || value['owner'] === undefined) return false;
+    if (!('ownerUsername' in value) || value['ownerUsername'] === undefined) return false;
+    if (!('publicPermissions' in value) || value['publicPermissions'] === undefined) return false;
+    if (!('publicPermissionStrings' in value) || value['publicPermissionStrings'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -154,11 +147,11 @@ export function instanceOfRole(value: object): value is Role {
     return true;
 }
 
-export function RoleFromJSON(json: any): Role {
-    return RoleFromJSONTyped(json, false);
+export function CourseFromJSON(json: any): Course {
+    return CourseFromJSONTyped(json, false);
 }
 
-export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role {
+export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Course {
     if (json == null) {
         return json;
     }
@@ -166,15 +159,14 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
         
         'id': json['id'],
         'slug': json['slug'],
-        'scopeType': json['scope_type'],
-        'scopeUuid': json['scope_uuid'],
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
-        'priority': json['priority'],
-        'permissions': ((json['permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'permissionStrings': json['permission_strings'],
+        'isTemplate': json['is_template'] == null ? undefined : json['is_template'],
+        'owner': UserReadFromJSON(json['owner']),
+        'ownerUsername': json['owner_username'],
+        'publicPermissions': ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
+        'publicPermissionStrings': json['public_permission_strings'],
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -182,11 +174,11 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
     };
 }
 
-export function RoleToJSON(json: any): Role {
-    return RoleToJSONTyped(json, false);
+export function CourseToJSON(json: any): Course {
+    return CourseToJSONTyped(json, false);
 }
 
-export function RoleToJSONTyped(value?: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'public_permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -194,14 +186,12 @@ export function RoleToJSONTyped(value?: Omit<Role, 'id'|'permissions'|'created_b
     return {
         
         'slug': value['slug'],
-        'scope_type': value['scopeType'],
-        'scope_uuid': value['scopeUuid'],
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
-        'is_active': value['isActive'],
-        'priority': value['priority'],
-        'permission_strings': value['permissionStrings'],
+        'is_template': value['isTemplate'],
+        'owner_username': value['ownerUsername'],
+        'public_permission_strings': value['publicPermissionStrings'],
     };
 }
 

@@ -17,37 +17,37 @@ import * as runtime from '../runtime';
 import type {
   CurrentUserResponse,
   PaginatedRoleListList,
-  PaginatedUserList,
+  PaginatedUserReadList,
   PatchedRole,
-  PatchedUser,
+  PatchedUserRead,
   Role,
   ScopeTypeList,
   ScopeTypeRetrieve,
-  User,
+  UserRead,
 } from '../models/index';
 import {
     CurrentUserResponseFromJSON,
     CurrentUserResponseToJSON,
     PaginatedRoleListListFromJSON,
     PaginatedRoleListListToJSON,
-    PaginatedUserListFromJSON,
-    PaginatedUserListToJSON,
+    PaginatedUserReadListFromJSON,
+    PaginatedUserReadListToJSON,
     PatchedRoleFromJSON,
     PatchedRoleToJSON,
-    PatchedUserFromJSON,
-    PatchedUserToJSON,
+    PatchedUserReadFromJSON,
+    PatchedUserReadToJSON,
     RoleFromJSON,
     RoleToJSON,
     ScopeTypeListFromJSON,
     ScopeTypeListToJSON,
     ScopeTypeRetrieveFromJSON,
     ScopeTypeRetrieveToJSON,
-    UserFromJSON,
-    UserToJSON,
+    UserReadFromJSON,
+    UserReadToJSON,
 } from '../models/index';
 
 export interface AuthRolesCreateRequest {
-    role: Omit<Role, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthRolesDestroyRequest {
@@ -60,21 +60,26 @@ export interface AuthRolesListRequest {
     search?: string;
     sort?: string;
     createdAt?: Date;
-    createdBy?: number;
-    id?: string;
+    createdAtGte?: Date;
+    createdAtLte?: Date;
+    createdBy?: string;
     isActive?: boolean;
     modifiedAt?: Date;
-    modifiedBy?: number;
+    modifiedAtGte?: Date;
+    modifiedAtLte?: Date;
+    modifiedBy?: string;
     name?: string;
     priority?: number;
-    scopeType?: number;
+    priorityGte?: number;
+    priorityLte?: number;
+    scopeType?: string;
     scopeUuid?: string;
     slug?: string;
 }
 
 export interface AuthRolesPartialUpdateRequest {
     id: string;
-    patchedRole?: Omit<PatchedRole, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    patchedRole?: Omit<PatchedRole, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthRolesRetrieveRequest {
@@ -83,7 +88,7 @@ export interface AuthRolesRetrieveRequest {
 
 export interface AuthRolesUpdateRequest {
     id: string;
-    role: Omit<Role, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthScopesRetrieveRequest {
@@ -91,7 +96,7 @@ export interface AuthScopesRetrieveRequest {
 }
 
 export interface AuthUsersCreateRequest {
-    user: User;
+    userRead: Omit<UserRead, 'display_name'>;
 }
 
 export interface AuthUsersDestroyRequest {
@@ -106,12 +111,11 @@ export interface AuthUsersListRequest {
     firstName?: string;
     isStaff?: boolean;
     lastName?: string;
-    username?: string;
 }
 
 export interface AuthUsersPartialUpdateRequest {
     id: number;
-    patchedUser?: PatchedUser;
+    patchedUserRead?: Omit<PatchedUserRead, 'display_name'>;
 }
 
 export interface AuthUsersRetrieveRequest {
@@ -120,7 +124,7 @@ export interface AuthUsersRetrieveRequest {
 
 export interface AuthUsersUpdateRequest {
     id: number;
-    user: User;
+    userRead: Omit<UserRead, 'display_name'>;
 }
 
 /**
@@ -228,12 +232,16 @@ export class AuthApi extends runtime.BaseAPI {
             queryParameters['created_at'] = (requestParameters['createdAt'] as any).toISOString();
         }
 
-        if (requestParameters['createdBy'] != null) {
-            queryParameters['created_by'] = requestParameters['createdBy'];
+        if (requestParameters['createdAtGte'] != null) {
+            queryParameters['created_at__gte'] = (requestParameters['createdAtGte'] as any).toISOString();
         }
 
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
+        if (requestParameters['createdAtLte'] != null) {
+            queryParameters['created_at__lte'] = (requestParameters['createdAtLte'] as any).toISOString();
+        }
+
+        if (requestParameters['createdBy'] != null) {
+            queryParameters['created_by'] = requestParameters['createdBy'];
         }
 
         if (requestParameters['isActive'] != null) {
@@ -242,6 +250,14 @@ export class AuthApi extends runtime.BaseAPI {
 
         if (requestParameters['modifiedAt'] != null) {
             queryParameters['modified_at'] = (requestParameters['modifiedAt'] as any).toISOString();
+        }
+
+        if (requestParameters['modifiedAtGte'] != null) {
+            queryParameters['modified_at__gte'] = (requestParameters['modifiedAtGte'] as any).toISOString();
+        }
+
+        if (requestParameters['modifiedAtLte'] != null) {
+            queryParameters['modified_at__lte'] = (requestParameters['modifiedAtLte'] as any).toISOString();
         }
 
         if (requestParameters['modifiedBy'] != null) {
@@ -254,6 +270,14 @@ export class AuthApi extends runtime.BaseAPI {
 
         if (requestParameters['priority'] != null) {
             queryParameters['priority'] = requestParameters['priority'];
+        }
+
+        if (requestParameters['priorityGte'] != null) {
+            queryParameters['priority__gte'] = requestParameters['priorityGte'];
+        }
+
+        if (requestParameters['priorityLte'] != null) {
+            queryParameters['priority__lte'] = requestParameters['priorityLte'];
         }
 
         if (requestParameters['scopeType'] != null) {
@@ -480,11 +504,11 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Profiles
      */
-    async authUsersCreateRaw(requestParameters: AuthUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters['user'] == null) {
+    async authUsersCreateRaw(requestParameters: AuthUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
+        if (requestParameters['userRead'] == null) {
             throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling authUsersCreate().'
+                'userRead',
+                'Required parameter "userRead" was null or undefined when calling authUsersCreate().'
             );
         }
 
@@ -502,16 +526,16 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
+            body: UserReadToJSON(requestParameters['userRead']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * User Profiles
      */
-    async authUsersCreate(requestParameters: AuthUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async authUsersCreate(requestParameters: AuthUsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
         const response = await this.authUsersCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -583,7 +607,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Profiles
      */
-    async authUsersListRaw(requestParameters: AuthUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserList>> {
+    async authUsersListRaw(requestParameters: AuthUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserReadList>> {
         const queryParameters: any = {};
 
         if (requestParameters['page'] != null) {
@@ -614,10 +638,6 @@ export class AuthApi extends runtime.BaseAPI {
             queryParameters['last_name'] = requestParameters['lastName'];
         }
 
-        if (requestParameters['username'] != null) {
-            queryParameters['username'] = requestParameters['username'];
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
@@ -630,13 +650,13 @@ export class AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedUserListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedUserReadListFromJSON(jsonValue));
     }
 
     /**
      * User Profiles
      */
-    async authUsersList(requestParameters: AuthUsersListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedUserList> {
+    async authUsersList(requestParameters: AuthUsersListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedUserReadList> {
         const response = await this.authUsersListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -644,7 +664,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Profiles
      */
-    async authUsersPartialUpdateRaw(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async authUsersPartialUpdateRaw(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -666,16 +686,16 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: PatchedUserToJSON(requestParameters['patchedUser']),
+            body: PatchedUserReadToJSON(requestParameters['patchedUserRead']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * User Profiles
      */
-    async authUsersPartialUpdate(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async authUsersPartialUpdate(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
         const response = await this.authUsersPartialUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -683,7 +703,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Profiles
      */
-    async authUsersRetrieveRaw(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async authUsersRetrieveRaw(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -705,13 +725,13 @@ export class AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * User Profiles
      */
-    async authUsersRetrieve(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async authUsersRetrieve(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
         const response = await this.authUsersRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -719,7 +739,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * User Profiles
      */
-    async authUsersUpdateRaw(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async authUsersUpdateRaw(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserRead>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -727,10 +747,10 @@ export class AuthApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['user'] == null) {
+        if (requestParameters['userRead'] == null) {
             throw new runtime.RequiredError(
-                'user',
-                'Required parameter "user" was null or undefined when calling authUsersUpdate().'
+                'userRead',
+                'Required parameter "userRead" was null or undefined when calling authUsersUpdate().'
             );
         }
 
@@ -748,16 +768,16 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters['user']),
+            body: UserReadToJSON(requestParameters['userRead']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserReadFromJSON(jsonValue));
     }
 
     /**
      * User Profiles
      */
-    async authUsersUpdate(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async authUsersUpdate(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserRead> {
         const response = await this.authUsersUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }

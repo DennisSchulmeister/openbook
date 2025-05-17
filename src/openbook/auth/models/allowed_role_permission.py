@@ -6,12 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.contrib                       import admin
 from django.contrib.auth.models           import Permission
 from django.db                            import models
 from django.contrib.contenttypes.models   import ContentType
 from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.uuid     import UUIDMixin
+from ..utils                              import perm_name_for_permission
+from ..utils                              import perm_string_for_permission
 
 class AllowedRolePermission(UUIDMixin):
     """
@@ -40,3 +43,11 @@ class AllowedRolePermission(UUIDMixin):
         Get a list of allowed permissions for the given scope type.
         """
         return cls.objects.filter(scope_type=scope_type)
+    
+    @admin.display(description=_("Permission"))
+    def perm_name(self, obj=None):
+        return perm_name_for_permission(self.permission)
+
+    @admin.display(description=_("Code"))
+    def perm(self, obj=None):
+        return perm_string_for_permission(self.permission)

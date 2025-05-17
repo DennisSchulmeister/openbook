@@ -18,6 +18,7 @@ from openbook.admin            import ImportExportModelResource
 from ..models.user             import User
 from ..models.user_profile     import UserProfile
 
+# TODO: Import/Export
 class UserResource(ImportExportModelResource):
     class Meta:
         model = User

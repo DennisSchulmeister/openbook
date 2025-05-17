@@ -8,7 +8,6 @@
 
 from datetime                             import timezone
 from typing                               import TYPE_CHECKING
-
 from django.conf                          import settings
 from django.contrib.auth.models           import AbstractUser
 from django.db                            import models
@@ -17,7 +16,6 @@ from django.utils.translation             import gettext_lazy as _
 from openbook.core.models.mixins.active   import ActiveInactiveMixin
 from openbook.core.models.mixins.datetime import ValidityTimeSpanMixin
 from openbook.core.models.mixins.uuid     import UUIDMixin
-
 from .mixins.audit                        import CreatedModifiedByMixin
 from .mixins.auth                         import ScopeMixin
 
@@ -27,7 +25,7 @@ if TYPE_CHECKING:
 
 class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpanMixin, CreatedModifiedByMixin):
     """
-    Role assignments assign a given role (defined in a given scope) to user, effectively
+    A role assignment assigns a given role (defined in a given scope) to a user, effectively
     granting the object-level permissions associated with them.
     """
     class AssignmentMethod(models.TextChoices):
@@ -56,6 +54,16 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
 
     def __str__(self):
         return f"{self.user.username}: {self.role.name} {ActiveInactiveMixin.__str__(self)}".strip()
+
+    def clean_assignment_method(self):
+        """
+        Set assignment method to manual, when it is empty. Needed for the Django Admin, because
+        this field cannot be set manually.
+        """
+        if not self.assignment_method:
+            self.assignment_method = self.AssignmentMethod.MANUAL[0]
+
+        return self.assignment_method
 
     @classmethod
     def enroll(

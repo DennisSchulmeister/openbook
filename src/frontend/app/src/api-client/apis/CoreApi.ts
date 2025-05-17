@@ -48,7 +48,6 @@ export interface CoreLanguagesListRequest {
     pageSize?: number;
     search?: string;
     sort?: string;
-    language?: string;
     name?: string;
 }
 
@@ -96,7 +95,8 @@ export interface CoreSitesListRequest {
     search?: string;
     sort?: string;
     domain?: string;
-    id?: number;
+    name?: string;
+    shortName?: string;
 }
 
 export interface CoreSitesRetrieveRequest {
@@ -127,10 +127,6 @@ export class CoreApi extends runtime.BaseAPI {
 
         if (requestParameters['sort'] != null) {
             queryParameters['_sort'] = requestParameters['sort'];
-        }
-
-        if (requestParameters['language'] != null) {
-            queryParameters['language'] = requestParameters['language'];
         }
 
         if (requestParameters['name'] != null) {
@@ -508,8 +504,12 @@ export class CoreApi extends runtime.BaseAPI {
             queryParameters['domain'] = requestParameters['domain'];
         }
 
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
+        if (requestParameters['name'] != null) {
+            queryParameters['name'] = requestParameters['name'];
+        }
+
+        if (requestParameters['shortName'] != null) {
+            queryParameters['short_name'] = requestParameters['shortName'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

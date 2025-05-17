@@ -13,9 +13,9 @@ from openbook.admin                   import ImportExportModelResource
 from openbook.auth.admin.role         import RoleInline
 from openbook.auth.admin.mixins.audit import created_modified_by_fields
 from openbook.auth.admin.mixins.audit import created_modified_by_fieldset
-from openbook.auth.admin.mixins.auth  import ScopedRolesResourceMixin
 from openbook.auth.admin.mixins.auth  import permissions_fieldset
-from ..forms.course                   import CourseForm
+from openbook.auth.admin.mixins.auth  import ScopedRolesResourceMixin
+from openbook.auth.admin.mixins.auth  import ScopedRolesFormMixin
 from ..models.course                  import Course
 
 class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
@@ -31,6 +31,11 @@ class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
     
     def dehydrate_is_template(self, obj):
         return "true" if obj.is_template else "false"
+
+class CourseForm(ScopedRolesFormMixin):
+    class Meta:
+        model  = Course
+        fields = "__all__"
 
 class CourseAdmin(CustomModelAdmin):
     model               = Course

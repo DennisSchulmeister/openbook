@@ -36,99 +36,93 @@ import {
 } from './PermissionRead';
 
 /**
- * Full list of fields for retrieving a single role.
+ * Full list of fields for retrieving a single course.
  * @export
- * @interface PatchedRole
+ * @interface PatchedCourse
  */
-export interface PatchedRole {
+export interface PatchedCourse {
     /**
      * 
      * @type {string}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     readonly id?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     slug?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedRole
-     */
-    scopeType?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PatchedRole
-     */
-    scopeUuid?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     name?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     description?: string;
     /**
      * 
      * @type {TextFormatEnum}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     textFormat?: TextFormatEnum;
     /**
-     * 
+     * Flag that this course is only used for creating other courses.
      * @type {boolean}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
-    isActive?: boolean;
-    /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
-     * @type {number}
-     * @memberof PatchedRole
-     */
-    priority?: number;
-    /**
-     * 
-     * @type {Array<PermissionRead>}
-     * @memberof PatchedRole
-     */
-    readonly permissions?: Array<PermissionRead>;
-    /**
-     * List of permission strings in Django format
-     * @type {Array<string>}
-     * @memberof PatchedRole
-     */
-    permissionStrings?: Array<string>;
+    isTemplate?: boolean;
     /**
      * 
      * @type {UserRead}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
+     */
+    readonly owner?: UserRead;
+    /**
+     * User name
+     * @type {string}
+     * @memberof PatchedCourse
+     */
+    ownerUsername?: string;
+    /**
+     * 
+     * @type {Array<PermissionRead>}
+     * @memberof PatchedCourse
+     */
+    readonly publicPermissions?: Array<PermissionRead>;
+    /**
+     * List of permission strings in Django format
+     * @type {Array<string>}
+     * @memberof PatchedCourse
+     */
+    publicPermissionStrings?: Array<string>;
+    /**
+     * 
+     * @type {UserRead}
+     * @memberof PatchedCourse
      */
     readonly createdBy?: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     readonly createdAt?: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     readonly modifiedBy?: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof PatchedRole
+     * @memberof PatchedCourse
      */
     readonly modifiedAt?: Date;
 }
@@ -136,17 +130,17 @@ export interface PatchedRole {
 
 
 /**
- * Check if a given object implements the PatchedRole interface.
+ * Check if a given object implements the PatchedCourse interface.
  */
-export function instanceOfPatchedRole(value: object): value is PatchedRole {
+export function instanceOfPatchedCourse(value: object): value is PatchedCourse {
     return true;
 }
 
-export function PatchedRoleFromJSON(json: any): PatchedRole {
-    return PatchedRoleFromJSONTyped(json, false);
+export function PatchedCourseFromJSON(json: any): PatchedCourse {
+    return PatchedCourseFromJSONTyped(json, false);
 }
 
-export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): PatchedRole {
+export function PatchedCourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): PatchedCourse {
     if (json == null) {
         return json;
     }
@@ -154,15 +148,14 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'id': json['id'] == null ? undefined : json['id'],
         'slug': json['slug'] == null ? undefined : json['slug'],
-        'scopeType': json['scope_type'] == null ? undefined : json['scope_type'],
-        'scopeUuid': json['scope_uuid'] == null ? undefined : json['scope_uuid'],
         'name': json['name'] == null ? undefined : json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
-        'priority': json['priority'] == null ? undefined : json['priority'],
-        'permissions': json['permissions'] == null ? undefined : ((json['permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'permissionStrings': json['permission_strings'] == null ? undefined : json['permission_strings'],
+        'isTemplate': json['is_template'] == null ? undefined : json['is_template'],
+        'owner': json['owner'] == null ? undefined : UserReadFromJSON(json['owner']),
+        'ownerUsername': json['owner_username'] == null ? undefined : json['owner_username'],
+        'publicPermissions': json['public_permissions'] == null ? undefined : ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
+        'publicPermissionStrings': json['public_permission_strings'] == null ? undefined : json['public_permission_strings'],
         'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
         'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
@@ -170,11 +163,11 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function PatchedRoleToJSON(json: any): PatchedRole {
-    return PatchedRoleToJSONTyped(json, false);
+export function PatchedCourseToJSON(json: any): PatchedCourse {
+    return PatchedCourseToJSONTyped(json, false);
 }
 
-export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner'|'public_permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -182,14 +175,12 @@ export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'permissio
     return {
         
         'slug': value['slug'],
-        'scope_type': value['scopeType'],
-        'scope_uuid': value['scopeUuid'],
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
-        'is_active': value['isActive'],
-        'priority': value['priority'],
-        'permission_strings': value['permissionStrings'],
+        'is_template': value['isTemplate'],
+        'owner_username': value['ownerUsername'],
+        'public_permission_strings': value['publicPermissionStrings'],
     };
 }
 

@@ -22,90 +22,76 @@ import {
 } from './UserRead';
 
 /**
- * Reduced list of fields for filtering a list of roles.
+ * Reduced list of fields for filtering a list of courses.
  * @export
- * @interface RoleList
+ * @interface CourseList
  */
-export interface RoleList {
+export interface CourseList {
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly id: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly slug: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
-     */
-    scopeType: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RoleList
-     */
-    readonly scopeUuid: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly name: string;
     /**
-     * 
+     * Flag that this course is only used for creating other courses.
      * @type {boolean}
-     * @memberof RoleList
+     * @memberof CourseList
      */
-    readonly isActive: boolean;
-    /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
-     * @type {number}
-     * @memberof RoleList
-     */
-    readonly priority: number;
+    readonly isTemplate: boolean;
     /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof CourseList
+     */
+    readonly owner: UserRead;
+    /**
+     * 
+     * @type {UserRead}
+     * @memberof CourseList
      */
     readonly createdBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly createdAt: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly modifiedBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof CourseList
      */
     readonly modifiedAt: Date;
 }
 
 /**
- * Check if a given object implements the RoleList interface.
+ * Check if a given object implements the CourseList interface.
  */
-export function instanceOfRoleList(value: object): value is RoleList {
+export function instanceOfCourseList(value: object): value is CourseList {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('slug' in value) || value['slug'] === undefined) return false;
-    if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
-    if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('isActive' in value) || value['isActive'] === undefined) return false;
-    if (!('priority' in value) || value['priority'] === undefined) return false;
+    if (!('isTemplate' in value) || value['isTemplate'] === undefined) return false;
+    if (!('owner' in value) || value['owner'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -113,11 +99,11 @@ export function instanceOfRoleList(value: object): value is RoleList {
     return true;
 }
 
-export function RoleListFromJSON(json: any): RoleList {
-    return RoleListFromJSONTyped(json, false);
+export function CourseListFromJSON(json: any): CourseList {
+    return CourseListFromJSONTyped(json, false);
 }
 
-export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): RoleList {
+export function CourseListFromJSONTyped(json: any, ignoreDiscriminator: boolean): CourseList {
     if (json == null) {
         return json;
     }
@@ -125,11 +111,9 @@ export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         
         'id': json['id'],
         'slug': json['slug'],
-        'scopeType': json['scope_type'],
-        'scopeUuid': json['scope_uuid'],
         'name': json['name'],
-        'isActive': json['is_active'],
-        'priority': json['priority'],
+        'isTemplate': json['is_template'],
+        'owner': UserReadFromJSON(json['owner']),
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -137,18 +121,17 @@ export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function RoleListToJSON(json: any): RoleList {
-    return RoleListToJSONTyped(json, false);
+export function CourseListToJSON(json: any): CourseList {
+    return CourseListToJSONTyped(json, false);
 }
 
-export function RoleListToJSONTyped(value?: Omit<RoleList, 'id'|'slug'|'scope_uuid'|'name'|'is_active'|'priority'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function CourseListToJSONTyped(value?: Omit<CourseList, 'id'|'slug'|'name'|'is_template'|'owner'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'scope_type': value['scopeType'],
     };
 }
 

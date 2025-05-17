@@ -12,6 +12,7 @@ from openbook.admin            import ImportExportModelResource
 
 from ..models.group            import Group
 
+# TODO: Import/Export
 class GroupResource(ImportExportModelResource):
     class Meta:
         model = Group

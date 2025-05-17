@@ -42,6 +42,12 @@ export interface AllowedPermission {
      * @type {string}
      * @memberof AllowedPermission
      */
+    model: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AllowedPermission
+     */
     name: string;
 }
 
@@ -52,6 +58,7 @@ export function instanceOfAllowedPermission(value: object): value is AllowedPerm
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('perm' in value) || value['perm'] === undefined) return false;
     if (!('app' in value) || value['app'] === undefined) return false;
+    if (!('model' in value) || value['model'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
@@ -69,6 +76,7 @@ export function AllowedPermissionFromJSONTyped(json: any, ignoreDiscriminator: b
         'id': json['id'],
         'perm': json['perm'],
         'app': json['app'],
+        'model': json['model'],
         'name': json['name'],
     };
 }
@@ -87,6 +95,7 @@ export function AllowedPermissionToJSONTyped(value?: AllowedPermission | null, i
         'id': value['id'],
         'perm': value['perm'],
         'app': value['app'],
+        'model': value['model'],
         'name': value['name'],
     };
 }
