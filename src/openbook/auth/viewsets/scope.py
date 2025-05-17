@@ -49,7 +49,7 @@ class ScopeTypeListSerializer(Serializer):
     id    = CharField()
     label = CharField()
 
-class ScopeViewSet(ViewSet):
+class ScopeTypeViewSet(ViewSet):
     """
     Permission scopes. When a list is requested, a flat list of scope types will be returned.
     If a single object is requested, full details including all scopes and allowed permissions

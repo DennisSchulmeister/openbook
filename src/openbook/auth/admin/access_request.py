@@ -17,6 +17,7 @@ from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
+from .mixins.auth                      import ScopeRoleFieldMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.access_request           import AccessRequest
 
@@ -25,13 +26,16 @@ class AccessRequestResource(ImportExportModelResource):
     class Meta:
         model = AccessRequest
 
-class AccessRequestForm(ScopeFormMixin):
+class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldMixin):
     class Meta:
         model  = AccessRequest
         fields = "__all__"
     
     class Media:
-        js = ScopeFormMixin.Media.js
+        css = {
+            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldMixin.Media.css["all"]),
+        }
+        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
 # TODO: Inline
 class AccessRequestInline(GenericTabularInline, TabularInline):

@@ -13,3 +13,11 @@
     }
 }
 
+/**
+ * Workaround: Widgets that are set to disabled in the form, rather then declaring
+ * them read-only in the ModelForm class are not greyed out by Django Unfold.
+ */
+select[disabled] {
+    background-color: rgb(var(--color-base-50));
+    border-color: rgb(var(--color-base-700));
+}

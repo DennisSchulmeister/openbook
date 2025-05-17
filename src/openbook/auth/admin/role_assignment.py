@@ -17,6 +17,7 @@ from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
+from .mixins.auth                      import ScopeRoleFieldMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.role_assignment          import RoleAssignment
 
@@ -25,13 +26,16 @@ class RoleAssignmentResource(ImportExportModelResource):
     class Meta:
         model = RoleAssignment
 
-class RoleAssignmentForm(ScopeFormMixin):
+class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldMixin):
     class Meta:
         model  = RoleAssignment
         fields = "__all__"
     
     class Media:
-        js = ScopeFormMixin.Media.js
+        css = {
+            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldMixin.Media.css["all"]),
+        }
+        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
 # TODO: Inline
 class RoleAssignmentInline(GenericTabularInline, TabularInline):
@@ -45,7 +49,6 @@ class RoleAssignmentInline(GenericTabularInline, TabularInline):
     show_change_link    = True
     tab                 = True
 
-# TODO:
 class RoleAssignmentAdmin(CustomModelAdmin):
     model              = RoleAssignment
     form               = RoleAssignmentForm
@@ -55,7 +58,6 @@ class RoleAssignmentAdmin(CustomModelAdmin):
     ordering            = ("scope_type", "scope_uuid", "role", "user")
     search_fields       = ("role__name", "user__username", "user__first_name", "user__last_name")
     readonly_fields     = ("assignment_method", "enrollment_method", "access_request", *created_modified_by_fields,)
-    # "scope_type", "scope_object",
 
     list_filter = (
         scope_type_filter,
@@ -70,8 +72,8 @@ class RoleAssignmentAdmin(CustomModelAdmin):
         (None, {
             "fields": (
                 ("scope_type", "scope_uuid"),
-                ("role", "user", "is_active"), 
                 ("assignment_method", "enrollment_method", "access_request"),
+                ("role", "user", "is_active"), 
             ),
         }),
         (_("Validity"), {

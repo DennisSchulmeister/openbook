@@ -12,5 +12,5 @@
 # from .permission              import PermissionViewSet
 # from .role_assignment         import RoleAssignmentViewSet
 from .role                    import RoleViewSet
-from .scope                   import ScopeViewSet
+from .scope                   import ScopeTypeViewSet
 from .user                    import UserViewSet

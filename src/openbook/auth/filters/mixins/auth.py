@@ -36,9 +36,12 @@ class ScopeFilterMixin(FilterSet):
         }
     
     def scope_type_filter(self, queryset, name, value):
-        app_label, model = value.split(".", 1)
+        try:
+            return queryset.filter(scope_type__pk=int(value))
+        except ValueError:
+            app_label, model = value.split(".", 1)
 
-        return queryset.filter(
-            scope_type__app_label = app_label,
-            scope_type__model     = model,
-        )
+            return queryset.filter(
+                scope_type__app_label = app_label,
+                scope_type__model     = model,
+            )

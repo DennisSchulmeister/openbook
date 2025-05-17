@@ -55,15 +55,15 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
     def __str__(self):
         return f"{self.user.username}: {self.role.name} {ActiveInactiveMixin.__str__(self)}".strip()
 
-    def clean_assignment_method(self):
+    def clean(self):
         """
         Set assignment method to manual, when it is empty. Needed for the Django Admin, because
         this field cannot be set manually.
         """
         if not self.assignment_method:
-            self.assignment_method = self.AssignmentMethod.MANUAL[0]
+            self.assignment_method = self.AssignmentMethod.MANUAL
 
-        return self.assignment_method
+        return super().clean()
 
     @classmethod
     def enroll(

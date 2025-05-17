@@ -18,7 +18,16 @@ class UUIDMixin(models.Model):
     reasons, we want to avoid predictable sequences. But unfortunately we cannot
     enforce this in Django, as Auto IDs needs to be integers.
     """
-    id = models.UUIDField(verbose_name=_("Id"), primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(verbose_name=_("Id"), primary_key=True, editable=False)
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        """
+        Assign new UUID when saving a new entry.
+        """
+        if not self.id:
+            self.id = uuid.uuid4()
+        
+        return super().save(*args, **kwargs)

@@ -9,112 +9,181 @@
 */
 
 /**
- * Update scope uuid choices according to the selected scope type.
- * The choices are fetched via the API.
+ * Handler class that fetches the required information on the currently selected
+ * scope and updates all dependent UI fields accordingly. Also watches the UI
+ * fields for a changed scope type to repeat the process.
  */
-document.addEventListener("DOMContentLoaded", async () => {
-    let scopeTypeField;
-    let scopeUuidField;
-    let permissionsFromField;
-    let permissionsToField;
-    let allPermissionOptions = [];
-    let permissionsFromMutationObserver;
-    let count = 0;
+class ScopeDependantFieldsHandler {
+    // Input fields
+    scopeTypeField       = document.querySelector("#id_scope_type");
+    scopeUuidField       = document.querySelector("#id_scope_uuid");
+    permissionsFromField = document.querySelector("#id_permissions_from");
+    permissionsToField   = document.querySelector("#id_permissions_to");
 
-    while (!permissionsFromField && count < 100) {
-        await new Promise(resolve => window.setTimeout(resolve, 250));
-        count++;
+    // Auxiliary variables
+    scopeUuidChangeEventListenerRegistered = false;
+    permissionsFromMutationObserver;
+    retryCount = 0;
 
-        scopeTypeField       = document.querySelector("#id_scope_type");
-        scopeUuidField       = document.querySelector("#id_scope_uuid");
-        permissionsFromField = document.querySelector("#id_permissions_from");
-        permissionsToField   = document.querySelector("#id_permissions_to");
+    // Scope type data from backend
+    scopeTypeDetails = {
+        scopeType: "",
+        inFlight:  false,
+        data:      {},
     }
 
-    if (!permissionsFromField) {
-        console.error("Field #id_permissions_from is still not available. Aborting!");
-        return;
-    }
+    /**
+     * Kickstart handling. This calls all other methods as required.
+     */
+    async updateAll(permissionsOnly) {
+        if (++this.retryCount > 20) return;
 
-    async function updateScopeUuidChoices(scopeType, newValue) {
         try {
-            let result = {};
-
-            if (scopeType) {
-                let url = `/api/auth/scopes/${scopeType}`;
-                let response = await fetch(url);
+            this.queryDomElements();
     
-                if (!response.ok) {
-                    throw new Error(await response.text());
-                }
-    
-                result = (await response.json()) || {};
+            if (this.scopeTypeField && !permissionsOnly) {
+                await this.fetchScopeTypeDetails(this.scopeTypeField.value || "");
+                this.updateScopeUuidField();
             }
 
-            // Clear and repopulate scopeUuidField
-            selectedValue = scopeUuidField.querySelector("[selected]")?.value || "";
-            if (newValue) scopeUuidField.innerHTML = "";
-
-            for (let scope_object of result.objects || []) {
-                let option = new Option(scope_object.name, scope_object.uuid);
-                if (scope_object.uuid === selectedValue) option.selected = true;
-                scopeUuidField.appendChild(option);
-            }
-
-            if (!selectedValue) {
-                let option = new Option("", "");
-                option.setAttribute("selected", "");
-                scopeUuidField.appendChild(option);
-            }
-
-            // Hide disallowed permissions from the permission filter
-            if (!result.allowed_permissions) result.allowed_permissions = [];
-            permissionsFromMutationObserver._mutex = true;
-            allPermissionOptions = [];
-            
-            for (let option of permissionsFromField.querySelectorAll("option")) {                
-                option.classList.remove("_visible");
-                allPermissionOptions.push(option);
-                option.remove();
-            }
-
-            for (let allowedPermission of result.allowed_permissions) {
-                let toPermission = permissionsToField.querySelector(`option[value="${allowedPermission.id}"]`);
-
-                allPermissionOptions.filter(option => {
-                    if (option.value == allowedPermission.id && !toPermission) {
-                        //option.setAttribute("title", `${allowedPermission.model} | ${allowedPermission.name}`);
-                        option.classList.add("_visible");
-                        permissionsFromField.appendChild(option);
-                        return false;
-                    }
-
-                    return true;
-                });
+            if (this.permissionsFromField && this.permissionsToField) {
+                this.updatePermissionsFilter();
+            } else {
+                window.setTimeout(() => this.updateAll(true), 250);
             }
         } catch (err) {
-            console.error("Failed to load scope UUIDs:", err);
+            console.error("Failed to update scope dependant fields:", err);
         }
     }
 
-    scopeTypeField.addEventListener("change", () => {
-        let selected = scopeTypeField.value || "";
-        updateScopeUuidChoices(selected, true);
-    });
+    /**
+     * This method must be called at least once to get the field references from the DOM.
+     * For the permissions filter the call must be repeated a second or so, until the filter
+     * becomes available. If it is still not available after a few seconds it should be safe
+     * to assume there is no permissions filter on the page.
+     * 
+     * If the scope UUID fields is found, a change event listener is registered.
+     * If the permissions filter is found, a mutation handler is registered.
+     */
+    queryDomElements() {
+        this.scopeTypeField       = document.querySelector("#id_scope_type");
+        this.scopeUuidField       = document.querySelector("#id_scope_uuid");
+        this.permissionsFromField = document.querySelector("#id_permissions_from");
+        this.permissionsToField   = document.querySelector("#id_permissions_to");
 
-    permissionsFromMutationObserver = new MutationObserver(() => {
-        // Django Unfold (or Django Admin) rebuilds the M2M from list each time, an entry is
-        // moved between the from and to list. So we need to hide the disallowed options again.
-        if (permissionsFromMutationObserver._mutex) {
-            permissionsFromMutationObserver._mutex = false;
-            return;
+        // Register change event handler for the scope type
+        if (this.scopeTypeField && !this.scopeUuidChangeEventListenerRegistered) {
+            this.scopeUuidChangeEventListenerRegistered = true;
+            this.scopeTypeField.addEventListener("change", () => this.updateAll());
         }
 
-        updateScopeUuidChoices(scopeTypeField.value || "", false);
-    });
+        // Register mutation handler for permissions from filter. Django Unfold (or Django Admin)
+        // rebuilds the M2M from list each time, an entry is moved between the from and to list.
+        // So we need to hide the disallowed options again.
+        if (this.permissionsFromField && !this.permissionsFromMutationObserver) {
+            this.permissionsFromMutationObserver = new MutationObserver(() => {
+                if (this.permissionsFromMutationObserver._mutex) {
+                    this.permissionsFromMutationObserver._mutex = false;
+                    return;
+                }
+        
+                this.updateAll(true);
+            });
+        
+            this.permissionsFromMutationObserver.observe(this.permissionsFromField, {childList: true});
+        }
+    }
 
-    permissionsFromMutationObserver.observe(permissionsFromField, {childList: true});
-    
-    // Load initial data if editing an existing instances
-    updateScopeUuidChoices(scopeTypeField.value || "", false);
+    /**
+     * Fetch new data from backend if the scope type has been changed and no other
+     * request is currently in flight.
+     * 
+     * @param {String} scopeType Selected scope type value
+     */
+    async fetchScopeTypeDetails(scopeType) {
+        if (!scopeType || this.scopeTypeDetails.inFlight) return;
+        if (this.scopeTypeDetails.scopeType === scopeType) return;
+
+        this.scopeTypeDetails.scopeType = scopeType;
+        this.scopeTypeDetails.inFlight  = true;
+
+        let url = `/api/auth/scope_types/${scopeType}/`;
+        let response = await fetch(url);
+
+        if (!response.ok) {
+            this.scopeTypeDetails.inFlight = false;
+            throw new Error(await response.text());
+        }
+
+        this.scopeTypeDetails.data = (await response.json()) || {};
+
+        if (!this.scopeTypeDetails.data.allowed_permissions) {
+            this.scopeTypeDetails.data.allowed_permissions = [];
+        }
+
+        this.scopeTypeDetails.inFlight = false;
+    }
+
+    /**
+     * Clear and repopulate scope UUID field, if it exists on the page.
+     */
+    updateScopeUuidField() {
+        if (!this.scopeUuidField) return;
+        if (this.scopeTypeDetails.inFlight) return;
+
+        let selectedValue = this.scopeUuidField.querySelector("[selected]")?.value || "";
+        this.scopeUuidField.innerHTML = "";
+
+        for (let scope_object of this.scopeTypeDetails.data.objects || []) {
+            let option = new Option(scope_object.name, scope_object.uuid);
+            if (scope_object.uuid === selectedValue) option.selected = true;
+            this.scopeUuidField.appendChild(option);
+        }
+
+        if (!selectedValue) {
+            let option = new Option("", "");
+            option.setAttribute("selected", "");
+            this.scopeUuidField.appendChild(option);
+        }
+    }
+
+    /**
+     * Hide disallowed permissions from the permission filter, if input fields for
+     * a horizontal permissions filter exist on the page.
+     */
+    updatePermissionsFilter() {
+        if (!this.permissionsFromField || !this.permissionsToField) return;
+        if (this.scopeTypeDetails.inFlight) return;
+
+        this.permissionsFromMutationObserver._mutex = true;
+        let allPermissionOptions = [];
+        
+        for (let option of this.permissionsFromField.querySelectorAll("option")) {                
+            option.classList.remove("_visible");
+            allPermissionOptions.push(option);
+            option.remove();
+        }
+
+        for (let allowedPermission of this.scopeTypeDetails.data.allowed_permissions) {
+            let toPermission = this.permissionsToField.querySelector(`option[value="${allowedPermission.id}"]`);
+
+            allPermissionOptions.filter(option => {
+                if (option.value == allowedPermission.id && !toPermission) {
+                    option.classList.add("_visible");
+                    this.permissionsFromField.appendChild(option);
+                    return false;
+                }
+
+                return true;
+            });
+        }
+    }
+}
+
+/**
+ * Get the stone rolling once the DOM has finished loading.
+ */
+document.addEventListener("DOMContentLoaded", async () => {
+    let handler = new ScopeDependantFieldsHandler();
+    handler.updateAll();
 });

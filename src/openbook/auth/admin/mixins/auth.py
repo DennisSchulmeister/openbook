@@ -122,10 +122,16 @@ class ScopeFormMixin(ModelForm):
 
             self.fields["scope_type"].choices = scope_types
 
+            if self.instance.pk:
+                self.fields["scope_type"].disabled = True
+
         if "scope_uuid" in self.fields:
             # Replace scope object widget
             self.fields["scope_uuid"].widget = UnfoldAdminSelectWidget()
             self.fields["scope_uuid"].label  = _("Scope Object")
+
+            if self.instance.pk:
+                self.fields["scope_uuid"].disabled = True
 
             # Preserve scope uuid value when editing an existing instance
             instance = kwargs.get("instance")
@@ -149,9 +155,20 @@ class ScopeFormMixin(ModelForm):
         validate_scope_type(scope_type)
         return cleaned_data
 
+class ScopeRoleFieldMixin(ModelForm):
+    """
+    Form mixin for the enrollment models that combine a scope with a role, e.g. User role
+    assignment, enrollment method etc. This mixin makes sure that only active roles of
+    the selected scope can be chosen and updates the role selection list accordingly
+    when the scope is changed.
+    """
+    class Media:
+        css = {"all": ()}
+        js  = ("openbook_auth/scope_roles_autoload.js",)
+
 class ScopedRolesFormMixin(ModelForm):
     """
-    For mixin for model forms where the model implements the `ScopedRoles` mixin and
+    Form mixin for model forms where the model implements the `ScopedRoles` mixin and
     therefor acts as a permission scope for user roles. This mixin makes sure that
     only allowed permissions are assigned as public permissions.
     """
@@ -160,7 +177,6 @@ class ScopedRolesFormMixin(ModelForm):
         Restrict visible choices in the HTML output to only allowed permissions.
         """
         super().__init__(*args, **kwargs)
-
 
         self._scope_type = ContentType.objects.get_for_model(self.Meta.model)
         allowed_permissions = AllowedRolePermission.get_for_scope_type(self._scope_type).values_list("permission", flat=True)

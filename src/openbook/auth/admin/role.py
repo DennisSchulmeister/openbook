@@ -31,6 +31,9 @@ class RoleForm(ScopeFormMixin):
         fields = "__all__"
     
     class Media:
+        css = {
+            "all": ScopeFormMixin.Media.css["all"],
+        }
         js = ScopeFormMixin.Media.js
     
     def clean(self):

@@ -17,6 +17,7 @@ from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
+from .mixins.auth                      import ScopeRoleFieldMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.enrollment_method        import EnrollmentMethod
 
@@ -25,13 +26,16 @@ class EnrollmentMethodResource(ImportExportModelResource):
     class Meta:
         model = EnrollmentMethod
 
-class EnrollmentMethodForm(ScopeFormMixin):
+class EnrollmentMethodForm(ScopeFormMixin, ScopeRoleFieldMixin):
     class Meta:
         model  = EnrollmentMethod
         fields = "__all__"
     
     class Media:
-        js = ScopeFormMixin.Media.js
+        css = {
+            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldMixin.Media.css["all"]),
+        }
+        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
 # TODO: Inline
 class EnrollmentMethodInline(GenericTabularInline, TabularInline):
