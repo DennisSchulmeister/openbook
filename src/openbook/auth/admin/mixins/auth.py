@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.forms                       import ModelForm
 from django.utils.translation           import gettext_lazy as _
 from import_export.fields               import Field
+from unfold.admin                       import TabularInline
 from unfold.contrib.forms.widgets       import UnfoldAdminSelectWidget
 
 from openbook.admin                     import ImportExportModelResource
@@ -20,6 +21,7 @@ from openbook.auth.utils                import perm_string_for_permission
 from openbook.auth.utils                import permission_for_perm_string
 from ...models.allowed_role_permission  import AllowedRolePermission
 from ...models.mixins.auth              import ScopedRolesMixin
+from ...models.role                     import Role
 from ...validators                      import validate_permissions
 from ...validators                      import validate_scope_type
 
@@ -165,6 +167,22 @@ class ScopeRoleFieldMixin(ModelForm):
     class Media:
         css = {"all": ()}
         js  = ("openbook_auth/scope_roles_autoload.js",)
+
+class ScopeRoleFieldInlineMixin(TabularInline):
+    """
+    Tabular inline mixin that restricts the choice of roles to the current scope.
+    """
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super().get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if self.parent_obj and db_field.name == "role":
+            scope_type = ContentType.objects.get_for_model(self.parent_obj)
+            kwargs["queryset"] = Role.objects.filter(scope_type=scope_type, scope_uuid=self.parent_obj.id)
+            pass
+    
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ScopedRolesFormMixin(ModelForm):
     """

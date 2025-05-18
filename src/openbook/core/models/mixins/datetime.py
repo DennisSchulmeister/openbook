@@ -86,6 +86,15 @@ class DurationMixin(models.Model):
         else:
             return ""
 
+    def save(self, *args, **kwargs):
+        """
+        Make sure to not fail the NOT NULL constraint on duration value.
+        """
+        if not self.duration_value:
+            self.duration_value = 0.0
+        
+        super().save(*args, **kwargs)
+
     def add_duration_to(self, timestamp: datetime) -> datetime:
         """
         Add the specified duration to the given timestamp.

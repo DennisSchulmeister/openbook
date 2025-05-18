@@ -12,6 +12,7 @@ from django.conf                          import settings
 from django.contrib.auth.models           import AbstractUser
 from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
+from django.utils.timezone                import now
 
 from openbook.core.models.mixins.active   import ActiveInactiveMixin
 from openbook.core.models.mixins.datetime import ValidityTimeSpanMixin
@@ -98,19 +99,27 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
             AccessRequest:    cls.AssignmentMethod.ACCESS_REQUEST,
         }
     
-        role_assignment = cls(
-            scope_type        = enrollment.scope_type,
-            scope_uuid        = enrollment.scope_uuid,
-            role              = enrollment.role,
-            user              = user,
-            assignment_method = assignment_methods.get(type(enrollment), cls.AssignmentMethod.MANUAL),
-            start_date        = timezone.now(),
-        )
+        try:
+            role_assignment = cls.objects.get(
+                scope_type  = enrollment.scope_type,
+                scope_uuid  = enrollment.scope_uuid,
+                role        = enrollment.role,
+                user        = user,
+            )
+        except cls.DoesNotExist:
+            role_assignment = cls(
+                scope_type        = enrollment.scope_type,
+                scope_uuid        = enrollment.scope_uuid,
+                role              = enrollment.role,
+                user              = user,
+                assignment_method = assignment_methods.get(type(enrollment), cls.AssignmentMethod.MANUAL),
+                start_date        = now(),
+            )
 
         if enrollment.end_date is not None:
             role_assignment.end_date = enrollment.end_date
         elif enrollment.duration_period and enrollment.duration_value:
-            role_assignment.end_date = enrollment.add_duration_to(role_assignment.start_date)
+            role_assignment.end_date = enrollment.add_duration_to(now())
 
         role_assignment.save()
 

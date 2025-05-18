@@ -6,11 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from datetime                             import timezone
-
 from django.conf                          import settings
 from django.contrib.auth.models           import AbstractUser
 from django.db                            import models
+from django.utils.timezone                import now
 from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.datetime import DurationMixin
@@ -33,8 +32,8 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         ACCEPTED = "accepted", _("Accepted")
         DENIED   = "denied",   _("Denied")
 
-    role          = models.ForeignKey("Role", on_delete=models.CASCADE, related_name="access_requests")
     user          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="access_requests")
+    role          = models.ForeignKey("Role", on_delete=models.CASCADE, related_name="access_requests")
     end_date      = models.DateTimeField(verbose_name=_("Enrollment Ends on"), blank=True, null=True)
     decision      = models.CharField(verbose_name=_("Decision"), max_length=10, choices=Decision, default=Decision.PENDING, null=False, blank=False)
     decision_date = models.DateTimeField(verbose_name=_("Decision Date"), blank=True, null=True)
@@ -72,10 +71,17 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         """
         from .role_assignment import RoleAssignment
         
-        if not self.pk:
+        if not self.decision:
             self.decision = self.Decision.PENDING
-            self.decision_date = None
         
+        if self.decision == self.Decision.PENDING:
+            self.decision_date = None
+        elif self.pk is not None:
+            old = type(self).objects.get(pk=self.pk)
+
+            if old.decision != self.decision:
+                self.decision_date = now()
+
         match self.decision:
             case self.Decision.ACCEPTED:
                 RoleAssignment.enroll(enrollment=self)
@@ -90,7 +96,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         the role assignment.
         """
         self.decision      = self.Decision.ACCEPTED
-        self.decision_date = timezone.now()
+        self.decision_date = now()
         self.save()
 
     def deny(self):
@@ -98,5 +104,5 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         Deny access request by setting the decision to denied and saving the object.
         """
         self.decision      = self.Decision.DENIED
-        self.decision_date = timezone.now()
+        self.decision_date = now()
         self.save()

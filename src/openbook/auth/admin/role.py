@@ -17,7 +17,10 @@ from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
 from .mixins.auth                      import scope_type_filter
+from ..models.access_request           import AccessRequest
+from ..models.enrollment_method        import EnrollmentMethod
 from ..models.role                     import Role
+from ..models.role_assignment          import RoleAssignment
 from ..validators                      import validate_permissions
 
 # TODO: Import/Export
@@ -51,14 +54,43 @@ class RoleInline(GenericTabularInline, TabularInline):
     model               = Role
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    fields              = ("priority", "name", "slug", "is_active", *created_modified_by_fields)
+    fields              = ("priority", "name", "slug", "is_active")
     ordering            = ("priority", "name")
-    readonly_fields     = (*created_modified_by_fields,)
+    readonly_fields     = ()
     prepopulated_fields = {"slug": ["name"]}
+    extra               = 0
     show_change_link    = True
     tab                 = True
 
-# TODO: Inlines for all role-dependent objects, directly defined here
+class _RoleAssignmentInline(TabularInline):
+    model            = RoleAssignment
+    fields           = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
+    ordering         = ("user",)
+    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
+    extra            = 0
+    show_change_link = True
+    tab              = True
+
+class _EnrollmentMethodInline(TabularInline):
+    model               = EnrollmentMethod
+    fields              = ("name", "is_active", "passphrase")
+    ordering            = ("name",)
+    extra               = 0
+    show_change_link    = True
+    tab                 = True
+
+class _AccessRequestInline(TabularInline):
+    model               = AccessRequest
+    fields              = ("user", "decision", "decision_date")
+    ordering            = ("user",)
+    readonly_fields     = ("user", "decision_date")
+    extra               = 0
+    show_change_link    = True
+    tab                 = True
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
 class RoleAdmin(CustomModelAdmin):
     model               = Role
     form                = RoleForm
@@ -71,10 +103,16 @@ class RoleAdmin(CustomModelAdmin):
     readonly_fields     = (*created_modified_by_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("permissions",)
+    inlines             = (_RoleAssignmentInline, _EnrollmentMethodInline, _AccessRequestInline)
 
     fieldsets = (
         (None, {
-            "fields": (("scope_type", "scope_uuid"), ("name", "slug"), ("priority", "is_active")),
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("name", "slug"),
+                "priority",
+                "is_active"
+            ),
         }),
         (_("Description"), {
             "classes": ("tab",),
@@ -89,7 +127,12 @@ class RoleAdmin(CustomModelAdmin):
 
     add_fieldsets = (
         (None, {
-            "fields": (("scope_type", "scope_uuid"), ("name", "slug"), ("priority", "is_active")),
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("name", "slug"),
+                "priority",
+                "is_active"
+            ),
         }),
         (_("Description"), {
             "classes": ("tab",),

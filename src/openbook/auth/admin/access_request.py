@@ -18,6 +18,7 @@ from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
 from .mixins.auth                      import ScopeRoleFieldMixin
+from .mixins.auth                      import ScopeRoleFieldInlineMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.access_request           import AccessRequest
 
@@ -37,30 +38,82 @@ class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldMixin):
         }
         js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
-# TODO: Inline
-class AccessRequestInline(GenericTabularInline, TabularInline):
+class AccessRequestInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model               = AccessRequest
-    form                = AccessRequestForm
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    # fields              = ("priority", "name", "slug", "is_active", *created_modified_by_fields)
-    # ordering            = ("priority", "name")
-    # readonly_fields     = (*created_modified_by_fields,)
+    fields              = ("user", "role", "decision", "decision_date")
+    ordering            = ("user", "role")
+    readonly_fields     = ("user", "role", "decision_date")
+    extra               = 0
     show_change_link    = True
     tab                 = True
 
-# TODO:
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
 class AccessRequestAdmin(CustomModelAdmin):
     model              = AccessRequest
     form               = AccessRequestForm
     resource_classes   = (AccessRequestResource,)
-#     list_display       = ("id", "domain", "name", "short_name")
-#     list_display_links = ("id", "domain")
-#     list_filter        = (scope_type_filter, *created_modified_by_filter)
-#     search_fields      = ("domain", "name", "short_name")
-# 
-#     fieldsets = (
-#         (None, {
-#             "fields": ("id", "domain", "name", "short_name", "about_url", "brand_color")
-#         }),
-#     )
+    list_display       = ("scope_type", "scope_object", "role", "user", "decision", "decision_date", *created_modified_by_fields)
+    list_display_links = ("scope_type", "scope_object", "role", "user")
+    ordering           = ("scope_type", "scope_uuid", "role", "user")
+    search_fields      = ("role__name", "user__username", "user__first_name", "user__last_name")
+    readonly_fields    = ("decision_date", *created_modified_by_fields,)
+
+    list_filter = (
+        scope_type_filter,
+        ("role", RelatedOnlyFieldListFilter),
+        ("user", RelatedOnlyFieldListFilter),
+        "decision",
+        "decision_date",
+        *created_modified_by_filter
+    )
+
+    fieldsets = (
+        (None, {
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("role", "user"),
+            ),
+        }),
+        (_("Validity"), {
+            "classes": ("tab",),
+            "description": _("Leave empty to request access for an unlimited period."),
+            "fields": (
+                ("duration_value", "duration_period"),
+                "end_date"
+            ),
+        }),
+        (_("Decision"), {
+            "classes": ("tab",),
+            "fields": (
+                ("decision", "decision_date"),
+            ),
+        }),
+        created_modified_by_fieldset,
+    )
+
+    add_fieldsets = (
+        (None, {
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("role", "user"),
+            ),
+        }),
+        (_("Validity"), {
+            "classes": ("tab",),
+            "description": _("Leave empty to request access for an unlimited period."),
+            "fields": (
+                ("duration_value", "duration_period"),
+                "end_date"
+            ),
+        }),
+        (_("Decision"), {
+            "classes": ("tab",),
+            "fields": (
+                ("decision", "decision_date"),
+            ),
+        }),
+    )

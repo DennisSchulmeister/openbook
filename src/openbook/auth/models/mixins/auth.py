@@ -155,7 +155,7 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
     used for role assignments to assign scoped roles to users. This is used internally to add a
     generic relation for the scope to models like `AccessRequest` or `EnrollmentMethod`.
     """
-    scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), on_delete=models.CASCADE, related_name = "+")
+    scope_type   = models.ForeignKey(ContentType, verbose_name=_("Scope Type"), null=True, on_delete=models.CASCADE, related_name = "+")
     scope_uuid   = models.UUIDField(verbose_name=_("Scope UUID"))
     scope_object = GenericForeignKey("scope_type", "scope_uuid")
 

@@ -18,6 +18,7 @@ from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
 from .mixins.auth                      import ScopeRoleFieldMixin
+from .mixins.auth                      import ScopeRoleFieldInlineMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.enrollment_method        import EnrollmentMethod
 
@@ -37,30 +38,75 @@ class EnrollmentMethodForm(ScopeFormMixin, ScopeRoleFieldMixin):
         }
         js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
-# TODO: Inline
-class EnrollmentMethodInline(GenericTabularInline, TabularInline):
+class EnrollmentMethodInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model               = EnrollmentMethod
-    form                = EnrollmentMethodForm
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    # fields              = ("priority", "name", "slug", "is_active", *created_modified_by_fields)
-    # ordering            = ("priority", "name")
-    # readonly_fields     = (*created_modified_by_fields,)
+    fields              = ("name", "role", "is_active", "passphrase")
+    ordering            = ("name", "role")
+    extra               = 0
     show_change_link    = True
     tab                 = True
 
-# TODO:
 class EnrollmentMethodAdmin(CustomModelAdmin):
     model              = EnrollmentMethod
     form               = EnrollmentMethodForm
     resource_classes   = (EnrollmentMethodResource,)
-#     list_display       = ("id", "domain", "name", "short_name")
-#     list_display_links = ("id", "domain")
-#     list_filter        = (scope_type_filter, *created_modified_by_filter)
-#     search_fields      = ("domain", "name", "short_name")
-# 
-#     fieldsets = (
-#         (None, {
-#             "fields": ("id", "domain", "name", "short_name", "about_url", "brand_color")
-#         }),
-#     )
+    list_display       = ("scope_type", "scope_object", "name", "role", "passphrase", "is_active", *created_modified_by_fields)
+    list_display_links = ("scope_type", "scope_object", "name", "role")
+    ordering           = ("scope_type", "scope_uuid", "name", "role")
+    search_fields      = ("name", "role__name", "user__username")
+    readonly_fields    = (*created_modified_by_fields,)
+
+    list_filter = (
+        scope_type_filter,
+        ("role", RelatedOnlyFieldListFilter),
+        "end_date",
+        "is_active",
+        *created_modified_by_filter
+    )
+
+    fieldsets = (
+        (None, {
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("role", "passphrase",),
+                "is_active"
+            ),
+        }),
+        (_("Description"), {
+            "classes": ("tab",),
+            "fields": ("description", "text_format"),
+        }),
+        (_("Validity"), {
+            "classes": ("tab",),
+            "description": _("Leave empty to make the enrollment valid for an unlimited period. Otherwise either set a duration or an end date."),
+            "fields": (
+                ("duration_value", "duration_period"),
+                "end_date"
+            ),
+        }),
+        created_modified_by_fieldset,
+    )
+
+    add_fieldsets = (
+        (None, {
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("role", "passphrase"),
+                "is_active"
+            ),
+        }),
+        (_("Description"), {
+            "classes": ("tab",),
+            "fields": ("description", "text_format"),
+        }),
+        (_("Validity"), {
+            "classes": ("tab",),
+            "description": _("Leave empty to make the enrollment valid for an unlimited period. Otherwise either set a duration or an end date."),
+            "fields": (
+                ("duration_value", "duration_period"),
+                "end_date"
+            ),
+        }),
+    )

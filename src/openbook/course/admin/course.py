@@ -6,17 +6,20 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation         import gettext_lazy as _
+from django.utils.translation              import gettext_lazy as _
 
-from openbook.admin                   import CustomModelAdmin
-from openbook.admin                   import ImportExportModelResource
-from openbook.auth.admin.role         import RoleInline
-from openbook.auth.admin.mixins.audit import created_modified_by_fields
-from openbook.auth.admin.mixins.audit import created_modified_by_fieldset
-from openbook.auth.admin.mixins.auth  import permissions_fieldset
-from openbook.auth.admin.mixins.auth  import ScopedRolesResourceMixin
-from openbook.auth.admin.mixins.auth  import ScopedRolesFormMixin
-from ..models.course                  import Course
+from openbook.admin                        import CustomModelAdmin
+from openbook.admin                        import ImportExportModelResource
+from openbook.auth.admin.access_request    import AccessRequestInline
+from openbook.auth.admin.enrollment_method import EnrollmentMethodInline
+from openbook.auth.admin.mixins.audit      import created_modified_by_fields
+from openbook.auth.admin.mixins.audit      import created_modified_by_fieldset
+from openbook.auth.admin.mixins.auth       import permissions_fieldset
+from openbook.auth.admin.mixins.auth       import ScopedRolesResourceMixin
+from openbook.auth.admin.mixins.auth       import ScopedRolesFormMixin
+from openbook.auth.admin.role              import RoleInline
+from openbook.auth.admin.role_assignment   import RoleAssignmentInline
+from ..models.course                       import Course
 
 class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
     class Meta:
@@ -37,6 +40,7 @@ class CourseForm(ScopedRolesFormMixin):
         model  = Course
         fields = "__all__"
 
+# TODO: Roles are not saved when new course is created!?
 class CourseAdmin(CustomModelAdmin):
     model               = Course
     form                = CourseForm
@@ -48,7 +52,11 @@ class CourseAdmin(CustomModelAdmin):
     readonly_fields     = (*created_modified_by_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("public_permissions",)
-    inlines             = (RoleInline,)
+    _inlines            = (RoleInline, RoleAssignmentInline, EnrollmentMethodInline, AccessRequestInline)
+    _add_inlines        = (RoleInline,)
+
+    def get_inlines(self, request, obj):
+        return self._inlines if obj else self._add_inlines
 
     fieldsets = (
         (None, {

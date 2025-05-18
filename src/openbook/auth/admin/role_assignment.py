@@ -18,6 +18,7 @@ from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
 from .mixins.auth                      import ScopeFormMixin
 from .mixins.auth                      import ScopeRoleFieldMixin
+from .mixins.auth                      import ScopeRoleFieldInlineMixin
 from .mixins.auth                      import scope_type_filter
 from ..models.role_assignment          import RoleAssignment
 
@@ -37,27 +38,26 @@ class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldMixin):
         }
         js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
 
-# TODO: Inline
-class RoleAssignmentInline(GenericTabularInline, TabularInline):
-    model               = RoleAssignment
-    form                = RoleAssignmentForm
-    ct_field            = "scope_type"
-    ct_fk_field         = "scope_uuid"
-    # fields              = ("priority", "name", "slug", "is_active", *created_modified_by_fields)
-    # ordering            = ("priority", "name")
-    # readonly_fields     = (*created_modified_by_fields,)
-    show_change_link    = True
-    tab                 = True
+class RoleAssignmentInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
+    model            = RoleAssignment
+    ct_field         = "scope_type"
+    ct_fk_field      = "scope_uuid"
+    fields           = ("role", "user", "is_active", "assignment_method", "enrollment_method", "access_request")
+    ordering         = ("role", "user")
+    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
+    extra            = 0
+    show_change_link = True
+    tab              = True
 
 class RoleAssignmentAdmin(CustomModelAdmin):
     model              = RoleAssignment
     form               = RoleAssignmentForm
     resource_classes   = (RoleAssignmentResource,)
-    list_display        = ("scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields)
-    list_display_links  = ("scope_type", "scope_object", "role", "user", "assignment_method")
-    ordering            = ("scope_type", "scope_uuid", "role", "user")
-    search_fields       = ("role__name", "user__username", "user__first_name", "user__last_name")
-    readonly_fields     = ("assignment_method", "enrollment_method", "access_request", *created_modified_by_fields,)
+    list_display       = ("scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields)
+    list_display_links = ("scope_type", "scope_object", "role", "user", "assignment_method")
+    ordering           = ("scope_type", "scope_uuid", "role", "user")
+    search_fields      = ("role__name", "user__username", "user__first_name", "user__last_name")
+    readonly_fields    = ("assignment_method", "enrollment_method", "access_request", *created_modified_by_fields,)
 
     list_filter = (
         scope_type_filter,
@@ -72,8 +72,8 @@ class RoleAssignmentAdmin(CustomModelAdmin):
         (None, {
             "fields": (
                 ("scope_type", "scope_uuid"),
-                ("assignment_method", "enrollment_method", "access_request"),
-                ("role", "user", "is_active"), 
+                ("role", "user"),
+                "is_active"
             ),
         }),
         (_("Validity"), {
@@ -81,12 +81,20 @@ class RoleAssignmentAdmin(CustomModelAdmin):
             "description": _("Leave empty to make the assignment valid for an unlimited period."),
             "fields": ("start_date", "end_date"),
         }),
+        (_("Source"), {
+            "classes": ("tab",),
+            "fields": ("assignment_method", "enrollment_method", "access_request"),
+        }),
         created_modified_by_fieldset,
     )
 
     add_fieldsets = (
         (None, {
-            "fields": (("scope_type", "scope_uuid"), ("role", "user"), "is_active"),
+            "fields": (
+                ("scope_type", "scope_uuid"),
+                ("role", "user"),
+                "is_active"
+            ),
         }),
         (_("Validity"), {
             "classes": ("tab",),
