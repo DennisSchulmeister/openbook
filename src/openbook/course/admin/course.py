@@ -40,7 +40,6 @@ class CourseForm(ScopedRolesFormMixin):
         model  = Course
         fields = "__all__"
 
-# TODO: Roles are not saved when new course is created!?
 class CourseAdmin(CustomModelAdmin):
     model               = Course
     form                = CourseForm
@@ -53,7 +52,7 @@ class CourseAdmin(CustomModelAdmin):
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("public_permissions",)
     _inlines            = (RoleInline, RoleAssignmentInline, EnrollmentMethodInline, AccessRequestInline)
-    _add_inlines        = (RoleInline,)
+    _add_inlines        = ()
 
     def get_inlines(self, request, obj):
         return self._inlines if obj else self._add_inlines

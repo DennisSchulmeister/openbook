@@ -41,3 +41,4 @@ class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, Acti
     
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
+

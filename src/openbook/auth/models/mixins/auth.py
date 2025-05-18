@@ -186,12 +186,9 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         """
         Validate that role and this object refer to the same scope (if `role` field exists).
         """
-        if not hasattr(self, "role"):
+        if not hasattr(self, "role") or not self.role:
             return
         
-        if not self.role:
-            return
-    
         if not self.scope_type or not self.scope_uuid:
            self.scope_type = self.role.scope_type
            self.scope_uuid = self.role.scope_uuid
