@@ -19,7 +19,7 @@ class UserProfile(models.Model):
     User profile with additional values for each user.
     """
     def _calc_file_path(self, filename):
-        return calc_file_path(self._meta, self.id, filename)
+        return calc_file_path(self._meta, self.user.username, filename)
     
     user        = models.OneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE, related_name="profile")
     description = models.TextField(verbose_name=_("Description"), blank=True, null=False)

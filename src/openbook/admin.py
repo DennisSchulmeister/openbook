@@ -36,6 +36,8 @@ class CustomModelAdmin(DjangoQLSearchMixin, UnfoldModelAdmin, ImportExportModelA
     Django Import/Export into on common base-class.
     """
     save_as = True
+    warn_unsaved_form = True
+    compressed_fields = True
 
 class CustomAdminSite(UnfoldAdminSite):
     """

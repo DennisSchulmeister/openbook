@@ -6,10 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models import Group as DjangoGroup
-from django.utils.translation   import gettext_lazy as _
+from django.contrib.auth.models       import Group as DjangoGroup
+from django.utils.translation         import gettext_lazy as _
+from unfold.decorators                import display
 
-class Group(DjangoGroup):
+from openbook.core.models.mixins.slug import UniqueSlugMixin
+
+class Group(UniqueSlugMixin, DjangoGroup):
     """
     Dummy class to move the Group model from `django.contrib.auth` into our own app,
     so that users and groups stand together in the Admin.
@@ -17,3 +20,7 @@ class Group(DjangoGroup):
     class Meta():
         verbose_name        = _("User Group")
         verbose_name_plural = _("User Groups")
+    
+    @display(label=True, description=_("User Count"))
+    def user_count(self):
+        return self.user_set.count()

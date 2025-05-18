@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 from django.utils.translation              import gettext_lazy as _
+from import_export.fields                  import Field
 
 from openbook.admin                        import CustomModelAdmin
 from openbook.admin                        import ImportExportModelResource
@@ -19,9 +20,12 @@ from openbook.auth.admin.mixins.auth       import ScopedRolesResourceMixin
 from openbook.auth.admin.mixins.auth       import ScopedRolesFormMixin
 from openbook.auth.admin.role              import RoleInline
 from openbook.auth.admin.role_assignment   import RoleAssignmentInline
+from openbook.core.import_export.boolean   import BooleanWidget
 from ..models.course                       import Course
 
 class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
+    is_template = Field(attribute="is_template", widget=BooleanWidget())
+
     class Meta:
         model = Course
         fields = (
@@ -31,9 +35,6 @@ class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
             *ScopedRolesResourceMixin.Meta.fields,
             "is_template"
         )
-    
-    def dehydrate_is_template(self, obj):
-        return "true" if obj.is_template else "false"
 
 class CourseForm(ScopedRolesFormMixin):
     class Meta:
@@ -48,6 +49,7 @@ class CourseAdmin(CustomModelAdmin):
     list_display_links  = ("name", "slug", "owner")
     list_filter         = ("name", "is_template", "owner", *created_modified_by_fields)
     search_fields       = ("name", "slug", "owner", "description")
+    ordering            = ("name", "slug")
     readonly_fields     = (*created_modified_by_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("public_permissions",)
