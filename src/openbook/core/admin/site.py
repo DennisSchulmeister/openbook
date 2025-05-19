@@ -13,6 +13,7 @@ from ..models.site  import Site
 class SiteResource(ImportExportModelResource):
     class Meta:
         model = Site
+        fields = ("id", "delete", "domain", "name", "short_name", "about_url", "brand_color")
 
 class SiteAdmin(CustomModelAdmin):
     model              = Site

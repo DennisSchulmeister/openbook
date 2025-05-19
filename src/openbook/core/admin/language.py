@@ -13,6 +13,8 @@ from ..models.language import Language
 class LanguageResource(ImportExportModelResource):
     class Meta:
         model = Language
+        import_id_fields = ("language",)
+        fields = ("language", "delete", "name")
 
 class LanguageAdmin(CustomModelAdmin):
     model              = Language
