@@ -8,6 +8,7 @@
 
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.translation          import gettext_lazy as _
+from import_export.fields              import Field
 from unfold.admin                      import TabularInline
 
 from openbook.admin                    import CustomModelAdmin
@@ -15,8 +16,9 @@ from openbook.admin                    import ImportExportModelResource
 from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
-from .mixins.auth                      import ScopeFormMixin
-from .mixins.auth                      import scope_type_filter
+from .mixins.scope                     import ScopeFormMixin
+from .mixins.scope                     import ScopeResourceMixin
+from .mixins.scope                     import scope_type_filter
 from ..models.access_request           import AccessRequest
 from ..models.enrollment_method        import EnrollmentMethod
 from ..models.role                     import Role
@@ -24,7 +26,7 @@ from ..models.role_assignment          import RoleAssignment
 from ..validators                      import validate_permissions
 
 # TODO: Import/Export
-class RoleResource(ImportExportModelResource):
+class RoleResource(ScopeResourceMixin):
     class Meta:
         model = Role
 

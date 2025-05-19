@@ -16,7 +16,7 @@ from openbook.core.models.mixins.text     import NameDescriptionMixin
 from openbook.core.models.mixins.uuid     import UUIDMixin
 
 from .mixins.audit                        import CreatedModifiedByMixin
-from .mixins.auth                         import ScopeMixin
+from .mixins.scope                        import ScopeMixin
 
 class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInactiveMixin, DurationMixin, CreatedModifiedByMixin):
     """

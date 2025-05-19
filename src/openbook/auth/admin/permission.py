@@ -9,38 +9,23 @@
 from django.contrib.auth.models         import Permission
 from django.utils.translation           import gettext_lazy as _
 from import_export.fields               import Field
+from import_export.widgets              import ForeignKeyWidget
 
 from openbook.admin                     import CustomModelAdmin
 from openbook.admin                     import ImportExportModelResource
 from openbook.core.models.language      import Language
+from ..import_export.permission         import PermissionForeignKeyWidget
 from ..models.permission                import Permission_T
 from ..utils                            import perm_string_for_permission
 from ..utils                            import permission_for_perm_string
 
 class PermissionTextResource(ImportExportModelResource):
-    parent = Field(attribute="parent")
+    parent   = Field(attribute="parent",   widget=PermissionForeignKeyWidget())
+    language = Field(attribute="language", widget=ForeignKeyWidget(model=Language, field="language"))
 
     class Meta:
         model  = Permission_T
         fields = ("id", "delete", "parent", "language", "name")
-        use_natural_foreign_keys = True
-    
-    def dehydrate_parent(self, obj):
-        return perm_string_for_permission(obj.parent)
-    
-    def before_import_row(self, row, **kwargs):
-        parent   = row.get("parent")
-        language = row.get("language")
-
-        try:
-            row["parent"] = permission_for_perm_string(parent)
-        except Permission.DoesNotExist:
-            row["parent"] = None
-            
-        try:
-            row["language"] = Language.objects.get(pk=language)
-        except Language.DoesNotExist:
-            row["language"] = None
 
 class PermissionTextAdmin(CustomModelAdmin):
     model              = Permission_T

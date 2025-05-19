@@ -8,19 +8,27 @@
 
 from django.contrib.admin              import RelatedOnlyFieldListFilter
 from django.forms                      import ModelForm
-from unfold.admin                      import TabularInline
+from import_export.fields              import Field
 
 from openbook.admin                    import CustomModelAdmin
 from openbook.admin                    import ImportExportModelResource
-from .mixins.auth                      import scope_type_filter
+from .mixins.scope                     import scope_type_filter
 from ..models.allowed_role_permission  import AllowedRolePermission
-from ..models.mixins.auth              import ScopedRolesMixin
+from ..models.mixins.scope             import ScopedRolesMixin
+from ..import_export.permission        import PermissionForeignKeyWidget
+from ..import_export.scope             import ScopeTypeForeignKeyWidget
 from ..validators                      import validate_scope_type
 
-# TODO: Import/Export
 class AllowedRolePermissionResource(ImportExportModelResource):
+    scope_type = Field(attribute="scope_type", widget=ScopeTypeForeignKeyWidget())
+    permission = Field(attribute="permission", widget=PermissionForeignKeyWidget())
+
     class Meta:
         model = AllowedRolePermission
+        fields = (
+            "id", "delete",
+            "scope_type", "permission",
+        )
 
 class AllowedRolePermissionForm(ModelForm):
     class Meta:

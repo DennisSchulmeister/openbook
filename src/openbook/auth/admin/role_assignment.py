@@ -6,37 +6,50 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.admin              import RelatedOnlyFieldListFilter
-from django.contrib.contenttypes.admin import GenericTabularInline
-from django.utils.translation          import gettext_lazy as _
-from unfold.admin                      import TabularInline
+from django.contrib.admin                import RelatedOnlyFieldListFilter
+from django.contrib.contenttypes.admin   import GenericTabularInline
+from django.utils.translation            import gettext_lazy as _
+from import_export.fields                import Field
+from unfold.admin                        import TabularInline
 
-from openbook.admin                    import CustomModelAdmin
-from openbook.admin                    import ImportExportModelResource
-from .mixins.audit                     import created_modified_by_fields
-from .mixins.audit                     import created_modified_by_fieldset
-from .mixins.audit                     import created_modified_by_filter
-from .mixins.auth                      import ScopeFormMixin
-from .mixins.auth                      import ScopeRoleFieldMixin
-from .mixins.auth                      import ScopeRoleFieldInlineMixin
-from .mixins.auth                      import scope_type_filter
-from ..models.role_assignment          import RoleAssignment
+from openbook.admin                      import CustomModelAdmin
+from openbook.core.import_export.boolean import BooleanWidget
+from .mixins.audit                       import created_modified_by_fields
+from .mixins.audit                       import created_modified_by_fieldset
+from .mixins.audit                       import created_modified_by_filter
+from .mixins.scope                       import ScopeFormMixin
+from .mixins.scope                       import ScopeResourceMixin
+from .mixins.scope                       import ScopeRoleFieldFormMixin
+from .mixins.scope                       import ScopeRoleFieldInlineMixin
+from .mixins.scope                       import scope_type_filter
+from ..import_export.role                import RoleForeignKeyWidget
+from ..import_export.user                import UserForeignKeyWidget
+from ..models.role_assignment            import RoleAssignment
 
-# TODO: Import/Export
-class RoleAssignmentResource(ImportExportModelResource):
+class RoleAssignmentResource(ScopeResourceMixin):
+    user      = Field(attribute="user",      widget=UserForeignKeyWidget())
+    role      = Field(attribute="role",      widget=RoleForeignKeyWidget())
+    is_active = Field(attribute="is_active", widget=BooleanWidget())
+
     class Meta:
         model = RoleAssignment
+        fields = (
+            "id", "delete",
+            *ScopeResourceMixin.Meta.fields,
+            "role", "user", "is_active",
+            "start_date", "end_date",
+        )
 
-class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldMixin):
+class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     class Meta:
         model  = RoleAssignment
         fields = "__all__"
     
     class Media:
         css = {
-            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldMixin.Media.css["all"]),
+            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]),
         }
-        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
+        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js)
 
 class RoleAssignmentInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model            = RoleAssignment

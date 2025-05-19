@@ -18,7 +18,7 @@ from openbook.core.models.mixins.active   import ActiveInactiveMixin
 from openbook.core.models.mixins.datetime import ValidityTimeSpanMixin
 from openbook.core.models.mixins.uuid     import UUIDMixin
 from .mixins.audit                        import CreatedModifiedByMixin
-from .mixins.auth                         import ScopeMixin
+from .mixins.scope                        import ScopeMixin
 
 if TYPE_CHECKING:
     from .access_request    import AccessRequest

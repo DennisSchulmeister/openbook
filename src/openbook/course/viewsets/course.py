@@ -10,11 +10,11 @@ from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
 from openbook.auth.filters.mixins.audit      import CreatedModifiedByFilterMixin
-from openbook.auth.filters.mixins.auth       import ScopedRolesFilterMixin
-from openbook.auth.viewsets.mixins.auth      import ScopedRolesViewSetMixin
+from openbook.auth.filters.mixins.scope      import ScopedRolesFilterMixin
+from openbook.auth.viewsets.mixins.scope     import ScopedRolesViewSetMixin
 from openbook.auth.serializers.mixins.audit  import CreatedModifiedBySerializerMixin
-from openbook.auth.serializers.mixins.auth   import ScopedRolesSerializerMixin
-from openbook.auth.serializers.mixins.auth   import ScopedRolesListSerializerMixin
+from openbook.auth.serializers.mixins.scope  import ScopedRolesSerializerMixin
+from openbook.auth.serializers.mixins.scope  import ScopedRolesListSerializerMixin
 from openbook.core.filters.mixins.slug       import SlugFilterMixin
 from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
 from openbook.core.serializers.mixins.slug   import SlugSerializerMixin

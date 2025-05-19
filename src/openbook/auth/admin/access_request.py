@@ -9,34 +9,46 @@
 from django.contrib.admin              import RelatedOnlyFieldListFilter
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.translation          import gettext_lazy as _
+from import_export.fields              import Field
 from unfold.admin                      import TabularInline
 
 from openbook.admin                    import CustomModelAdmin
-from openbook.admin                    import ImportExportModelResource
 from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
-from .mixins.auth                      import ScopeFormMixin
-from .mixins.auth                      import ScopeRoleFieldMixin
-from .mixins.auth                      import ScopeRoleFieldInlineMixin
-from .mixins.auth                      import scope_type_filter
+from .mixins.scope                     import ScopeFormMixin
+from .mixins.scope                     import ScopeResourceMixin
+from .mixins.scope                     import ScopeRoleFieldFormMixin
+from .mixins.scope                     import ScopeRoleFieldInlineMixin
+from .mixins.scope                     import scope_type_filter
+from ..import_export.role              import RoleForeignKeyWidget
+from ..import_export.user              import UserForeignKeyWidget
 from ..models.access_request           import AccessRequest
 
-# TODO: Import/Export
-class AccessRequestResource(ImportExportModelResource):
+class AccessRequestResource(ScopeResourceMixin):
+    user = Field(attribute="user", widget=UserForeignKeyWidget())
+    role = Field(attribute="role", widget=RoleForeignKeyWidget())
+
     class Meta:
         model = AccessRequest
+        fields = (
+            "id", "delete",
+            *ScopeResourceMixin.Meta.fields,
+            "role", "user",
+            "duration_value", "duration_period", "end_date",
+            "decision",
+        )
 
-class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldMixin):
+class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     class Meta:
         model  = AccessRequest
         fields = "__all__"
     
     class Media:
         css = {
-            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldMixin.Media.css["all"]),
+            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]),
         }
-        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldMixin.Media.js)
+        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js)
 
 class AccessRequestInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model               = AccessRequest

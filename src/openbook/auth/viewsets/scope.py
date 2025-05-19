@@ -21,7 +21,7 @@ from rest_framework.viewsets            import ViewSet
 
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..models.permission                import Permission_T
-from ..models.mixins.auth               import ScopedRolesMixin
+from ..models.mixins.scope              import ScopedRolesMixin
 from ..utils                            import perm_string_for_permission
 from ..utils                            import content_type_for_model_string
 from ..utils                            import model_string_for_content_type

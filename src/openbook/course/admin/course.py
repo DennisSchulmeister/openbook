@@ -15,9 +15,9 @@ from openbook.auth.admin.access_request    import AccessRequestInline
 from openbook.auth.admin.enrollment_method import EnrollmentMethodInline
 from openbook.auth.admin.mixins.audit      import created_modified_by_fields
 from openbook.auth.admin.mixins.audit      import created_modified_by_fieldset
-from openbook.auth.admin.mixins.auth       import permissions_fieldset
-from openbook.auth.admin.mixins.auth       import ScopedRolesResourceMixin
-from openbook.auth.admin.mixins.auth       import ScopedRolesFormMixin
+from openbook.auth.admin.mixins.scope      import permissions_fieldset
+from openbook.auth.admin.mixins.scope      import ScopedRolesResourceMixin
+from openbook.auth.admin.mixins.scope      import ScopedRolesFormMixin
 from openbook.auth.admin.role              import RoleInline
 from openbook.auth.admin.role_assignment   import RoleAssignmentInline
 from openbook.core.import_export.boolean   import BooleanWidget

@@ -20,7 +20,7 @@ class Permission_T(TranslatableMixin):
     """
     Translated permission name.
     """
-    parent = models.ForeignKey(Permission, on_delete=models.CASCADE, related_name="translations")
+    parent = models.ForeignKey(Permission, verbose_name=_("Permission"), on_delete=models.CASCADE, related_name="translations")
     name   = models.CharField(verbose_name=_("Translated Name"), max_length=255, null=False, blank=False)
 
     class Meta(TranslatableMixin.Meta):

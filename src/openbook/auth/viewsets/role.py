@@ -21,9 +21,9 @@ from openbook.core.serializers.mixins.text   import NameDescriptionListSerialize
 from openbook.core.serializers.mixins.text   import NameDescriptionSerializerMixin
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 
-from ..filters.mixins.auth                   import ScopeFilterMixin
+from ..filters.mixins.scope                  import ScopeFilterMixin
 from ..models.role                           import Role
-from ..serializers.mixins.auth               import ScopeSerializerMixin
+from ..serializers.mixins.scope              import ScopeSerializerMixin
 from ..serializers.permission                import PermissionListReadField
 from ..serializers.permission                import PermissionListWriteField
 from ..validators                            import validate_permissions

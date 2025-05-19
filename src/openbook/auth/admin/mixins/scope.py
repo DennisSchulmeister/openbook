@@ -17,9 +17,10 @@ from unfold.contrib.forms.widgets       import UnfoldAdminSelectWidget
 
 from openbook.admin                     import ImportExportModelResource
 from ...import_export.permission        import PermissionManyToManyWidget
+from ...import_export.scope             import ScopeTypeForeignKeyWidget
 from ...import_export.user              import UserForeignKeyWidget
 from ...models.allowed_role_permission  import AllowedRolePermission
-from ...models.mixins.auth              import ScopedRolesMixin
+from ...models.mixins.scope             import ScopedRolesMixin
 from ...models.role                     import Role
 from ...validators                      import validate_permissions
 from ...validators                      import validate_scope_type
@@ -43,6 +44,49 @@ class ScopedRolesResourceMixin(ImportExportModelResource):
 
     class Meta:
         fields = ("owner", "public_permissions")
+
+class ScopeResourceMixin(ImportExportModelResource):
+    """
+    Mixin class for the import/export resource class of models that reference an authorization
+    scope with the fields `scope_type` and `scope_uuid`.
+    """
+    scope_type = Field(attribute="scope_type", widget=ScopeTypeForeignKeyWidget())
+    scope_id   = Field(attribute="scope_uuid", column_name="scope_id")
+
+    class Meta:
+        fields = ("scope_type", "scope_id")
+    
+    def dehydrate_scope_id(self, instance) -> str:
+        """
+        Export scope id using either slug (if existing as it should) or id of the scope model.
+        """
+        if not instance \
+        or not hasattr(instance, "scope_type") or not instance.scope_type \
+        or not hasattr(instance, "scope_uuid") or not instance.scope_uuid:
+            return ""
+
+        content_type: ContentType = instance.scope_type
+        scope = content_type.model_class().objects.get(pk=instance.scope_uuid)
+        return scope.slug if hasattr(scope, "slug") else scope.id
+
+    def before_save_instance(self, instance, row, **kwargs):
+        """
+        Resolve slug from scope model back to UUID.
+        """
+        if not instance or not instance.scope_type:
+            return None
+        
+        content_type: ContentType = instance.scope_type
+        model_class = content_type.model_class()
+
+        if hasattr(model_class, "slug"):
+            try:
+                instance.scope_uuid = model_class.objects.get(slug=row["scope_id"]).id
+                return
+            except model_class.DoesNotExist:
+                return
+        
+        instance.scope_uuid = row["scope_id"]
 
 class ScopeFormMixin(ModelForm):
     """
@@ -106,7 +150,7 @@ class ScopeFormMixin(ModelForm):
         validate_scope_type(scope_type)
         return cleaned_data
 
-class ScopeRoleFieldMixin(ModelForm):
+class ScopeRoleFieldFormMixin(ModelForm):
     """
     Form mixin for the enrollment models that combine a scope with a role, e.g. User role
     assignment, enrollment method etc. This mixin makes sure that only active roles of

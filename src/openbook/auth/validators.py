@@ -12,7 +12,7 @@ from django.core.exceptions             import ValidationError
 from django.db.models                   import QuerySet
 
 from .models.allowed_role_permission    import AllowedRolePermission
-from .models.mixins.auth                import ScopedRolesMixin
+from .models.mixins.scope               import ScopedRolesMixin
 
 def validate_scope_type(scope_type: ContentType):
     """

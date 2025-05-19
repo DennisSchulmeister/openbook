@@ -6,20 +6,20 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth   import get_user_model
 from import_export.widgets import ForeignKeyWidget
 from import_export.widgets import ManyToManyWidget
+from ..models.role         import Role
 
-class UserForeignKeyWidget(ForeignKeyWidget):
+class RoleForeignKeyWidget(ForeignKeyWidget):
     """
-    A customized foreign-key widget that exports and imports users with their username.
+    A customized foreign-key widget that exports and imports roles with their slug.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(model=get_user_model(), field="username", *args, **kwargs)
+        super().__init__(model=Role, field="slug", *args, **kwargs)
 
-class UserManyToManyWidget(ManyToManyWidget):
+class RoleManyToManyWidget(ManyToManyWidget):
     """
-    A customized many-to-many widget that exports and imports users with their username.
+    A customized many-to-many widget that exports and imports roles with their slug.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(model=get_user_model(), field="username", *args, **kwargs)
+        super().__init__(model=Role, field="slug", *args, **kwargs)
