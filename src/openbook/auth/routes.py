@@ -9,6 +9,7 @@
 from . import viewsets
 
 def register_api_routes(router, prefix):
-    router.register(f"{prefix}/users",       viewsets.UserViewSet,  basename="user")
-    router.register(f"{prefix}/roles",       viewsets.RoleViewSet,  basename="role")
-    router.register(f"{prefix}/scope_types", viewsets.ScopeTypeViewSet, basename="scope_type")
+    router.register(f"{prefix}/users",       viewsets.UserViewSet,        basename="user")
+    router.register(f"{prefix}/permissions", viewsets.PermissionTViewSet, basename="permission")
+    router.register(f"{prefix}/roles",       viewsets.RoleViewSet,        basename="role")
+    router.register(f"{prefix}/scope_types", viewsets.ScopeTypeViewSet,   basename="scope_type")

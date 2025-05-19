@@ -29,7 +29,6 @@ class UserFilter(FilterSet):
         model  = User
         fields = ("first_name", "last_name", "is_staff")
 
-
 class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users. The serializer makes sure that only
