@@ -34,7 +34,7 @@ class EnrollmentMethodResource(ScopeResourceMixin):
         fields = (
             "id", "delete",
             *ScopeResourceMixin.Meta.fields,
-            "role", "passphrase", "is_active",
+            "name", "role", "passphrase", "is_active",
             "duration_value", "duration_period", "end_date",
             "description", "text_format",
         )
@@ -82,8 +82,8 @@ class EnrollmentMethodAdmin(CustomModelAdmin):
         (None, {
             "fields": (
                 ("scope_type", "scope_uuid"),
-                ("role", "passphrase",),
-                "is_active"
+                ("name", "role"),
+                ("passphrase", "is_active"),
             ),
         }),
         (_("Description"), {
@@ -105,8 +105,8 @@ class EnrollmentMethodAdmin(CustomModelAdmin):
         (None, {
             "fields": (
                 ("scope_type", "scope_uuid"),
-                ("role", "passphrase"),
-                "is_active"
+                ("name", "role"),
+                ("passphrase", "is_active"),
             ),
         }),
         (_("Description"), {
