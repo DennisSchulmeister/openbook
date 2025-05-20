@@ -9,11 +9,13 @@
 from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
 from rest_framework.serializers import Field
+from rest_framework.serializers import ImageField
 from rest_framework.serializers import ListField
 from rest_framework.serializers import ListSerializer
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.serializers import ValidationError
 
+from openbook.core.validators   import ValidateImage
 from openbook.drf               import ModelSerializer
 from ..models.user              import User
 
@@ -45,26 +47,6 @@ class UserReadSerializer(ModelSerializer):
             return obj.profile.picture.url if obj.profile else ""
         except ValueError:
             return ""
-
-class UserDetailsReadSerializer(UserReadSerializer):
-    """
-    Serializer for full user details including all profile data. Not meant for embedding
-    in lists but rather for retrieving a single user profile.
-    """
-    __doc__ = "User (Full Profile)"
-
-    description = SerializerMethodField()
-
-    class Meta:
-        model    = User
-        fields   = (*UserReadSerializer.Meta.fields, "description")
-        filterset_fields = (*UserReadSerializer.Meta.filterset_fields,)
-
-    def get_description(self, obj):
-        """
-        Description from user profile
-        """
-        return obj.profile.description if obj.profile else ""
 
 @extend_schema_field(UserReadSerializer)
 class UserReadField(Field):
@@ -131,3 +113,38 @@ class UserWriteListField(ListField):
             raise ValidationError(_("Invalid format: Expected a list of username strings."))
 
         return [self.child.to_internal_value(item) for item in data]
+
+class UserDetailsReadSerializer(UserReadSerializer):
+    """
+    Serializer for full user details including all profile data. Not meant for embedding
+    in lists but rather for retrieving a single user profile.
+
+    Note: The email is deliberately missing to keep it private. It is only returned by
+    the endpoint to query the currently logged in user.
+    """
+    __doc__ = "User (Full Profile)"
+
+    description = SerializerMethodField()
+
+    class Meta:
+        model    = User
+        fields   = (*UserReadSerializer.Meta.fields, "description")
+        filterset_fields = (*UserReadSerializer.Meta.filterset_fields,)
+
+    def get_description(self, obj):
+        """
+        Description from user profile
+        """
+        return obj.profile.description if obj.profile else ""
+
+class UserDetailsUpdateSerializer(ModelSerializer):
+    """
+    Serializer for updating own profile information.
+    """
+    __doc__ = "Update user profile"
+
+    profile_picture = ImageField(required=False, validators=[ValidateImage()])
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email", "profile_picture", "description")

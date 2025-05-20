@@ -9,40 +9,21 @@
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
 from drf_spectacular.utils      import extend_schema
-from drf_spectacular.utils      import inline_serializer
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.decorators  import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response    import Response
-from rest_framework.serializers import Serializer
 from rest_framework.serializers import BooleanField
-from rest_framework.serializers import CharField
-from rest_framework.serializers import ImageField
 
 from openbook.drf               import ModelViewSetMixin
-from openbook.core.validators   import ValidateImage
 from ..models.user              import User
 from ..models.user_profile      import UserProfile
 from ..serializers.user         import UserDetailsReadSerializer
+from ..serializers.user         import UserDetailsUpdateSerializer
 from ..serializers.user         import UserReadSerializer
 
-class CurrentUserReadSerializer(Serializer):
-    username         = CharField(help_text="Username")
-    first_name       = CharField(help_text="First Name")
-    last_name        = CharField(help_text="Last Name")
-    email            = CharField(help_text="E-Mail Address")
-    is_staff         = BooleanField(help_text="Administrative User")
-    is_superuser     = BooleanField(help_text="Super User")
+class CurrentUserReadSerializer(UserDetailsReadSerializer):
     is_authenticated = BooleanField(help_text="Logged-in User")
-    profile_picture  = CharField(help_text="URL of profile picture")
-    description      = CharField(help_text="Description from user profile")
-
-class CurrentUserUpdateSerializer(Serializer):
-    first_name      = CharField(required=False, help_text="First Name")
-    last_name       = CharField(required=False, help_text="Last Name")
-    email           = CharField(required=False, help_text="E-Mail Address")
-    profile_picture = ImageField(required=False, help_text="Profile picture", validators=[ValidateImage()])
-    description     = CharField(required=False, help_text="Description from user profile")
 
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
@@ -60,13 +41,12 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     __doc__ = "User Profiles"
 
+    lookup_field       = "username"
     queryset           = User.objects.filter(is_active = True)
     permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
+    http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
     filterset_class    = UserFilter
     search_fields      = ("username", "first_name", "last_name")
-
-    # TODO: Use username in URL to retrieve details
-    # TODO: Disallow creation of new users, updates, deletion
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -90,6 +70,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
         except ValueError:
             pass
 
+        # TODO: Simplify?
         return Response({
             "username":         request.user.username,
             "first_name":       getattr(request.user, "first_name", ""),
@@ -103,8 +84,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
         })
 
     # TODO: Better user DRF viewset functionality but make sure only own user can be changed.
-    # TODO: Allow to delete own user
-    @extend_schema(request=CurrentUserUpdateSerializer, responses=CurrentUserReadSerializer)
+    @extend_schema(request=UserDetailsUpdateSerializer, responses=CurrentUserReadSerializer)
     @action(detail=False, url_path="current", methods=["post"], permission_classes=[IsAuthenticated])
     def update_current(self, request):
         """
