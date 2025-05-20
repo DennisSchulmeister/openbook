@@ -19,28 +19,22 @@ from ..models.user              import User
 
 class UserReadSerializer(ModelSerializer):
     """
-    Serializer for user objects.
+    Serializer for user objects for embedding in other serializers via the `UserReadField`.
+    Returns enough information to display a list of users but not necessarily all profile data.
     """
-    __doc__ = "User"
+    __doc__ = "User (Reduced Data)"
 
-    display_name    = SerializerMethodField()
+    full_name       = SerializerMethodField()
     profile_picture = SerializerMethodField()
-    description     = SerializerMethodField()
 
     class Meta:
         model    = User
-        fields   = ("username", "display_name", "first_name", "last_name", "is_staff", "profile_picture", "description")
+        fields   = ("username", "full_name", "first_name", "last_name", "is_staff", "is_superuser", "profile_picture")
         filterset_fields = ("first_name", "last_name", "is_staff")
     
     @extend_schema_field(str)
-    def get_display_name(self, obj):
-        """
-        Formatted name.
-        """
-        if obj.first_name or obj.last_name:
-            return f"{obj.first_name} {obj.last_name}"
-        else:
-            return obj.username
+    def get_full_name(self, obj):
+        return obj.get_full_name()
     
     @extend_schema_field(str)
     def get_profile_picture(self, obj):
@@ -51,6 +45,20 @@ class UserReadSerializer(ModelSerializer):
             return obj.profile.picture.url if obj.profile else ""
         except ValueError:
             return ""
+
+class UserDetailsReadSerializer(UserReadSerializer):
+    """
+    Serializer for full user details including all profile data. Not meant for embedding
+    in lists but rather for retrieving a single user profile.
+    """
+    __doc__ = "User (Full Profile)"
+
+    description = SerializerMethodField()
+
+    class Meta:
+        model    = User
+        fields   = (*UserReadSerializer.Meta.fields, "description")
+        filterset_fields = (*UserReadSerializer.Meta.filterset_fields,)
 
     def get_description(self, obj):
         """

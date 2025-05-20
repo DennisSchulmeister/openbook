@@ -23,6 +23,7 @@ from openbook.drf               import ModelViewSetMixin
 from openbook.core.validators   import ValidateImage
 from ..models.user              import User
 from ..models.user_profile      import UserProfile
+from ..serializers.user         import UserDetailsReadSerializer
 from ..serializers.user         import UserReadSerializer
 
 class CurrentUserReadSerializer(Serializer):
@@ -31,6 +32,7 @@ class CurrentUserReadSerializer(Serializer):
     last_name        = CharField(help_text="Last Name")
     email            = CharField(help_text="E-Mail Address")
     is_staff         = BooleanField(help_text="Administrative User")
+    is_superuser     = BooleanField(help_text="Super User")
     is_authenticated = BooleanField(help_text="Logged-in User")
     profile_picture  = CharField(help_text="URL of profile picture")
     description      = CharField(help_text="Description from user profile")
@@ -59,11 +61,19 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "User Profiles"
 
     queryset           = User.objects.filter(is_active = True)
-    serializer_class   = UserReadSerializer
     permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
     filterset_class    = UserFilter
     search_fields      = ("username", "first_name", "last_name")
 
+    # TODO: Use username in URL to retrieve details
+    # TODO: Disallow creation of new users, updates, deletion
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return UserReadSerializer
+        else:
+            return UserDetailsReadSerializer
+        
     @extend_schema(responses=CurrentUserReadSerializer)
     @action(detail=False, permission_classes=[])
     def current(self, request):
@@ -86,11 +96,14 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
             "last_name":        getattr(request.user, "last_name", ""),
             "email":            getattr(request.user, "email", ""),
             "is_staff":         request.user.is_staff,
+            "is_superuser":     request.user.is_superuser,
             "is_authenticated": request.user.is_authenticated,
             "profile_picture":  profile_picture,
             "description":      profile.description if profile else "",
         })
 
+    # TODO: Better user DRF viewset functionality but make sure only own user can be changed.
+    # TODO: Allow to delete own user
     @extend_schema(request=CurrentUserUpdateSerializer, responses=CurrentUserReadSerializer)
     @action(detail=False, url_path="current", methods=["post"], permission_classes=[IsAuthenticated])
     def update_current(self, request):
