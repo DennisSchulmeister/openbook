@@ -97,7 +97,13 @@ class RoleSerializer(
         validate_permissions(scope_type, permissions)
         return attributes
 
-class RoleFilter(SlugFilterMixin, ScopeFilterMixin, NameDescriptionFilterMixin, ActiveInactiveFilterMixin, CreatedModifiedByFilterMixin):
+class RoleFilter(
+    SlugFilterMixin,
+    ScopeFilterMixin,
+    NameDescriptionFilterMixin,
+    ActiveInactiveFilterMixin,
+    CreatedModifiedByFilterMixin
+):
     class Meta:
         model  = Role
         fields = {
@@ -109,6 +115,7 @@ class RoleFilter(SlugFilterMixin, ScopeFilterMixin, NameDescriptionFilterMixin, 
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
+# TODO: Should access be restricted?
 class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Authenticated users only as we don't want the world to scrap our role list.

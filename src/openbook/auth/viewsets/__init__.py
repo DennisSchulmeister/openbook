@@ -10,7 +10,7 @@
 # from .allowed_role_permission import AllowedRolePermissionViewSet
 # from .enrollment_method       import EnrollmentMethodViewSet
 from .permission              import PermissionTViewSet
-# from .role_assignment         import RoleAssignmentViewSet
+from .role_assignment         import RoleAssignmentViewSet
 from .role                    import RoleViewSet
 from .scope                   import ScopeTypeViewSet
 from .user                    import UserViewSet

@@ -10,7 +10,7 @@ from rest_framework.serializers import ModelSerializer
 
 class SlugSerializerMixin(ModelSerializer):
     """
-    Mixin class for model serializers whose models implement the one of the slug mixins
+    Mixin class for model serializers whose models implement one of the slug mixins
     and therefor have a `slug` field.
     """
     class Meta:

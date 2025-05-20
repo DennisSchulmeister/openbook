@@ -14,14 +14,17 @@ models/MediaFileList.ts
 models/PaginatedCourseListList.ts
 models/PaginatedLanguageList.ts
 models/PaginatedMediaFileListList.ts
+models/PaginatedPermissionTList.ts
 models/PaginatedRoleListList.ts
 models/PaginatedSiteList.ts
 models/PaginatedUserReadList.ts
 models/PatchedCourse.ts
 models/PatchedMediaFile.ts
+models/PatchedPermissionT.ts
 models/PatchedRole.ts
 models/PatchedUserRead.ts
 models/PermissionRead.ts
+models/PermissionT.ts
 models/Role.ts
 models/RoleList.ts
 models/ScopeObject.ts

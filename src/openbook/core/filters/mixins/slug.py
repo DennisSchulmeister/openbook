@@ -7,7 +7,6 @@
 # License, or (at your option) any later version.
 
 from django_filters.filterset import FilterSet
-from django_filters.filters   import CharFilter
 
 class SlugFilterMixin(FilterSet):
     """

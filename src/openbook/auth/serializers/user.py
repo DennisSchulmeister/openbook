@@ -23,11 +23,13 @@ class UserReadSerializer(ModelSerializer):
     """
     __doc__ = "User"
 
-    display_name = SerializerMethodField()
+    display_name    = SerializerMethodField()
+    profile_picture = SerializerMethodField()
+    description     = SerializerMethodField()
 
     class Meta:
         model    = User
-        fields   = ("username", "display_name", "first_name", "last_name", "is_staff")
+        fields   = ("username", "display_name", "first_name", "last_name", "is_staff", "profile_picture", "description")
         filterset_fields = ("first_name", "last_name", "is_staff")
     
     @extend_schema_field(str)
@@ -39,6 +41,22 @@ class UserReadSerializer(ModelSerializer):
             return f"{obj.first_name} {obj.last_name}"
         else:
             return obj.username
+    
+    @extend_schema_field(str)
+    def get_profile_picture(self, obj):
+        """
+        URL for profile picture
+        """
+        try:
+            return obj.profile.picture.url if obj.profile else ""
+        except ValueError:
+            return ""
+
+    def get_description(self, obj):
+        """
+        Description from user profile
+        """
+        return obj.profile.description if obj.profile else ""
 
 @extend_schema_field(UserReadSerializer)
 class UserReadField(Field):

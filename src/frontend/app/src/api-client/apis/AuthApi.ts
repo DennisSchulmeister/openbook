@@ -16,10 +16,13 @@
 import * as runtime from '../runtime';
 import type {
   CurrentUserResponse,
+  PaginatedPermissionTList,
   PaginatedRoleListList,
   PaginatedUserReadList,
+  PatchedPermissionT,
   PatchedRole,
   PatchedUserRead,
+  PermissionT,
   Role,
   ScopeTypeList,
   ScopeTypeRetrieve,
@@ -28,14 +31,20 @@ import type {
 import {
     CurrentUserResponseFromJSON,
     CurrentUserResponseToJSON,
+    PaginatedPermissionTListFromJSON,
+    PaginatedPermissionTListToJSON,
     PaginatedRoleListListFromJSON,
     PaginatedRoleListListToJSON,
     PaginatedUserReadListFromJSON,
     PaginatedUserReadListToJSON,
+    PatchedPermissionTFromJSON,
+    PatchedPermissionTToJSON,
     PatchedRoleFromJSON,
     PatchedRoleToJSON,
     PatchedUserReadFromJSON,
     PatchedUserReadToJSON,
+    PermissionTFromJSON,
+    PermissionTToJSON,
     RoleFromJSON,
     RoleToJSON,
     ScopeTypeListFromJSON,
@@ -45,6 +54,41 @@ import {
     UserReadFromJSON,
     UserReadToJSON,
 } from '../models/index';
+
+export interface AuthPermissionsCreateRequest {
+    permissionT: Omit<PermissionT, 'permission'>;
+}
+
+export interface AuthPermissionsDestroyRequest {
+    id: number;
+}
+
+export interface AuthPermissionsListRequest {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sort?: string;
+    app?: string;
+    codename?: string;
+    language?: string;
+    model?: string;
+    name?: string;
+    permString?: string;
+}
+
+export interface AuthPermissionsPartialUpdateRequest {
+    id: number;
+    patchedPermissionT?: Omit<PatchedPermissionT, 'permission'>;
+}
+
+export interface AuthPermissionsRetrieveRequest {
+    id: number;
+}
+
+export interface AuthPermissionsUpdateRequest {
+    id: number;
+    permissionT: Omit<PermissionT, 'permission'>;
+}
 
 export interface AuthRolesCreateRequest {
     role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
@@ -91,7 +135,7 @@ export interface AuthRolesUpdateRequest {
     role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
-export interface AuthScopesRetrieveRequest {
+export interface AuthScopeTypesRetrieveRequest {
     id: string;
 }
 
@@ -131,6 +175,270 @@ export interface AuthUsersUpdateRequest {
  * 
  */
 export class AuthApi extends runtime.BaseAPI {
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsCreateRaw(requestParameters: AuthPermissionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionT>> {
+        if (requestParameters['permissionT'] == null) {
+            throw new runtime.RequiredError(
+                'permissionT',
+                'Required parameter "permissionT" was null or undefined when calling authPermissionsCreate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PermissionTToJSON(requestParameters['permissionT']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTFromJSON(jsonValue));
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsCreate(requestParameters: AuthPermissionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionT> {
+        const response = await this.authPermissionsCreateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsDestroyRaw(requestParameters: AuthPermissionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authPermissionsDestroy().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsDestroy(requestParameters: AuthPermissionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authPermissionsDestroyRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsListRaw(requestParameters: AuthPermissionsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedPermissionTList>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['_page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['_page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['app'] != null) {
+            queryParameters['app'] = requestParameters['app'];
+        }
+
+        if (requestParameters['codename'] != null) {
+            queryParameters['codename'] = requestParameters['codename'];
+        }
+
+        if (requestParameters['language'] != null) {
+            queryParameters['language'] = requestParameters['language'];
+        }
+
+        if (requestParameters['model'] != null) {
+            queryParameters['model'] = requestParameters['model'];
+        }
+
+        if (requestParameters['name'] != null) {
+            queryParameters['name'] = requestParameters['name'];
+        }
+
+        if (requestParameters['permString'] != null) {
+            queryParameters['perm_string'] = requestParameters['permString'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedPermissionTListFromJSON(jsonValue));
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsList(requestParameters: AuthPermissionsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedPermissionTList> {
+        const response = await this.authPermissionsListRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsPartialUpdateRaw(requestParameters: AuthPermissionsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionT>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authPermissionsPartialUpdate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PatchedPermissionTToJSON(requestParameters['patchedPermissionT']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTFromJSON(jsonValue));
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsPartialUpdate(requestParameters: AuthPermissionsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionT> {
+        const response = await this.authPermissionsPartialUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsRetrieveRaw(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionT>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authPermissionsRetrieve().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTFromJSON(jsonValue));
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsRetrieve(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionT> {
+        const response = await this.authPermissionsRetrieveRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsUpdateRaw(requestParameters: AuthPermissionsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionT>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authPermissionsUpdate().'
+            );
+        }
+
+        if (requestParameters['permissionT'] == null) {
+            throw new runtime.RequiredError(
+                'permissionT',
+                'Required parameter "permissionT" was null or undefined when calling authPermissionsUpdate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
+            headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
+        }
+        const response = await this.request({
+            path: `/api/auth/permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PermissionTToJSON(requestParameters['permissionT']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTFromJSON(jsonValue));
+    }
+
+    /**
+     * User Profiles
+     */
+    async authPermissionsUpdate(requestParameters: AuthPermissionsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionT> {
+        const response = await this.authPermissionsUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * User Roles Within a Scope
@@ -439,7 +747,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * GET List: Return a flat list of scope types.
      */
-    async authScopesListRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ScopeTypeList>>> {
+    async authScopeTypesListRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ScopeTypeList>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -448,7 +756,7 @@ export class AuthApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         const response = await this.request({
-            path: `/api/auth/scopes/`,
+            path: `/api/auth/scope_types/`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -460,19 +768,19 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * GET List: Return a flat list of scope types.
      */
-    async authScopesList(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ScopeTypeList>> {
-        const response = await this.authScopesListRaw(initOverrides);
+    async authScopeTypesList(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ScopeTypeList>> {
+        const response = await this.authScopeTypesListRaw(initOverrides);
         return await response.value();
     }
 
     /**
      * GET Scope Type: Return an object with all scopes and allowed permissions.
      */
-    async authScopesRetrieveRaw(requestParameters: AuthScopesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ScopeTypeRetrieve>> {
+    async authScopeTypesRetrieveRaw(requestParameters: AuthScopeTypesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ScopeTypeRetrieve>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling authScopesRetrieve().'
+                'Required parameter "id" was null or undefined when calling authScopeTypesRetrieve().'
             );
         }
 
@@ -484,7 +792,7 @@ export class AuthApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
         const response = await this.request({
-            path: `/api/auth/scopes/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: `/api/auth/scope_types/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -496,8 +804,8 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * GET Scope Type: Return an object with all scopes and allowed permissions.
      */
-    async authScopesRetrieve(requestParameters: AuthScopesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ScopeTypeRetrieve> {
-        const response = await this.authScopesRetrieveRaw(requestParameters, initOverrides);
+    async authScopeTypesRetrieve(requestParameters: AuthScopeTypesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ScopeTypeRetrieve> {
+        const response = await this.authScopeTypesRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

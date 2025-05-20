@@ -7,11 +7,10 @@
 # License, or (at your option) any later version.
 
 from django_filters.filterset import FilterSet
-from django_filters.filters   import CharFilter
 
 class ActiveInactiveFilterMixin(FilterSet):
     """
-    Mixin filter class for any model that implements the `ActiveInactveMixin` and as such
+    Mixin filter class for any model that implements the `ActiveInactiveMixin` and as such
     has an `is_active` field.
     """
     class Meta:
