@@ -8,12 +8,9 @@
 
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
-from drf_spectacular.utils      import extend_schema
 from rest_framework.viewsets    import ModelViewSet
-from rest_framework.decorators  import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response    import Response
-from rest_framework.serializers import BooleanField
+from rest_framework.permissions import BasePermission
 
 from openbook.drf               import ModelViewSetMixin
 from ..models.user              import User
@@ -23,7 +20,9 @@ from ..serializers.user         import UserDetailsUpdateSerializer
 from ..serializers.user         import UserReadSerializer
 
 class CurrentUserReadSerializer(UserDetailsReadSerializer):
-    is_authenticated = BooleanField(help_text="Logged-in User")
+    class Meta:
+        model  = User
+        fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
 
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
@@ -33,11 +32,16 @@ class UserFilter(FilterSet):
         model  = User
         fields = ("first_name", "last_name", "is_staff")
 
+class IsSelf(BasePermission):
+    """
+    Allows access only to the user themself.
+    """
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj
+    
 class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
-    Read/write view set to query active users. The serializer makes sure that only
-    basic information is returned. Authenticated users only as we don't want the
-    world to scrap our user list.
+    Read/write view set to query active users and update/delete the own user profile.
     """
     __doc__ = "User Profiles"
 
@@ -51,65 +55,35 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return UserReadSerializer
+        elif self.action in ("update", "partial_update"):
+            return UserDetailsUpdateSerializer
         else:
             return UserDetailsReadSerializer
-        
-    @extend_schema(responses=CurrentUserReadSerializer)
-    @action(detail=False, permission_classes=[])
-    def current(self, request):
+
+    def get_permissions(self):
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsSelf()]
+        return super().get_permissions()
+
+    def update(self, instance, validated_data):
         """
-        Return information about the currently logged in user or a sentinel response,
-        when the user is not logged in.
+        Handle updates for separate `UserProfile` model.
         """
-        profile = getattr(request.user, "profile", None)
-        profile_picture = ""
+        profile_data = {
+            "picture":     validated_data.pop("profile_picture", None),
+            "description": validated_data.pop("description", None),
+        }
 
-        try:
-            if profile:
-                profile_picture = profile.picture.url
-        except ValueError:
-            pass
+        user = super().update(instance, validated_data)
+        profile, _ = getattr(user, "profile", None), False
 
-        # TODO: Simplify?
-        return Response({
-            "username":         request.user.username,
-            "first_name":       getattr(request.user, "first_name", ""),
-            "last_name":        getattr(request.user, "last_name", ""),
-            "email":            getattr(request.user, "email", ""),
-            "is_staff":         request.user.is_staff,
-            "is_superuser":     request.user.is_superuser,
-            "is_authenticated": request.user.is_authenticated,
-            "profile_picture":  profile_picture,
-            "description":      profile.description if profile else "",
-        })
+        if profile is None:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
 
-    # TODO: Better user DRF viewset functionality but make sure only own user can be changed.
-    @extend_schema(request=UserDetailsUpdateSerializer, responses=CurrentUserReadSerializer)
-    @action(detail=False, url_path="current", methods=["post"], permission_classes=[IsAuthenticated])
-    def update_current(self, request):
-        """
-        Update information for the currently logged in user.
-        """
-        user = request.user
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-
-        # Update the user fields
-        for field in ["first_name", "last_name", "email"]:
-            if field in request.data:
-                setattr(user, field, request.data[field])
-
-        user.save()
-
-        # Update the user profile fields
-        for field in ["profile_picture", "description"]:
-            if field in request.data:
-                if field == "profile_picture":
-                    profile.picture = request.data[field]
-                else:
-                    setattr(profile, field, request.data[field])
+        if profile_data["picture"] is not None:
+            profile.picture = profile_data["picture"]
+        if profile_data["description"] is not None:
+            profile.description = profile_data["description"]
 
         profile.save()
-
-        # Return updated user data
-        return self.current(request)
-
+        return user

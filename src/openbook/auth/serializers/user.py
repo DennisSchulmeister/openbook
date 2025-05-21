@@ -36,7 +36,7 @@ class UserReadSerializer(ModelSerializer):
     
     @extend_schema_field(str)
     def get_full_name(self, obj):
-        return obj.get_full_name()
+        return obj.get_full_name() if hasattr(obj, "get_full_name") else ""
     
     @extend_schema_field(str)
     def get_profile_picture(self, obj):
@@ -44,7 +44,7 @@ class UserReadSerializer(ModelSerializer):
         URL for profile picture
         """
         try:
-            return obj.profile.picture.url if obj.profile else ""
+            return obj.profile.picture.url if hasattr(obj, "profile") and obj.profile else ""
         except ValueError:
             return ""
 
@@ -135,7 +135,7 @@ class UserDetailsReadSerializer(UserReadSerializer):
         """
         Description from user profile
         """
-        return obj.profile.description if obj.profile else ""
+        return obj.profile.description if hasattr(obj, "profile") and obj.profile else ""
 
 class UserDetailsUpdateSerializer(ModelSerializer):
     """
