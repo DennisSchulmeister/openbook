@@ -17,10 +17,13 @@ from rest_framework.serializers         import ValidationError
 
 from openbook.auth.validators           import validate_permissions
 from openbook.auth.validators           import validate_scope_type
+from ..access_request                   import AccessRequestListReadField
+from ..enrollment_method                import EnrollmentMethodListReadField
 from ..user                             import UserReadField
 from ..user                             import UserWriteField
 from ..permission                       import PermissionListReadField
 from ..permission                       import PermissionListWriteField
+from ..role_assignment                  import RoleAssignmentListReadField
 from ...utils                           import content_type_for_model_string
 from ...utils                           import model_string_for_content_type
 
@@ -43,11 +46,15 @@ class ScopedRolesSerializerMixin(ModelSerializer):
     owner_username            = UserWriteField(write_only=True)
     public_permissions        = PermissionListReadField(read_only=True)
     public_permission_strings = PermissionListWriteField(write_only=True)
+    role_assignments          = RoleAssignmentListReadField(read_only=True)
+    enrollment_methods        = EnrollmentMethodListReadField(read_only=True)
+    access_requests           = AccessRequestListReadField(read_only=True)
 
     class Meta:
         fields = (
             "owner", "owner_username",
             "public_permissions", "public_permission_strings",
+            "role_assignments", "enrollment_methods", "access_requests",
         )
 
         read_only_fields = ()

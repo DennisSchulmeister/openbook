@@ -17,48 +17,51 @@ from rest_framework.serializers                import ValidationError
 from openbook.drf                              import ModelSerializer
 from openbook.auth.filters.mixins.audit        import CreatedModifiedByFilterMixin
 from openbook.auth.serializers.mixins.audit    import CreatedModifiedBySerializerMixin
+from openbook.auth.serializers.mixins.scope    import ScopeSerializerMixin
 from openbook.core.filters.mixins.active       import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.datetime     import ValidityTimeSpanFilterMixin
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
-from openbook.core.serializers.mixins.datetime import ValidityTimeSpanSerializerMixin
+from openbook.core.serializers.mixins.datetime import DurationSerializerMixin
+from openbook.core.serializers.mixins.text     import NameDescriptionListSerializerMixin
+from openbook.core.serializers.mixins.text     import NameDescriptionSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
-from ..models.access_request                   import AccessRequest
+from ..models.role                             import Role
 
 # TODO: Correct fields
-class AccessRequestReadSerializer(
+class RoleReadSerializer(
     UUIDSerializerMixin,
     ActiveInactiveSerializerMixin,
 ):
     """
-    Very short overview of only the very most important access request fields to be
-    embedded in parent models.
+    Very short overview of only the very most important role fields to be embedded
+    in parent models.
     """
     class Meta:
-        model = AccessRequest
+        model = Role
         fields = (
             *UUIDSerializerMixin.Meta.fields,
             *ActiveInactiveSerializerMixin.Meta.fields,
         )
         read_only_fields = fields
 
-@extend_schema_field(AccessRequestReadSerializer)
-class AccessRequestReadField(Field):
+@extend_schema_field(RoleReadSerializer)
+class RoleReadField(Field):
     """
-    Serializer field for reading an access request.
+    Serializer field for reading a role.
     """
     def to_internal_value(self, data):
-        raise RuntimeError("AccessRequestReadField to write data. Use AccessRequestWriteField, instead.")
+        raise RuntimeError("RoleReadField to write data. Use RoleWriteField, instead.")
 
     def to_representation(self, obj):
-        return AccessRequestReadSerializer(obj).data
+        return RoleReadSerializer(obj).data
 
-@extend_schema_field(ListSerializer(child=AccessRequestReadSerializer()))
-class AccessRequestListReadField(ListField):
+@extend_schema_field(ListSerializer(child=RoleReadSerializer()))
+class RoleListReadField(ListField):
     """
-    Serializer field for reading multiple access requests.
+    Serializer field for reading multiple roles.
     """
     def __init__(self, **kwargs):
-        self.child = AccessRequestReadField()
+        self.child = RoleReadField()
         super().__init__(**kwargs)
 
     def to_representation(self, value):

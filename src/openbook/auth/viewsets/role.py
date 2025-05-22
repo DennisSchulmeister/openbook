@@ -10,8 +10,6 @@ from rest_framework.permissions              import IsAuthenticated
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
-from openbook.auth.filters.mixins.audit      import CreatedModifiedByFilterMixin
-from openbook.auth.serializers.mixins.audit  import CreatedModifiedBySerializerMixin
 from openbook.core.filters.mixins.active     import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.slug       import SlugFilterMixin
 from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
@@ -21,8 +19,10 @@ from openbook.core.serializers.mixins.text   import NameDescriptionListSerialize
 from openbook.core.serializers.mixins.text   import NameDescriptionSerializerMixin
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 
+from ..filters.mixins.audit                  import CreatedModifiedByFilterMixin
 from ..filters.mixins.scope                  import ScopeFilterMixin
 from ..models.role                           import Role
+from ..serializers.mixins.audit              import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope              import ScopeSerializerMixin
 from ..serializers.permission                import PermissionListReadField
 from ..serializers.permission                import PermissionListWriteField

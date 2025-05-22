@@ -22,43 +22,43 @@ from openbook.core.filters.mixins.datetime     import ValidityTimeSpanFilterMixi
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
 from openbook.core.serializers.mixins.datetime import ValidityTimeSpanSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
-from ..models.access_request                   import AccessRequest
+from ..models.role_assignment                  import RoleAssignment
 
 # TODO: Correct fields
-class AccessRequestReadSerializer(
+class RoleAssignmentReadSerializer(
     UUIDSerializerMixin,
     ActiveInactiveSerializerMixin,
 ):
     """
-    Very short overview of only the very most important access request fields to be
+    Very short overview of only the very most important role assignment fields to be
     embedded in parent models.
     """
     class Meta:
-        model = AccessRequest
+        model = RoleAssignment
         fields = (
             *UUIDSerializerMixin.Meta.fields,
             *ActiveInactiveSerializerMixin.Meta.fields,
         )
         read_only_fields = fields
 
-@extend_schema_field(AccessRequestReadSerializer)
-class AccessRequestReadField(Field):
+@extend_schema_field(RoleAssignmentReadSerializer)
+class RoleAssignmentReadField(Field):
     """
-    Serializer field for reading an access request.
+    Serializer field for reading a role assignment.
     """
     def to_internal_value(self, data):
-        raise RuntimeError("AccessRequestReadField to write data. Use AccessRequestWriteField, instead.")
+        raise RuntimeError("RoleAssignmentReadField to write data. Use RoleAssignmentWriteField, instead.")
 
     def to_representation(self, obj):
-        return AccessRequestReadSerializer(obj).data
+        return RoleAssignmentReadSerializer(obj).data
 
-@extend_schema_field(ListSerializer(child=AccessRequestReadSerializer()))
-class AccessRequestListReadField(ListField):
+@extend_schema_field(ListSerializer(child=RoleAssignmentReadSerializer()))
+class RoleAssignmentListReadField(ListField):
     """
-    Serializer field for reading multiple access requests.
+    Serializer field for reading multiple role assignments.
     """
     def __init__(self, **kwargs):
-        self.child = AccessRequestReadField()
+        self.child = RoleAssignmentReadField()
         super().__init__(**kwargs)
 
     def to_representation(self, value):

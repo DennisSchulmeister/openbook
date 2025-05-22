@@ -6,20 +6,22 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django_filters.filters                    import CharFilter
 from rest_framework.permissions                import IsAuthenticated
 from rest_framework.viewsets                   import ModelViewSet
 
 from openbook.drf                              import ModelViewSetMixin
-from openbook.auth.filters.mixins.audit        import CreatedModifiedByFilterMixin
-from openbook.auth.serializers.mixins.audit    import CreatedModifiedBySerializerMixin
 from openbook.core.filters.mixins.active       import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.datetime     import ValidityTimeSpanFilterMixin
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
 from openbook.core.serializers.mixins.datetime import ValidityTimeSpanSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
 
+from ..filters.mixins.audit                    import CreatedModifiedByFilterMixin
 from ..filters.mixins.scope                    import ScopeFilterMixin
 from ..models.role_assignment                  import RoleAssignment
+from ..serializers.enrollment_method           import EnrollmentMethodReadField
+from ..serializers.mixins.audit                import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope                import ScopeSerializerMixin
 from ..serializers.user                        import UserReadField
 from ..serializers.user                        import UserWriteField
@@ -35,14 +37,13 @@ class RoleAssignmentListSerializer(
     Reduced list of fields for filtering a list of role assignments.
     """
     user = UserReadField(read_only=True)
-    # enrollment_method = EnrollmentMethodSerializer()
 
     class Meta:
         model = RoleAssignment
         fields = (
             *UUIDSerializerMixin.Meta.fields,
             *ScopeSerializerMixin.Meta.fields,
-            "role", "user", "assignment_method", "enrollment_method",
+            "role", "user",
             *ActiveInactiveSerializerMixin.Meta.fields,
             *ValidityTimeSpanSerializerMixin.Meta.fields,
             *CreatedModifiedBySerializerMixin.Meta.fields,
@@ -59,11 +60,11 @@ class RoleAssignmentSerializer(
     """
     Full list of fields for retrieving a single role assignments.
     """
-    user = UserReadField(read_only=True)
-    user_username = UserWriteField(write_only=True)
-
-    # enrollment_method = EnrollmentMethodSerializer(read_only=True)
-    # access_request = AccessRequestSerializer(read_only=True)
+    role              = RoleReadField(read_only=True)
+    user              = UserReadField(read_only=True)
+    user_username     = UserWriteField(write_only=True)
+    enrollment_method = EnrollmentMethodReadField(read_only=True)
+    access_request    = AccessRequestReadField(read_only=True)
 
     class Meta:
         model  = RoleAssignment
@@ -91,15 +92,25 @@ class RoleAssignmentFilter(
     ActiveInactiveFilterMixin,
     CreatedModifiedByFilterMixin
 ):
+    role = CharFilter(method="role_filter")
+    user = CharFilter(method="user_filter")
+
     class Meta:
         model  = RoleAssignment
         fields = {
             **ScopeFilterMixin.Meta.fields,
             **ValidityTimeSpanFilterMixin.Meta.fields,
-            #TODO: "role", "user", "assignment_method", "enrollment_method"
+            "role": ("exact"),
+            "user": ("exact"),
             **ActiveInactiveFilterMixin.Meta.fields,
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
+
+    def role_filter(self, queryset, name, value):
+        return queryset.filter(role__slug=value)
+
+    def user_filter(self, queryset, name, value):
+        return queryset.filter(user__username=value)
 
 # TODO: Should access be restricted?
 class RoleAssignmentViewSet(ModelViewSetMixin, ModelViewSet):
