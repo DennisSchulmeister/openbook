@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from drf_spectacular.utils                     import extend_schema
 from django_filters.filters                    import CharFilter
 from rest_framework.permissions                import IsAuthenticated
 from rest_framework.serializers                import ListField
@@ -41,7 +42,7 @@ class EnrollmentMethodListSerializer(
     CreatedModifiedBySerializerMixin,
 ):
     """
-    Reduced list of fields for listing and querying enrollment methods.
+    Reduced list of fields for getting a list of enrollment methods.
     """
     # role = RoleReadField
     class Meta:
@@ -91,5 +92,4 @@ class EnrollmentMethodSerializer(
             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
         )
 
-# TODO: Should access be restricted?
 # TODO: Action enroll

@@ -8,8 +8,9 @@
 
 from django_filters.filters     import CharFilter
 from django_filters.filterset   import FilterSet
+from drf_spectacular.utils      import extend_schema
 from rest_framework.viewsets    import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 from rest_framework.serializers import ModelSerializer
 
 from ..models.language          import Language
@@ -26,11 +27,22 @@ class LanguageFilter(FilterSet):
         model  = Language
         fields = ("name",)
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "OpenBook Server",
+        "x-model-name": "Available Languages",
+    }
+)
 class LanguageViewSet(ReadOnlyModelViewSet):
     ___doc__ = "Available Languages"
 
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
     filterset_class    = LanguageFilter
     search_fields      = ("language", "name")
+
+    def get_permissions(self):
+        if self.action == "list":
+            return (AllowAny,)
+        else:
+            return super().get_permissions()

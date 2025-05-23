@@ -6,10 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+
+from collections                import defaultdict
+
 from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
 from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.pagination  import PageNumberPagination as DRFPageNumberPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.permissions import BasePermission
 from rest_framework.permissions import DjangoObjectPermissions
 from rest_framework.response    import Response
@@ -57,48 +61,9 @@ class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
         # Our authentication backend checks model-permissions as fallback, instead.
         return True
 
-class WritableNestedM2MSerializerMixin:
+class ModelSerializer(DRFModelSerializer):
     """
-    Mixin for serializers to support writable many-to-many fields using nested serializers
-    that return model instances (not just primary keys). Normally DRF expects the client to
-    send primary keys for related models. If the serializer is instead implementing the
-    method `to_internal_value(self, data)` to allow for other formats, DRF skips affected
-    fields when writing models, expecting the developer to manually handle fields in the
-    `create()` and `update()` methods.
-
-    This mixin automates the task. Simply define `writable_non_pk_m2m_fields` as a list of
-    field names to handle.
-    """
-    writable_non_pk_m2m_fields: list[str] = []
-
-    def create(self, validated_data):
-        """
-        Handle object creation to add M2M fields with custom deserialization logic.
-        """
-        m2m_data = {field: validated_data.pop(field, []) for field in self.writable_non_pk_m2m_fields}
-        instance = super().create(validated_data)
-        
-        for field, value in m2m_data.items():
-            getattr(instance, field).set(value)
-        
-        return instance
-
-    def update(self, instance, validated_data):
-        """
-        Handle object update to add M2M fields with custom deserialization logic.
-        """
-        m2m_data = {field: validated_data.pop(field, None) for field in self.writable_non_pk_m2m_fields}
-        instance = super().update(instance, validated_data)
-
-        for field, value in m2m_data.items():
-            if value is not None:
-                getattr(instance, field).set(value)
-        
-        return instance
-
-class ModelSerializer(WritableNestedM2MSerializerMixin, DRFModelSerializer):
-    """
-    Reuse full cleaning and validation logic on the model's in the REST API, including
+    Reuse full cleaning and validation logic of the models in the REST API, including
     `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
     that the pre-filled model instance can be accessed in the DRF view.
     """
@@ -138,8 +103,6 @@ class ModelViewSetMixin:
         pass
     ```
     """
-    permission_classes = [DjangoObjectPermissionsOnly]
-
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -150,3 +113,62 @@ class ModelViewSetMixin:
 
         serializer.save()
         return Response(serializer.data, status=201)
+
+class AllowAnonymousListViewSetMixin:
+    """
+    Small view set mixin class that allows unrestricted access to the `list` action while
+    deferring permission checks for all other actions to the permission classes of the
+    view set (usually defined in `settings.py`).
+    """
+    def get_permissions(self):
+        if self.action == "list":
+            return (AllowAny,)
+        else:
+            return super().get_permissions()
+
+OPERATION_ID_SUMMARY = {
+    "list": "List",
+    "retrieve": "Retrieve",
+    "create": "Create",
+    "update": "Update",
+    "partial_update": "Partial Update",
+    "destroy": "Delete",
+}
+
+def add_tag_groups(result, **kwargs):
+    """
+    Builds x-tagGroups for drf-spectacular based on OpenAPI extensions:
+
+    - `x-app-name`:   used for tag group
+    - `x-model-name`: used as the tag for the endpoint
+    """
+    tag_groups = defaultdict(set)
+
+    for path_item in result.get("paths", {}).values():
+        for method, operation in path_item.items():
+            if not isinstance(operation, dict):
+                continue
+
+            # Get tag info
+            extensions = operation.get("extensions", operation)
+            app_name   = extensions.get("x-app-name")
+            model_name = extensions.get("x-model-name")
+
+            if app_name and model_name:
+                tag_groups[app_name].add(model_name)
+                operation["tags"] = [model_name]
+
+            # Parse operationId to assign friendly label
+            operation_id = operation.get("operationId")
+
+            if operation_id and not "summary" in operation:
+                for action, summary in OPERATION_ID_SUMMARY.items():
+                    if operation_id.endswith(f"_{action}"):
+                        operation["summary"] = summary
+
+    result["x-tagGroups"] = [
+        {"name": app_name, "tags": sorted(tags)}
+        for app_name, tags in sorted(tag_groups.items())
+    ]
+
+    return result

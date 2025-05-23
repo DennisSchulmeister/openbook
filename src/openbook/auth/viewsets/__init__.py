@@ -6,7 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-# from .access_request          import AccessRequestViewSet
+from .access_request          import AccessRequestViewSet
 from .allowed_role_permission import AllowedRolePermissionViewSet
 from .current_user            import CurrentUserViewSet
 # from .enrollment_method       import EnrollmentMethodViewSet

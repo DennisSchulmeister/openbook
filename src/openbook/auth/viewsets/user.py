@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from drf_spectacular.utils      import extend_schema
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
 from rest_framework.viewsets    import ModelViewSet
@@ -37,7 +38,13 @@ class IsSelf(BasePermission):
     """
     def has_object_permission(self, request, view, obj):
         return request.user == obj
-    
+
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "User Profiles",
+    }
+)
 class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users and update/delete the own user profile.
@@ -46,7 +53,6 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
 
     lookup_field       = "username"
     queryset           = User.objects.filter(is_active = True)
-    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
     http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
     filterset_class    = UserFilter
     search_fields      = ("username", "first_name", "last_name")

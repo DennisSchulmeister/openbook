@@ -18,13 +18,25 @@ from ..models.access_request                   import AccessRequest
 from .role                                     import RoleReadField
 from .user                                     import UserReadField
 
-class AccessRequestWithoutRoleReadSerializer(
-    UUIDSerializerMixin,
-    ActiveInactiveSerializerMixin,
-):
+class AccessRequestWithoutRoleReadSerializer(UUIDSerializerMixin):
     """
     Very short overview of only the very most important access request fields to be
     embedded in parent models (without role because it is identical with the parent).
+    """
+    user = UserReadField(read_only=True)
+
+    class Meta:
+        model = AccessRequest
+        fields = (
+            *UUIDSerializerMixin.Meta.fields,
+            "user", "role", "decision", "decision_date", "created_at",
+        )
+        read_only_fields = fields
+
+class AccessRequestWithRoleReadSerializer(UUIDSerializerMixin):
+    """
+    Very short overview of only the very most important access request fields to be
+    embedded in parent models (including role).
     """
     user = UserReadField(read_only=True)
     role = RoleReadField(read_only=True)
@@ -33,27 +45,7 @@ class AccessRequestWithoutRoleReadSerializer(
         model = AccessRequest
         fields = (
             *UUIDSerializerMixin.Meta.fields,
-            *ActiveInactiveSerializerMixin.Meta.fields,
             "user", "role", "decision", "decision_date", "created_at",
-        )
-        read_only_fields = fields
-
-class AccessRequestWithRoleReadSerializer(
-    UUIDSerializerMixin,
-    ActiveInactiveSerializerMixin,
-):
-    """
-    Very short overview of only the very most important access request fields to be
-    embedded in parent models (including role).
-    """
-    user = UserReadField(read_only=True)
-
-    class Meta:
-        model = AccessRequest
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            "user", "decision", "decision_date", "created_at",
         )
         read_only_fields = fields
 

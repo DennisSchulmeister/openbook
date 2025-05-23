@@ -49,6 +49,12 @@ class ScopeTypeListSerializer(Serializer):
     id    = CharField()
     label = CharField()
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Scope Types",
+    }
+)
 class ScopeTypeViewSet(ViewSet):
     """
     Permission scopes. When a list is requested, a flat list of scope types will be returned.

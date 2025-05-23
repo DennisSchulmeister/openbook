@@ -8,6 +8,7 @@
 
 from django_filters.filters   import CharFilter
 from django_filters.filterset import FilterSet
+from drf_spectacular.utils    import extend_schema
 from rest_framework.viewsets  import ModelViewSet
 
 from openbook.drf             import ModelViewSetMixin
@@ -33,6 +34,12 @@ class MediaFileFilter(FilterSet):
         model  = MediaFile
         fields = MediaFileListSerializer.Meta.fields
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "OpenBook Server",
+        "x-model-name": "Media Files",
+    }
+)
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Attached Media Files"
 

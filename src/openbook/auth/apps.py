@@ -12,4 +12,4 @@ from django.utils.translation import gettext_lazy as _
 class AuthApp(AppConfig):
     name         = "openbook.auth"
     label        = "openbook_auth"
-    verbose_name = _("Authentication and Authorization")
+    verbose_name = _("User Management")

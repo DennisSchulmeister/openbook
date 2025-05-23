@@ -9,7 +9,7 @@
 from . import viewsets
 
 def register_api_routes(router, prefix):
-    # router.register(f"{prefix}/access_requests",          viewsets.AccessRequestViewSet,         basename="access_request")
+    router.register(f"{prefix}/access_requests",          viewsets.AccessRequestViewSet,         basename="access_request")
     router.register(f"{prefix}/allowed_role_permissions", viewsets.AllowedRolePermissionViewSet, basename="allowed_role_permission")
     router.register(f"{prefix}/current_user",             viewsets.CurrentUserViewSet,           basename="current_user")
     # router.register(f"{prefix}/enrollment_methods",       viewsets.EnrollmentMethodViewSet,      basename="enrollment_method")

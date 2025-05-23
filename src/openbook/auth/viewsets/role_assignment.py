@@ -6,8 +6,8 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from drf_spectacular.utils                     import extend_schema
 from django_filters.filters                    import CharFilter
-from rest_framework.permissions                import IsAuthenticated
 from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
@@ -38,7 +38,7 @@ class RoleAssignmentListSerializer(
     CreatedModifiedBySerializerMixin,
 ):
     """
-    Reduced list of fields for filtering a list of role assignments.
+    Reduced list of fields for getting a list of role assignments.
     """
     user = UserReadField(read_only=True)
     role = RoleReadField(read_only=True)
@@ -63,7 +63,7 @@ class RoleAssignmentSerializer(
     CreatedModifiedBySerializerMixin,
 ):
     """
-    Full list of fields for retrieving a single role assignments.
+    Full list of fields for retrieving a single role assignment.
     """
     role              = RoleReadField(read_only=True)
     role_slug         = CharField(write_only=True)
@@ -132,14 +132,18 @@ class RoleAssignmentFilter(
     def user_filter(self, queryset, name, value):
         return queryset.filter(user__username=value)
 
-# TODO: Should access be restricted?
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Role Assignments",
+    }
+)
 class RoleAssignmentViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Users and their roles in a scope"
 
-    queryset           = RoleAssignment.objects.all()
-    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
-    filterset_class    = RoleAssignmentFilter
-    search_fields      = ("user__username", "role__name", "role__description")
+    queryset        = RoleAssignment.objects.all()
+    filterset_class = RoleAssignmentFilter
+    search_fields   = ("user__username", "role__name", "role__description")
 
     def get_serializer_class(self):
         if self.action == "list":

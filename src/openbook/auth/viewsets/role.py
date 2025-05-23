@@ -6,7 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.permissions              import IsAuthenticated
+from drf_spectacular.utils                   import extend_schema
 from rest_framework.serializers              import ListField
 from rest_framework.viewsets                 import ModelViewSet
 
@@ -38,7 +38,7 @@ class RoleListSerializer(
     CreatedModifiedBySerializerMixin,
 ):
     """
-    Reduced list of fields for filtering a list of roles.
+    Reduced list of fields for getting a list of roles.
     """
     class Meta:
         model = Role
@@ -116,17 +116,21 @@ class RoleFilter(
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
-# TODO: Should access be restricted?
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Roles",
+    }
+)
 class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Authenticated users only as we don't want the world to scrap our role list.
     """
     __doc__ = "User Roles Within a Scope"
 
-    queryset           = Role.objects.all()
-    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
-    filterset_class    = RoleFilter
-    search_fields      = ("slug", "name", "description")
+    queryset        = Role.objects.all()
+    filterset_class = RoleFilter
+    search_fields   = ("slug", "name", "description")
 
     def get_serializer_class(self):
         if self.action == "list":

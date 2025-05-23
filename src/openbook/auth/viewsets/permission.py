@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from drf_spectacular.utils      import extend_schema
 from django.contrib.auth.models import Permission
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
@@ -45,6 +46,12 @@ class PermissionTFilter(FilterSet):
 
         return queryset.filter(parent=permission) if permission else queryset.none()
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Translated Permissions",
+    }
+)
 class PermissionTViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users. The serializer makes sure that only
@@ -53,7 +60,7 @@ class PermissionTViewSet(ModelViewSetMixin, ModelViewSet):
     """
     __doc__ = "User Profiles"
 
-    queryset           = Permission_T.objects.all()
-    filterset_class    = PermissionTFilter
-    serializer_class   = PermissionTSerializer
-    search_fields      = ("parent", "name", "language")
+    queryset         = Permission_T.objects.all()
+    filterset_class  = PermissionTFilter
+    serializer_class = PermissionTSerializer
+    search_fields    = ("parent", "name", "language")

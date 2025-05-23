@@ -145,7 +145,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
-        "openbook.drf.AllowNone"
+        "rest_framework.permissions.IsAuthenticated",
+        "openbook.drf.DjangoObjectPermissionsOnly",
     ],
 
     "DEFAULT_FILTER_BACKENDS": (
@@ -173,6 +174,14 @@ SPECTACULAR_SETTINGS = {
     "REDOC_DIST": "SIDECAR",
 
     "DEBUG": True,
+
+    # Create a custom group in the ReDoc documentation for each app, using the custom
+    # tags set on each viewset class. Because otherwise drf-spectacular createas a group
+    # for each app using the app label and puts all operations in one large group.
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "openbook.drf.add_tag_groups",
+    ],
 }
 
 # Password validation

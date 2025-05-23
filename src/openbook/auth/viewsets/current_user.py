@@ -20,6 +20,12 @@ class CurrentUserReadSerializer(UserDetailsReadSerializer):
         model  = User
         fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Current User",
+    }
+)
 @extend_schema_view(retrieve=extend_schema(exclude=True))
 class CurrentUserViewSet(ViewSet):
     """
@@ -36,7 +42,8 @@ class CurrentUserViewSet(ViewSet):
     @extend_schema(
         operation_id= "auth_current_user",
         description = "Returns the currently authenticated user or a fallback response.",
-        responses   = CurrentUserReadSerializer
+        responses   = CurrentUserReadSerializer,
+        summary     = "Retrieve",
     )
     def list(self, request):
         if request.user.is_authenticated:

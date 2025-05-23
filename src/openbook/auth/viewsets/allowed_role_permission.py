@@ -6,7 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.permissions              import IsAuthenticated
+from drf_spectacular.utils                   import extend_schema
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
@@ -34,11 +34,16 @@ class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
         fields = {**ScopeTypeFilterMixin.Meta.fields, **PermissionFilterMixin.Meta.fields}
         permissions_field = "permission"
 
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Allowed Role Permissions",
+    }
+)
 class AllowedRolePermissionViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Allowed permissions for the roles of a given scope type"
 
-    queryset           = AllowedRolePermission.objects.all()
-    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
-    serializer_class   = AllowedRolePermissionSerializer
-    filterset_class    = AllowedRolePermissionFilter
-    search_fields      = ("scope_type", "permission",)
+    queryset         = AllowedRolePermission.objects.all()
+    serializer_class = AllowedRolePermissionSerializer
+    filterset_class  = AllowedRolePermissionFilter
+    search_fields    = ("scope_type", "permission",)

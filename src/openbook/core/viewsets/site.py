@@ -12,11 +12,11 @@ from drf_spectacular.utils      import extend_schema
 from drf_spectacular.utils      import inline_serializer
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.decorators  import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response    import Response
 from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
 
+from openbook.drf               import AllowAnonymousListViewSetMixin
 from ..models.site              import Site
 
 class SiteSerializer(ModelSerializer):
@@ -33,19 +33,25 @@ class SiteFilter(FilterSet):
         model = Site
         fields = ("domain", "name", "short_name")
 
-class SiteViewSet(ReadOnlyModelViewSet):
+@extend_schema(
+    extensions={
+        "x-app-name":   "OpenBook Server",
+        "x-model-name": "Websites",
+    }
+)
+class SiteViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "General Website Settings"
 
     queryset           = Site.objects.all()
     serializer_class   = SiteSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
     filterset_class    = SiteFilter
     search_fields      = ("domain", "name", "short_name")
-    
+
     @extend_schema(
         responses = inline_serializer(name="health-response", fields={
             "status": CharField(help_text="Status of the API server")
-        })
+        }),
+        summary="Health Status",
     )
     @action(detail=False)
     def health(self, request):

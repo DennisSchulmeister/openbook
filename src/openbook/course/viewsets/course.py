@@ -6,22 +6,24 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.viewsets                 import ModelViewSet
+from drf_spectacular.utils                  import extend_schema
+from rest_framework.viewsets                import ModelViewSet
 
-from openbook.drf                            import ModelViewSetMixin
-from openbook.auth.filters.mixins.audit      import CreatedModifiedByFilterMixin
-from openbook.auth.filters.mixins.scope      import ScopedRolesFilterMixin
-from openbook.auth.serializers.mixins.audit  import CreatedModifiedBySerializerMixin
-from openbook.auth.serializers.mixins.scope  import ScopedRolesSerializerMixin
-from openbook.auth.serializers.mixins.scope  import ScopedRolesListSerializerMixin
-from openbook.core.filters.mixins.slug       import SlugFilterMixin
-from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
-from openbook.core.serializers.mixins.slug   import SlugSerializerMixin
-from openbook.core.serializers.mixins.text   import NameDescriptionListSerializerMixin
-from openbook.core.serializers.mixins.text   import NameDescriptionSerializerMixin
-from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
+from openbook.drf                           import AllowAnonymousListViewSetMixin
+from openbook.drf                           import ModelViewSetMixin
+from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
+from openbook.auth.filters.mixins.scope     import ScopedRolesFilterMixin
+from openbook.auth.serializers.mixins.audit import CreatedModifiedBySerializerMixin
+from openbook.auth.serializers.mixins.scope import ScopedRolesSerializerMixin
+from openbook.auth.serializers.mixins.scope import ScopedRolesListSerializerMixin
+from openbook.core.filters.mixins.slug      import SlugFilterMixin
+from openbook.core.filters.mixins.text      import NameDescriptionFilterMixin
+from openbook.core.serializers.mixins.slug  import SlugSerializerMixin
+from openbook.core.serializers.mixins.text  import NameDescriptionListSerializerMixin
+from openbook.core.serializers.mixins.text  import NameDescriptionSerializerMixin
+from openbook.core.serializers.mixins.uuid  import UUIDSerializerMixin
 
-from ..models.course                         import Course
+from ..models.course                        import Course
 
 class CourseListSerializer(
     UUIDSerializerMixin,
@@ -50,7 +52,7 @@ class CourseSerializer(
     SlugSerializerMixin,
     NameDescriptionSerializerMixin,
     ScopedRolesSerializerMixin,
-    CreatedModifiedBySerializerMixin
+    CreatedModifiedBySerializerMixin,
 ):
     """
     Full list of fields for retrieving a single course.
@@ -74,7 +76,12 @@ class CourseSerializer(
             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
         )
 
-class CourseFilter(SlugFilterMixin, NameDescriptionFilterMixin, CreatedModifiedByFilterMixin, ScopedRolesFilterMixin):
+class CourseFilter(
+    SlugFilterMixin,
+    NameDescriptionFilterMixin,
+    CreatedModifiedByFilterMixin,
+    ScopedRolesFilterMixin,
+):
     class Meta:
         model  = Course
         fields = {
@@ -85,7 +92,17 @@ class CourseFilter(SlugFilterMixin, NameDescriptionFilterMixin, CreatedModifiedB
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
-class CourseViewSet(ModelViewSetMixin, ModelViewSet):
+@extend_schema(
+    extensions={
+        "x-app-name":   "Courses",
+        "x-model-name": "Courses",
+    }
+)
+class CourseViewSet(
+    AllowAnonymousListViewSetMixin,
+    ModelViewSetMixin,
+    ModelViewSet,
+):
     __doc__ = "Courses"
 
     queryset         = Course.objects.all()

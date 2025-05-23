@@ -10,10 +10,8 @@ from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
 from rest_framework.serializers import Field
 from rest_framework.serializers import ImageField
-from rest_framework.serializers import ListField
-from rest_framework.serializers import ListSerializer
+from rest_framework.serializers import CharField
 from rest_framework.serializers import SerializerMethodField
-from rest_framework.serializers import ValidationError
 
 from openbook.core.validators   import ValidateImage
 from openbook.drf               import ModelSerializer
@@ -84,25 +82,6 @@ class UserWriteField(Field):
     def to_representation(self, obj):
         raise RuntimeError("UserWriteField used to deserialize data. Use UserReadField, instead.")
 
-@extend_schema_field({
-    "type": "array",
-    "items": {"type": "string"},
-    "description": "List of user names"
-})
-class UserWriteListField(ListField):
-    """
-    Serializer field for writing multiple users.
-    """
-    def __init__(self, **kwargs):
-        self.child = UserWriteField()
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        if not isinstance(data, list):
-            raise ValidationError(_("Invalid format: Expected a list of username strings."))
-
-        return [self.child.to_internal_value(item) for item in data]
-
 class UserDetailsReadSerializer(UserReadSerializer):
     """
     Serializer for full user details including all profile data. Not meant for embedding
@@ -116,8 +95,8 @@ class UserDetailsReadSerializer(UserReadSerializer):
     description = SerializerMethodField()
 
     class Meta:
-        model    = User
-        fields   = (*UserReadSerializer.Meta.fields, "description")
+        model  = User
+        fields = (*UserReadSerializer.Meta.fields, "description")
         filterset_fields = (*UserReadSerializer.Meta.filterset_fields,)
 
     def get_description(self, obj):
@@ -133,6 +112,7 @@ class UserDetailsUpdateSerializer(ModelSerializer):
     __doc__ = "Update user profile"
 
     profile_picture = ImageField(required=False, validators=[ValidateImage()])
+    description     = CharField(required=False)
 
     class Meta:
         model = User
