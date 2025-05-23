@@ -73,7 +73,7 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         user: AbstractUser|None = None,
         passphrase: str|None    = None,
         check_passphrase: bool  = True
-    ) -> None:
+    ) -> "RoleAssignment":
         """
         Apply the given enrollment method or access request to a user, effectively adding the role
         assignment. For access requests the user should not be given, as it is already contained
@@ -122,6 +122,7 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
             role_assignment.end_date = enrollment.add_duration_to(now())
 
         role_assignment.save()
+        return role_assignment
 
     @classmethod
     def withdraw(

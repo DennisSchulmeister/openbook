@@ -9,6 +9,7 @@
 from django.contrib.auth.models           import AbstractUser
 from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
+from typing                               import TYPE_CHECKING
 
 from openbook.core.models.mixins.active   import ActiveInactiveMixin
 from openbook.core.models.mixins.datetime import DurationMixin
@@ -17,6 +18,9 @@ from openbook.core.models.mixins.uuid     import UUIDMixin
 
 from .mixins.audit                        import CreatedModifiedByMixin
 from .mixins.scope                        import ScopeMixin
+
+if TYPE_CHECKING:
+    from .role_assignment import RoleAssignment
 
 class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInactiveMixin, DurationMixin, CreatedModifiedByMixin):
     """
@@ -59,10 +63,10 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         count = scope.role_assignments.filter(user=user_obj, role__priority__lte=self.role.priority).count()
         return count > 0
 
-    def enroll(self, user, passphrase=None, check_passphrase=True):
+    def enroll(self, user, passphrase=None, check_passphrase=True) -> "RoleAssignment":
         """
         Enroll the given user, optionally checking the passphrase. Raises a `ValueError` when
         the passphrase doesn't match.
         """
         from .role_assignment import RoleAssignment
-        RoleAssignment.enroll(enrollment=self, user=user, passphrase=passphrase, check_passphrase=check_passphrase)
+        return RoleAssignment.enroll(enrollment=self, user=user, passphrase=passphrase, check_passphrase=check_passphrase)

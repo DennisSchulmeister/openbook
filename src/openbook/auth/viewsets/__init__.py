@@ -9,7 +9,7 @@
 from .access_request          import AccessRequestViewSet
 from .allowed_role_permission import AllowedRolePermissionViewSet
 from .current_user            import CurrentUserViewSet
-# from .enrollment_method       import EnrollmentMethodViewSet
+from .enrollment_method       import EnrollmentMethodViewSet
 from .permission              import PermissionTViewSet
 from .role_assignment         import RoleAssignmentViewSet
 from .role                    import RoleViewSet

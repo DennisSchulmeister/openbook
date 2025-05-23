@@ -97,7 +97,7 @@ class AccessRequestSerializer(
 
 class AccessRequestFilter(
     ScopeFilterMixin,
-    CreatedModifiedByFilterMixin
+    CreatedModifiedByFilterMixin,
 ):
     role = CharFilter(method="role_filter")
     user = CharFilter(method="user_filter")
