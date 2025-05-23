@@ -130,7 +130,7 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = AccessRequest.objects.all()
     filterset_class = AccessRequestFilter
-    search_fields   = ("user__username", "role__name", "role__description")
+    search_fields   = ("user__username", "user__first_name", "user__last_name", "user__email", "role__name", "role__description")
 
     def get_serializer_class(self):
         if self.action == "list":

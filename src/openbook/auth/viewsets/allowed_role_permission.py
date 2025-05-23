@@ -46,4 +46,7 @@ class AllowedRolePermissionViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = AllowedRolePermission.objects.all()
     serializer_class = AllowedRolePermissionSerializer
     filterset_class  = AllowedRolePermissionFilter
-    search_fields    = ("scope_type", "permission",)
+    search_fields    = (
+        "scope_type__app_label", "scope_type__model",
+        "permission__codename", "permission__content_type__app_label",
+    )

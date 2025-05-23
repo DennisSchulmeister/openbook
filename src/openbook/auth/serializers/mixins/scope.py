@@ -91,25 +91,7 @@ class ScopeTypeField(Field):
 
     def to_representation(self, obj):
         return model_string_for_content_type(obj)
-    
-@extend_schema_field(ListSerializer(child=ScopeTypeField()))
-class ScopeTypeListField(ListField):
-    """
-    Serializer field for multiple scope types.
-    """
-    def __init__(self, **kwargs):
-        self.child = ScopeTypeField()
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        if not isinstance(data, list):
-            raise ValidationError(_("Invalid format: Expected a list of scope type strings."))
-
-        return [self.child.to_internal_value(item) for item in data]
-    
-    def to_representation(self, value):
-        return [self.child.to_representation(item) for item in value.all()]
-    
+        
 class ScopeSerializerMixin(ModelSerializer):
     """
     Mixin class for model serializers whose models implement the `ScopeMixin` and as such have

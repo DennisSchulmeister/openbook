@@ -122,7 +122,7 @@ class AllowAnonymousListViewSetMixin:
     """
     def get_permissions(self):
         if self.action == "list":
-            return (AllowAny,)
+            return (AllowAny(),)
         else:
             return super().get_permissions()
 

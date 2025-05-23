@@ -143,7 +143,10 @@ class RoleAssignmentViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = RoleAssignment.objects.all()
     filterset_class = RoleAssignmentFilter
-    search_fields   = ("user__username", "role__name", "role__description")
+    search_fields   = (
+        "user__username", "user__first_name", "user__last_name", "user__email",
+         "role__slug", "role__name", "role__description"
+    )
 
     def get_serializer_class(self):
         if self.action == "list":

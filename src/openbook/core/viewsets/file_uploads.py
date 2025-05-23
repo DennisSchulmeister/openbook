@@ -46,7 +46,7 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
     filterset_class  = MediaFileFilter
-    search_fields    = ("file_name",)
+    search_fields    = ("file_name", "mime_type")
 
     def get_serializer_class(self):
         if self.action == "list":

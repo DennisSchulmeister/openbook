@@ -136,7 +136,7 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = EnrollmentMethod.objects.all()
     filterset_class = EnrollmentMethodFilter
-    search_fields   = ("name", "description", "role__name", "role__description")
+    search_fields   = ("name", "description", "role__slug", "role__name", "role__description")
 
     def get_serializer_class(self):
         if self.action == "list":
