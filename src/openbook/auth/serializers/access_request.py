@@ -11,55 +11,70 @@ from drf_spectacular.utils                     import extend_schema_field
 from rest_framework.serializers                import Field
 from rest_framework.serializers                import ListField
 from rest_framework.serializers                import ListSerializer
-from rest_framework.serializers                import SerializerMethodField
-from rest_framework.serializers                import ValidationError
 
-from openbook.drf                              import ModelSerializer
-from openbook.auth.filters.mixins.audit        import CreatedModifiedByFilterMixin
-from openbook.auth.serializers.mixins.audit    import CreatedModifiedBySerializerMixin
-from openbook.core.filters.mixins.active       import ActiveInactiveFilterMixin
-from openbook.core.filters.mixins.datetime     import ValidityTimeSpanFilterMixin
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
-from openbook.core.serializers.mixins.datetime import ValidityTimeSpanSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
 from ..models.access_request                   import AccessRequest
+from .role                                     import RoleReadField
+from .user                                     import UserReadField
 
-# TODO: Correct fields
-class AccessRequestReadSerializer(
+class AccessRequestWithoutRoleReadSerializer(
     UUIDSerializerMixin,
     ActiveInactiveSerializerMixin,
 ):
     """
     Very short overview of only the very most important access request fields to be
-    embedded in parent models.
+    embedded in parent models (without role because it is identical with the parent).
     """
+    user = UserReadField(read_only=True)
+    role = RoleReadField(read_only=True)
+
     class Meta:
         model = AccessRequest
         fields = (
             *UUIDSerializerMixin.Meta.fields,
             *ActiveInactiveSerializerMixin.Meta.fields,
+            "user", "role", "decision", "decision_date", "created_at",
         )
         read_only_fields = fields
 
-@extend_schema_field(AccessRequestReadSerializer)
-class AccessRequestReadField(Field):
+class AccessRequestWithRoleReadSerializer(
+    UUIDSerializerMixin,
+    ActiveInactiveSerializerMixin,
+):
     """
-    Serializer field for reading an access request.
+    Very short overview of only the very most important access request fields to be
+    embedded in parent models (including role).
+    """
+    user = UserReadField(read_only=True)
+
+    class Meta:
+        model = AccessRequest
+        fields = (
+            *UUIDSerializerMixin.Meta.fields,
+            *ActiveInactiveSerializerMixin.Meta.fields,
+            "user", "decision", "decision_date", "created_at",
+        )
+        read_only_fields = fields
+
+@extend_schema_field(AccessRequestWithoutRoleReadSerializer)
+class AccessRequestWithoutRoleReadField(Field):
+    """
+    Serializer field for reading an access request (without role).
     """
     def to_internal_value(self, data):
-        raise RuntimeError("AccessRequestReadField to write data. Use AccessRequestWriteField, instead.")
+        raise RuntimeError("AccessRequestWithoutRoleReadField to write data, which is not supported.")
 
     def to_representation(self, obj):
-        return AccessRequestReadSerializer(obj).data
-
-@extend_schema_field(ListSerializer(child=AccessRequestReadSerializer()))
-class AccessRequestListReadField(ListField):
+        return AccessRequestWithoutRoleReadSerializer(obj).data
+    
+@extend_schema_field(AccessRequestWithRoleReadSerializer)
+class AccessRequestWithRoleReadField(Field):
     """
-    Serializer field for reading multiple access requests.
+    Serializer field for reading an access request (with role).
     """
-    def __init__(self, **kwargs):
-        self.child = AccessRequestReadField()
-        super().__init__(**kwargs)
+    def to_internal_value(self, data):
+        raise RuntimeError("AccessRequestWithRoleReadField to write data, which is not supported.")
 
-    def to_representation(self, value):
-        return [self.child.to_representation(item) for item in value.all()]
+    def to_representation(self, obj):
+        return AccessRequestWithRoleReadSerializer(obj).data

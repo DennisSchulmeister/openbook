@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 from rest_framework.permissions              import IsAuthenticated
+from rest_framework.serializers              import ListField
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
@@ -24,8 +25,8 @@ from ..filters.mixins.scope                  import ScopeFilterMixin
 from ..models.role                           import Role
 from ..serializers.mixins.audit              import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope              import ScopeSerializerMixin
-from ..serializers.permission                import PermissionListReadField
-from ..serializers.permission                import PermissionListWriteField
+from ..serializers.permission                import PermissionReadField
+from ..serializers.permission                import PermissionWriteField
 from ..validators                            import validate_permissions
 
 class RoleListSerializer(
@@ -63,8 +64,8 @@ class RoleSerializer(
     """
     Full list of fields for retrieving a single role.
     """
-    permissions        = PermissionListReadField(read_only=True)
-    permission_strings = PermissionListWriteField(write_only=True)
+    permissions        = ListField(child=PermissionReadField(), read_only=True)
+    permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="permissions")
 
     class Meta:
         model  = Role
@@ -132,13 +133,3 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
             return RoleListSerializer
         else:
             return RoleSerializer
-
-    def create(self, validated_data):
-        instance = super().create(validated_data)
-        instance.permissions.set(validated_data.pop("permission_strings", []))
-        return instance
-
-    def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        instance.permissions.set(validated_data.pop("permission_strings", []))
-        return instance

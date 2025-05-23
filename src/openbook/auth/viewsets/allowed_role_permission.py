@@ -6,26 +6,39 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters                  import CharFilter
 from rest_framework.permissions              import IsAuthenticated
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
-from openbook.core.filters.mixins.active     import ActiveInactiveFilterMixin
-from openbook.core.filters.mixins.slug       import SlugFilterMixin
-from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
-from openbook.core.serializers.mixins.active import ActiveInactiveSerializerMixin
-from openbook.core.serializers.mixins.slug   import SlugSerializerMixin
-from openbook.core.serializers.mixins.text   import NameDescriptionListSerializerMixin
-from openbook.core.serializers.mixins.text   import NameDescriptionSerializerMixin
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
-
-from ..filters.mixins.audit                  import CreatedModifiedByFilterMixin
-from ..filters.mixins.scope                  import ScopeFilterMixin
+from ..filters.mixins.scope                  import ScopeTypeFilterMixin
+from ..filters.mixins.permission             import PermissionFilterMixin
 from ..models.allowed_role_permission        import AllowedRolePermission
-from ..serializers.mixins.audit              import CreatedModifiedBySerializerMixin
-from ..serializers.mixins.scope              import ScopeSerializerMixin
-from ..serializers.permission                import PermissionListReadField
-from ..serializers.permission                import PermissionListWriteField
-from ..validators                            import validate_permissions
-# TODO: Should access be restricted?
+from ..serializers.mixins.scope              import ScopeTypeField
+from ..serializers.permission                import PermissionReadField
+from ..serializers.permission                import PermissionWriteField
+from ..models.allowed_role_permission        import AllowedRolePermission
+
+class AllowedRolePermissionSerializer(UUIDSerializerMixin):
+    scope_type        = ScopeTypeField()
+    permission        = PermissionReadField(read_only=True)
+    permission_string = PermissionWriteField(write_only=True, source="permission")
+
+    class Meta:
+        model = AllowedRolePermission
+        fields = (*UUIDSerializerMixin.Meta.fields, "scope_type", "permission", "permission_string")
+
+class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
+    class Meta:
+        model  = AllowedRolePermission
+        fields = {**ScopeTypeFilterMixin.Meta.fields, **PermissionFilterMixin.Meta.fields}
+        permissions_field = "permission"
+
+class AllowedRolePermissionViewSet(ModelViewSetMixin, ModelViewSet):
+    __doc__ = "Allowed permissions for the roles of a given scope type"
+
+    queryset           = AllowedRolePermission.objects.all()
+    permission_classes = (IsAuthenticated, *ModelViewSetMixin.permission_classes)
+    serializer_class   = AllowedRolePermissionSerializer
+    filterset_class    = AllowedRolePermissionFilter
+    search_fields      = ("scope_type", "permission",)

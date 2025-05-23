@@ -11,21 +11,21 @@ from drf_spectacular.utils                     import extend_schema_field
 from rest_framework.serializers                import Field
 from rest_framework.serializers                import ListField
 from rest_framework.serializers                import ListSerializer
-from rest_framework.serializers                import ValidationError
 
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
 from openbook.core.serializers.mixins.text     import NameDescriptionListSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
 from ..models.enrollment_method                import EnrollmentMethod
+from .role                                     import RoleReadField
 
-class EnrollmentMethodReadSerializer(
+class EnrollmentMethodWithoutRoleReadSerializer(
     UUIDSerializerMixin,
     NameDescriptionListSerializerMixin,
     ActiveInactiveSerializerMixin,
 ):
     """
     Very short overview of only the very most important enrollment method fields to
-    be embedded in parent models.
+    be embedded in parent models (without role).
     """
     class Meta:
         model = EnrollmentMethod
@@ -36,25 +36,46 @@ class EnrollmentMethodReadSerializer(
         )
         read_only_fields = fields
 
-@extend_schema_field(EnrollmentMethodReadSerializer)
-class EnrollmentMethodReadField(Field):
+class EnrollmentMethodWithRoleReadSerializer(
+    UUIDSerializerMixin,
+    NameDescriptionListSerializerMixin,
+    ActiveInactiveSerializerMixin,
+):
     """
-    Serializer field for reading an enrollment method.
+    Very short overview of only the very most important enrollment method fields to
+    be embedded in parent models (with role).
+    """
+    role = RoleReadField(read_only=True)
+
+    class Meta:
+        model = EnrollmentMethod
+        fields = (
+            *UUIDSerializerMixin.Meta.fields,
+            *NameDescriptionListSerializerMixin.Meta.fields,
+            "role",
+            *ActiveInactiveSerializerMixin.Meta.fields,
+        )
+        read_only_fields = fields
+
+@extend_schema_field(EnrollmentMethodWithoutRoleReadSerializer)
+class EnrollmentMethodWithoutRoleReadField(Field):
+    """
+    Serializer field for reading an enrollment method (without role).
     """
     def to_internal_value(self, data):
-        raise RuntimeError("EnrollmentMethodReadField to write data. Use EnrollmentMethodWriteField, instead.")
+        raise RuntimeError("EnrollmentMethodWithoutRoleReadField to write data, which is not supported.")
 
     def to_representation(self, obj):
-        return EnrollmentMethodReadSerializer(obj).data
-
-@extend_schema_field(ListSerializer(child=EnrollmentMethodReadSerializer()))
-class EnrollmentMethodListReadField(ListField):
+        return EnrollmentMethodWithoutRoleReadSerializer(obj).data
+    
+@extend_schema_field(EnrollmentMethodWithRoleReadSerializer)
+class EnrollmentMethodWithRoleReadField(Field):
     """
-    Serializer field for reading multiple enrollment methods.
+    Serializer field for reading an enrollment method (with role).
     """
-    def __init__(self, **kwargs):
-        self.child = EnrollmentMethodReadField()
-        super().__init__(**kwargs)
+    def to_internal_value(self, data):
+        raise RuntimeError("EnrollmentMethodWithRoleReadField to write data, which is not supported.")
 
-    def to_representation(self, value):
-        return [self.child.to_representation(item) for item in value.all()]
+    def to_representation(self, obj):
+        return EnrollmentMethodWithRoleReadSerializer(obj).data
+

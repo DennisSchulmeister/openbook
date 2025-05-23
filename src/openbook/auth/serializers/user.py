@@ -18,6 +18,7 @@ from rest_framework.serializers import ValidationError
 from openbook.core.validators   import ValidateImage
 from openbook.drf               import ModelSerializer
 from ..models.user              import User
+from ..models.user_profile      import UserProfile
 
 class UserReadSerializer(ModelSerializer):
     """
@@ -31,7 +32,7 @@ class UserReadSerializer(ModelSerializer):
 
     class Meta:
         model    = User
-        fields   = ("username", "full_name", "first_name", "last_name", "is_staff", "is_superuser", "profile_picture")
+        fields   = ("username", "full_name", "first_name", "last_name", "profile_picture")
         filterset_fields = ("first_name", "last_name", "is_staff")
     
     @extend_schema_field(str)
@@ -59,18 +60,6 @@ class UserReadField(Field):
 
     def to_representation(self, obj):
         return UserReadSerializer(obj).data
-
-@extend_schema_field(ListSerializer(child=UserReadSerializer()))
-class UserListReadField(ListField):
-    """
-    Serializer field for reading multiple users.
-    """
-    def __init__(self, **kwargs):
-        self.child = UserReadField()
-        super().__init__(**kwargs)
-
-    def to_representation(self, value):
-        return [self.child.to_representation(item) for item in value.all()]
 
 @extend_schema_field({"type": "string", "description": "User name"})
 class UserWriteField(Field):
@@ -148,3 +137,26 @@ class UserDetailsUpdateSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "profile_picture", "description")
+
+    def update(self, instance, validated_data):
+        """
+        Handle updates for separate `UserProfile` model.
+        """
+        profile_data = {
+            "picture":     validated_data.pop("profile_picture", None),
+            "description": validated_data.pop("description", None),
+        }
+
+        user = super().update(instance, validated_data)
+        profile, _ = getattr(user, "profile", None), False
+
+        if profile is None:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+
+        if profile_data["picture"] is not None:
+            profile.picture = profile_data["picture"]
+        if profile_data["description"] is not None:
+            profile.description = profile_data["description"]
+
+        profile.save()
+        return user

@@ -15,17 +15,17 @@ from rest_framework.serializers         import ListSerializer
 from rest_framework.serializers         import ModelSerializer
 from rest_framework.serializers         import ValidationError
 
-from openbook.auth.validators           import validate_permissions
-from openbook.auth.validators           import validate_scope_type
-from ..access_request                   import AccessRequestListReadField
-from ..enrollment_method                import EnrollmentMethodListReadField
+from ..access_request                   import AccessRequestWithRoleReadField
+from ..enrollment_method                import EnrollmentMethodWithRoleReadField
 from ..user                             import UserReadField
 from ..user                             import UserWriteField
-from ..permission                       import PermissionListReadField
-from ..permission                       import PermissionListWriteField
-from ..role_assignment                  import RoleAssignmentListReadField
+from ..permission                       import PermissionReadField
+from ..permission                       import PermissionWriteField
+from ..role_assignment                  import RoleAssignmentReadField
 from ...utils                           import content_type_for_model_string
 from ...utils                           import model_string_for_content_type
+from ...validators                      import validate_scope_type
+from ...validators                      import validate_permissions
 
 class ScopedRolesListSerializerMixin(ModelSerializer):
     """
@@ -43,12 +43,12 @@ class ScopedRolesSerializerMixin(ModelSerializer):
     act as permission scope for user roles. Default serializer, that adds all scope fields.
     """
     owner                     = UserReadField(read_only=True)
-    owner_username            = UserWriteField(write_only=True)
-    public_permissions        = PermissionListReadField(read_only=True)
-    public_permission_strings = PermissionListWriteField(write_only=True)
-    role_assignments          = RoleAssignmentListReadField(read_only=True)
-    enrollment_methods        = EnrollmentMethodListReadField(read_only=True)
-    access_requests           = AccessRequestListReadField(read_only=True)
+    owner_username            = UserWriteField(write_only=True, source="owner")
+    public_permissions        = ListField(child=PermissionReadField(), read_only=True)
+    public_permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="public_permissions")
+    role_assignments          = ListField(child=RoleAssignmentReadField(), read_only=True)
+    enrollment_methods        = ListField(child=EnrollmentMethodWithRoleReadField(), read_only=True)
+    access_requests           = ListField(child=AccessRequestWithRoleReadField(), read_only=True)
 
     class Meta:
         fields = (
@@ -62,7 +62,7 @@ class ScopedRolesSerializerMixin(ModelSerializer):
     def validate(self, attributes):
         """
         Check that only allowed permissions are assigned.
-        """
+        """        
         scope_type = ContentType.objects.get_for_model(self.Meta.model)
         public_permissions = attributes.get("public_permissions", None)
 

@@ -11,7 +11,6 @@ from rest_framework.viewsets                 import ModelViewSet
 from openbook.drf                            import ModelViewSetMixin
 from openbook.auth.filters.mixins.audit      import CreatedModifiedByFilterMixin
 from openbook.auth.filters.mixins.scope      import ScopedRolesFilterMixin
-from openbook.auth.viewsets.mixins.scope     import ScopedRolesViewSetMixin
 from openbook.auth.serializers.mixins.audit  import CreatedModifiedBySerializerMixin
 from openbook.auth.serializers.mixins.scope  import ScopedRolesSerializerMixin
 from openbook.auth.serializers.mixins.scope  import ScopedRolesListSerializerMixin
@@ -86,7 +85,7 @@ class CourseFilter(SlugFilterMixin, NameDescriptionFilterMixin, CreatedModifiedB
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
-class CourseViewSet(ScopedRolesViewSetMixin, ModelViewSetMixin, ModelViewSet):
+class CourseViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Courses"
 
     queryset         = Course.objects.all()

@@ -7,7 +7,7 @@
 # License, or (at your option) any later version.
 
 # from .access_request          import AccessRequestViewSet
-# from .allowed_role_permission import AllowedRolePermissionViewSet
+from .allowed_role_permission import AllowedRolePermissionViewSet
 from .current_user            import CurrentUserViewSet
 # from .enrollment_method       import EnrollmentMethodViewSet
 from .permission              import PermissionTViewSet

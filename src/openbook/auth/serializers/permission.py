@@ -62,18 +62,6 @@ class PermissionReadField(Field):
             "codename":           obj.codename,
         }).data
 
-@extend_schema_field(ListSerializer(child=PermissionReadSerializer()))
-class PermissionListReadField(ListField):
-    """
-    Serializer field for reading multiple permissions.
-    """
-    def __init__(self, **kwargs):
-        self.child = PermissionReadField()
-        super().__init__(**kwargs)
-
-    def to_representation(self, value):
-        return [self.child.to_representation(item) for item in value.all()]
-
 @extend_schema_field({
     "type":        "string",
     "description": "Permission string",
@@ -101,21 +89,3 @@ class PermissionWriteField(Field):
     def to_representation(self, obj):
         raise RuntimeError("PermissionWriteField used to deserialize data. Use PermissionReadField, instead.")
 
-@extend_schema_field({
-    "type": "array",
-    "items": {"type": "string", "example": "app.model_codename"},
-    "description": "List of permission strings in Django format"
-})
-class PermissionListWriteField(ListField):
-    """
-    Serializer field for writing multiple permissions.
-    """
-    def __init__(self, **kwargs):
-        self.child = PermissionWriteField()
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        if not isinstance(data, list):
-            raise ValidationError(_("Invalid format: Expected a list of permission strings."))
-
-        return [self.child.to_internal_value(item) for item in data]

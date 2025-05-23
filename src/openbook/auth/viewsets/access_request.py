@@ -8,6 +8,7 @@
 
 from django_filters.filters                  import CharFilter
 from rest_framework.permissions              import IsAuthenticated
+from rest_framework.serializers              import ListField
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
@@ -25,8 +26,8 @@ from ..filters.mixins.scope                  import ScopeFilterMixin
 from ..models.access_request                 import AccessRequest
 from ..serializers.mixins.audit              import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope              import ScopeSerializerMixin
-from ..serializers.permission                import PermissionListReadField
-from ..serializers.permission                import PermissionListWriteField
+from ..serializers.permission                import PermissionReadField
+from ..serializers.permission                import PermissionWriteField
 from ..validators                            import validate_permissions
 
 # TODO: Should access be restricted?
