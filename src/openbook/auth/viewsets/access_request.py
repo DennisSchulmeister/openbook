@@ -9,6 +9,7 @@
 from django_filters.filters                    import CharFilter
 from drf_spectacular.utils                     import extend_schema
 from rest_framework.decorators                 import action
+from rest_framework.response                   import Response
 from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
@@ -150,7 +151,7 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
         Accept request.
         """
         access_request = self.get_object()
-        access_request.accept()
+        access_request.accept(permission_user=request.user)
         return Response(AccessRequestSerializer(instance=access_request).data)
 
     @extend_schema(
@@ -165,5 +166,5 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
         Deny request.
         """
         access_request = self.get_object()
-        access_request.deny()
+        access_request.deny(permission_user=request.user)
         return Response(AccessRequestSerializer(instance=access_request).data)

@@ -45,28 +45,22 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
 
-    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
-        """
-        A user can only add/change/delete enrollment methods with lower or equal priority to his/her own roles.
-
-        **Caveat:** Take care to not reveal the passphrase when enrollment methods are queried or viewed.
-        """
-        principally_allowed = super().has_obj_perm(user_obj, perm)
-
-        if not principally_allowed:
-            return False
-        
-        if ".view_" in perm:
-            return True
-
-        scope = self.get_scope()
-        count = scope.role_assignments.filter(user=user_obj, role__priority__lte=self.role.priority).count()
-        return count > 0
-
-    def enroll(self, user, passphrase=None, check_passphrase=True) -> "RoleAssignment":
+    def enroll(self,
+        user: AbstractUser,
+        passphrase: str = None,
+        check_passphrase: bool = True,
+        permission_user: AbstractUser|None = None
+    ) -> "RoleAssignment":
         """
         Enroll the given user, optionally checking the passphrase. Raises a `ValueError` when
         the passphrase doesn't match.
         """
         from .role_assignment import RoleAssignment
-        return RoleAssignment.enroll(enrollment=self, user=user, passphrase=passphrase, check_passphrase=check_passphrase)
+
+        return RoleAssignment.enroll(
+            enrollment       = self,
+            user             = user,
+            passphrase       = passphrase,
+            check_passphrase = check_passphrase,
+            permission_user  = permission_user,
+        )

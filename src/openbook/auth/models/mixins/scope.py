@@ -205,7 +205,10 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
 
     def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
-        The referenced role must be of lower or equal priority than any of the user's roles.
+        Object-level permission for all models with a scope reference. If this is a role,
+        its priority must be of lower or equal priority than any of the user's roles.
+        Otherwise the priority of the referenced role must be of lower or equal priority
+        than any of the user's roles.
         """
         principally_allowed = super().has_obj_perm(user_obj, perm)
 
@@ -215,8 +218,16 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         if ".view_" in perm:
             return True
         
-        priority = self.priority if hasattr(self, "priority") else self.role.priority
+        if hasattr(self, "priority"):
+            priority = self.priority
+        elif hasattr(self, "role"):
+            priority = self.role.priority
+        else:
+            return False
 
-        scope = self.get_scope()
-        count = scope.role_assignments.filter(user=user_obj, role__priority__gte=priority).count()
-        return count > 0
+        return self.get_scope().role_assignments.filter(
+            scope_type          = self.scope_type,
+            scope_uuid          = self.scope_uuid,
+            user                = user_obj,
+            role__priority__gte = priority
+        ).count() > 0

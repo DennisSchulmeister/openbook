@@ -59,7 +59,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         if user_obj == get_current_user():
             if ".delete_" in perm or ".view_" in perm:
                 return True
-            if ".add_" in perm and self.decision == self.Decision.PENDING:
+            if ".add_" in perm and self.user == user_obj and self.decision == self.Decision.PENDING:
                 return True
 
         return super().has_obj_perm(user_obj, perm)
@@ -82,27 +82,29 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
             if old.decision != self.decision:
                 self.decision_date = now()
 
+        permission_user = kwargs.pop("permission_user", None)
+
         match self.decision:
             case self.Decision.ACCEPTED:
-                RoleAssignment.enroll(enrollment=self)
+                RoleAssignment.enroll(enrollment=self, permission_user=permission_user)
             case self.Decision.DENIED:
-                RoleAssignment.withdraw(enrollment=self)
+                RoleAssignment.withdraw(enrollment=self, permission_user=permission_user)
 
         super().save(*args, **kwargs)
 
-    def accept(self):
+    def accept(self, permission_user=None):
         """
         Accept request by setting the decision to accepted, saving the object and creating
         the role assignment.
         """
         self.decision      = self.Decision.ACCEPTED
         self.decision_date = now()
-        self.save()
+        self.save(permission_user=permission_user)
 
-    def deny(self):
+    def deny(self, permission_user=None):
         """
         Deny access request by setting the decision to denied and saving the object.
         """
         self.decision      = self.Decision.DENIED
         self.decision_date = now()
-        self.save()
+        self.save(permission_user=permission_user)

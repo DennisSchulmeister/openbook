@@ -10,6 +10,7 @@ from django_filters.filters                    import CharFilter
 from drf_spectacular.utils                     import extend_schema
 from drf_spectacular.utils                     import inline_serializer
 from rest_framework.decorators                 import action
+from rest_framework.response                   import Response
 from rest_framework.serializers                import BooleanField
 from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
@@ -160,15 +161,15 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
     @action(detail=True, methods=["post"], url_path="enroll")
     def enroll(self, request, pk=None):
         enrollment_method = self.get_object()
-        
+
         kwargs = {
             "user":             request.data.get("user_username"),
             "passphrase":       request.data.get("passphrase", None),
             "check_passphrase": request.data.get("check_passphrase", True),
+            "permission_user":  request.user,
         }
 
         role_assignment = enrollment_method.enroll(**kwargs)
         serializer      = RoleAssignmentReadSerializer(role_assignment)
 
         return Response(serializer.data)
-

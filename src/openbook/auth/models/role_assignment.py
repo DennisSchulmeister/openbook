@@ -10,6 +10,7 @@ from datetime                             import timezone
 from typing                               import TYPE_CHECKING
 from django.conf                          import settings
 from django.contrib.auth.models           import AbstractUser
+from django.core.exceptions               import PermissionDenied
 from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
 from django.utils.timezone                import now
@@ -19,6 +20,7 @@ from openbook.core.models.mixins.datetime import ValidityTimeSpanMixin
 from openbook.core.models.mixins.uuid     import UUIDMixin
 from .mixins.audit                        import CreatedModifiedByMixin
 from .mixins.scope                        import ScopeMixin
+from ..middleware.current_user            import get_current_user
 
 if TYPE_CHECKING:
     from .access_request    import AccessRequest
@@ -67,12 +69,12 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         return super().clean()
 
     @classmethod
-    def enroll(
-        cls,
+    def enroll(cls,
         enrollment:"EnrollmentMethod|AccessRequest",
         user: AbstractUser|None = None,
-        passphrase: str|None    = None,
-        check_passphrase: bool  = True
+        passphrase: str|None = None,
+        check_passphrase: bool = True,
+        permission_user: AbstractUser|None = None,
     ) -> "RoleAssignment":
         """
         Apply the given enrollment method or access request to a user, effectively adding the role
@@ -80,10 +82,14 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         in the access request object. For enrollment methods it must be given, however.
 
         Raises a `ValueError` when the passphrase doesn't match or the user is missing.
+
+        Raises `PermissionDenied` when the `permission_user` or the current request users lacks
+        the `openbook_auth.add_roleassignment` permission.
         """
         from .access_request    import AccessRequest
         from .enrollment_method import EnrollmentMethod
 
+        # Check parameters
         if hasattr(enrollment, "passphrase") and check_passphrase:
             if enrollment.passphrase and enrollment.passphrase != passphrase:
                 raise ValueError(_("Incorrect passphrase"))
@@ -94,6 +100,14 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         if not user:
             raise ValueError(_("User missing"))
     
+        # Check permissions
+        if not permission_user:
+            permission_user = get_current_user()
+        
+        if not permission_user and not permission_user.has_perm("openbook_auth.add_roleassignment", enrollment):
+                raise PermissionDenied()
+
+        # Add role assignment for user
         assignment_methods = {
             EnrollmentMethod: cls.AssignmentMethod.SELF_ENROLLMENT,
             AccessRequest:    cls.AssignmentMethod.ACCESS_REQUEST,
@@ -125,10 +139,10 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         return role_assignment
 
     @classmethod
-    def withdraw(
-        cls,
+    def withdraw(cls,
         enrollment:"EnrollmentMethod|AccessRequest",
         user: AbstractUser|None = None,
+        permission_user: AbstractUser|None = None,
     ) -> None:
         """
         Withdraw role assignment for a given enrollment method or access request. For access requests the
@@ -136,13 +150,25 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         methods it must be given, however.
 
         Raises a `ValueError` when the user is missing.
+
+        Raises `PermissionDenied` when the `permission_user` or the current request users lacks
+        the `openbook_auth.delete_roleassignment` permission.
         """
+        # Check parameters
         if not user and hasattr(enrollment, "user"):
             user = enrollment.user
         
         if not user:
             raise ValueError(_("User missing"))
-    
+
+        # Check permissions
+        if not permission_user:
+            permission_user = get_current_user()
+        
+        if not permission_user and not permission_user.has_perm("openbook_auth.delete_roleassignment", enrollment):
+                raise PermissionDenied()
+
+        # Remove role assignment for user
         cls.objects.filter(
             scope_type  = enrollment.scope_type,
             scope_uuid  = enrollment.scope_uuid,
