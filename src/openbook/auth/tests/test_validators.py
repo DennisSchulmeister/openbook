@@ -12,7 +12,7 @@ from django.test            import TestCase
 from ..utils                import content_type_for_model_string
 from ..                     import validators
 
-class TestValidators(TestCase):
+class Validators_Test(TestCase):
     """
     Test cases for validator functions.
     """

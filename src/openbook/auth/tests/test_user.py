@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.test            import TestCase
 from ..                     import models
 
-class TestUserModel(TestCase):
+class User_Model_Tests(TestCase):
     """
     Tests for the `User` and `UserProfile` models.
     """
@@ -58,3 +58,9 @@ class TestUserModel(TestCase):
             user_profile.description, user.profile.description,
             "User profile description got lost after saving user."
         )
+
+class User_ViewSet_Test(TestCase):
+    """
+    Tests for the `UserViewSet` REST API.
+    """
+    pass

@@ -7,22 +7,20 @@
 # License, or (at your option) any later version.
 
 from drf_spectacular.utils                   import extend_schema
-from rest_framework.viewsets                 import ModelViewSet
+from rest_framework.viewsets                 import ReadOnlyModelViewSet
 
-from openbook.drf                            import ModelViewSetMixin
+from openbook.drf                            import AllowAnonymousListViewSetMixin
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 from ..filters.mixins.scope                  import ScopeTypeFilterMixin
 from ..filters.mixins.permission             import PermissionFilterMixin
 from ..models.allowed_role_permission        import AllowedRolePermission
 from ..serializers.mixins.scope              import ScopeTypeField
 from ..serializers.permission                import PermissionReadField
-from ..serializers.permission                import PermissionWriteField
 from ..models.allowed_role_permission        import AllowedRolePermission
 
 class AllowedRolePermissionSerializer(UUIDSerializerMixin):
-    scope_type        = ScopeTypeField()
-    permission        = PermissionReadField(read_only=True)
-    permission_string = PermissionWriteField(write_only=True, source="permission")
+    scope_type = ScopeTypeField()
+    permission = PermissionReadField(read_only=True)
 
     class Meta:
         model = AllowedRolePermission
@@ -40,7 +38,7 @@ class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
         "x-model-name": "Allowed Role Permissions",
     }
 )
-class AllowedRolePermissionViewSet(ModelViewSetMixin, ModelViewSet):
+class AllowedRolePermissionViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Allowed permissions for the roles of a given scope type"
 
     queryset         = AllowedRolePermission.objects.all()

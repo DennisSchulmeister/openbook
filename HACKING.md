@@ -32,14 +32,18 @@ far from replacing a skilled software developer. Our own experience is this (May
 * AI coding assistants fail to consider the wider context and development style.
 * For Django, DRF, drf-spectacular the results are only so so, oftentimes hallucinated or convoluted.
 * You need to try very hard to make the LLM match your code style.
-* AI generated unit tests are often incomplete or broken or both.
+* For writing unit tests GitHub CoPilot performs better then Windsurf.
+* For simpler tasks (how to do X in Python again?) Windsurf is usually good enough.
 
-Yes, a lot can be done with good prompts. But then, what is the point, if it takes the same time
-to tweak a prompt than it does to manually write the code? So you can use AI, but be cautious.
-Make sure that generated code blends in with the rest (redact and change as necessary) and is as
-good as hand-written code. Double check generated code for subtle bugs, elegance and conciseness.
-Understand every line as if you had written it yourself. Then it is fine. Spamming us with AI slob
-is not fine. If in doubt prefer hand-written code.
+Of course a lot can be done with good prompts. But don't spend more time prompting than it would
+take you to write the code by hand. Please always be cautious, make sure that generated code blends
+in with the rest (redact and change as necessary) and is as good as hand-written code. Double check
+generated code for subtle bugs and straight-forwardness. LLMs tend for very elaborate and indirect
+solutions even when a straight-forward way exists.
+
+* Understand every line as if you had written it yourself. Then it is fine.
+* Spamming us with unrevised AI slob is no trivial offense.
+* If in doubt prefer hand-written code, even if it is less complete. 🙃
 
 Quick Start
 -----------

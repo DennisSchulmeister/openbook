@@ -16,10 +16,7 @@ from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
 
-class EnrollmentMethodTests(TestCase):
-    """
-    Tests for the `EnrollmentMethod` model.
-    """
+class EnrollmentMethod_Test_Mixin:
     def setUp(self):
         self.user = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
         self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
@@ -32,7 +29,11 @@ class EnrollmentMethodTests(TestCase):
 
         self.em_no_passphrase = EnrollmentMethod.from_obj(self.course, name="self-enrollment", role=self.role)
         self.em_no_passphrase.save()
-        
+
+class EnrollmentMethod_Model_Tests(EnrollmentMethod_Test_Mixin, TestCase):
+    """
+    Tests for the `EnrollmentMethod` model.
+    """
     def test_role_scope(self):
         """
         The assigned role must belong to the same scope.
@@ -112,3 +113,8 @@ class EnrollmentMethodTests(TestCase):
             user = self.user,
             role = self.role,
         ).count(), 1)
+
+class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
+    """
+    Tests for the `EnrollmentMethodViewSet` REST API.
+    """

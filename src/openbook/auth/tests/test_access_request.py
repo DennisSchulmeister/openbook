@@ -19,10 +19,7 @@ from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
 from ..utils                       import permission_for_perm_string
 
-class TestAccessRequestModel(TestCase):
-    """
-    Tests for the `AccessRequest` model.
-    """
+class AccessRequest_Test_Mixin:
     def setUp(self):
         self.user_new       = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
         self.user_student   = User.objects.create_user(username="test-student", email="test-student@example.com", password="password")
@@ -47,6 +44,10 @@ class TestAccessRequestModel(TestCase):
         RoleAssignment.from_obj(self.course, user=self.user_student, role=self.role_student).save()
         RoleAssignment.from_obj(self.course, user=self.user_assistant, role=self.role_assistant).save()
 
+class AccessRequest_Model_Tests(AccessRequest_Test_Mixin, TestCase):
+    """
+    Tests for the `AccessRequest` model.
+    """
     def test_role_scope(self):
         """
         The assigned role must belong to the same scope.
@@ -275,3 +276,9 @@ class TestAccessRequestModel(TestCase):
         )
 
         access_request4.save(permission_user=self.user_student)
+
+class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
+    """
+    Tests for the `AccessRequestViewSet` REST API.
+    """
+    pass

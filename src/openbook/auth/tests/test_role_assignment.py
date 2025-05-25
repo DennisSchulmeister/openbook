@@ -15,19 +15,20 @@ from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
 
-class RoleAssignmentTests(TestCase):
-    """
-    Tests for the `RoleAssignment` model.
-
-    NOTE: Methods `enroll()` and `withdraw()` require are enrollment method or access request
-    as first parameter. They are therefor already tested in the unit tests for these models.
-    """
+class RoleAssignment_Test_Mixin:
     def setUp(self):
         self.user   = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
         self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
         self.role   = Role.from_obj(self.course, name="Student", slug="student", priority=0)
         self.role.save()
 
+class RoleAssignment_Model_Tests(RoleAssignment_Test_Mixin):
+    """
+    Tests for the `RoleAssignment` model.
+
+    NOTE: Methods `enroll()` and `withdraw()` require are enrollment method or access request
+    as first parameter. They are therefor already tested in the unit tests for these models.
+    """
     def test_role_scope(self):
         """
         The assigned role must belong to the same scope.
@@ -61,3 +62,9 @@ class RoleAssignmentTests(TestCase):
                 role              = self.role,
                 assignment_method = RoleAssignment.AssignmentMethod.MANUAL
             ).save()
+
+class RoleAssignment_ViewSet_Tests(RoleAssignment_Test_Mixin):
+    """
+    Tests for the `RoleAssignmentViewSet` REST API.
+    """
+    pass

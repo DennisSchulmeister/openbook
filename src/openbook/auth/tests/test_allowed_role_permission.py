@@ -14,10 +14,7 @@ from ..utils                            import permission_for_perm_string
 from ..validators                       import validate_permissions
 from ..utils                            import content_type_for_model_string
 
-class AllowedRolePermissionTests(TestCase):
-    """
-    Tests for the `AllowedRolePermission` model.
-    """
+class AllowedRolePermission_Test_Mixin:
     def setUp(self):
         self.scope_type = content_type_for_model_string("openbook_course.course")
 
@@ -31,6 +28,10 @@ class AllowedRolePermissionTests(TestCase):
             permission = permission_for_perm_string("admin.view_logentry"),
         )
 
+class AllowedRolePermission_Model_Tests(AllowedRolePermission_Test_Mixin, TestCase):
+    """
+    Tests for the `AllowedRolePermission` model.
+    """
     def test_validate_permissions(self):
         """
         Validation must only whitelisted permissions for roles or scopes.
@@ -53,3 +54,7 @@ class AllowedRolePermissionTests(TestCase):
         with self.assertRaises(ValidationError):
             validate_permissions(self.scope_type, disallowed)
     
+class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, TestCase):
+    """
+    Tests for the `AllowedRolePermissionViewSet` REST API.
+    """

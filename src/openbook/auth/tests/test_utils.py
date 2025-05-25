@@ -12,7 +12,7 @@ from django.test                        import TestCase
 from django.utils.translation           import activate
 from ..                                 import utils
 
-class TestUtils(TestCase):
+class Utils_Test(TestCase):
     """
     Test cases for utility functions.
     """
