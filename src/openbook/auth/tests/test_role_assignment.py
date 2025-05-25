@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.core.exceptions        import ValidationError
 from django.db.utils               import IntegrityError
 from django.test                   import TestCase
 
@@ -26,6 +27,23 @@ class RoleAssignmentTests(TestCase):
         self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
         self.role   = Role.from_obj(self.course, name="Student", slug="student", priority=0)
         self.role.save()
+
+    def test_role_scope(self):
+        """
+        The assigned role must belong to the same scope.
+        """
+        wrong_scope = Course.objects.create(name="Other Course", slug="other-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        wrong_role  = Role.from_obj(wrong_scope, name="Wrong Scope", slug="wrong-scope", priority=0)
+        wrong_role.save()
+
+        role_assignment = RoleAssignment.from_obj(self.course,
+            user              = self.user,
+            role              = wrong_role,
+            assignment_method = RoleAssignment.AssignmentMethod.MANUAL
+        )
+
+        with self.assertRaises(ValidationError):
+            role_assignment.clean()
 
     def test_cannot_assign_twice(self):
         """

@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.core.exceptions        import ValidationError
 from django.test                   import TestCase
 from unittest.mock                 import patch
 
@@ -32,6 +33,19 @@ class EnrollmentMethodTests(TestCase):
         self.em_no_passphrase = EnrollmentMethod.from_obj(self.course, name="self-enrollment", role=self.role)
         self.em_no_passphrase.save()
         
+    def test_role_scope(self):
+        """
+        The assigned role must belong to the same scope.
+        """
+        wrong_scope = Course.objects.create(name="Other Course", slug="other-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        wrong_role  = Role.from_obj(wrong_scope, name="Wrong Scope", slug="wrong-scope", priority=0)
+        wrong_role.save()
+
+        enrollment_method = EnrollmentMethod.from_obj(self.course, name="wrong-role", role=wrong_role)
+
+        with self.assertRaises(ValidationError):
+            enrollment_method.clean()
+
     def test_enroll_called(self):
         """
         `RoleAssignment.enroll()` should be called when a user self-enrolls.

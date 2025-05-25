@@ -6,10 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation           import gettext_lazy as _
+from typing                             import Iterable
+
+from django.contrib.auth.models         import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions             import ValidationError
-from django.db.models                   import QuerySet
+from django.utils.translation           import gettext_lazy as _
 
 from .models.allowed_role_permission    import AllowedRolePermission
 from .models.mixins.scope               import ScopedRolesMixin
@@ -24,7 +26,7 @@ def validate_scope_type(scope_type: ContentType):
             "scope_type": scope_type.model_class()._meta.verbose_name
         })
 
-def validate_permissions(scope_type: ContentType, permissions: QuerySet):
+def validate_permissions(scope_type: ContentType, permissions: Iterable[Permission]):
     """
     Check that only allowed permissions are assigned. Does nothing if either value
     is missing or only allowed permissions are used. Otherwise a `ValidationError`

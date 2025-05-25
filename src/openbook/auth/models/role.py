@@ -17,6 +17,7 @@ from openbook.core.models.mixins.uuid   import UUIDMixin
 
 from .mixins.audit                      import CreatedModifiedByMixin
 from .mixins.scope                      import ScopeMixin
+from ..validators                       import validate_permissions
 
 class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, ActiveInactiveMixin, CreatedModifiedByMixin):
     """
@@ -41,4 +42,3 @@ class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, Acti
     
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
-

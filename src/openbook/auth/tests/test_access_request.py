@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.core.exceptions        import ValidationError
 from django.core.exceptions        import PermissionDenied
 from django.test                   import TestCase
 from django.utils                  import timezone
@@ -45,6 +46,19 @@ class TestAccessRequestModel(TestCase):
 
         RoleAssignment.from_obj(self.course, user=self.user_student, role=self.role_student).save()
         RoleAssignment.from_obj(self.course, user=self.user_assistant, role=self.role_assistant).save()
+
+    def test_role_scope(self):
+        """
+        The assigned role must belong to the same scope.
+        """
+        wrong_scope = Course.objects.create(name="Other Course", slug="other-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        wrong_role  = Role.from_obj(wrong_scope, name="Wrong Scope", slug="wrong-scope", priority=0)
+        wrong_role.save()
+
+        access_request = AccessRequest.from_obj(self.course, user=self.user_new, role=wrong_role)
+
+        with self.assertRaises(ValidationError):
+            access_request.clean()
 
     def test_new_pending_decision(self):
         """
