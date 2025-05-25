@@ -11,6 +11,7 @@ from collections                import defaultdict
 
 from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
+from rest_framework             import status
 from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.pagination  import PageNumberPagination as DRFPageNumberPagination
 from rest_framework.permissions import AllowAny
@@ -90,10 +91,10 @@ class ModelSerializer(DRFModelSerializer):
 
 class ModelViewSetMixin:
     """
-    Make sure that object permissions are also checked when creating new model instances.
-    By default, DRF applies object permissions on the unmodified object right after reading
-    it from the database, before changes are applied. Here, when a new object is created,
-    we check the object initialized with all values.
+    Ensure that object permissions are also checked when creating new model instances.
+    DRF checks object permissions on database-loaded objects, but during creation,
+    the object doesn't exist yet. Here we validate the input and construct the instance
+    before saving to allow permission checks.
 
     NOTE: This is a mixin that must be used together with `ModelViewSet` to avoid a mysterious
     circular import in DRF. To overwrite the implementation of `post()` the mixin must come first.
@@ -103,16 +104,22 @@ class ModelViewSetMixin:
         pass
     ```
     """
-    def post(self, request):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         if hasattr(serializer, "get_prefilled_instance"):
+            # Use custom method to construct the instance
             instance = serializer.get_prefilled_instance()
-            self.check_object_permissions(request, instance)
+        else:
+            # Default behavior: construct the instance manually
+            instance = serializer.Meta.model(**serializer.validated_data)
 
-        serializer.save()
-        return Response(serializer.data, status=201)
+        self.check_object_permissions(request, instance)
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class AllowAnonymousListViewSetMixin:
     """
@@ -127,12 +134,12 @@ class AllowAnonymousListViewSetMixin:
             return super().get_permissions()
 
 OPERATION_ID_SUMMARY = {
-    "list": "List",
-    "retrieve": "Retrieve",
-    "create": "Create",
-    "update": "Update",
+    "list":           "List",
+    "retrieve":       "Retrieve",
+    "create":         "Create",
+    "update":         "Update",
     "partial_update": "Partial Update",
-    "destroy": "Delete",
+    "destroy":        "Delete",
 }
 
 def add_tag_groups(result, **kwargs):

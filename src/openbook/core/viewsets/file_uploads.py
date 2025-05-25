@@ -25,7 +25,16 @@ class MediaFileSerializer(ModelSerializer):
     class Meta:
         model  = MediaFile
         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
-        list_serializer_class = MediaFileListSerializer
+
+    def to_internal_value(self, data):
+        """
+        Make file data optional for partial updates.
+        """
+        if self.context["request"].method == "PATCH" and "file_data" not in data:
+            data = {**data}
+            data["file_data"] = self.instance.file_data
+            
+        return super().to_internal_value(data)
 
 class MediaFileFilter(FilterSet):
     file_name = CharFilter(lookup_expr="icontains")

@@ -32,7 +32,7 @@ class AbstractFileModel(UUIDMixin):
 
     # Uploaded file data
     file_data = models.FileField(verbose_name=_("File Data"), upload_to=_calc_file_path)
-    file_name = models.CharField(verbose_name=_("File Name"), max_length=255, blank=True)
+    file_name = models.CharField(verbose_name=_("File Name"), max_length=255, null=False, blank=True)
     file_size = models.PositiveIntegerField(verbose_name=_("File Size"), null=True)
     mime_type = models.CharField(verbose_name=_("MIME Type"), max_length=64)
 

@@ -13,7 +13,7 @@ from io                             import BytesIO
 from PIL                            import Image
 from ..                             import validators
 
-class TestValidateImage(TestCase):
+class ValidateImage_Tests(TestCase):
     """
     Test cases for the `ValidateImage` validator class.
     """

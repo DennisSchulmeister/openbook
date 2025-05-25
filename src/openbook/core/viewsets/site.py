@@ -15,6 +15,7 @@ from rest_framework.decorators  import action
 from rest_framework.response    import Response
 from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
+from rest_framework.permissions    import AllowAny
 
 from openbook.drf               import AllowAnonymousListViewSetMixin
 from ..models.site              import Site
@@ -53,7 +54,7 @@ class SiteViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
         }),
         summary="Health Status",
     )
-    @action(detail=False)
+    @action(detail=False, permission_classes=[AllowAny])
     def health(self, request):
         """
         Return a simple health status that the API is up and running.

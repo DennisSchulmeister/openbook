@@ -1,6 +1,10 @@
+---
+mode: 'agent'
+---
 Please suggest unit tests for the Model `XYZ`.
 
-* Use class `django.test.TestCase`
+* Inherit from `django.test.TestCase`
+* Name the class `XYZ_Model_Tests`.
 * Write a docstring for the class, e.g.:  "Tests for the `MyModel` model."
 * Keep method names short and concise, e.g.: "test_role_assigned_on_accept"
 * Write a short and concise docstring for each method, e.g.: "Role should be assigned when access request is accepted."

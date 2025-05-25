@@ -49,13 +49,13 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
 
     # Django Unfold (Modern Admin)
-    "unfold.apps.BasicAppConfig",        # before django.contrib.admin
-    "unfold.contrib.filters",            # optional, if special filters are needed
-    "unfold.contrib.forms",              # optional, if special form elements are needed
-    "unfold.contrib.inlines",            # optional, if special inlines are needed
-    "unfold.contrib.import_export",      # optional, if django-import-export package is used
-    #"unfold.contrib.guardian",          # optional, if django-guardian package is used
-    #"unfold.contrib.simple_history",    # optional, if django-simple-history package is used
+    "unfold.apps.BasicAppConfig",            # before django.contrib.admin
+    "unfold.contrib.filters",                # optional, if special filters are needed
+    "unfold.contrib.forms",                  # optional, if special form elements are needed
+    "unfold.contrib.inlines",                # optional, if special inlines are needed
+    "unfold.contrib.import_export",          # optional, if django-import-export package is used
+    #"unfold.contrib.guardian",              # optional, if django-guardian package is used
+    #"unfold.contrib.simple_history",        # optional, if django-simple-history package is used
 
     # Django built-in apps
     "openbook.apps.OpenBookAdmin",
@@ -67,11 +67,12 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     # Other useful apps
-    "django_extensions",                # Django Extensions (additional management commands)
-    "dbbackup",                         # Django DBBackup: Database and Media Files Backups
-    "import_export",                    # Django Import/Export: Import and export data in the Django Admin
-    "djangoql",                         # Django QL: Advanced search language for Django
-    "colorfield",                       # Django Color Field: Color field for models with color-picker in the admin
+    "django_cleanup.apps.CleanupConfig",    # Django Cleanup: Automatically delete files when models are deleted or updated
+    "django_extensions",                    # Django Extensions (additional management commands)
+    "dbbackup",                             # Django DBBackup: Database and Media Files Backups
+    "import_export",                        # Django Import/Export: Import and export data in the Django Admin
+    "djangoql",                             # Django QL: Advanced search language for Django
+    "colorfield",                           # Django Color Field: Color field for models with color-picker in the admin
 ]
 
 MIDDLEWARE = [
