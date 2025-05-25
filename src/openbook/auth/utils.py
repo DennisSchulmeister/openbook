@@ -56,14 +56,20 @@ def app_name_for_permission(permission: "Permission") -> str:
 
 def model_for_permission(permission: "Permission") -> str:
     """
-    Get modal label from permission object.
+    Get model label from permission object.
     """
+    if not permission:
+        return ""
+    
     return permission.content_type.model
 
 def model_name_for_permission(permission: "Permission") -> str:
     """
     Get translated modal name from permission object.
     """
+    if not permission:
+        return ""
+    
     model = permission.content_type.model_class()
 
     if not model:
