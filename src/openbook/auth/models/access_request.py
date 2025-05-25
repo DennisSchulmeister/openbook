@@ -83,28 +83,35 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
                 self.decision_date = now()
 
         permission_user = kwargs.pop("permission_user", None)
+        check_permission = kwargs.pop("check_permission", True)
 
         match self.decision:
             case self.Decision.ACCEPTED:
-                RoleAssignment.enroll(enrollment=self, permission_user=permission_user)
+                RoleAssignment.enroll(enrollment=self, permission_user=permission_user, check_permission=check_permission)
             case self.Decision.DENIED:
-                RoleAssignment.withdraw(enrollment=self, permission_user=permission_user)
+                RoleAssignment.withdraw(enrollment=self, permission_user=permission_user, check_permission=check_permission)
 
         super().save(*args, **kwargs)
 
-    def accept(self, permission_user=None):
+    def accept(self,
+        permission_user: AbstractUser = None,
+        check_permission: bool = True
+    ):
         """
         Accept request by setting the decision to accepted, saving the object and creating
         the role assignment.
         """
         self.decision      = self.Decision.ACCEPTED
         self.decision_date = now()
-        self.save(permission_user=permission_user)
+        self.save(permission_user=permission_user, check_permission=check_permission)
 
-    def deny(self, permission_user=None):
+    def deny(self,
+        permission_user: AbstractUser = None,
+        check_permission: bool = True
+    ):
         """
         Deny access request by setting the decision to denied and saving the object.
         """
         self.decision      = self.Decision.DENIED
         self.decision_date = now()
-        self.save(permission_user=permission_user)
+        self.save(permission_user=permission_user, check_permission=check_permission)

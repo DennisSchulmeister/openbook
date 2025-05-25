@@ -12,6 +12,9 @@ from django.test            import TestCase
 from ..                     import models
 
 class TestUserModel(TestCase):
+    """
+    Tests for the `User` and `UserProfile` models.
+    """
     def test_user_creation_without_email(self):
         """
         The e-mail address should be obligatory when a new user is created.

@@ -7,7 +7,8 @@
 # License, or (at your option) any later version.
 
 from django.conf                        import settings
-from django.contrib.auth.models         import AbstractUser, Permission
+from django.contrib.auth.models         import AbstractUser
+from django.contrib.auth.models         import Permission
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -48,7 +49,7 @@ class RoleBasedObjectPermissionsMixin(models.Model):
         ).count() > 0:
             return True
         
-        return user_obj.is_authenticated() and scope.role_assignments.filter(
+        return user_obj.is_authenticated and scope.role_assignments.filter(
             user = user_obj,
             role__permissions__content_type__app_label = app_label,
             role__permissions__codename = codename
@@ -163,16 +164,21 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         abstract = True
 
     @classmethod
-    def from_obj(cls, other_obj: "ScopeMixin") -> "ScopeMixin":
+    def from_obj(cls, other_obj: "ScopeMixin|ScopedRolesMixin", **kwargs) -> "ScopeMixin":
         """
         Create a new instance from another scope-related model instance, copying over the
         scope reference and optionally the role.
         """
         from ..role import Role
         
-        obj = cls()
-        obj.scope_type = other_obj.scope_type
-        obj.scope_uuid = other_obj.scope_uuid
+        obj = cls(**kwargs)
+
+        if hasattr(other_obj, "scope_type") and hasattr(other_obj, "scope_uui"):
+            obj.scope_type = other_obj.scope_type
+            obj.scope_uuid = other_obj.scope_uuid
+        else:
+            obj.scope_type = ContentType.objects.get_for_model(other_obj)
+            obj.scope_uuid = other_obj.id
 
         if hasattr(obj, "role"):
             if hasattr(other_obj, "role"):

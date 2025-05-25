@@ -49,7 +49,8 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         user: AbstractUser,
         passphrase: str = None,
         check_passphrase: bool = True,
-        permission_user: AbstractUser|None = None
+        permission_user: AbstractUser|None = None,
+        check_permission: bool = True,
     ) -> "RoleAssignment":
         """
         Enroll the given user, optionally checking the passphrase. Raises a `ValueError` when
@@ -63,4 +64,5 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
             passphrase       = passphrase,
             check_passphrase = check_passphrase,
             permission_user  = permission_user,
+            check_permission = check_permission,
         )

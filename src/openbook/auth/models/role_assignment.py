@@ -75,6 +75,7 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         passphrase: str|None = None,
         check_passphrase: bool = True,
         permission_user: AbstractUser|None = None,
+        check_permission: bool = True,
     ) -> "RoleAssignment":
         """
         Apply the given enrollment method or access request to a user, effectively adding the role
@@ -104,8 +105,9 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         if not permission_user:
             permission_user = get_current_user()
         
-        if not permission_user and not permission_user.has_perm("openbook_auth.add_roleassignment", enrollment):
-                raise PermissionDenied()
+        if check_permission and permission_user:
+            if not permission_user.has_perm("openbook_auth.add_roleassignment", enrollment):
+                    raise PermissionDenied()
 
         # Add role assignment for user
         assignment_methods = {
@@ -143,6 +145,7 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         enrollment:"EnrollmentMethod|AccessRequest",
         user: AbstractUser|None = None,
         permission_user: AbstractUser|None = None,
+        check_permission: bool = True,
     ) -> None:
         """
         Withdraw role assignment for a given enrollment method or access request. For access requests the
@@ -165,8 +168,9 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         if not permission_user:
             permission_user = get_current_user()
         
-        if not permission_user and not permission_user.has_perm("openbook_auth.delete_roleassignment", enrollment):
-                raise PermissionDenied()
+        if check_permission and permission_user:
+            if not permission_user.has_perm("openbook_auth.delete_roleassignment", enrollment):
+                    raise PermissionDenied()
 
         # Remove role assignment for user
         cls.objects.filter(

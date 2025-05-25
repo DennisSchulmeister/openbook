@@ -11,19 +11,19 @@ import markdown
 from django.db                  import models
 from django.utils.translation   import gettext_lazy as _
 
-class TextFormatChoices(models.TextChoices):
-    """
-    Formatted text content can either be in plain text, HTML or Markdown format.
-    """
-    PLAIN_TEXT = "TEXT", _("Plain Text")
-    HTML       = "HTML", _("HTML")
-    MARKDOWN   = "MD",   _("Markdown")
-
 class NameDescriptionMixin(models.Model):
     """
     Mixin for models with a clear-text short name and long description in either plain text,
     HTML or Markdown format.
     """
+    class TextFormatChoices(models.TextChoices):
+        """
+        Formatted text content can either be in plain text, HTML or Markdown format.
+        """
+        PLAIN_TEXT = "TEXT", _("Plain Text")
+        HTML       = "HTML", _("HTML")
+        MARKDOWN   = "MD",   _("Markdown")
+
     name        = models.CharField(verbose_name=_("Name"), max_length=255, null=False, blank=False)
     description = models.TextField(verbose_name=_("Description"), null=False, blank=True)
 
