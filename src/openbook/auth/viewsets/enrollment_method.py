@@ -152,21 +152,20 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
         request      = inline_serializer(
             name   = "EnrollActionRequestSerializer",
             fields = {
-                "user_username":    CharField(required=True),
-                "passphrase":       CharField(required=False),
-                "check_passphrase": BooleanField(required=False, default=True),
+                "passphrase": CharField(required=False),
             }
         ),
     )
     @action(detail=True, methods=["post"], url_path="enroll")
     def enroll(self, request, pk=None):
+        """
+        Self-enrollment of the current user via given enrollment method.
+        """
         enrollment_method = self.get_object()
 
         kwargs = {
-            "user":             request.data.get("user_username"),
-            "passphrase":       request.data.get("passphrase", None),
-            "check_passphrase": request.data.get("check_passphrase", True),
-            "permission_user":  request.user,
+            "user":       request.user,
+            "passphrase": request.data.get("passphrase", None),
         }
 
         role_assignment = enrollment_method.enroll(**kwargs)

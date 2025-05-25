@@ -1,0 +1,100 @@
+# OpenBook: Interactive Online Textbooks - Server
+# © 2025 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+from django.test                   import TestCase
+from unittest.mock                 import patch
+
+from openbook.course.models.course import Course
+from ..models.enrollment_method    import EnrollmentMethod
+from ..models.role                 import Role
+from ..models.role_assignment      import RoleAssignment
+from ..models.user                 import User
+
+class EnrollmentMethodTests(TestCase):
+    """
+    Tests for the `EnrollmentMethod` model.
+    """
+    def setUp(self):
+        self.user = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
+        self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
+
+        self.role = Role.from_obj(self.course, name="Student", slug="student", priority=0)
+        self.role.save()
+
+        self.em_passphrase = EnrollmentMethod.from_obj(self.course, name="self-enrollment", role=self.role, passphrase="Correct!")
+        self.em_passphrase.save()
+
+        self.em_no_passphrase = EnrollmentMethod.from_obj(self.course, name="self-enrollment", role=self.role)
+        self.em_no_passphrase.save()
+        
+    def test_enroll_called(self):
+        """
+        `RoleAssignment.enroll()` should be called when a user self-enrolls.
+        """
+        with patch.object(RoleAssignment, "enroll") as mock_enroll:
+            self.em_no_passphrase.enroll(user=self.user, check_passphrase=False)
+            
+            mock_enroll.assert_called_once_with(
+                enrollment       = self.em_no_passphrase,
+                user             = self.user,
+                passphrase       = None,
+                check_passphrase = False,
+                check_permission = False,
+            )
+
+    def test_return_role_assignment(self):
+        """
+        `RoleAssignment` object should be returned when a user self-enrolls.
+        """
+        result = self.em_no_passphrase.enroll(user=self.user, check_passphrase=False)
+        self.assertIsInstance(result, RoleAssignment)
+    
+    def test_wrong_passphrase_value_error(self):
+        """
+        `ValueError` should be raised when a wrong passphrase is used.
+        """
+        with self.assertRaises(ValueError):
+            self.em_passphrase.enroll(user=self.user, passphrase="Wrong!")
+
+    def test_skip_passphrase_check(self):
+        """
+        Wrong passphrase is ignored when `check_passphrase` is `False`.
+        """
+        self.em_passphrase.enroll(user=self.user, passphrase="Wrong!", check_passphrase=False)
+
+    def test_correct_passphrase(self):
+        """
+        Correct passphrase creates new role assignment.
+        """
+        self.assertEqual(RoleAssignment.objects.filter(
+            user = self.user,
+            role = self.role,
+        ).count(), 0)
+
+        self.em_passphrase.enroll(user=self.user, passphrase="Correct!")
+
+        self.assertEqual(RoleAssignment.objects.filter(
+            user = self.user,
+            role = self.role,
+        ).count(), 1)
+    
+    def test_without_passphrase(self):
+        """
+        Users can always self-assign when no passphrase is required.
+        """
+        self.assertEqual(RoleAssignment.objects.filter(
+            user = self.user,
+            role = self.role,
+        ).count(), 0)
+
+        self.em_no_passphrase.enroll(user=self.user)
+
+        self.assertEqual(RoleAssignment.objects.filter(
+            user = self.user,
+            role = self.role,
+        ).count(), 1)

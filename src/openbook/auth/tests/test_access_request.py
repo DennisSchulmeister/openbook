@@ -124,14 +124,14 @@ class TestAccessRequestModel(TestCase):
         with self.assertRaises(RoleAssignment.DoesNotExist):
             RoleAssignment.objects.get(
                 user = self.user_new,
-                role = self.role_student
+                role = self.role_student,
             )
 
         access_request.accept(check_permission=False)
 
         self.assertEqual(RoleAssignment.objects.filter(
             user = self.user_new,
-            role = self.role_student
+            role = self.role_student,
         ).count(), 1)
 
         self.assertEqual(access_request.decision, AccessRequest.Decision.ACCEPTED)
