@@ -24,7 +24,7 @@ class AllowedRolePermissionSerializer(UUIDSerializerMixin):
 
     class Meta:
         model = AllowedRolePermission
-        fields = (*UUIDSerializerMixin.Meta.fields, "scope_type", "permission", "permission_string")
+        fields = (*UUIDSerializerMixin.Meta.fields, "scope_type", "permission")
 
 class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
     class Meta:
