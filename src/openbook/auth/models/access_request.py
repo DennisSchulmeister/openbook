@@ -56,7 +56,7 @@ class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin
         the own user. Otherwise use inherited object permission, that the target role's priority must be
         lower or equal any priority of the own assigned roles.
         """
-        if user_obj == get_current_user():
+        if self.user == user_obj:
             if ".delete_" in perm or ".view_" in perm:
                 return True
             if ".add_" in perm and self.user == user_obj and self.decision == self.Decision.PENDING:

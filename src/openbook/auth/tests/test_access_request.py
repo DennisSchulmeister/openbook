@@ -11,20 +11,28 @@ from django.core.exceptions        import PermissionDenied
 from django.test                   import TestCase
 from django.utils                  import timezone
 from unittest.mock                 import patch
+from rest_framework.test           import APIClient
+from rest_framework.reverse        import reverse
 
 from openbook.course.models.course import Course
+from ..middleware.current_user     import reset_current_user
 from ..models.access_request       import AccessRequest
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
+from ..utils                       import model_string_for_content_type
 from ..utils                       import permission_for_perm_string
 
 class AccessRequest_Test_Mixin:
     def setUp(self):
-        self.user_new       = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
-        self.user_student   = User.objects.create_user(username="test-student", email="test-student@example.com", password="password")
-        self.user_assistant = User.objects.create_user(username="test-assistant", email="test-assistant@example.com", password="password")
-        self.course         = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        reset_current_user()
+
+        self.user_new       = User.objects.create_user(username="new", email="new@test.com", password="password")
+        self.user_student   = User.objects.create_user(username="student", email="student@test.com", password="password")
+        self.user_assistant = User.objects.create_user(username="assistant", email="assistant@test.com", password="password")
+        self.user_owner     = User.objects.create_user(username="owner", email="owner@test.com", password="password")
+        self.user_dummy     = User.objects.create_user(username="dummy", email="dummy@test.com", password="password")
+        self.course         = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN, owner=self.user_owner)
         self.role_student   = Role.from_obj(self.course, name="Student", slug="student", priority=0)
         self.role_assistant = Role.from_obj(self.course, name="Assistant", slug="assistant", priority=1)
         self.role_teacher   = Role.from_obj(self.course, name="Teacher", slug="teacher", priority=2)
@@ -34,12 +42,21 @@ class AccessRequest_Test_Mixin:
         self.role_teacher.save()
 
         permissions = [
+            permission_for_perm_string("openbook_auth.add_accessrequest"),
+            permission_for_perm_string("openbook_auth.view_accessrequest"),
+            permission_for_perm_string("openbook_auth.change_accessrequest"),
+            permission_for_perm_string("openbook_auth.delete_accessrequest"),
             permission_for_perm_string("openbook_auth.add_roleassignment"),
             permission_for_perm_string("openbook_auth.delete_roleassignment"),
         ]
 
         self.role_assistant.permissions.set(permissions)
         self.role_teacher.permissions.set(permissions)
+
+        self.user_new.user_permissions.set([
+            permission_for_perm_string("openbook_auth.add_accessrequest"),
+            permission_for_perm_string("openbook_auth.delete_accessrequest"),
+        ])
 
         RoleAssignment.from_obj(self.course, user=self.user_student, role=self.role_student).save()
         RoleAssignment.from_obj(self.course, user=self.user_assistant, role=self.role_assistant).save()
@@ -281,4 +298,215 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
     """
     Tests for the `AccessRequestViewSet` REST API.
     """
-    pass
+    def setUp(self):
+        super().setUp()
+        self.client = APIClient()
+        self.list_url = reverse("access_request-list")
+
+        self.access_request = AccessRequest.from_obj(self.course, user=self.user_new, role=self.role_student)
+        self.access_request.save(check_permission=False)
+
+        self.detail_url = reverse("access_request-detail", args=[str(self.access_request.pk)])
+
+    def test_list(self):
+        """
+        List should return access requests for authenticated user with permission.
+        """
+        self.client.login(username="assistant", password="password")
+        response = self.client.get(self.list_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("results", response.data)
+        self.assertGreaterEqual(response.data["count"], 1)
+
+    def test_list_requires_auth(self):
+        """
+        List should require authentication.
+        """
+        self.client.logout()
+        response = self.client.get(self.list_url)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_retrieve(self):
+        """
+        Retrieve should return access request details for permitted user.
+        """
+        self.client.login(username="assistant", password="password")
+        response = self.client.get(self.detail_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["id"], str(self.access_request.pk))
+
+    def test_retrieve_requires_permission(self):
+        """
+        Retrieve requires authenticated user with correct permission.
+        """
+        # Not logged in
+        reset_current_user()
+        self.client.logout()
+
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 403)
+
+        # Logged in as dummy (lacks permission)
+        reset_current_user()
+        self.client.login(username="dummy", password="password")
+
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+        # Logged in as assistant (has permission)
+        reset_current_user()
+        self.client.login(username="assistant", password="password")
+
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_retrieve_404_for_nonexistent(self):
+        """
+        Retrieve should return 404 for non-existent access request.
+        """
+        self.client.login(username="assistant", password="password")
+        url = reverse("access_request-detail", args=["00000000-0000-0000-0000-000000000000"])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_create(self):
+        """
+        Create should allow authenticated user to create access request.
+        """
+        self.client.login(username="new", password="password")
+
+        response = self.client.post(self.list_url, {
+            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid":    str(self.role_student.scope_uuid),
+            "role_slug":     self.role_student.slug,
+            "user_username": self.user_new.username,
+        })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["user"]["username"], self.user_new.username)
+        self.assertEqual(response.data["role"]["id"], str(self.role_student.pk))
+
+    def test_create_requires_auth(self):
+        """
+        Create should require authentication.
+        """
+        self.client.logout()
+
+        response = self.client.post(self.list_url, {
+            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid":    str(self.role_student.scope_uuid),
+            "role_slug":     self.role_student.slug,
+            "user_username": self.user_new.username,
+        })
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_update(self):
+        """
+        Update should allow permitted user to update access request.
+        """
+        self.client.login(username="assistant", password="password")
+
+        response = self.client.put(self.detail_url, {
+            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid":    str(self.role_student.scope_uuid),
+            "role_slug":     self.role_student.slug,
+            "user_username": self.user_new.username,
+            "decision":      AccessRequest.Decision.ACCEPTED,
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["decision"], AccessRequest.Decision.ACCEPTED)
+
+    def test_partial_update(self):
+        """
+        Partial update should allow permitted user to update access request.
+        """
+        self.client.login(username="assistant", password="password")
+
+        response = self.client.patch(self.detail_url, {
+            "decision": AccessRequest.Decision.DENIED
+        }, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["decision"], AccessRequest.Decision.DENIED)
+
+    def test_delete(self):
+        """
+        Delete should allow permitted user to delete access request.
+        """
+        self.client.login(username="new", password="password")
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(AccessRequest.objects.filter(pk=self.access_request.pk).exists())
+
+    def test_permission_denied(self):
+        """
+        Operations without required permissions should return 403.
+        """
+        self.client.login(username="student", password="password")
+
+        # Try to accept without permission
+        url = reverse("access_request-accept", args=[str(self.access_request.pk)])
+        response = self.client.put(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Try to deny without permission
+        url = reverse("access_request-deny", args=[str(self.access_request.pk)])
+        response = self.client.put(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_accept(self):
+        """
+        Accept should assign role when permitted.
+        """
+        self.client.login(username="assistant", password="password")
+
+        url = reverse("access_request-accept", args=[str(self.access_request.pk)])
+        response = self.client.put(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.access_request.refresh_from_db()
+        self.assertEqual(self.access_request.decision, AccessRequest.Decision.ACCEPTED)
+
+    def test_deny(self):
+        """
+        Deny should unassign role when permitted.
+        """
+        self.client.login(username="assistant", password="password")
+
+        url = reverse("access_request-deny", args=[str(self.access_request.pk)])
+        response = self.client.put(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.access_request.refresh_from_db()
+        self.assertEqual(self.access_request.decision, AccessRequest.Decision.DENIED)
+
+    def test_search_and_sort(self):
+        """
+        List should support search and sort query parameters.
+        """
+        self.client.login(username="assistant", password="password")
+        response = self.client.get(self.list_url + f"?_search={self.user_new.username}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.user_new.username, str(response.data))
+
+        response = self.client.get(self.list_url + "?_sort=decision")
+        self.assertEqual(response.status_code, 200)
+
+    def test_pagination(self):
+        """
+        List should support pagination query parameters.
+        """
+        self.client.login(username="assistant", password="password")
+
+        response = self.client.get(self.list_url + "?_page=1&_page_size=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("results", response.data)

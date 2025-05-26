@@ -63,6 +63,9 @@ class AccessRequestSerializer(
     user          = UserReadField(read_only=True)
     user_username = UserWriteField(write_only=True, source="user")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model  = AccessRequest
         fields = (
@@ -91,11 +94,11 @@ class AccessRequestSerializer(
             attributes["role"] = Role.objects.get(
                 scope_type = attributes["scope_type"],
                 scope_uuid = attributes["scope_uuid"],
-                slug       = attributes["role_slug"],
+                slug       = attributes.pop("role_slug"),
             )
-
+            
         return attributes
-
+    
 class AccessRequestFilter(
     ScopeFilterMixin,
     CreatedModifiedByFilterMixin,
@@ -131,7 +134,8 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = AccessRequest.objects.all()
     filterset_class = AccessRequestFilter
-    search_fields   = ("user__username", "user__first_name", "user__last_name", "user__email", "role__name", "role__description")
+    ordering        = ("scope_type", "scope_uuid", "user__username", "role__slug")
+    search_fields   = ("user__username", "user__first_name", "user__last_name", "user__email", "role__slug", "role__name", "role__description")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -145,7 +149,7 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
         responses    = AccessRequestSerializer,
         summary      = "Accept",
     )
-    @action(methods=["post"], detail=True)
+    @action(methods=["put"], detail=True)   # PUT since an existing access request is updated
     def accept(self, request, pk):
         """
         Accept request.
@@ -160,7 +164,7 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
         responses    = AccessRequestSerializer,
         summary      = "Deny",
     )
-    @action(methods=["post"], detail=True)
+    @action(methods=["put"], detail=True)   # PUT since an existing access request is updated
     def deny(self, request, pk):
         """
         Deny request.

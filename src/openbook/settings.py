@@ -143,6 +143,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "openbook.drf.PageNumberPagination",
     "PAGE_SIZE": 100,
 
+    # Remember authenticated user (complimenting our custom middleware)
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "openbook.auth.middleware.current_user.CurrentUserTrackingAuthentication",
+    ],
+
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [

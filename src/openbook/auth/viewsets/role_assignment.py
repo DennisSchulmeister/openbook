@@ -101,7 +101,7 @@ class RoleAssignmentSerializer(
             attributes["role"] = Role.objects.get(
                 scope_type = attributes["scope_type"],
                 scope_uuid = attributes["scope_uuid"],
-                slug       = attributes["role_slug"],
+                slug       = attributes.pop("role_slug"),
             )
 
         return attributes
@@ -143,9 +143,10 @@ class RoleAssignmentViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = RoleAssignment.objects.all()
     filterset_class = RoleAssignmentFilter
+    ordering        = ("scope_type", "scope_uuid", "user__username", "role__slug")
     search_fields   = (
         "user__username", "user__first_name", "user__last_name", "user__email",
-         "role__slug", "role__name", "role__description"
+        "role__slug", "role__name", "role__description"
     )
 
     def get_serializer_class(self):

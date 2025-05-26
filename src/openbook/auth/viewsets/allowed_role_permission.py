@@ -44,7 +44,11 @@ class AllowedRolePermissionViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModel
     queryset         = AllowedRolePermission.objects.all()
     serializer_class = AllowedRolePermissionSerializer
     filterset_class  = AllowedRolePermissionFilter
+    ordering         = (
+        "scope_type__app_label", "scope_type__model",
+        "permission__content_type__app_label", "permission__codename",
+    )
     search_fields    = (
         "scope_type__app_label", "scope_type__model",
-        "permission__codename", "permission__content_type__app_label",
+        "permission__content_type__app_label", "permission__codename",
     )

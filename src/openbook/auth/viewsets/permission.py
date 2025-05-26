@@ -63,8 +63,9 @@ class PermissionTViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = Permission_T.objects.all()
     filterset_class  = PermissionTFilter
     serializer_class = PermissionTSerializer
+    ordering         = ("parent__content_type__app_label", "parent__codename", "language__language")
     search_fields    = (
-        "parent__codename", "parent__content_type__app_label",
-         "language__language", "language__name",
+        "parent__content_type__app_label", "parent__codename",
+        "language__language", "language__name",
         "name",
     )

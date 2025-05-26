@@ -74,10 +74,17 @@ class PermissionWriteField(Field):
     """
     default_error_messages = {
         "not_found": _("Permission '{value}' not found."),
-        "invalid":   _("Invalid format: Expected a permission string.")
+        "invalid":   _("Invalid format: Expected a permission string."),
+        "required":  _("Permission string is required."),
     }
 
     def to_internal_value(self, data):
+        if data is None:
+            if self.required:
+                self.fail("required")
+            else:
+                return None
+            
         if not isinstance(data, str):
             self.fail("invalid")
 

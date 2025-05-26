@@ -46,6 +46,7 @@ class SiteViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
     queryset           = Site.objects.all()
     serializer_class   = SiteSerializer
     filterset_class    = SiteFilter
+    ordering           = ("domain", "short_name", "name")
     search_fields      = ("domain", "name", "short_name")
 
     @extend_schema(

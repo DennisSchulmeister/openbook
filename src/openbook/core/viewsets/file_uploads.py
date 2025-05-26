@@ -26,16 +26,6 @@ class MediaFileSerializer(ModelSerializer):
         model  = MediaFile
         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
 
-    def to_internal_value(self, data):
-        """
-        Make file data optional for partial updates.
-        """
-        if self.context["request"].method == "PATCH" and "file_data" not in data:
-            data = {**data}
-            data["file_data"] = self.instance.file_data
-            
-        return super().to_internal_value(data)
-
 class MediaFileFilter(FilterSet):
     file_name = CharFilter(lookup_expr="icontains")
 
@@ -55,6 +45,7 @@ class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = MediaFile.objects.all()
     serializer_class = MediaFileSerializer
     filterset_class  = MediaFileFilter
+    ordering         = ("content_type", "object_id", "file_name", "file_size")
     search_fields    = ("file_name", "mime_type")
 
     def get_serializer_class(self):

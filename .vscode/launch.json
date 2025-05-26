@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Django Runserver",
+            "type": "debugpy",
+            "request": "launch",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "autoStartBrowser": false,
+            "program": "${workspaceFolder}/src/manage.py"
+        },
+        {
+            "name": "Python Debugger: Django Test",
+            "type": "debugpy",
+            "request": "launch",
+            "args": [
+                "test",
+                //"openbook.auth.tests.test_access_request.AccessRequest_ViewSet_Tests.test_retrieve_requires_permission"
+            ],
+            "django": true,
+            "autoStartBrowser": false,
+            "program": "${workspaceFolder}/src/manage.py"
+        }
+    ]
+}

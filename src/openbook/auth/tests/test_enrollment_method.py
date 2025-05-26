@@ -11,6 +11,7 @@ from django.test                   import TestCase
 from unittest.mock                 import patch
 
 from openbook.course.models.course import Course
+from ..middleware.current_user     import reset_current_user
 from ..models.enrollment_method    import EnrollmentMethod
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
@@ -18,8 +19,11 @@ from ..models.user                 import User
 
 class EnrollmentMethod_Test_Mixin:
     def setUp(self):
-        self.user = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
-        self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        reset_current_user()
+
+        self.user = User.objects.create_user(username="new", email="new@test.com", password="password")
+        self.owner = User.objects.create_user(username="owner", email="owner@test.com", password="password")
+        self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN, owner=self.owner)
 
         self.role = Role.from_obj(self.course, name="Student", slug="student", priority=0)
         self.role.save()
@@ -38,7 +42,7 @@ class EnrollmentMethod_Model_Tests(EnrollmentMethod_Test_Mixin, TestCase):
         """
         The assigned role must belong to the same scope.
         """
-        wrong_scope = Course.objects.create(name="Other Course", slug="other-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        wrong_scope = Course.objects.create(name="Other Course", slug="other-course", text_format=Course.TextFormatChoices.MARKDOWN, owner=self.owner)
         wrong_role  = Role.from_obj(wrong_scope, name="Wrong Scope", slug="wrong-scope", priority=0)
         wrong_role.save()
 

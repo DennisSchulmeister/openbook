@@ -100,7 +100,7 @@ class EnrollmentMethodSerializer(
             attributes["role"] = Role.objects.get(
                 scope_type = attributes["scope_type"],
                 scope_uuid = attributes["scope_uuid"],
-                slug       = attributes["role_slug"],
+                slug       = attributes.pop("role_slug"),
             )
 
         return attributes
@@ -137,6 +137,7 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = EnrollmentMethod.objects.all()
     filterset_class = EnrollmentMethodFilter
+    ordering        = ("scope_type", "scope_uuid", "name", "role__slug")
     search_fields   = ("name", "description", "role__slug", "role__name", "role__description")
 
     def get_serializer_class(self):

@@ -61,12 +61,13 @@ class ScopeTypeViewSet(ViewSet):
     If a single object is requested, full details including all scopes and allowed permissions
     will be returned.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     pagination_class   = None
-    filter_backends    = []
+    filter_backends    = ()
     queryset           = ContentType.objects.all()
     lookup_field       = "id"
     lookup_value_regex = '[^/]+'
+    ordering           = ("id",)
 
     @extend_schema(responses=ScopeTypeListSerializer)
     def list(self, request, *args, **kwargs):

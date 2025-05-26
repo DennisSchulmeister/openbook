@@ -19,3 +19,4 @@ Please suggest unit tests for the DRF REST webservice implemented in`…ViewSet`
 * Please also test that operations without required permissions fail with a 403 Forbidden response.
 * Don't leak object existence. DRF returns 404 instead of 403 Forbidden for non-existing objects.
 * For partial updates set the `format="json"` argument in the patch call when the model contains file fields.
+* Use `APIClient.login()` instead of `APIClient.force_authentication()`.

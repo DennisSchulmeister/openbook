@@ -9,13 +9,15 @@
 from django.core.exceptions             import ValidationError
 from django.test                        import TestCase
 
+from ..middleware.current_user          import reset_current_user
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..utils                            import permission_for_perm_string
 from ..validators                       import validate_permissions
 from ..utils                            import content_type_for_model_string
-
 class AllowedRolePermission_Test_Mixin:
     def setUp(self):
+        reset_current_user()
+        
         self.scope_type = content_type_for_model_string("openbook_course.course")
 
         AllowedRolePermission.objects.create(

@@ -55,6 +55,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     queryset           = User.objects.filter(is_active = True)
     http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
     filterset_class    = UserFilter
+    ordering           = ("username",)
     search_fields      = ("username", "first_name", "last_name", "email")
 
     def get_serializer_class(self):

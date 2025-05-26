@@ -6,10 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth    import get_user_model
-from django.core.exceptions import ValidationError
-from django.test            import TestCase
-from ..                     import models
+from django.contrib.auth       import get_user_model
+from django.core.exceptions    import ValidationError
+from django.test               import TestCase
+
+from ..middleware.current_user import reset_current_user
+from ..                        import models
 
 class User_Model_Tests(TestCase):
     """
@@ -63,4 +65,5 @@ class User_ViewSet_Test(TestCase):
     """
     Tests for the `UserViewSet` REST API.
     """
-    pass
+    def setUp(self):
+        reset_current_user()

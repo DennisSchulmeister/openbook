@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 import threading
+from rest_framework.authentication import SessionAuthentication
 
 thread_local = threading.local()
 
@@ -23,8 +24,30 @@ def CurrentUserMiddleware(get_response):
 
     return middleware
 
+class CurrentUserTrackingAuthentication(SessionAuthentication):
+    """
+    The same as above but for Django REST Framework, which wraps the plain Django
+    request object and resolves the user only when first accessed. Because of this
+    the middleware above only sees the initial anonymous user.
+    """
+    def authenticate(self, request):
+        result = super().authenticate(request)
+
+        if result is not None:
+            user, _ = result
+            thread_local.current_user = user
+
+        return result
+    
 def get_current_user():
     """
     Get the current request user, if any. Returns `None` otherwise.
     """
     return getattr(thread_local, "current_user", None)
+
+def reset_current_user():
+    """
+    Needed for unit tests which all run in a single thread. Forget previous tests's
+    user as it is probably not even existing anymore.
+    """
+    thread_local.current_user = None

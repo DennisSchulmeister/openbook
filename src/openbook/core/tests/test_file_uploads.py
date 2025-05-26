@@ -6,16 +6,17 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth                import get_user_model
-from django.contrib.auth.models         import Permission
-from django.contrib.contenttypes.models import ContentType
-from django.core.files.uploadedfile     import SimpleUploadedFile
-from django.test                        import TestCase
-from django.urls                        import reverse
-from rest_framework.test                import APIClient
-from uuid                               import uuid4
+from django.contrib.auth                   import get_user_model
+from django.contrib.auth.models            import Permission
+from django.contrib.contenttypes.models    import ContentType
+from django.core.files.uploadedfile        import SimpleUploadedFile
+from django.test                           import TestCase
+from django.urls                           import reverse
+from rest_framework.test                   import APIClient
+from uuid                                  import uuid4
 
-from ..models.file_uploads              import MediaFile
+from openbook.auth.middleware.current_user import reset_current_user
+from ..models.file_uploads                 import MediaFile
 
 class MediaFile_Model_Tests(TestCase):
     """
@@ -101,18 +102,19 @@ class MediaFile_ViewSet_Tests(TestCase):
     """
     def setUp(self):
         User = get_user_model()
+        reset_current_user()
 
         content_type = ContentType.objects.get_for_model(MediaFile)
         permissions  = Permission.objects.filter(content_type=content_type)
 
         self.client_valid_user = APIClient()
-        self.user_valid = User.objects.create_user(username="valid", password="password", email="valid@mail.com")
+        self.user_valid = User.objects.create_user(username="valid", password="password", email="valid@test.com")
         self.user_valid.user_permissions.set(permissions)
-        self.client_valid_user.force_authenticate(user=self.user_valid)
+        self.client_valid_user.login(username="valid", password="password")
 
-        self.user_invalid = User.objects.create_user(username="invalid", password="password", email="invalid@mail.com")
+        self.user_invalid = User.objects.create_user(username="invalid", password="password", email="invalid@test.com")
         self.client_invalid_user = APIClient()
-        self.client_invalid_user.force_authenticate(user=self.user_invalid)
+        self.client_invalid_user.login(username="invalid", password="password")
 
         self.dummy_model = ContentType.objects.get_for_model(ContentType)
 
@@ -211,16 +213,15 @@ class MediaFile_ViewSet_Tests(TestCase):
         file_bytes = b"test content"
         file_data = SimpleUploadedFile("delta.txt", file_bytes)
 
-        data = {
+        response = self.client_valid_user.post(url, {
             "content_type": self.dummy_model.pk,
             "object_id":    str(uuid4()),
             "file_name":    "delta.txt",
             "file_size":    len(file_bytes),
             "mime_type":    "text/plain",
             "file_data":    file_data,
-        }
-        
-        response = self.client_valid_user.post(url, data)
+        })
+
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data["file_name"], "delta.txt")
 
@@ -232,16 +233,15 @@ class MediaFile_ViewSet_Tests(TestCase):
         file_bytes = b"test content"
         file_data = SimpleUploadedFile("epsilon.txt", file_bytes)
 
-        data = {
+        response = self.client_invalid_user.post(url, {
             "content_type": self.dummy_model.pk,
             "object_id":    str(uuid4()),
             "file_name":    "epsilon.txt",
             "file_size":    len(file_bytes),
             "mime_type":    "text/plain",
             "file_data":    file_data,
-        }
+        })
 
-        response = self.client_invalid_user.post(url, data)
         self.assertEqual(response.status_code, 404)
 
     def test_update(self):
@@ -252,16 +252,15 @@ class MediaFile_ViewSet_Tests(TestCase):
         file_bytes = b"test content"
         file_data = SimpleUploadedFile("alpha-renamed.txt", file_bytes)
 
-        data = {
+        response = self.client_valid_user.put(url, {
             "content_type": self.dummy_model.pk,
             "object_id":    str(self.file1.object_id),
             "file_name":    "alpha-renamed.txt",
             "file_size":    len(file_bytes),
             "mime_type":    "text/plain",
             "file_data":    file_data,
-        }
+        })
 
-        response = self.client_valid_user.put(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["file_name"], "alpha-renamed.txt")
 
@@ -273,16 +272,15 @@ class MediaFile_ViewSet_Tests(TestCase):
         file_bytes = b"test content"
         file_data = SimpleUploadedFile("beta-renamed.txt", file_bytes)
 
-        data = {
+        response = self.client_invalid_user.put(url, {
             "content_type": self.dummy_model.pk,
             "object_id":    str(self.file2.object_id),
             "file_name":    "beta-renamed.txt",
             "file_size":    len(file_bytes),
             "mime_type":    "text/plain",
             "file_data":    file_data,
-        }
+        })
 
-        response = self.client_invalid_user.put(url, data)
         self.assertEqual(response.status_code, 404)
 
     def test_partial_update(self):

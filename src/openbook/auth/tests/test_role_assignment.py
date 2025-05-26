@@ -11,12 +11,15 @@ from django.db.utils               import IntegrityError
 from django.test                   import TestCase
 
 from openbook.course.models.course import Course
+from ..middleware.current_user     import reset_current_user
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
 
 class RoleAssignment_Test_Mixin:
     def setUp(self):
+        reset_current_user()
+
         self.user   = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
         self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
         self.role   = Role.from_obj(self.course, name="Student", slug="student", priority=0)

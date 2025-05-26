@@ -130,6 +130,7 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
 
     queryset        = Role.objects.all()
     filterset_class = RoleFilter
+    ordering        = ("scope_type", "scope_uuid", "slug",)
     search_fields   = ("slug", "name", "description")
 
     def get_serializer_class(self):

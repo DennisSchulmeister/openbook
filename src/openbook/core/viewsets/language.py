@@ -39,4 +39,5 @@ class LanguageViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
     queryset           = Language.objects.all()
     serializer_class   = LanguageSerializer
     filterset_class    = LanguageFilter
+    ordering           = ("language",)
     search_fields      = ("language", "name")
