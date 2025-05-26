@@ -10,10 +10,10 @@ from drf_spectacular.utils      import extend_schema
 from django.contrib.auth.models import Permission
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
-from rest_framework.viewsets    import ModelViewSet
+from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.serializers import ModelSerializer
 
-from openbook.drf               import ModelViewSetMixin
+from openbook.drf               import AllowAnonymousListViewSetMixin
 from ..models.permission        import Permission_T
 from ..serializers.permission   import PermissionReadField
 from ..serializers.permission   import PermissionWriteField
@@ -21,11 +21,10 @@ from ..utils                    import permission_for_perm_string
 
 class PermissionTSerializer(ModelSerializer):
     permission = PermissionReadField(read_only=True, source="parent")
-    permission_string = PermissionWriteField(write_only=True, source="parent")
 
     class Meta:
         model  = Permission_T
-        fields = ("permission", "permission_string", "language", "name")
+        fields = ("permission", "language", "name")
 
 class PermissionTFilter(FilterSet):
     perm_string = CharFilter(label="Permission String", method="filter_perm_string")
@@ -52,13 +51,8 @@ class PermissionTFilter(FilterSet):
         "x-model-name": "Translated Permissions",
     }
 )
-class PermissionTViewSet(ModelViewSetMixin, ModelViewSet):
-    """
-    Read/write view set to query active users. The serializer makes sure that only
-    basic information is returned. Authenticated users only as we don't want the
-    world to scrap our user list.
-    """
-    __doc__ = "User Profiles"
+class PermissionTViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
+    __doc__ = "Translated Permissions"
 
     queryset         = Permission_T.objects.all()
     filterset_class  = PermissionTFilter
