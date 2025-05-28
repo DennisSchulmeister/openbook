@@ -26,20 +26,22 @@ class PermissionT_ViewSet_Tests(TestCase):
         self.user.user_permissions.add(view_perm)
 
         self.permission = Permission.objects.first()
-        self.language = Language.objects.create(language="en", name="English")
-        self.translated_permission = Permission_T.objects.create(parent=self.permission, language=self.language, name="Test Permission Name")
+        self.language_en = Language.objects.create(language="en", name="English")
+        self.language_de = Language.objects.create(language="de", name="Deutsch")
+        self.translated_permission_en = Permission_T.objects.create(parent=self.permission, language=self.language_en, name="Test Permission Name")
+        self.translated_permission_de = Permission_T.objects.create(parent=self.permission, language=self.language_de, name="Test Berechtigung")
 
         self.client = APIClient()
         self.client.login(username="username", password="password")
 
-        self.list_url   = reverse("permission-list")
-        self.detail_url = reverse("permission-detail", args=[self.translated_permission.id])
+        self.url_list   = reverse("permission-list")
+        self.url_detail = reverse("permission-detail", args=[self.translated_permission_en.id])
         
     def test_list(self):
         """
-        List should return allowed translated permissions.
+        List should return translated permissions.
         """
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -50,7 +52,7 @@ class PermissionT_ViewSet_Tests(TestCase):
         """
         List should support search by _search query param.
         """
-        response = self.client.get(self.list_url, {"_search": "Test Permission Name"})
+        response = self.client.get(self.url_list, {"_search": "Test Permission Name"})
         
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(response.data["count"], 1)
@@ -59,7 +61,7 @@ class PermissionT_ViewSet_Tests(TestCase):
         """
         List should support sorting by _sort query param.
         """
-        response = self.client.get(self.list_url, {"_sort": "name"})
+        response = self.client.get(self.url_list, {"_sort": "name"})
         
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -68,28 +70,28 @@ class PermissionT_ViewSet_Tests(TestCase):
         """
         List should support pagination with _page and _page_size.
         """
-        response = self.client.get(self.list_url, {"_page": 1, "_page_size": 1})
+        response = self.client.get(self.url_list, {"_page": 1, "_page_size": 1})
 
         self.assertEqual(response.status_code, 200)
         self.assertLessEqual(len(response.data["results"]), 1)
 
-    def test_create_not_allowed(self):
+    def test_create_forbidden(self):
         """
         POST method to create new entry is not allowed.
         """
-        response = self.client.post(self.list_url, {
+        response = self.client.post(self.url_list, {
             "parent":   self.permission.id,
             "name":     "Another Name",
-            "language": "de",
+            "language": "fr",
         })
 
         self.assertEqual(response.status_code, 405)
 
-    def test_update_not_allowed(self):
+    def test_update_forbidden(self):
         """
         PUT method to update an existing entry is not allowed.
         """
-        response = self.client.put(self.detail_url, {
+        response = self.client.put(self.url_detail, {
             "name":     "Updated Name",
             "language": "en",
             "parent":   self.permission.id,
@@ -97,21 +99,21 @@ class PermissionT_ViewSet_Tests(TestCase):
         )
         self.assertEqual(response.status_code, 405)
 
-    def test_partial_update_not_allowed(self):
+    def test_partial_update_forbidden(self):
         """
         PATCH method to partially update an existing entry is not allowed.
         """
-        response = self.client.patch(self.detail_url, {"name": "Partially Updated"}, format="json")
+        response = self.client.patch(self.url_detail, {"name": "Partially Updated"}, format="json")
         self.assertEqual(response.status_code, 405)
 
-    def test_delete_not_allowed(self):
+    def test_delete_forbidden(self):
         """
-        DELETE method to delete an existing entry is not allowed.d
+        DELETE method to delete an existing entry is not allowed.
         """
-        response = self.client.delete(self.detail_url)
+        response = self.client.delete(self.url_detail)
         self.assertEqual(response.status_code, 405)
 
-    def test_anonymous_list_not_allowed(self):
+    def test_anonymous_list_forbidden(self):
         """
         Anonymous users cannot list entries.
         """
@@ -119,7 +121,7 @@ class PermissionT_ViewSet_Tests(TestCase):
         reset_current_user()
         self.client.logout()
 
-        response = self.client.post(self.list_url, {"parent": self.permission.id, "name": "X", "language": "en"})
+        response = self.client.post(self.url_list, {"parent": self.permission.id, "name": "X", "language": "en"})
         self.assertEqual(response.status_code, 403)
 
     def test_404_for_nonexistent(self):

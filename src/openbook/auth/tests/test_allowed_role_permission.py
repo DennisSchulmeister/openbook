@@ -78,13 +78,13 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         perms = Permission.objects.filter(content_type=content_type)
         self.user.user_permissions.set(perms)
 
-        self.list_url = reverse("allowed_role_permission-list")
+        self.url_list = reverse("allowed_role_permission-list")
 
     def test_list(self):
         """
         List should return allowed role permissions.
         """
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -94,7 +94,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         """
         List should support search by _search query param.
         """
-        response = self.client.get(self.list_url, {"_search": "logentry"})
+        response = self.client.get(self.url_list, {"_search": "logentry"})
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -104,7 +104,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         """
         List should support sorting by _sort query param.
         """
-        response = self.client.get(self.list_url, {"_sort": "-permission"})
+        response = self.client.get(self.url_list, {"_sort": "-permission"})
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -113,7 +113,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         """
         List should support pagination with _page and _page_size.
         """
-        response = self.client.get(self.list_url, {"_page": 1, "_page_size": 1})
+        response = self.client.get(self.url_list, {"_page": 1, "_page_size": 1})
         
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -125,7 +125,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         """
         perm = Permission.objects.get(codename="add_logentry")
 
-        response = self.client.post(self.list_url, {
+        response = self.client.post(self.url_list, {
             "scope_type": self.scope_type.pk,
             "permission": perm.pk,
         })
@@ -175,7 +175,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         reset_current_user()
         self.client.logout()
 
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
 
     def test_404_for_nonexistent(self):

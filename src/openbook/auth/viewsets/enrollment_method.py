@@ -11,7 +11,7 @@ from drf_spectacular.utils                     import extend_schema
 from drf_spectacular.utils                     import inline_serializer
 from rest_framework.decorators                 import action
 from rest_framework.response                   import Response
-from rest_framework.serializers                import BooleanField
+from rest_framework.permissions                import AllowAny
 from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
@@ -157,7 +157,7 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
             }
         ),
     )
-    @action(detail=True, methods=["post"], url_path="enroll")
+    @action(detail=True, methods=["put"], url_path="enroll", permission_classes=[AllowAny])
     def enroll(self, request, pk=None):
         """
         Self-enrollment of the current user via given enrollment method.
@@ -165,8 +165,9 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
         enrollment_method = self.get_object()
 
         kwargs = {
-            "user":       request.user,
-            "passphrase": request.data.get("passphrase", None),
+            "user":             request.user,
+            "passphrase":       request.data.get("passphrase", None),
+            "check_permission": True,
         }
 
         role_assignment = enrollment_method.enroll(**kwargs)

@@ -8,7 +8,9 @@
 
 from django.core.exceptions        import ValidationError
 from django.db.utils               import IntegrityError
+from django.urls                   import reverse
 from django.test                   import TestCase
+from rest_framework.test           import APIClient
 
 from openbook.course.models.course import Course
 from ..middleware.current_user     import reset_current_user

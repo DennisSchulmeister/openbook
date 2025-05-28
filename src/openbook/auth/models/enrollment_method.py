@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.models           import AbstractUser
+from django.core.exceptions               import PermissionDenied
 from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
 from typing                               import TYPE_CHECKING
@@ -41,6 +42,10 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         indexes = [
             models.Index(fields=("scope_type", "scope_uuid", "role",)),
         ]
+
+        permissions = (
+            ("self_enroll", "Can self-enroll in a scope"),
+        )
     
     def __str__(self):
         return f"{self.name} {ActiveInactiveMixin.__str__(self)}".strip()
@@ -49,6 +54,7 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         user: AbstractUser,
         passphrase: str = None,
         check_passphrase: bool = True,
+        check_permission: bool = True,
     ) -> "RoleAssignment":
         """
         Enroll the given user, optionally checking the passphrase. Raises a `ValueError` when
@@ -56,10 +62,18 @@ class EnrollmentMethod(UUIDMixin, ScopeMixin, NameDescriptionMixin, ActiveInacti
         """
         from .role_assignment import RoleAssignment
 
+        if check_permission:
+            # This checks if the user has the self-enroll permission globally,
+            # within one of the already assigned roles (though unlikely to occur),
+            # or within the public permissions of the scope (which effectively allows
+            # to completely disable self-enrollment for a scope).
+            if not user.has_perm("openbook_auth.self_enroll", self):
+                raise PermissionDenied()
+
         return RoleAssignment.enroll(
             enrollment       = self,
             user             = user,
             passphrase       = passphrase,
             check_passphrase = check_passphrase,
-            check_permission = False,    # Cannot check permission before user is enrolled
+            check_permission = False,    # Cannot check role-assignment permission before user is enrolled
         )

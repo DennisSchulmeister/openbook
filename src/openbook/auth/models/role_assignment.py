@@ -6,7 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from datetime                             import timezone
 from typing                               import TYPE_CHECKING
 from django.conf                          import settings
 from django.contrib.auth.models           import AbstractUser
@@ -82,10 +81,10 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         assignment. For access requests the user should not be given, as it is already contained
         in the access request object. For enrollment methods it must be given, however.
 
-        Raises a `ValueError` when the passphrase doesn't match or the user is missing.
-
         Raises `PermissionDenied` when the `permission_user` or the current request users lacks
         the `openbook_auth.add_roleassignment` permission.
+
+        Also raises a `PermissionDenied` when the passphrase doesn't match or the user is missing.
         """
         from .access_request    import AccessRequest
         from .enrollment_method import EnrollmentMethod
@@ -93,7 +92,7 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
         # Check parameters
         if hasattr(enrollment, "passphrase") and check_passphrase:
             if enrollment.passphrase and enrollment.passphrase != passphrase:
-                raise ValueError(_("Incorrect passphrase"))
+                raise PermissionDenied(_("Incorrect passphrase"))
         
         if not user and hasattr(enrollment, "user"):
             user = enrollment.user

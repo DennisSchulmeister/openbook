@@ -301,19 +301,19 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
     def setUp(self):
         super().setUp()
         self.client = APIClient()
-        self.list_url = reverse("access_request-list")
+        self.url_list = reverse("access_request-list")
 
         self.access_request = AccessRequest.from_obj(self.course, user=self.user_new, role=self.role_student)
         self.access_request.save(check_permission=False)
 
-        self.detail_url = reverse("access_request-detail", args=[str(self.access_request.pk)])
+        self.url_detail = reverse("access_request-detail", args=[str(self.access_request.pk)])
 
     def test_list(self):
         """
         List should return access requests for authenticated user with permission.
         """
         self.client.login(username="assistant", password="password")
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
@@ -324,7 +324,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         List should require authentication.
         """
         self.client.logout()
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 403)
 
@@ -333,7 +333,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         Retrieve should return access request details for permitted user.
         """
         self.client.login(username="assistant", password="password")
-        response = self.client.get(self.detail_url)
+        response = self.client.get(self.url_detail)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], str(self.access_request.pk))
@@ -346,14 +346,14 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         reset_current_user()
         self.client.logout()
 
-        response = self.client.get(self.detail_url)
+        response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code, 403)
 
         # Logged in as dummy (lacks permission)
         reset_current_user()
         self.client.login(username="dummy", password="password")
 
-        response = self.client.get(self.detail_url)
+        response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code, 404)
         self.client.logout()
 
@@ -361,7 +361,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         reset_current_user()
         self.client.login(username="assistant", password="password")
 
-        response = self.client.get(self.detail_url)
+        response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code, 200)
 
     def test_retrieve_404_for_nonexistent(self):
@@ -380,7 +380,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         self.client.login(username="new", password="password")
 
-        response = self.client.post(self.list_url, {
+        response = self.client.post(self.url_list, {
             "scope_type":    model_string_for_content_type(self.role_student.scope_type),
             "scope_uuid":    str(self.role_student.scope_uuid),
             "role_slug":     self.role_student.slug,
@@ -397,7 +397,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         self.client.logout()
 
-        response = self.client.post(self.list_url, {
+        response = self.client.post(self.url_list, {
             "scope_type":    model_string_for_content_type(self.role_student.scope_type),
             "scope_uuid":    str(self.role_student.scope_uuid),
             "role_slug":     self.role_student.slug,
@@ -412,7 +412,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         self.client.login(username="assistant", password="password")
 
-        response = self.client.put(self.detail_url, {
+        response = self.client.put(self.url_detail, {
             "scope_type":    model_string_for_content_type(self.role_student.scope_type),
             "scope_uuid":    str(self.role_student.scope_uuid),
             "role_slug":     self.role_student.slug,
@@ -429,7 +429,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         self.client.login(username="assistant", password="password")
 
-        response = self.client.patch(self.detail_url, {
+        response = self.client.patch(self.url_detail, {
             "decision": AccessRequest.Decision.DENIED
         }, format="json")
 
@@ -441,26 +441,26 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         Delete should allow permitted user to delete access request.
         """
         self.client.login(username="new", password="password")
-        response = self.client.delete(self.detail_url)
+        response = self.client.delete(self.url_detail)
 
         self.assertEqual(response.status_code, 204)
         self.assertFalse(AccessRequest.objects.filter(pk=self.access_request.pk).exists())
 
     def test_permission_denied(self):
         """
-        Operations without required permissions should return 403.
+        Operations without required permissions should return 404.
         """
         self.client.login(username="student", password="password")
 
         # Try to accept without permission
         url = reverse("access_request-accept", args=[str(self.access_request.pk)])
         response = self.client.put(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
         # Try to deny without permission
         url = reverse("access_request-deny", args=[str(self.access_request.pk)])
         response = self.client.put(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_accept(self):
         """
@@ -493,12 +493,12 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         List should support search and sort query parameters.
         """
         self.client.login(username="assistant", password="password")
-        response = self.client.get(self.list_url + f"?_search={self.user_new.username}")
+        response = self.client.get(self.url_list + f"?_search={self.user_new.username}")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.user_new.username, str(response.data))
 
-        response = self.client.get(self.list_url + "?_sort=decision")
+        response = self.client.get(self.url_list + "?_sort=decision")
         self.assertEqual(response.status_code, 200)
 
     def test_pagination(self):
@@ -507,6 +507,6 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         self.client.login(username="assistant", password="password")
 
-        response = self.client.get(self.list_url + "?_page=1&_page_size=1")
+        response = self.client.get(self.url_list + "?_page=1&_page_size=1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)

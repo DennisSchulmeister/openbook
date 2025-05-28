@@ -32,15 +32,20 @@ class RoleBasedObjectPermissionsMixin(models.Model):
     def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
         """
         Check if the given user has the given permission on the object. This always checks the public
-        permissions of the scope and all role assignments, if the user is authenticated. But it can be
-        overridden to implement custom checks like "the owner is always authorized".
+        permissions of the scope and all role assignments, if the user is authenticated. Unless the
+        user is the owner of the scope in which case (s)he is always allowed.
 
-        Usually `super().has_obj_perm(user_obj, perm)` should still be called, when this method is overridden.
+        This method can be overridden to implement custom permission checks. Usually
+        `super().has_obj_perm(user_obj, perm)` should still be called, then.
 
         Note, this method is called `has_obj_perm()` instead of `has_perm()` because the Django user model
         already has a method `has_perm()`.
         """
         scope = self.get_scope()
+
+        if hasattr(scope, "owner") and user_obj == scope.owner:
+            return True
+        
         app_label, codename = perm.split(".")
 
         if scope.public_permissions.filter(
@@ -216,14 +221,27 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         Otherwise the priority of the referenced role must be of lower or equal priority
         than any of the user's roles.
         """
+        # The scope owner is always authorized
+        scope = self.get_scope()
+
+        if hasattr(scope, "owner") and user_obj == scope.owner:
+            return True
+        
+        # Next require the general permission granted in the scope
         principally_allowed = super().has_obj_perm(user_obj, perm)
 
         if not principally_allowed:
             return False
-        
+
+        # Special case self-enrollment, the use likely has no role assigned, yet
+        if perm == "openbook_auth.self_enroll":
+            return True 
+                
+        # Viewing the information os okay, even the role is of higher priority
         if ".view_" in perm:
             return True
         
+        # Updates are only allowed when the role is of same or lower priority than any own role
         if hasattr(self, "priority"):
             priority = self.priority
         elif hasattr(self, "role"):
