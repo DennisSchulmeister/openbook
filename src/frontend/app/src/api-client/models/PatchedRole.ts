@@ -102,7 +102,7 @@ export interface PatchedRole {
      */
     readonly permissions?: Array<PermissionRead>;
     /**
-     * List of permission strings in Django format
+     * 
      * @type {Array<string>}
      * @memberof PatchedRole
      */

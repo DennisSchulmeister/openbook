@@ -147,7 +147,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
 
         self.assertEqual(response.status_code, 405)
 
-    def test_partial_update(self):
+    def test_partial_update_not_allowed(self):
         """
         PATCH method to partially update an existing entry is not allowed.
         """
@@ -158,7 +158,7 @@ class AllowedRolePermission_ViewSet_Tests(AllowedRolePermission_Test_Mixin, Test
         response = self.client.patch(url, {"permission": perm.pk}, format="json")
         self.assertEqual(response.status_code, 405)
 
-    def test_delete(self):
+    def test_delete_not_allowed(self):
         """
         DELETE method to delete an existing entry is not allowed.d
         """

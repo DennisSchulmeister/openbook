@@ -34,12 +34,6 @@ export interface PermissionT {
      */
     readonly permission: PermissionRead;
     /**
-     * Permission string
-     * @type {string}
-     * @memberof PermissionT
-     */
-    permissionString: string;
-    /**
      * 
      * @type {string}
      * @memberof PermissionT
@@ -58,7 +52,6 @@ export interface PermissionT {
  */
 export function instanceOfPermissionT(value: object): value is PermissionT {
     if (!('permission' in value) || value['permission'] === undefined) return false;
-    if (!('permissionString' in value) || value['permissionString'] === undefined) return false;
     if (!('language' in value) || value['language'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     return true;
@@ -75,7 +68,6 @@ export function PermissionTFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'permission': PermissionReadFromJSON(json['permission']),
-        'permissionString': json['permission_string'],
         'language': json['language'],
         'name': json['name'],
     };
@@ -92,7 +84,6 @@ export function PermissionTToJSONTyped(value?: Omit<PermissionT, 'permission'> |
 
     return {
         
-        'permission_string': value['permissionString'],
         'language': value['language'],
         'name': value['name'],
     };

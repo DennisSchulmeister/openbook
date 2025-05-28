@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RoleAssignmentRead } from './RoleAssignmentRead';
+import {
+    RoleAssignmentReadFromJSON,
+    RoleAssignmentReadFromJSONTyped,
+    RoleAssignmentReadToJSON,
+    RoleAssignmentReadToJSONTyped,
+} from './RoleAssignmentRead';
 import type { TextFormatEnum } from './TextFormatEnum';
 import {
     TextFormatEnumFromJSON,
@@ -20,6 +27,13 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
+import type { EnrollmentMethodWithRoleRead } from './EnrollmentMethodWithRoleRead';
+import {
+    EnrollmentMethodWithRoleReadFromJSON,
+    EnrollmentMethodWithRoleReadFromJSONTyped,
+    EnrollmentMethodWithRoleReadToJSON,
+    EnrollmentMethodWithRoleReadToJSONTyped,
+} from './EnrollmentMethodWithRoleRead';
 import type { UserRead } from './UserRead';
 import {
     UserReadFromJSON,
@@ -34,6 +48,13 @@ import {
     PermissionReadToJSON,
     PermissionReadToJSONTyped,
 } from './PermissionRead';
+import type { AccessRequestWithRoleRead } from './AccessRequestWithRoleRead';
+import {
+    AccessRequestWithRoleReadFromJSON,
+    AccessRequestWithRoleReadFromJSONTyped,
+    AccessRequestWithRoleReadToJSON,
+    AccessRequestWithRoleReadToJSONTyped,
+} from './AccessRequestWithRoleRead';
 
 /**
  * Full list of fields for retrieving a single course.
@@ -96,11 +117,29 @@ export interface Course {
      */
     readonly publicPermissions: Array<PermissionRead>;
     /**
-     * List of permission strings in Django format
+     * 
      * @type {Array<string>}
      * @memberof Course
      */
     publicPermissionStrings: Array<string>;
+    /**
+     * 
+     * @type {Array<RoleAssignmentRead>}
+     * @memberof Course
+     */
+    readonly roleAssignments: Array<RoleAssignmentRead>;
+    /**
+     * 
+     * @type {Array<EnrollmentMethodWithRoleRead>}
+     * @memberof Course
+     */
+    readonly enrollmentMethods: Array<EnrollmentMethodWithRoleRead>;
+    /**
+     * 
+     * @type {Array<AccessRequestWithRoleRead>}
+     * @memberof Course
+     */
+    readonly accessRequests: Array<AccessRequestWithRoleRead>;
     /**
      * 
      * @type {UserRead}
@@ -140,6 +179,9 @@ export function instanceOfCourse(value: object): value is Course {
     if (!('ownerUsername' in value) || value['ownerUsername'] === undefined) return false;
     if (!('publicPermissions' in value) || value['publicPermissions'] === undefined) return false;
     if (!('publicPermissionStrings' in value) || value['publicPermissionStrings'] === undefined) return false;
+    if (!('roleAssignments' in value) || value['roleAssignments'] === undefined) return false;
+    if (!('enrollmentMethods' in value) || value['enrollmentMethods'] === undefined) return false;
+    if (!('accessRequests' in value) || value['accessRequests'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -167,6 +209,9 @@ export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
         'ownerUsername': json['owner_username'],
         'publicPermissions': ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
         'publicPermissionStrings': json['public_permission_strings'],
+        'roleAssignments': ((json['role_assignments'] as Array<any>).map(RoleAssignmentReadFromJSON)),
+        'enrollmentMethods': ((json['enrollment_methods'] as Array<any>).map(EnrollmentMethodWithRoleReadFromJSON)),
+        'accessRequests': ((json['access_requests'] as Array<any>).map(AccessRequestWithRoleReadFromJSON)),
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -178,7 +223,7 @@ export function CourseToJSON(json: any): Course {
     return CourseToJSONTyped(json, false);
 }
 
-export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'public_permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

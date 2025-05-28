@@ -20,92 +20,106 @@ import {
     UserReadToJSON,
     UserReadToJSONTyped,
 } from './UserRead';
+import type { RoleRead } from './RoleRead';
+import {
+    RoleReadFromJSON,
+    RoleReadFromJSONTyped,
+    RoleReadToJSON,
+    RoleReadToJSONTyped,
+} from './RoleRead';
 
 /**
- * Reduced list of fields for getting a list of roles.
+ * Reduced list of fields for getting a list of role assignments.
  * @export
- * @interface RoleList
+ * @interface RoleAssignmentList
  */
-export interface RoleList {
+export interface RoleAssignmentList {
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     readonly id: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
-     */
-    readonly slug: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     scopeType: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     readonly scopeUuid: string;
     /**
      * 
-     * @type {string}
-     * @memberof RoleList
+     * @type {RoleRead}
+     * @memberof RoleAssignmentList
      */
-    readonly name: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof RoleList
-     */
-    readonly isActive: boolean;
-    /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
-     * @type {number}
-     * @memberof RoleList
-     */
-    readonly priority: number;
+    readonly role: RoleRead;
     /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
+     */
+    readonly user: UserRead;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof RoleAssignmentList
+     */
+    readonly isActive: boolean;
+    /**
+     * 
+     * @type {Date}
+     * @memberof RoleAssignmentList
+     */
+    readonly startDate: Date | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof RoleAssignmentList
+     */
+    readonly endDate: Date | null;
+    /**
+     * 
+     * @type {UserRead}
+     * @memberof RoleAssignmentList
      */
     readonly createdBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     readonly createdAt: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     readonly modifiedBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof RoleAssignmentList
      */
     readonly modifiedAt: Date;
 }
 
 /**
- * Check if a given object implements the RoleList interface.
+ * Check if a given object implements the RoleAssignmentList interface.
  */
-export function instanceOfRoleList(value: object): value is RoleList {
+export function instanceOfRoleAssignmentList(value: object): value is RoleAssignmentList {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
-    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('role' in value) || value['role'] === undefined) return false;
+    if (!('user' in value) || value['user'] === undefined) return false;
     if (!('isActive' in value) || value['isActive'] === undefined) return false;
-    if (!('priority' in value) || value['priority'] === undefined) return false;
+    if (!('startDate' in value) || value['startDate'] === undefined) return false;
+    if (!('endDate' in value) || value['endDate'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -113,23 +127,24 @@ export function instanceOfRoleList(value: object): value is RoleList {
     return true;
 }
 
-export function RoleListFromJSON(json: any): RoleList {
-    return RoleListFromJSONTyped(json, false);
+export function RoleAssignmentListFromJSON(json: any): RoleAssignmentList {
+    return RoleAssignmentListFromJSONTyped(json, false);
 }
 
-export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): RoleList {
+export function RoleAssignmentListFromJSONTyped(json: any, ignoreDiscriminator: boolean): RoleAssignmentList {
     if (json == null) {
         return json;
     }
     return {
         
         'id': json['id'],
-        'slug': json['slug'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
-        'name': json['name'],
+        'role': RoleReadFromJSON(json['role']),
+        'user': UserReadFromJSON(json['user']),
         'isActive': json['is_active'],
-        'priority': json['priority'],
+        'startDate': (json['start_date'] == null ? null : new Date(json['start_date'])),
+        'endDate': (json['end_date'] == null ? null : new Date(json['end_date'])),
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -137,11 +152,11 @@ export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function RoleListToJSON(json: any): RoleList {
-    return RoleListToJSONTyped(json, false);
+export function RoleAssignmentListToJSON(json: any): RoleAssignmentList {
+    return RoleAssignmentListToJSONTyped(json, false);
 }
 
-export function RoleListToJSONTyped(value?: Omit<RoleList, 'id'|'slug'|'scope_uuid'|'name'|'is_active'|'priority'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function RoleAssignmentListToJSONTyped(value?: Omit<RoleAssignmentList, 'id'|'scope_uuid'|'role'|'user'|'is_active'|'start_date'|'end_date'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

@@ -6,141 +6,127 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models       import Permission
-from django.test                      import TestCase
-from rest_framework.test              import APIClient
-from django.urls                      import reverse
+from django.contrib.auth.models    import Permission
+from django.test                   import TestCase
+from django.urls                   import reverse
+from rest_framework.test           import APIClient
 
-from openbook.core.models.language    import Language
-from ..middleware.current_user        import reset_current_user
-from ..models.permission              import Permission_T
-from ..models.user                    import User
+from openbook.core.models.language import Language
+from ..models.permission           import Permission_T
+from ..models.user                 import User
+from ..middleware.current_user     import reset_current_user
 
 class PermissionT_ViewSet_Tests(TestCase):
     """
     Tests for the `PermissionTViewSet` REST API.
     """
-
     def setUp(self):
-        reset_current_user()
-
-        self.user       = User.objects.create_user(username="user", password="password")
-        self.language   = Language.objects.create(language="en", name="English")
-        self.permission = Permission.objects.first()
-        self.translated_permission = Permission_T.objects.create(parent=self.permission, name="Test Permission Name", language=self.language)
-
         view_perm = Permission.objects.get(codename="view_permission_t")
+        self.user = User.objects.create_user(username="username", password="password", email="user@test.com")
         self.user.user_permissions.add(view_perm)
 
+        self.permission = Permission.objects.first()
+        self.language = Language.objects.create(language="en", name="English")
+        self.translated_permission = Permission_T.objects.create(parent=self.permission, language=self.language, name="Test Permission Name")
+
         self.client = APIClient()
-        self.client.login(username="user", password="password")
+        self.client.login(username="username", password="password")
 
-    def test_list_permissions(self):
+        self.list_url   = reverse("permission-list")
+        self.detail_url = reverse("permission-detail", args=[self.translated_permission.id])
+        
+    def test_list(self):
         """
-        Should return a list of translated permissions with correct structure.
+        List should return allowed translated permissions.
         """
-        url = reverse("permission-list")
-        response = self.client.get(url)
+        response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("results", response.data)
         self.assertIn("count", response.data)
         self.assertIsInstance(response.data["results"], list)
 
-    def test_list_permissions_anonymous(self):
+    def test_search(self):
         """
-        Should allow anonymous users to list translated permissions.
+        List should support search by _search query param.
         """
-        self.client.logout()
-
-        url = reverse("permission-list")
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("results", response.data)
-        self.assertIn("count", response.data)
-        self.assertIsInstance(response.data["results"], list)
-
-    def test_search_permissions(self):
-        """
-        Should filter permissions by search query.
-        """
-        url = reverse("permission-list")
-        response = self.client.get(url, {"_search": "Test Perm"})
-
+        response = self.client.get(self.list_url, {"_search": "Test Permission Name"})
+        
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(response.data["count"], 1)
 
-    def test_sort_permissions(self):
+    def test_sort(self):
         """
-        Should sort permissions by given field.
+        List should support sorting by _sort query param.
         """
-        url = reverse("permission-list")
-        response = self.client.get(url, {"_sort": "name"})
-
+        response = self.client.get(self.list_url, {"_sort": "name"})
+        
         self.assertEqual(response.status_code, 200)
+        self.assertIn("results", response.data)
 
     def test_pagination(self):
         """
-        Should paginate results with _page and _page_size.
+        List should support pagination with _page and _page_size.
         """
-        url = reverse("permission-list")
-        response = self.client.get(url, {"_page": 1, "_page_size": 1})
+        response = self.client.get(self.list_url, {"_page": 1, "_page_size": 1})
 
         self.assertEqual(response.status_code, 200)
         self.assertLessEqual(len(response.data["results"]), 1)
 
-    def test_update_permission_not_allowed(self):
+    def test_create_not_allowed(self):
         """
-        Should not allow updating a translated permission (405 Method Not Allowed).
+        POST method to create new entry is not allowed.
         """
-        url = reverse("permission-detail", args=[self.translated_permission.id])
-
-        response = self.client.put(url, {
-            "name":     "Updated Name",
-            "language": "en",
+        response = self.client.post(self.list_url, {
             "parent":   self.permission.id,
-        })
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_partial_update_permission_not_allowed(self):
-        """
-        Should not allow partial update of a translated permission (405 Method Not Allowed).
-        """
-        url = reverse("permission-detail", args=[self.translated_permission.id])
-        response = self.client.patch(url, {"name": "Partially Updated"}, format="json")
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_delete_permission_not_allowed(self):
-        """
-        Should not allow deleting a translated permission (405 Method Not Allowed).
-        """
-        url = reverse("permission-detail", args=[self.translated_permission.id])
-        response = self.client.delete(url)
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_create_permission_not_allowed(self):
-        """
-        Should not allow creating a translated permission (405 Method Not Allowed).
-        """
-        url = reverse("permission-list")
-
-        response = self.client.post(url, {
-            "parent": self.permission.id,
-            "name": "Another Name",
+            "name":     "Another Name",
             "language": "de",
         })
 
         self.assertEqual(response.status_code, 405)
 
-    def test_404_for_nonexistent_object(self):
+    def test_update_not_allowed(self):
         """
-        Should return 404 for non-existent object access.
+        PUT method to update an existing entry is not allowed.
+        """
+        response = self.client.put(self.detail_url, {
+            "name":     "Updated Name",
+            "language": "en",
+            "parent":   self.permission.id,
+        }
+        )
+        self.assertEqual(response.status_code, 405)
+
+    def test_partial_update_not_allowed(self):
+        """
+        PATCH method to partially update an existing entry is not allowed.
+        """
+        response = self.client.patch(self.detail_url, {"name": "Partially Updated"}, format="json")
+        self.assertEqual(response.status_code, 405)
+
+    def test_delete_not_allowed(self):
+        """
+        DELETE method to delete an existing entry is not allowed.d
+        """
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_anonymous_list_not_allowed(self):
+        """
+        Anonymous users cannot list entries.
+        """
+        # Remove all permissions
+        reset_current_user()
+        self.client.logout()
+
+        response = self.client.post(self.list_url, {"parent": self.permission.id, "name": "X", "language": "en"})
+        self.assertEqual(response.status_code, 403)
+
+    def test_404_for_nonexistent(self):
+        """
+        Operations for non-existent object should return 404.
         """
         url = reverse("permission-detail", args=[999999])
-        response = self.client.get(url)
 
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 404)

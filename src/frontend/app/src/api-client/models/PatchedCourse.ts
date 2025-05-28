@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RoleAssignmentRead } from './RoleAssignmentRead';
+import {
+    RoleAssignmentReadFromJSON,
+    RoleAssignmentReadFromJSONTyped,
+    RoleAssignmentReadToJSON,
+    RoleAssignmentReadToJSONTyped,
+} from './RoleAssignmentRead';
 import type { TextFormatEnum } from './TextFormatEnum';
 import {
     TextFormatEnumFromJSON,
@@ -20,6 +27,13 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
+import type { EnrollmentMethodWithRoleRead } from './EnrollmentMethodWithRoleRead';
+import {
+    EnrollmentMethodWithRoleReadFromJSON,
+    EnrollmentMethodWithRoleReadFromJSONTyped,
+    EnrollmentMethodWithRoleReadToJSON,
+    EnrollmentMethodWithRoleReadToJSONTyped,
+} from './EnrollmentMethodWithRoleRead';
 import type { UserRead } from './UserRead';
 import {
     UserReadFromJSON,
@@ -34,6 +48,13 @@ import {
     PermissionReadToJSON,
     PermissionReadToJSONTyped,
 } from './PermissionRead';
+import type { AccessRequestWithRoleRead } from './AccessRequestWithRoleRead';
+import {
+    AccessRequestWithRoleReadFromJSON,
+    AccessRequestWithRoleReadFromJSONTyped,
+    AccessRequestWithRoleReadToJSON,
+    AccessRequestWithRoleReadToJSONTyped,
+} from './AccessRequestWithRoleRead';
 
 /**
  * Full list of fields for retrieving a single course.
@@ -96,11 +117,29 @@ export interface PatchedCourse {
      */
     readonly publicPermissions?: Array<PermissionRead>;
     /**
-     * List of permission strings in Django format
+     * 
      * @type {Array<string>}
      * @memberof PatchedCourse
      */
     publicPermissionStrings?: Array<string>;
+    /**
+     * 
+     * @type {Array<RoleAssignmentRead>}
+     * @memberof PatchedCourse
+     */
+    readonly roleAssignments?: Array<RoleAssignmentRead>;
+    /**
+     * 
+     * @type {Array<EnrollmentMethodWithRoleRead>}
+     * @memberof PatchedCourse
+     */
+    readonly enrollmentMethods?: Array<EnrollmentMethodWithRoleRead>;
+    /**
+     * 
+     * @type {Array<AccessRequestWithRoleRead>}
+     * @memberof PatchedCourse
+     */
+    readonly accessRequests?: Array<AccessRequestWithRoleRead>;
     /**
      * 
      * @type {UserRead}
@@ -156,6 +195,9 @@ export function PatchedCourseFromJSONTyped(json: any, ignoreDiscriminator: boole
         'ownerUsername': json['owner_username'] == null ? undefined : json['owner_username'],
         'publicPermissions': json['public_permissions'] == null ? undefined : ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
         'publicPermissionStrings': json['public_permission_strings'] == null ? undefined : json['public_permission_strings'],
+        'roleAssignments': json['role_assignments'] == null ? undefined : ((json['role_assignments'] as Array<any>).map(RoleAssignmentReadFromJSON)),
+        'enrollmentMethods': json['enrollment_methods'] == null ? undefined : ((json['enrollment_methods'] as Array<any>).map(EnrollmentMethodWithRoleReadFromJSON)),
+        'accessRequests': json['access_requests'] == null ? undefined : ((json['access_requests'] as Array<any>).map(AccessRequestWithRoleReadFromJSON)),
         'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
         'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
@@ -167,7 +209,7 @@ export function PatchedCourseToJSON(json: any): PatchedCourse {
     return PatchedCourseToJSONTyped(json, false);
 }
 
-export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner'|'public_permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

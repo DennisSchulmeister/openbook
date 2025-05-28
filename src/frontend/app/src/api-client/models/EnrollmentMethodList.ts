@@ -20,92 +20,92 @@ import {
     UserReadToJSON,
     UserReadToJSONTyped,
 } from './UserRead';
+import type { RoleRead } from './RoleRead';
+import {
+    RoleReadFromJSON,
+    RoleReadFromJSONTyped,
+    RoleReadToJSON,
+    RoleReadToJSONTyped,
+} from './RoleRead';
 
 /**
- * Reduced list of fields for getting a list of roles.
+ * Reduced list of fields for getting a list of enrollment methods.
  * @export
- * @interface RoleList
+ * @interface EnrollmentMethodList
  */
-export interface RoleList {
+export interface EnrollmentMethodList {
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly id: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
-     */
-    readonly slug: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     scopeType: string;
     /**
      * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly scopeUuid: string;
     /**
      * 
+     * @type {RoleRead}
+     * @memberof EnrollmentMethodList
+     */
+    readonly role: RoleRead;
+    /**
+     * 
      * @type {string}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly name: string;
     /**
      * 
      * @type {boolean}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly isActive: boolean;
     /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
-     * @type {number}
-     * @memberof RoleList
-     */
-    readonly priority: number;
-    /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly createdBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly createdAt: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly modifiedBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof RoleList
+     * @memberof EnrollmentMethodList
      */
     readonly modifiedAt: Date;
 }
 
 /**
- * Check if a given object implements the RoleList interface.
+ * Check if a given object implements the EnrollmentMethodList interface.
  */
-export function instanceOfRoleList(value: object): value is RoleList {
+export function instanceOfEnrollmentMethodList(value: object): value is EnrollmentMethodList {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
+    if (!('role' in value) || value['role'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('isActive' in value) || value['isActive'] === undefined) return false;
-    if (!('priority' in value) || value['priority'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -113,23 +113,22 @@ export function instanceOfRoleList(value: object): value is RoleList {
     return true;
 }
 
-export function RoleListFromJSON(json: any): RoleList {
-    return RoleListFromJSONTyped(json, false);
+export function EnrollmentMethodListFromJSON(json: any): EnrollmentMethodList {
+    return EnrollmentMethodListFromJSONTyped(json, false);
 }
 
-export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): RoleList {
+export function EnrollmentMethodListFromJSONTyped(json: any, ignoreDiscriminator: boolean): EnrollmentMethodList {
     if (json == null) {
         return json;
     }
     return {
         
         'id': json['id'],
-        'slug': json['slug'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
+        'role': RoleReadFromJSON(json['role']),
         'name': json['name'],
         'isActive': json['is_active'],
-        'priority': json['priority'],
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -137,11 +136,11 @@ export function RoleListFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function RoleListToJSON(json: any): RoleList {
-    return RoleListToJSONTyped(json, false);
+export function EnrollmentMethodListToJSON(json: any): EnrollmentMethodList {
+    return EnrollmentMethodListToJSONTyped(json, false);
 }
 
-export function RoleListToJSONTyped(value?: Omit<RoleList, 'id'|'slug'|'scope_uuid'|'name'|'is_active'|'priority'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function EnrollmentMethodListToJSONTyped(value?: Omit<EnrollmentMethodList, 'id'|'scope_uuid'|'role'|'name'|'is_active'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

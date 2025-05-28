@@ -27,108 +27,127 @@ import {
     UserReadToJSON,
     UserReadToJSONTyped,
 } from './UserRead';
-import type { PermissionRead } from './PermissionRead';
+import type { AccessRequestDurationPeriod } from './AccessRequestDurationPeriod';
 import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
+    AccessRequestDurationPeriodFromJSON,
+    AccessRequestDurationPeriodFromJSONTyped,
+    AccessRequestDurationPeriodToJSON,
+    AccessRequestDurationPeriodToJSONTyped,
+} from './AccessRequestDurationPeriod';
+import type { RoleRead } from './RoleRead';
+import {
+    RoleReadFromJSON,
+    RoleReadFromJSONTyped,
+    RoleReadToJSON,
+    RoleReadToJSONTyped,
+} from './RoleRead';
 
 /**
- * Full list of fields for retrieving a single role.
+ * Full list of fields for retrieving a single enrollment method.
  * @export
- * @interface Role
+ * @interface EnrollmentMethod
  */
-export interface Role {
+export interface EnrollmentMethod {
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     readonly id: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
-     */
-    slug: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     scopeType: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     scopeUuid: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     description?: string;
     /**
      * 
      * @type {TextFormatEnum}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     textFormat?: TextFormatEnum;
     /**
      * 
+     * @type {RoleRead}
+     * @memberof EnrollmentMethod
+     */
+    readonly role: RoleRead;
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollmentMethod
+     */
+    roleSlug: string;
+    /**
+     * 
      * @type {boolean}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     isActive?: boolean;
     /**
-     * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
+     * 
      * @type {number}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
-    priority: number;
+    durationValue?: number;
     /**
      * 
-     * @type {Array<PermissionRead>}
-     * @memberof Role
+     * @type {AccessRequestDurationPeriod}
+     * @memberof EnrollmentMethod
      */
-    readonly permissions: Array<PermissionRead>;
+    durationPeriod?: AccessRequestDurationPeriod;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof Role
+     * @type {Date}
+     * @memberof EnrollmentMethod
      */
-    permissionStrings: Array<string>;
+    endDate?: Date | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollmentMethod
+     */
+    passphrase?: string;
     /**
      * 
      * @type {UserRead}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     readonly createdBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     readonly createdAt: Date;
     /**
      * 
      * @type {UserRead}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     readonly modifiedBy: UserRead;
     /**
      * 
      * @type {Date}
-     * @memberof Role
+     * @memberof EnrollmentMethod
      */
     readonly modifiedAt: Date;
 }
@@ -136,17 +155,15 @@ export interface Role {
 
 
 /**
- * Check if a given object implements the Role interface.
+ * Check if a given object implements the EnrollmentMethod interface.
  */
-export function instanceOfRole(value: object): value is Role {
+export function instanceOfEnrollmentMethod(value: object): value is EnrollmentMethod {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('priority' in value) || value['priority'] === undefined) return false;
-    if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    if (!('permissionStrings' in value) || value['permissionStrings'] === undefined) return false;
+    if (!('role' in value) || value['role'] === undefined) return false;
+    if (!('roleSlug' in value) || value['roleSlug'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -154,27 +171,29 @@ export function instanceOfRole(value: object): value is Role {
     return true;
 }
 
-export function RoleFromJSON(json: any): Role {
-    return RoleFromJSONTyped(json, false);
+export function EnrollmentMethodFromJSON(json: any): EnrollmentMethod {
+    return EnrollmentMethodFromJSONTyped(json, false);
 }
 
-export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role {
+export function EnrollmentMethodFromJSONTyped(json: any, ignoreDiscriminator: boolean): EnrollmentMethod {
     if (json == null) {
         return json;
     }
     return {
         
         'id': json['id'],
-        'slug': json['slug'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
+        'role': RoleReadFromJSON(json['role']),
+        'roleSlug': json['role_slug'],
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
-        'priority': json['priority'],
-        'permissions': ((json['permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'permissionStrings': json['permission_strings'],
+        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
+        'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
+        'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
+        'passphrase': json['passphrase'] == null ? undefined : json['passphrase'],
         'createdBy': UserReadFromJSON(json['created_by']),
         'createdAt': (new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
@@ -182,26 +201,28 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
     };
 }
 
-export function RoleToJSON(json: any): Role {
-    return RoleToJSONTyped(json, false);
+export function EnrollmentMethodToJSON(json: any): EnrollmentMethod {
+    return EnrollmentMethodToJSONTyped(json, false);
 }
 
-export function RoleToJSONTyped(value?: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function EnrollmentMethodToJSONTyped(value?: Omit<EnrollmentMethod, 'id'|'role'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'slug': value['slug'],
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
+        'role_slug': value['roleSlug'],
         'is_active': value['isActive'],
-        'priority': value['priority'],
-        'permission_strings': value['permissionStrings'],
+        'duration_value': value['durationValue'],
+        'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
+        'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),
+        'passphrase': value['passphrase'],
     };
 }
 

@@ -21,8 +21,8 @@ class EnrollmentMethod_Test_Mixin:
     def setUp(self):
         reset_current_user()
 
-        self.user = User.objects.create_user(username="new", email="new@test.com", password="password")
-        self.owner = User.objects.create_user(username="owner", email="owner@test.com", password="password")
+        self.user   = User.objects.create_user(username="new", email="new@test.com", password="password")
+        self.owner  = User.objects.create_user(username="owner", email="owner@test.com", password="password")
         self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN, owner=self.owner)
 
         self.role = Role.from_obj(self.course, name="Student", slug="student", priority=0)

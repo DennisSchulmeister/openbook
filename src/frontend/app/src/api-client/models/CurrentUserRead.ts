@@ -14,58 +14,79 @@
 
 import { mapValues } from '../runtime';
 /**
- * User (Reduced Data)
+ * User (Full Profile)
  * @export
- * @interface UserRead
+ * @interface CurrentUserRead
  */
-export interface UserRead {
+export interface CurrentUserRead {
     /**
      * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
      * @type {string}
-     * @memberof UserRead
+     * @memberof CurrentUserRead
      */
     username: string;
     /**
      * 
      * @type {string}
-     * @memberof UserRead
+     * @memberof CurrentUserRead
      */
     readonly fullName: string;
     /**
      * 
      * @type {string}
-     * @memberof UserRead
+     * @memberof CurrentUserRead
      */
     firstName?: string;
     /**
      * 
      * @type {string}
-     * @memberof UserRead
+     * @memberof CurrentUserRead
      */
     lastName?: string;
     /**
      * URL for profile picture
      * @type {string}
-     * @memberof UserRead
+     * @memberof CurrentUserRead
      */
     readonly profilePicture: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CurrentUserRead
+     */
+    readonly description: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CurrentUserRead
+     */
+    email: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CurrentUserRead
+     */
+    readonly isAuthenticated: string;
 }
 
 /**
- * Check if a given object implements the UserRead interface.
+ * Check if a given object implements the CurrentUserRead interface.
  */
-export function instanceOfUserRead(value: object): value is UserRead {
+export function instanceOfCurrentUserRead(value: object): value is CurrentUserRead {
     if (!('username' in value) || value['username'] === undefined) return false;
     if (!('fullName' in value) || value['fullName'] === undefined) return false;
     if (!('profilePicture' in value) || value['profilePicture'] === undefined) return false;
+    if (!('description' in value) || value['description'] === undefined) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
+    if (!('isAuthenticated' in value) || value['isAuthenticated'] === undefined) return false;
     return true;
 }
 
-export function UserReadFromJSON(json: any): UserRead {
-    return UserReadFromJSONTyped(json, false);
+export function CurrentUserReadFromJSON(json: any): CurrentUserRead {
+    return CurrentUserReadFromJSONTyped(json, false);
 }
 
-export function UserReadFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserRead {
+export function CurrentUserReadFromJSONTyped(json: any, ignoreDiscriminator: boolean): CurrentUserRead {
     if (json == null) {
         return json;
     }
@@ -76,14 +97,17 @@ export function UserReadFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'firstName': json['first_name'] == null ? undefined : json['first_name'],
         'lastName': json['last_name'] == null ? undefined : json['last_name'],
         'profilePicture': json['profile_picture'],
+        'description': json['description'],
+        'email': json['email'],
+        'isAuthenticated': json['is_authenticated'],
     };
 }
 
-export function UserReadToJSON(json: any): UserRead {
-    return UserReadToJSONTyped(json, false);
+export function CurrentUserReadToJSON(json: any): CurrentUserRead {
+    return CurrentUserReadToJSONTyped(json, false);
 }
 
-export function UserReadToJSONTyped(value?: Omit<UserRead, 'full_name'|'profile_picture'> | null, ignoreDiscriminator: boolean = false): any {
+export function CurrentUserReadToJSONTyped(value?: Omit<CurrentUserRead, 'full_name'|'profile_picture'|'description'|'is_authenticated'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -93,6 +117,7 @@ export function UserReadToJSONTyped(value?: Omit<UserRead, 'full_name'|'profile_
         'username': value['username'],
         'first_name': value['firstName'],
         'last_name': value['lastName'],
+        'email': value['email'],
     };
 }
 

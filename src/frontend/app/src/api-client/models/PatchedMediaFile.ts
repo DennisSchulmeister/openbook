@@ -14,7 +14,7 @@
 
 import { mapValues } from '../runtime';
 /**
- * Reuse full cleaning and validation logic on the model's in the REST API, including
+ * Reuse full cleaning and validation logic of the models in the REST API, including
  * `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
  * that the pre-filled model instance can be accessed in the DRF view.
  * @export
