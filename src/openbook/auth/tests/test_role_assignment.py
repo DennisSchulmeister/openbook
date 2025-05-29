@@ -8,8 +8,8 @@
 
 from django.core.exceptions        import ValidationError
 from django.db.utils               import IntegrityError
-from django.urls                   import reverse
 from django.test                   import TestCase
+from django.urls                   import reverse
 from rest_framework.test           import APIClient
 
 from openbook.course.models.course import Course

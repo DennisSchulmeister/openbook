@@ -8,8 +8,8 @@
 
 from django.core.exceptions        import PermissionDenied
 from django.core.exceptions        import ValidationError
-from django.test                   import TestCase
 from django.urls                   import reverse
+from django.test                   import TestCase
 from rest_framework.test           import APIClient
 from unittest.mock                 import patch
 
@@ -156,6 +156,16 @@ class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
         self.url_passphrase_enroll    = reverse("enrollment_method-enroll", args=[str(self.em_passphrase.pk)])
         self.url_no_self_enroll       = reverse("enrollment_method-enroll", args=[str(self.em_course_no_self_enroll.pk)])
     
+    def test_list_requires_auth(self):
+        """
+        Anonymous users cannot list entries.
+        """
+        reset_current_user()
+        self.client.logout()
+
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 403)
+        
     def test_list(self):
         """
         List should return enrollment methods.
@@ -212,6 +222,7 @@ class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
         """
         Create should require authentication.
         """
+        reset_current_user()
         self.client.logout()
 
         response = self.client.post(self.url_list, {
@@ -256,16 +267,6 @@ class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
 
         self.assertEqual(response.status_code, 204)
         self.assertFalse(EnrollmentMethod.objects.filter(pk=self.em_no_passphrase.pk).exists())
-
-    def test_anonymous_list_forbidden(self):
-        """
-        Anonymous users cannot list entries.
-        """
-        reset_current_user()
-        self.client.logout()
-
-        response = self.client.get(self.url_list)
-        self.assertEqual(response.status_code, 403)
 
     def test_404_for_nonexistent(self):
         """

@@ -8,6 +8,7 @@
 
 from drf_spectacular.utils      import extend_schema
 from django_filters.filterset   import FilterSet
+from django_filters.filters     import BooleanFilter
 from django_filters.filters     import CharFilter
 from rest_framework.viewsets    import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
@@ -27,10 +28,12 @@ class CurrentUserReadSerializer(UserDetailsReadSerializer):
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
     last_name  = CharFilter(lookup_expr="icontains")
+    email      = CharFilter(lookup_expr="icontains")
+    is_staff   = BooleanFilter()
     
     class Meta:
         model  = User
-        fields = ("first_name", "last_name", "is_staff")
+        fields = ("username", "first_name", "last_name", "email", "is_staff")
 
 class IsSelf(BasePermission):
     """
