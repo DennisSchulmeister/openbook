@@ -82,6 +82,9 @@ def permission_for_perm_string(perm: str) -> "Permission":
     Get permission object for a given permission string or raise `Permission.DoesNotExist`,
     when the permission cannot be found.
     """
+    if not perm:
+        return None
+    
     app_label, codename = perm.split(".", 1)
     return Permission.objects.get(codename=codename, content_type__app_label=app_label)
 
@@ -96,5 +99,8 @@ def content_type_for_model_string(model_string: str) -> "ContentType":
     Get content type object for a given model string or raise `ContentType.DoesNotExist`,
     when the content type cannot be found.
     """
+    if not model_string:
+        return None
+    
     app_label, model = model_string.split(".", 1)
     return ContentType.objects.get(app_label=app_label, model=model)

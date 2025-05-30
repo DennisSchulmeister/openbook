@@ -13,6 +13,7 @@ from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
 from rest_framework             import status
 from rest_framework.exceptions  import ValidationError as DRFValidationError
+from rest_framework.filters     import BaseFilterBackend
 from rest_framework.pagination  import PageNumberPagination as DRFPageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import BasePermission
@@ -49,8 +50,8 @@ class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
     # Include "view" permission
     perms_map = {
         "GET":     ["%(app_label)s.view_%(model_name)s"],
-        "OPTIONS": [],
-        "HEAD":    [],
+        "OPTIONS": ["%(app_label)s.view_%(model_name)s"],
+        "HEAD":    ["%(app_label)s.view_%(model_name)s"],
         "POST":    ["%(app_label)s.add_%(model_name)s"],
         "PUT":     ["%(app_label)s.change_%(model_name)s"],
         "PATCH":   ["%(app_label)s.change_%(model_name)s"],
@@ -61,6 +62,23 @@ class DjangoObjectPermissionsOnly(DjangoObjectPermissions):
         # Always True to avoid PermissionDenied.
         # Our authentication backend checks model-permissions as fallback, instead.
         return True
+
+class DjangoObjectPermissionsFilter(BaseFilterBackend):
+    """
+    Filter implementation inspired by `django-rest-framework-guardian2` `ObjectPermissionsFilter`.
+    Filters out all objects from a queryset for which the user has no object-level view permission.
+    """
+    def filter_queryset(self, request, queryset, view):
+        app_label   = queryset.model._meta.app_label
+        model_name  = queryset.model._meta.model_name
+        perm_string = f"{app_label}.view_{model_name}"
+        allowed_pks = []
+
+        for obj in queryset:
+            if request.user.has_perm(perm_string, obj):
+                allowed_pks.append(obj.pk)
+
+        return queryset.model.objects.filter(pk__in=allowed_pks)
 
 class ModelSerializer(DRFModelSerializer):
     """

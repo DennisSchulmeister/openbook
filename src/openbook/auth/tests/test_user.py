@@ -35,8 +35,7 @@ class User_Model_Tests(TestCase):
 
     def test_user_profile_created(self):
         """
-        Each user should have a user profile, automatically created when a new
-        user is created.
+        Each user should have a user profile, automatically created when a new user is created.
         """
         # User profile gets automatically created
         User = get_user_model()

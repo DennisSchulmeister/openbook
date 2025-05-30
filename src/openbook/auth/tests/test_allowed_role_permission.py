@@ -22,6 +22,7 @@ from ..utils                            import content_type_for_model_string
 
 class AllowedRolePermission_Test_Mixin:
     def setUp(self):
+        super().setUp()
         reset_current_user()
         
         self.scope_type = content_type_for_model_string("openbook_course.course")

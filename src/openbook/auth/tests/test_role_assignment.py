@@ -9,23 +9,29 @@
 from django.core.exceptions        import ValidationError
 from django.db.utils               import IntegrityError
 from django.test                   import TestCase
-from django.urls                   import reverse
-from rest_framework.test           import APIClient
 
 from openbook.course.models.course import Course
+from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
+from ..utils                       import model_string_for_content_type
 
 class RoleAssignment_Test_Mixin:
     def setUp(self):
+        super().setUp()
         reset_current_user()
 
-        self.user   = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
-        self.course = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
-        self.role   = Role.from_obj(self.course, name="Student", slug="student", priority=0)
-        self.role.save()
+        self.user            = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
+        self.course          = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        self.role_student    = Role.from_obj(self.course, name="Student", slug="student", priority=0)
+        self.role_assistant  = Role.from_obj(self.course, name="Assistant", slug="assistant", priority=1)
+        self.role_teacher    = Role.from_obj(self.course, name="Teacher", slug="teacher", priority=2)
+
+        self.role_student.save()
+        self.role_assistant.save()
+        self.role_teacher.save()
 
 class RoleAssignment_Model_Tests(RoleAssignment_Test_Mixin):
     """
@@ -42,11 +48,7 @@ class RoleAssignment_Model_Tests(RoleAssignment_Test_Mixin):
         wrong_role  = Role.from_obj(wrong_scope, name="Wrong Scope", slug="wrong-scope", priority=0)
         wrong_role.save()
 
-        role_assignment = RoleAssignment.from_obj(self.course,
-            user              = self.user,
-            role              = wrong_role,
-            assignment_method = RoleAssignment.AssignmentMethod.MANUAL
-        )
+        role_assignment = RoleAssignment.from_obj(self.course, user=self.user, role=wrong_role)
 
         with self.assertRaises(ValidationError):
             role_assignment.clean()
@@ -55,21 +57,68 @@ class RoleAssignment_Model_Tests(RoleAssignment_Test_Mixin):
         """
         The same role cannot be applied to the same user twice.
         """
-        RoleAssignment.from_obj(self.course,
-            user              = self.user,
-            role              = self.role,
-            assignment_method = RoleAssignment.AssignmentMethod.MANUAL
-        ).save()
+        RoleAssignment.from_obj(self.course, user=self.user, role=self.role_student).save()
 
         with self.assertRaises(IntegrityError):
-            RoleAssignment.from_obj(self.course,
-                user              = self.user,
-                role              = self.role,
-                assignment_method = RoleAssignment.AssignmentMethod.MANUAL
-            ).save()
+            RoleAssignment.from_obj(self.course, user=self.user, role=self.role_student).save()
 
-class RoleAssignment_ViewSet_Tests(RoleAssignment_Test_Mixin):
+class RoleAssignment_ViewSet_Tests(ModelViewSetTestMixin, RoleAssignment_Test_Mixin, TestCase):
     """
     Tests for the `RoleAssignmentViewSet` REST API.
     """
-    pass
+    base_name     = "role_assignment"
+    model         = RoleAssignment
+    search_string = "test-new"
+    search_count  = 2
+    sort_field    = "user__username"
+
+    def setUp(self):
+        super().setUp()
+
+        self.ra_student = RoleAssignment.from_obj(self.course, role=self.role_student, user=self.user)
+        self.ra_student.save()
+
+        self.ra_assistant = RoleAssignment.from_obj(self.course, role=self.role_assistant, user=self.user)
+        self.ra_assistant.save()
+    
+    def pk_found(self):
+        return self.ra_student.id
+    
+    def get_create_request_data(self):
+        return {
+            "scope_type":    model_string_for_content_type(self.ra_student.scope_type),
+            "scope_uuid":    str(self.ra_student.scope_uuid),
+            "role_slug":     "teacher",
+            "user_username": "test-new",
+        }
+
+    def get_update_request_data(self):
+        return {
+                "scope_type":    model_string_for_content_type(self.ra_student.scope_type),
+                "scope_uuid":    str(self.ra_student.scope_uuid),
+                "role_slug":     "teacher",
+                "user_username": "test-new",
+                "is_active":     False,
+                "start_date":    "",
+                "end_date":      "",
+            }
+
+    operations = {
+        "create": {
+            "request_data": get_create_request_data,
+        },
+        "update": {
+            "request_data": get_update_request_data,
+            "updates": {
+                "role":       {"slug": "teacher"},
+                "user":       {"username": "test-new"},
+                "is_active":  False,
+                "start_date": None,
+                "end_date":   None,
+            }
+        },
+        "partial_update": {
+            "request_data": {"is_active": False},
+            "updates":      {"is_active": False},
+        },
+    }
