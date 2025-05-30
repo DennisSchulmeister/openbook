@@ -151,7 +151,7 @@ class ModelViewSetTestMixin:
             "requires_auth":      True,                     # Whether the operation requires a logged-in user
             "model_permission":   ("view",),                # Model permissions the user must have (as in "app.view_model")
             "custom_permissions": [],                       # Additional custom permission strings to check
-            "request_data":       None,                     # Dict or method that returns dict to get request body data (to create or update and object)
+            "request_data":       None,                     # Dict or method that returns dict to get request body data (to create or update an object)
             "format":             None,                     # APIClient parameter format
             "content_type":       None,                     # APIClient parameter content_type: 
             "extra":              {},                       # APIClient parameter extra
@@ -459,7 +459,7 @@ class ModelViewSetTestMixin:
         Factory for the dynamically created test methods.
         """
         def test(self):
-            # Create user and with necessary permissions 
+            # Create user with necessary permissions and login
             if create_user:
                 if add_permissions:
                     permissions = [*configuration["custom_permissions"]]
