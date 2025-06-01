@@ -9,7 +9,7 @@
 from drf_spectacular.utils                   import extend_schema
 from rest_framework.viewsets                 import ReadOnlyModelViewSet
 
-from openbook.drf                            import AllowAnonymousListViewSetMixin
+from openbook.drf                            import AllowAnonymousListRetrieveViewSetMixin
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 from ..filters.mixins.scope                  import ScopeTypeFilterMixin
 from ..filters.mixins.permission             import PermissionFilterMixin
@@ -38,7 +38,7 @@ class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
         "x-model-name": "Allowed Role Permissions",
     }
 )
-class AllowedRolePermissionViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
+class AllowedRolePermissionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Allowed permissions for the roles of a given scope type"
 
     queryset         = AllowedRolePermission.objects.all()

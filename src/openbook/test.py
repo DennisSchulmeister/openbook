@@ -37,7 +37,7 @@ class _HttpMethod:
         self.name = name
 
     def __str__(self):
-        return self.name
+        return self.name.upper()
 
     def call(self,
         client:       APIClient,
@@ -162,7 +162,7 @@ class ModelViewSetTestMixin:
             "custom_permissions": [],                       # Additional custom permission strings to check
             "request_data":       None,                     # Dict or method that returns dict to get request body data (to create or update an object)
             "format":             None,                     # APIClient parameter format
-            "content_type":       None,                     # APIClient parameter content_type: 
+            "content_type":       "",                       # APIClient parameter content_type: 
             "extra":              {},                       # APIClient parameter extra
             "updates":            {},                       # Dict or method that returns dict with expected values after an update
             "assertions":         (),                       # Callback functions that receive the response object to check extra assertions
@@ -176,9 +176,9 @@ class ModelViewSetTestMixin:
             "requires_auth":      True,
             "model_permission":   ("view", "add",),
             "custom_permissions": [],
-            "request_data":       {"change_me": True},
+            "request_data":       None,
             "format":             None,
-            "content_type":       None,
+            "content_type":       "",
             "extra":              {},
             "updates":            {},
             "assertions":         (),
@@ -194,7 +194,7 @@ class ModelViewSetTestMixin:
             "custom_permissions": [],
             "request_data":       None,
             "format":             None,
-            "content_type":       None,
+            "content_type":       "",
             "extra":              {},
             "updates":            {},
             "assertions":         (),
@@ -208,9 +208,9 @@ class ModelViewSetTestMixin:
             "requires_auth":      True,
             "model_permission":   ("view", "change"),
             "custom_permissions": [],
-            "request_data":       {"change_me": True},
+            "request_data":       None,
             "format":             None,
-            "content_type":       None,
+            "content_type":       "",
             "extra":              {},
             "updates":            {"change_me": True},
             "assertions":         (),
@@ -224,9 +224,9 @@ class ModelViewSetTestMixin:
             "requires_auth":      True,
             "model_permission":   ("view", "change"),
             "custom_permissions": [],
-            "request_data":       {"change_me": True},
+            "request_data":       None,
             "format":             None,
-            "content_type":       None,
+            "content_type":       "",
             "extra":              {},
             "updates":            {"change_me": True},
             "assertions":         (),
@@ -242,7 +242,7 @@ class ModelViewSetTestMixin:
             "custom_permissions": [],
             "request_data":       None,
             "format":             None,
-            "content_type":       None,
+            "content_type":       "",
             "extra":              {},
             "updates":            {},
             "assertions":         (),
@@ -347,14 +347,25 @@ class ModelViewSetTestMixin:
 
             if not configuration["requires_auth"]:
                 # Unauthenticated usage is allowed, but still anonymous permissions must be set
-                setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
-                    configuration   = configuration,
-                    create_user     = False,
-                    add_permissions = False,
-                    pk_value        = cls.pk_found,
-                    query_params    = {"_sort": cls.sort_field},
-                    status_code     = [401, 403],          # Unauthorized (login required) or Forbidden (permission missing)
-                ))
+                if operation == "list":
+                    setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
+                        configuration   = configuration,
+                        create_user     = False,
+                        add_permissions = False,
+                        pk_value        = cls.pk_found,
+                        query_params    = {"_sort": cls.sort_field},
+                        status_code     = 200,          # Empty list expected if no permission
+                        assertions      = assertions_empty_list
+                    ))
+                else:
+                    setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
+                        configuration   = configuration,
+                        create_user     = False,
+                        add_permissions = False,
+                        pk_value        = cls.pk_found,
+                        query_params    = {"_sort": cls.sort_field},
+                        status_code     = [403, 404],   # Forbidden (permission missing) or Not Found (hidden by permission)
+                    ))
 
                 setattr(cls, f"test_{operation}_anonymous_authorized", cls._create_test_method(
                     configuration   = configuration,
@@ -476,8 +487,7 @@ class ModelViewSetTestMixin:
                 self.logout()
 
                 for perm_string in perm_strings:
-                    AnonymousPermission.objects.create(permission_for_perm_string(perm_string))
-
+                    AnonymousPermission.objects.create(permission=permission_for_perm_string(perm_string))
 
             # Call REST endpoint
             if pk_value and configuration["url_has_pk"]:
@@ -509,6 +519,14 @@ class ModelViewSetTestMixin:
                     assertion(self, response)
             except:
                 print()
+                print(f"Request: {configuration["http_method"]} {path} {query_params}")
+                print()
+
+                if request_data:
+                    print(json.dumps(request_data, indent=4))
+                    print()
+                
+                print(f"Response: {response.status_code}")
                 print(json.dumps(response.data, indent=4))
                 raise
 

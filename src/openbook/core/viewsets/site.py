@@ -17,7 +17,7 @@ from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import AllowAny
 
-from openbook.drf               import AllowAnonymousListViewSetMixin
+from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
 from ..models.site              import Site
 
 class SiteSerializer(ModelSerializer):
@@ -40,7 +40,7 @@ class SiteFilter(FilterSet):
         "x-model-name": "Websites",
     }
 )
-class SiteViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
+class SiteViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "General Website Settings"
 
     queryset           = Site.objects.all()

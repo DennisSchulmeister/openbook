@@ -140,14 +140,14 @@ class ModelViewSetMixin:
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-class AllowAnonymousListViewSetMixin:
+class AllowAnonymousListRetrieveViewSetMixin:
     """
-    Small view set mixin class that allows unrestricted access to the `list` action while
-    deferring permission checks for all other actions to the permission classes of the
-    view set (usually defined in `settings.py`).
+    Small view set mixin class that allows unrestricted access to the `list` and `retrieve`
+    actions while deferring permission checks for all other actions to the permission classes
+    of the view set (usually defined in `settings.py`).
     """
     def get_permissions(self):
-        if self.action == "list":
+        if self.action in ["list", "retrieve"]:
             return (AllowAny(),)
         else:
             return super().get_permissions()

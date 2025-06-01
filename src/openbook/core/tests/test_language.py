@@ -6,103 +6,38 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test                           import TestCase
-from django.urls                           import reverse
-from rest_framework.test                   import APIClient
+from django.test       import TestCase
+from django.urls       import reverse
 
-from openbook.auth.models                  import AnonymousPermission
-from openbook.auth.utils                   import permission_for_perm_string
-from openbook.auth.middleware.current_user import reset_current_user
-from ..models.language                     import Language
+from openbook.test     import ModelViewSetTestMixin
+from ..models.language import Language
 
-class Language_ViewSet_Tests(TestCase):
+class Language_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `LanguageViewSet` REST API.
     """
-    def setUp(self):
-        self.client = APIClient()
-        reset_current_user()
-    
-        Language.objects.create(language="en", name="English")
-        Language.objects.create(language="de", name="Deutsch")
-        Language.objects.create(language="fr", name="Français")
+    base_name     = "language"
+    model         = Language
+    pk_found      = "en"
+    search_string = "deu"
+    search_count  = 1
+    sort_field    = "name"
 
-        self.anonymous_permission = AnonymousPermission.objects.create(
-            permission = permission_for_perm_string("openbook_core.view_language")
-        )
+    operations = {
+        "list":           {"requires_auth": False},
+        "retrieve":       {"requires_auth": False},
+        "create":         {"supported": False},
+        "update":         {"supported": False},
+        "partial_update": {"supported": False},
+        "destroy":        {"supported": False},
+    }
+
+    def setUp(self):
+        super().setUp()
+        
+        self.language_en = Language.objects.create(language="en", name="English")
+        self.language_de = Language.objects.create(language="de", name="Deutsch")
+        self.language_fr = Language.objects.create(language="fr", name="Français")
 
         self.url_list    = reverse("language-list")
         self.url_english = reverse("language-detail", args=("en",))
-
-    def test_anonymous_permission(self):
-        """
-        Cannot access data without anonymous permission.
-        """
-        self.anonymous_permission.delete()
-
-        response = self.client.get(self.url_list)
-        self.assertEqual(response.data["count"], 0)
-
-        response = self.client.get(self.url_english)
-        self.assertEqual(response.status_code, 403)
-
-    def test_list_languages(self):
-        """
-        Should return all available languages.
-        """
-        response = self.client.get(self.url_list)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 3)
-
-    def test_filter_by_name(self):
-        """
-        Should filter languages by name (case-insensitive, partial match).
-        """
-        response = self.client.get(self.url_list, {"name": "deu"})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]["name"], "Deutsch")
-
-    def test_search_by_language_code(self):
-        """
-        Should search languages by language code.
-        """
-        response = self.client.get(self.url_list, {"_search": "fr"})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]["language"], "fr")
-
-    def test_sort_by_name(self):
-        """
-        Should sort languages by name in ascending and descending order.
-        """
-        # Ascending order
-        response = self.client.get(self.url_list, {"_sort": "name"})
-        self.assertEqual(response.status_code, 200)
-
-        names = [item["name"] for item in response.data["results"]]
-        self.assertEqual(names, sorted(names))
-
-        # Descending order
-        response = self.client.get(self.url_list, {"_sort": "-name"})
-        self.assertEqual(response.status_code, 200)
-        
-        names = [item["name"] for item in response.data["results"]]
-        self.assertEqual(names, sorted(names, reverse=True))
-
-    def test_pagination(self):
-        """
-        Should paginate results using _page_size and _page query parameters.
-        """
-        # Page size 2, first page
-        response = self.client.get(self.url_list, {"_page_size": 2, "_page": 1})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 2)
-
-        # Page size 2, second page
-        response = self.client.get(self.url_list, {"_page_size": 2, "_page": 2})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 1)

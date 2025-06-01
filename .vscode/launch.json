@@ -22,6 +22,7 @@
             "args": [
                 "test",
                 //"openbook.auth.tests.test_access_request.AccessRequest_ViewSet_Tests.test_retrieve_requires_permission"
+                "--failfast",
             ],
             "django": true,
             "autoStartBrowser": false,

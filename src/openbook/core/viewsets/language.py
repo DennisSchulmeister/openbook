@@ -12,7 +12,7 @@ from drf_spectacular.utils      import extend_schema
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.serializers import ModelSerializer
 
-from openbook.drf               import AllowAnonymousListViewSetMixin
+from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
 from ..models.language          import Language
 
 class LanguageSerializer(ModelSerializer):
@@ -33,7 +33,7 @@ class LanguageFilter(FilterSet):
         "x-model-name": "Available Languages",
     }
 )
-class LanguageViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
+class LanguageViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     ___doc__ = "Available Languages"
 
     queryset           = Language.objects.all()

@@ -9,7 +9,7 @@
 from drf_spectacular.utils                  import extend_schema
 from rest_framework.viewsets                import ModelViewSet
 
-from openbook.drf                           import AllowAnonymousListViewSetMixin
+from openbook.drf                           import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf                           import ModelViewSetMixin
 from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
 from openbook.auth.filters.mixins.scope     import ScopedRolesFilterMixin
@@ -99,7 +99,7 @@ class CourseFilter(
     }
 )
 class CourseViewSet(
-    AllowAnonymousListViewSetMixin,
+    AllowAnonymousListRetrieveViewSetMixin,
     ModelViewSetMixin,
     ModelViewSet,
 ):

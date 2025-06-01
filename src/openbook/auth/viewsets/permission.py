@@ -13,7 +13,7 @@ from django_filters.filters     import CharFilter
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.serializers import ModelSerializer
 
-from openbook.drf               import AllowAnonymousListViewSetMixin
+from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
 from ..models.permission        import Permission_T
 from ..serializers.permission   import PermissionReadSerializer
 from ..utils                    import permission_for_perm_string
@@ -50,7 +50,7 @@ class PermissionTFilter(FilterSet):
         "x-model-name": "Translated Permissions",
     }
 )
-class PermissionTViewSet(AllowAnonymousListViewSetMixin, ReadOnlyModelViewSet):
+class PermissionTViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Translated Permissions"
 
     queryset         = Permission_T.objects.all()
