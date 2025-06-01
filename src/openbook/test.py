@@ -11,19 +11,20 @@ import functools
 import json
 import typing
 
-from collections.abc                       import Iterable
-from django.contrib.auth                   import get_user_model
-from django.contrib.auth.models            import AbstractUser
-from django.db.models.manager              import Manager
-from django.db.models                      import Model
-from django.db.models                      import Manager
-from django.db.models                      import QuerySet
-from django.urls                           import reverse
-from rest_framework.response               import Response
-from rest_framework.test                   import APIClient
+from collections.abc                           import Iterable
+from django.contrib.auth                       import get_user_model
+from django.contrib.auth.models                import AbstractUser
+from django.db.models.manager                  import Manager
+from django.db.models                          import Model
+from django.db.models                          import Manager
+from django.db.models                          import QuerySet
+from django.urls                               import reverse
+from rest_framework.response                   import Response
+from rest_framework.test                       import APIClient
 
-from openbook.auth.middleware.current_user import reset_current_user
-from openbook.auth.utils                   import permission_for_perm_string
+from openbook.auth.middleware.current_user     import reset_current_user
+from openbook.auth.models.anonymous_permission import AnonymousPermission
+from openbook.auth.utils                       import permission_for_perm_string
 
 User = get_user_model()
 
@@ -94,7 +95,9 @@ class ModelViewSetTestMixin:
             },
 
             # Not supported operation
-            "delete": None,
+            "delete": {
+                "supported": False,
+            },
         }
     ```
 
@@ -126,6 +129,9 @@ class ModelViewSetTestMixin:
     model: Model = None
     """Model class for automatically determining required permissions"""
 
+    count: int = 0
+    """Expected list count, if not just all model entries. Set to < 0 to disable, or > 0 to override database lookup."""
+
     pk_field = "pk"
     """Name of the key field of the model (for testing that DELETE actually deletes the object)"""
 
@@ -135,17 +141,18 @@ class ModelViewSetTestMixin:
     pk_not_found = "not-found"
     """String or method to get key value of a non-existing object for testing the 404 status code"""
 
-    search_string = "change-me",
-    """Search string to test the `_search` query parameter"""
+    search_string = "",
+    """Search string to test the `_search` query parameter (will not be tested if string is empty)"""
 
     search_count = -1
     """Number of expected search results when testing the `_search` query parameter"""
 
-    sort_field = "change-me"
-    """Fieldname to test the `_sort` query parameter"""
+    sort_field = ""
+    """Fieldname to test the `_sort` query parameter (will not be tested if string is empty)"""
 
     operations = {
         "list": {
+            "supported":          True,                     # Operation is supported by the webservice
             "http_method":        HttpMethod.GET,           # HTTP method to call this endpoint
             "status_code":        200,      # Okay          # Expected status code on success
             "url_suffix":         "list",                   # Suffix for reverse(f"{base_name}-{suffix}")
@@ -161,6 +168,7 @@ class ModelViewSetTestMixin:
             "assertions":         (),                       # Callback functions that receive the response object to check extra assertions
         },
         "create": {
+            "supported":          True,
             "http_method":        HttpMethod.POST,
             "status_code":        201,      # Created
             "url_suffix":         "list",
@@ -176,6 +184,7 @@ class ModelViewSetTestMixin:
             "assertions":         (),
         },
         "retrieve": {
+            "supported":          True,
             "http_method":        HttpMethod.GET,
             "status_code":        200,      # Okay
             "url_suffix":         "detail",
@@ -191,6 +200,7 @@ class ModelViewSetTestMixin:
             "assertions":         (),
         },
         "update": {
+            "supported":          True,
             "http_method":        HttpMethod.PUT,
             "status_code":        200,      # Okay
             "url_suffix":         "detail",
@@ -206,6 +216,7 @@ class ModelViewSetTestMixin:
             "assertions":         (),
         },
         "partial_update": {
+            "supported":          True,
             "http_method":        HttpMethod.PATCH,
             "status_code":        200,      # Okay
             "url_suffix":         "detail",
@@ -221,6 +232,7 @@ class ModelViewSetTestMixin:
             "assertions":         (),
         },
         "destroy": {
+            "supported":          True,
             "http_method":        HttpMethod.DELETE,
             "status_code":        204,      # No Content
             "url_suffix":         "detail",
@@ -245,9 +257,9 @@ class ModelViewSetTestMixin:
 
     When adding custom actions, make sure to set the `"url_suffix"` to the action name and to
     set `"url_has_pk"` to `True`, when it is an action for a single object.
-    
-    Unsupported default operations should be overridden with a falsy value (e.g. `None`) but
-    remain in the dictionary. This lets the test case test that it is really unsupported.
+
+    For unsupported operations the key `"supported"` should be set to `False`. This lets the test
+    case test that it is really unsupported.
     
     Note, that test users will be automatically created to test the permissions. The permissions
     will be directly assigned to the users as user permissions. Scoped permissions need to be
@@ -259,10 +271,8 @@ class ModelViewSetTestMixin:
     def __init_subclass__(cls):
         """
         Merge configured operations from the subclass with the template defined in this class.
-
         In the subclass only the values to be changed need to be declared. All other values
-        are copied from the base class. To remove an operation entirely, assign a falsy value
-        (e.g. `None`) to it in the subclass.
+        are copied from the base class.
         """
         super().__init_subclass__()
 
@@ -281,21 +291,43 @@ class ModelViewSetTestMixin:
                     operations_merged[operation] = overrides
             else:
                 # New operation defined in subclass
+                if not "list" in cls.operations:
+                    raise KeyError(f"Cannot test custom action {operation}. Custom operations require the list operation as a template.")
+
                 operations_merged[operation] = copy.deepcopy(cls.operations["list"])
                 operations_merged[operation].update(overrides)
 
         cls.operations = operations_merged
 
         # Dynamically create test methods
+        if cls.count != 0:
+            expected_count = cls.count
+        else:
+            expected_count = cls.model.objects
+
         assertions_empty_list = (functools.partial(cls.assertResultList, expected_count=0),)
         assertions_one_item   = (functools.partial(cls.assertResultList, expected_count=1),)
-        assertions_full_list  = (functools.partial(cls.assertResultList, expected_count=cls.model.objects),)
+        assertions_full_list  = (functools.partial(cls.assertResultList, expected_count=expected_count),)
         assertions_search     = (functools.partial(cls.assertResultList, expected_count=cls.search_count),)
         assertions_sort       = (functools.partial(cls.assertSortOrder, sort_field=cls.sort_field),)
         assertions_create     = (functools.partial(cls.assertObjectCreated, pk_field=cls.pk_field, pk_found=cls.pk_found),)
         assertions_destroy    = (functools.partial(cls.assertObjectDeleted, pk_field=cls.pk_field, pk_found=cls.pk_found),)
 
         for operation, configuration in operations_merged.items():
+            # Operation not supported
+            if not configuration["supported"]:
+                setattr(cls, f"test_{operation}_not_supported", cls._create_test_method(
+                    configuration   = configuration,
+                    create_user     = True,
+                    add_permissions = True,
+                    pk_value        = cls.pk_found,
+                    query_params    = {"_sort": cls.sort_field},
+                    status_code     = 405,          # Method Not Allowed
+                ))
+
+                continue
+
+            # Operation supported
             assertions_operation = [*configuration["assertions"]]
 
             if operation == "list":
@@ -313,63 +345,26 @@ class ModelViewSetTestMixin:
                     )
                 )
 
-            if not configuration:
-                # Operation not supported
-                setattr(cls, f"test_{operation}_not_supported", cls._create_test_method(
+            if not configuration["requires_auth"]:
+                # Unauthenticated usage is allowed, but still anonymous permissions must be set
+                setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
                     configuration   = configuration,
                     create_user     = False,
                     add_permissions = False,
                     pk_value        = cls.pk_found,
                     query_params    = {"_sort": cls.sort_field},
-                    status_code     = 405,          # Method Not Allowed
+                    status_code     = [401, 403],          # Unauthorized (login required) or Forbidden (permission missing)
                 ))
-            elif not configuration["requires_auth"]:
-                # Anonymous usage is allowed, so no permission checks occur
-                setattr(cls, f"test_{operation}_public", cls._create_test_method(
+
+                setattr(cls, f"test_{operation}_anonymous_authorized", cls._create_test_method(
                     configuration   = configuration,
                     create_user     = False,
-                    add_permissions = False,
+                    add_permissions = True,
                     pk_value        = cls.pk_found,
                     status_code     = configuration["status_code"],
                     query_params    = {"_sort": cls.sort_field},
                     assertions      = assertions_operation,
                 ))
-
-                if operation == "list":
-                    setattr(cls, f"test_{operation}_search", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        status_code     = configuration["status_code"],
-                        query_params    = {"_search": cls.search_string, "_sort": cls.sort_field},
-                        assertions      = assertions_search,
-                    ))
-
-                    setattr(cls, f"test_{operation}_sort", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        status_code     = configuration["status_code"],
-                        query_params    = {"_sort": cls.sort_field},
-                        assertions      = assertions_sort,
-                    ))
-
-                    setattr(cls, f"test_{operation}_pagination", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        status_code     = configuration["status_code"],
-                        query_params    = {"_page_size": "1", "_page": "1", "_sort": cls.sort_field},
-                        assertions      = assertions_one_item,
-                    ))
-                elif operation == "retrieve":
-                    setattr(cls, f"test_{operation}_not_found", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        pk_value        = cls.pk_not_found,
-                        status_code     = 404,      # Not Found
-                    ))
             else:
                 # User must be logged-in and authorized
                 setattr(cls, f"test_{operation}_unauthenticated", cls._create_test_method(
@@ -381,6 +376,7 @@ class ModelViewSetTestMixin:
                     status_code     = [401, 403],          # Unauthorized (login required) or Forbidden (permission missing)
                 ))
 
+            if configuration["model_permission"] or configuration["custom_permissions"]:
                 if operation == "list":
                     setattr(cls, f"test_{operation}_unauthorized", cls._create_test_method(
                         configuration   = configuration,
@@ -401,17 +397,18 @@ class ModelViewSetTestMixin:
                         status_code     = [403, 404],   # Forbidden (permission missing) or Not Found (hidden by permission)
                     ))
 
-                setattr(cls, f"test_{operation}_authorized", cls._create_test_method(
-                    configuration   = configuration,
-                    create_user     = True,
-                    add_permissions = True,
-                    pk_value        = cls.pk_found,
-                    status_code     = configuration["status_code"],
-                    query_params    = {"_sort": cls.sort_field},
-                    assertions      = assertions_operation,
-                ))
+            setattr(cls, f"test_{operation}_authorized", cls._create_test_method(
+                configuration   = configuration,
+                create_user     = True,
+                add_permissions = True,
+                pk_value        = cls.pk_found,
+                status_code     = configuration["status_code"],
+                query_params    = {"_sort": cls.sort_field},
+                assertions      = assertions_operation,
+            ))
 
-                if operation == "list":
+            if operation == "list":
+                if cls.search_string:
                     setattr(cls, f"test_{operation}_search", cls._create_test_method(
                         configuration   = configuration,
                         create_user     = True,
@@ -421,6 +418,7 @@ class ModelViewSetTestMixin:
                         assertions      = assertions_search,
                     ))
 
+                if cls.sort_field:
                     setattr(cls, f"test_{operation}_sort", cls._create_test_method(
                         configuration   = configuration,
                         create_user     = True,
@@ -438,21 +436,21 @@ class ModelViewSetTestMixin:
                         query_params    = {"_page_size": "1", "_page": "1", "_sort": cls.sort_field},
                         assertions      = assertions_one_item,
                     ))
-                elif operation == "retrieve":
-                    setattr(cls, f"test_{operation}_not_found", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = True,
-                        add_permissions = True,
-                        pk_value        = cls.pk_not_found,
-                        status_code     = 404,      # Not Found
-                    ))
+            elif operation == "retrieve":
+                setattr(cls, f"test_{operation}_not_found", cls._create_test_method(
+                    configuration   = configuration,
+                    create_user     = True,
+                    add_permissions = True,
+                    pk_value        = cls.pk_not_found,
+                    status_code     = 404,      # Not Found
+                ))
 
     @classmethod
     def _create_test_method(cls,
-        configuration:   dict,
-        create_user:     bool,
-        add_permissions: bool,
-        status_code:     int|typing.Iterable[int],
+        configuration:   dict = {},
+        create_user:     bool = False,
+        add_permissions: bool = False,
+        status_code:     int|typing.Iterable[int] = [],
         pk_value:        str|None = "",
         query_params:    dict = {},
         assertions:      typing.Iterable[typing.Callable[[Response], None]] = [],
@@ -462,20 +460,24 @@ class ModelViewSetTestMixin:
         """
         def test(self):
             # Create user with necessary permissions and login
+            if add_permissions:
+                perm_strings = [*configuration["custom_permissions"]]
+
+                for action in configuration["model_permission"]:
+                    app_label  = self.model._meta.app_label
+                    model_name = self.model._meta.model_name
+                    perm_strings.append(f"{app_label}.{action}_{model_name}")
+            else:
+                perm_strings = []
+
             if create_user:
-                if add_permissions:
-                    permissions = [*configuration["custom_permissions"]]
-
-                    for action in configuration["model_permission"]:
-                        app_label  = self.model._meta.app_label
-                        model_name = self.model._meta.model_name
-                        permissions.append(f"{app_label}.{action}_{model_name}")
-                else:
-                    permissions = []
-
-                self.create_user_and_login(permissions)
+                self.create_user_and_login(perm_strings)
             else:
                 self.logout()
+
+                for perm_string in perm_strings:
+                    AnonymousPermission.objects.create(permission_for_perm_string(perm_string))
+
 
             # Call REST endpoint
             if pk_value and configuration["url_has_pk"]:
@@ -566,12 +568,18 @@ class ModelViewSetTestMixin:
         elif hasattr(expected_count, "count"):
             expected_count = expected_count.count()
 
-        self.assertIn("results", response.data)
-        self.assertIn("count", response.data)
-        self.assertIsInstance(response.data["results"], list)
+        if isinstance(response.data, list):
+            # Special case (e.g. scope type): Result is an array
+            if expected_count >= 0:
+                self.assertEqual(len(response.data), expected_count, f"Expected {expected_count} results but got {len(response.data)}")
+        else:
+            # Normale case: Result is an objects with `results` and `count`
+            self.assertIn("results", response.data)
+            self.assertIn("count", response.data)
+            self.assertIsInstance(response.data["results"], list)
 
-        if expected_count >= 0:
-            self.assertEqual(len(response.data["results"]), expected_count, f"Expected {expected_count} results but got {response.data["count"]}")
+            if expected_count >= 0:
+                self.assertEqual(len(response.data["results"]), expected_count, f"Expected {expected_count} results but got {response.data["count"]}")
     
     def assertSortOrder(self, response: Response, sort_field: str):
         """
