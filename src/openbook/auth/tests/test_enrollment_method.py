@@ -25,6 +25,7 @@ from ..utils                       import permission_for_perm_string
 class EnrollmentMethod_Test_Mixin:
     def setUp(self):
         super().setUp()
+        reset_current_user()
 
         self.user   = User.objects.create_user(username="new", email="new@test.com", password="password")
         self.course = Course.objects.create(name="Test Course 1", slug="test-course1", text_format=Course.TextFormatChoices.MARKDOWN)

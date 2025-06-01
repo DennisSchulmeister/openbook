@@ -10,6 +10,7 @@ from django.test                      import TestCase
 
 from openbook.course.models.course    import Course
 from openbook.test                    import ModelViewSetTestMixin
+from ..middleware.current_user        import reset_current_user
 from ..models.allowed_role_permission import AllowedRolePermission
 from ..models.role                    import Role
 from ..utils                          import content_type_for_model_string
@@ -28,6 +29,7 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
 
     def setUp(self):
         super().setUp()
+        reset_current_user()
 
         self.course         = Course.objects.create(name="Test Course", slug="test-course")
         self.role_student   = Role.from_obj(self.course, name="Student", slug="student", priority=0)

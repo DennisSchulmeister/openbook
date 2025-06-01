@@ -169,6 +169,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "list",                   # Suffix for reverse(f"{base_name}-{suffix}")
             "url_has_pk":         False,                    # Whether the PK must be appended to the URL
             "requires_auth":      True,                     # Whether the operation requires a logged-in user
+            "username":           "",                       # Existing user to login with, otherwise a new one will be created
+            "password":           "",                       # Password for existing user
             "model_permission":   ("view",),                # Model permissions the user must have (as in "app.view_model")
             "custom_permissions": [],                       # Additional custom permission strings to check
             "request_data":       None,                     # Dict or method that returns dict to get request body data (to create or update an object)
@@ -185,6 +187,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "list",
             "url_has_pk":         False,
             "requires_auth":      True,
+            "username":           "",
+            "password":           "",
             "model_permission":   ("view", "add",),
             "custom_permissions": [],
             "request_data":       None,
@@ -201,6 +205,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "detail",
             "url_has_pk":         True,
             "requires_auth":      True,
+            "username":           "",
+            "password":           "",
             "model_permission":   ("view",),
             "custom_permissions": [],
             "request_data":       None,
@@ -217,6 +223,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "detail",
             "url_has_pk":         True,
             "requires_auth":      True,
+            "username":           "",
+            "password":           "",
             "model_permission":   ("view", "change"),
             "custom_permissions": [],
             "request_data":       None,
@@ -233,6 +241,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "detail",
             "url_has_pk":         True,
             "requires_auth":      True,
+            "username":           "",
+            "password":           "",
             "model_permission":   ("view", "change"),
             "custom_permissions": [],
             "request_data":       None,
@@ -249,6 +259,8 @@ class ModelViewSetTestMixin:
             "url_suffix":         "detail",
             "url_has_pk":         True,
             "requires_auth":      True,
+            "username":           "",
+            "password":           "",
             "model_permission":   ("view", "delete"),
             "custom_permissions": [],
             "request_data":       None,
@@ -496,7 +508,15 @@ class ModelViewSetTestMixin:
                 perm_strings = []
 
             if create_user:
-                self.create_user_and_login(perm_strings)
+                if configuration["username"]:
+                    self.login(username=configuration["username"], password=configuration["password"])
+
+                    user = User.objects.get(username=configuration["username"])
+
+                    for perm_string in perm_strings:
+                        user.user_permissions.add(permission_for_perm_string(perm_string))
+                else:
+                    self.create_user_and_login(perm_strings)
             else:
                 self.logout()
 

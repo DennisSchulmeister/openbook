@@ -11,7 +11,6 @@ from django.core.exceptions        import PermissionDenied
 from django.test                   import TestCase
 from django.utils                  import timezone
 from unittest.mock                 import patch
-from rest_framework.test           import APIClient
 from rest_framework.reverse        import reverse
 
 from openbook.course.models.course import Course
@@ -27,6 +26,7 @@ from ..utils                       import permission_for_perm_string
 class AccessRequest_Test_Mixin:
     def setUp(self):
         super().setUp()
+        reset_current_user()
 
         self.user_new       = User.objects.create_user(username="new", email="new@test.com", password="password")
         self.user_student   = User.objects.create_user(username="student", email="student@test.com", password="password")
@@ -295,163 +295,76 @@ class AccessRequest_Model_Tests(AccessRequest_Test_Mixin, TestCase):
 
         access_request4.save(permission_user=self.user_student)
 
-class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
+class AccessRequest_ViewSet_Tests(ModelViewSetTestMixin, AccessRequest_Test_Mixin, TestCase):
     """
     Tests for the `AccessRequestViewSet` REST API.
     """
+    base_name     = "access_request"
+    model         = AccessRequest
+    search_string = "student"
+    search_count  = 1
+    sort_field    = "decision"
+
     def setUp(self):
         super().setUp()
-        self.client = APIClient()
-        self.url_list = reverse("access_request-list")
 
         self.access_request = AccessRequest.from_obj(self.course, user=self.user_new, role=self.role_student)
         self.access_request.save(check_permission=False)
 
-        self.url_detail = reverse("access_request-detail", args=[str(self.access_request.pk)])
+        AccessRequest.from_obj(self.course, user=self.user_new, role=self.role_assistant).save(check_permission=False)
 
-    def test_list(self):
-        """
-        List should return access requests for authenticated user with permission.
-        """
-        self.client.login(username="assistant", password="password")
-        response = self.client.get(self.url_list)
+    def pk_found(self):
+        return self.access_request.id
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("results", response.data)
-        self.assertGreaterEqual(response.data["count"], 1)
-
-    def test_list_requires_auth(self):
-        """
-        List should require authentication.
-        """
-        self.client.logout()
-        response = self.client.get(self.url_list)
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_retrieve(self):
-        """
-        Retrieve should return access request details for permitted user.
-        """
-        self.client.login(username="assistant", password="password")
-        response = self.client.get(self.url_detail)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["id"], str(self.access_request.pk))
-
-    def test_retrieve_requires_permission(self):
-        """
-        Retrieve requires authenticated user with correct permission.
-        """
-        # Not logged in
-        reset_current_user()
-        self.client.logout()
-
-        response = self.client.get(self.url_detail)
-        self.assertEqual(response.status_code, 403)
-
-        # Logged in as dummy (lacks permission)
-        reset_current_user()
-        self.client.login(username="dummy", password="password")
-
-        response = self.client.get(self.url_detail)
-        self.assertEqual(response.status_code, 404)
-        self.client.logout()
-
-        # Logged in as assistant (has permission)
-        reset_current_user()
-        self.client.login(username="assistant", password="password")
-
-        response = self.client.get(self.url_detail)
-        self.assertEqual(response.status_code, 200)
-
-    def test_retrieve_404_for_nonexistent(self):
-        """
-        Retrieve should return 404 for non-existent access request.
-        """
-        self.client.login(username="assistant", password="password")
-        url = reverse("access_request-detail", args=["00000000-0000-0000-0000-000000000000"])
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 404)
-
-    def test_create(self):
-        """
-        Create should allow authenticated user to create access request.
-        """
-        self.client.login(username="new", password="password")
-
-        response = self.client.post(self.url_list, {
+    def get_create_request_data(self):
+        return {
             "scope_type":    model_string_for_content_type(self.role_student.scope_type),
             "scope_uuid":    str(self.role_student.scope_uuid),
-            "role_slug":     self.role_student.slug,
-            "user_username": self.user_new.username,
-        })
+            "role_slug":     "student",
+            "user_username": "new",
+        }
 
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data["user"]["username"], self.user_new.username)
-        self.assertEqual(response.data["role"]["id"], str(self.role_student.pk))
-
-    def test_create_requires_auth(self):
-        """
-        Create should require authentication.
-        """
-        self.client.logout()
-
-        response = self.client.post(self.url_list, {
+    def get_update_request_data(self):
+        return {
             "scope_type":    model_string_for_content_type(self.role_student.scope_type),
             "scope_uuid":    str(self.role_student.scope_uuid),
-            "role_slug":     self.role_student.slug,
-            "user_username": self.user_new.username,
-        })
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_update(self):
-        """
-        Update should allow permitted user to update access request.
-        """
-        self.client.login(username="assistant", password="password")
-
-        response = self.client.put(self.url_detail, {
-            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
-            "scope_uuid":    str(self.role_student.scope_uuid),
-            "role_slug":     self.role_student.slug,
-            "user_username": self.user_new.username,
+            "role_slug":     "student",
+            "user_username": "dummy",
             "decision":      AccessRequest.Decision.ACCEPTED,
-        })
+        }
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["decision"], AccessRequest.Decision.ACCEPTED)
+    operations = {
+        "create": {
+            "request_data": get_create_request_data,
+        },
+        "update": {
+            "request_data": get_update_request_data,
+            "updates":      {
+                "user":     {"username": "dummy"},
+                "decision": AccessRequest.Decision.ACCEPTED,
+            },
 
-    def test_partial_update(self):
-        """
-        Partial update should allow permitted user to update access request.
-        """
-        self.client.login(username="assistant", password="password")
+            # Use pre-configured user with correcet permissions
+            "username":         "owner",
+            "password":         "password",
+            "model_permission": (),
+        },
+        "partial_update": {
+            "request_data":     {"decision": AccessRequest.Decision.DENIED},
+            "updates":          {"decision": AccessRequest.Decision.DENIED},
 
-        response = self.client.patch(self.url_detail, {
-            "decision": AccessRequest.Decision.DENIED
-        }, format="json")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["decision"], AccessRequest.Decision.DENIED)
-
-    def test_delete(self):
-        """
-        Delete should allow permitted user to delete access request.
-        """
-        self.client.login(username="new", password="password")
-        response = self.client.delete(self.url_detail)
-
-        self.assertEqual(response.status_code, 204)
-        self.assertFalse(AccessRequest.objects.filter(pk=self.access_request.pk).exists())
+            # Use pre-configured user with correcet permissions
+            "username":         "owner",
+            "password":         "password",
+            "model_permission": (),
+        },
+    }
 
     def test_permission_denied(self):
         """
         Operations without required permissions should return 404.
         """
-        self.client.login(username="student", password="password")
+        self.login(username="student", password="password")
 
         # Try to accept without permission
         url = reverse("access_request-accept", args=[str(self.access_request.pk)])
@@ -467,7 +380,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         Accept should assign role when permitted.
         """
-        self.client.login(username="assistant", password="password")
+        self.login(username="assistant", password="password")
 
         url = reverse("access_request-accept", args=[str(self.access_request.pk)])
         response = self.client.put(url)
@@ -480,7 +393,7 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         """
         Deny should unassign role when permitted.
         """
-        self.client.login(username="assistant", password="password")
+        self.login(username="assistant", password="password")
 
         url = reverse("access_request-deny", args=[str(self.access_request.pk)])
         response = self.client.put(url)
@@ -488,26 +401,3 @@ class AccessRequest_ViewSet_Tests(AccessRequest_Test_Mixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.access_request.refresh_from_db()
         self.assertEqual(self.access_request.decision, AccessRequest.Decision.DENIED)
-
-    def test_search_and_sort(self):
-        """
-        List should support search and sort query parameters.
-        """
-        self.client.login(username="assistant", password="password")
-        response = self.client.get(self.url_list + f"?_search={self.user_new.username}")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(self.user_new.username, str(response.data))
-
-        response = self.client.get(self.url_list + "?_sort=decision")
-        self.assertEqual(response.status_code, 200)
-
-    def test_pagination(self):
-        """
-        List should support pagination query parameters.
-        """
-        self.client.login(username="assistant", password="password")
-
-        response = self.client.get(self.url_list + "?_page=1&_page_size=1")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("results", response.data)

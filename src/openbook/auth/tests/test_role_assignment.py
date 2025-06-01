@@ -21,6 +21,7 @@ from ..utils                       import model_string_for_content_type
 class RoleAssignment_Test_Mixin:
     def setUp(self):
         super().setUp()
+        reset_current_user()
 
         self.user            = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
         self.course          = Course.objects.create(name="Test Course", slug="test-course")

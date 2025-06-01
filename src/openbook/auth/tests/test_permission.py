@@ -12,6 +12,7 @@ from django.urls                   import reverse
 
 from openbook.core.models.language import Language
 from openbook.test                 import ModelViewSetTestMixin
+from ..middleware.current_user     import reset_current_user
 from ..models.permission           import Permission_T
 
 class PermissionT_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
@@ -35,6 +36,7 @@ class PermissionT_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
 
     def setUp(self):
         super().setUp()
+        reset_current_user()
 
         permission    = Permission.objects.first()
         language_en   = Language.objects.create(language="en", name="English")
