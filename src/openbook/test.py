@@ -560,6 +560,7 @@ class ModelViewSetTestMixin:
         (Re)login with another user.
         """
         reset_current_user()
+        self.client.logout()
         self.client.login(username=username, password=password)
     
     def create_user_and_login(self, perm_strings: typing.Iterable[str]) -> AbstractUser:
