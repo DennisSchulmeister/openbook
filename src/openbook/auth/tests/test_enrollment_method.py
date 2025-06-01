@@ -39,6 +39,7 @@ class EnrollmentMethod_Test_Mixin:
         ])
 
         self.course.public_permissions.add(
+            permission_for_perm_string("openbook_auth.view_enrollmentmethod"),
             permission_for_perm_string("openbook_auth.self_enroll"),
         )
 
@@ -343,7 +344,7 @@ class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
         self.client.login(username="new", password="password")
 
         response = self.client.put(self.url_no_self_enroll)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
         self.assertEqual(RoleAssignment.objects.filter(
             user = self.user,
