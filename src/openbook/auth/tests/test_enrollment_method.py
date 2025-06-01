@@ -350,3 +350,21 @@ class EnrollmentMethod_ViewSet_Tests(EnrollmentMethod_Test_Mixin, TestCase):
             user = self.user,
             role = self.role,
         ).count(), 0)
+    
+    def test_self_enrollment_requires_auth(self):
+        """
+        Cannot self-enroll when public permissions of scope are not set.
+        """
+        self.course.public_permissions.set([])
+
+        reset_current_user()
+        self.client.logout()
+        self.client.login(username="new", password="password")
+
+        response = self.client.put(self.url_passphrase_enroll, {"passphrase": "Correct!"})
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(RoleAssignment.objects.filter(
+            user = self.user,
+            role = self.role,
+        ).count(), 0)

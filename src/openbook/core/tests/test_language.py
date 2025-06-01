@@ -6,33 +6,51 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test          import TestCase
-from django.urls          import reverse
-from rest_framework.test  import APIClient
+from django.test                           import TestCase
+from django.urls                           import reverse
+from rest_framework.test                   import APIClient
 
-from openbook.auth.models import AnonymousPermission
-from openbook.auth.utils  import permission_for_perm_string
-from ..models.language    import Language
+from openbook.auth.models                  import AnonymousPermission
+from openbook.auth.utils                   import permission_for_perm_string
+from openbook.auth.middleware.current_user import reset_current_user
+from ..models.language                     import Language
 
 class Language_ViewSet_Tests(TestCase):
     """
     Tests for the `LanguageViewSet` REST API.
     """
     def setUp(self):
+        self.client = APIClient()
+        reset_current_user()
+    
         Language.objects.create(language="en", name="English")
         Language.objects.create(language="de", name="Deutsch")
         Language.objects.create(language="fr", name="Français")
 
-        AnonymousPermission.objects.create(permission=permission_for_perm_string("openbook_core.view_language"))
+        self.anonymous_permission = AnonymousPermission.objects.create(
+            permission = permission_for_perm_string("openbook_core.view_language")
+        )
 
-        self.client = APIClient()
+        self.url_list    = reverse("language-list")
+        self.url_english = reverse("language-detail", args=("en",))
+
+    def test_anonymous_permission(self):
+        """
+        Cannot access data without anonymous permission.
+        """
+        self.anonymous_permission.delete()
+
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.data["count"], 0)
+
+        response = self.client.get(self.url_english)
+        self.assertEqual(response.status_code, 403)
 
     def test_list_languages(self):
         """
         Should return all available languages.
         """
-        url = reverse("language-list")
-        response = self.client.get(url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 3)
@@ -41,8 +59,7 @@ class Language_ViewSet_Tests(TestCase):
         """
         Should filter languages by name (case-insensitive, partial match).
         """
-        url = reverse("language-list")
-        response = self.client.get(url, {"name": "deu"})
+        response = self.client.get(self.url_list, {"name": "deu"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 1)
@@ -52,8 +69,7 @@ class Language_ViewSet_Tests(TestCase):
         """
         Should search languages by language code.
         """
-        url = reverse("language-list")
-        response = self.client.get(url, {"_search": "fr"})
+        response = self.client.get(self.url_list, {"_search": "fr"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 1)
@@ -63,17 +79,15 @@ class Language_ViewSet_Tests(TestCase):
         """
         Should sort languages by name in ascending and descending order.
         """
-        url = reverse("language-list")
-
         # Ascending order
-        response = self.client.get(url, {"_sort": "name"})
+        response = self.client.get(self.url_list, {"_sort": "name"})
         self.assertEqual(response.status_code, 200)
 
         names = [item["name"] for item in response.data["results"]]
         self.assertEqual(names, sorted(names))
 
         # Descending order
-        response = self.client.get(url, {"_sort": "-name"})
+        response = self.client.get(self.url_list, {"_sort": "-name"})
         self.assertEqual(response.status_code, 200)
         
         names = [item["name"] for item in response.data["results"]]
@@ -83,14 +97,12 @@ class Language_ViewSet_Tests(TestCase):
         """
         Should paginate results using _page_size and _page query parameters.
         """
-        url = reverse("language-list")
-
         # Page size 2, first page
-        response = self.client.get(url, {"_page_size": 2, "_page": 1})
+        response = self.client.get(self.url_list, {"_page_size": 2, "_page": 1})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 2)
 
         # Page size 2, second page
-        response = self.client.get(url, {"_page_size": 2, "_page": 2})
+        response = self.client.get(self.url_list, {"_page_size": 2, "_page": 2})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["results"]), 1)

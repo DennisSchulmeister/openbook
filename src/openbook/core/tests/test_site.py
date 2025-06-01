@@ -6,13 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test          import TestCase
-from django.urls          import reverse
-from rest_framework.test  import APIClient
+from django.test                           import TestCase
+from django.urls                           import reverse
+from rest_framework.test                   import APIClient
 
-from openbook.auth.models import AnonymousPermission
-from openbook.auth.utils  import permission_for_perm_string
-from ..models.site        import Site
+from openbook.auth.models                  import AnonymousPermission
+from openbook.auth.utils                   import permission_for_perm_string
+from openbook.auth.middleware.current_user import reset_current_user
+from ..models.site                         import Site
 
 class Site_ViewSet_Tests(TestCase):
     """
@@ -20,6 +21,7 @@ class Site_ViewSet_Tests(TestCase):
     """
     def setUp(self):
         self.client = APIClient()
+        reset_current_user()
 
         self.site1 = Site.objects.create(
             id          = 1,
@@ -39,14 +41,31 @@ class Site_ViewSet_Tests(TestCase):
             brand_color = "#471115",
         )
 
-        AnonymousPermission.objects.create(permission=permission_for_perm_string("openbook_core.view_site"))
+        self.anonymous_permission = AnonymousPermission.objects.create(
+            permission = permission_for_perm_string("openbook_core.view_site")
+        )
+
+        self.url_list   = reverse("site-list")
+        self.url_site1  = reverse("site-detail", args=(self.site1.id,))
+        self.url_health = reverse("site-health")
+
+    def test_anonymous_permission(self):
+        """
+        Cannot access data without anonymous permission.
+        """
+        self.anonymous_permission.delete()
+
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.data["count"], 0)
+
+        response = self.client.get(self.url_site1)
+        self.assertEqual(response.status_code, 403)
 
     def test_list_returns_all_sites(self):
         """
         List endpoint should return all sites.
         """
-        url = reverse("site-list")
-        response = self.client.get(url)
+        response = self.client.get(self.url_list)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 2)
@@ -56,8 +75,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should filter by domain.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"domain": "example"})
+        response = self.client.get(self.url_list, {"domain": "example"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
@@ -67,8 +85,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should filter by name.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"name": "Test"})
+        response = self.client.get(self.url_list, {"name": "Test"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
@@ -78,8 +95,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should filter by short_name.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"short_name": "Ex"})
+        response = self.client.get(self.url_list, {"short_name": "Ex"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
@@ -89,8 +105,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should support the _search query parameter.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"_search": "Test"})
+        response = self.client.get(self.url_list, {"_search": "Test"})
 
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(response.data["count"], 1)
@@ -99,8 +114,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should support the _sort query parameter.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"_sort": "-name"})
+        response = self.client.get(self.url_list, {"_sort": "-name"})
         self.assertEqual(response.status_code, 200)
 
         names = [site["name"] for site in response.data["results"]]
@@ -110,8 +124,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         List endpoint should support pagination with _page and _page_size.
         """
-        url = reverse("site-list")
-        response = self.client.get(url, {"_page": 1, "_page_size": 1})
+        response = self.client.get(self.url_list, {"_page": 1, "_page_size": 1})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 2)
@@ -121,8 +134,7 @@ class Site_ViewSet_Tests(TestCase):
         """
         Health endpoint should return status GOOD.
         """
-        url = reverse("site-health")
-        response = self.client.get(url)
+        response = self.client.get(self.url_health)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], "GOOD")
