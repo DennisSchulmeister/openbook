@@ -27,7 +27,6 @@ from ..utils                       import permission_for_perm_string
 class AccessRequest_Test_Mixin:
     def setUp(self):
         super().setUp()
-        reset_current_user()
 
         self.user_new       = User.objects.create_user(username="new", email="new@test.com", password="password")
         self.user_student   = User.objects.create_user(username="student", email="student@test.com", password="password")

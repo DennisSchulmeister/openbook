@@ -35,9 +35,6 @@ class Language_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     def setUp(self):
         super().setUp()
         
-        self.language_en = Language.objects.create(language="en", name="English")
-        self.language_de = Language.objects.create(language="de", name="Deutsch")
-        self.language_fr = Language.objects.create(language="fr", name="Français")
-
-        self.url_list    = reverse("language-list")
-        self.url_english = reverse("language-detail", args=("en",))
+        Language.objects.create(language="en", name="English")
+        Language.objects.create(language="de", name="Deutsch")
+        Language.objects.create(language="fr", name="Français")

@@ -26,7 +26,7 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        self.site1 = Site.objects.create(
+        Site.objects.create(
             id          = 1,
             domain      = "example.com",
             name        = "Example Site",
@@ -35,7 +35,7 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             brand_color = "#FFFFFF",
         )
 
-        self.site2 = Site.objects.create(
+        Site.objects.create(
             id          = 2,
             domain      = "test.com",
             name        = "Test Site",
@@ -43,10 +43,6 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             about_url   = "https://test.com/about",
             brand_color = "#777777",
         )
-
-        self.url_list   = reverse("site-list")
-        self.url_site1  = reverse("site-detail", args=(self.site1.id,))
-        self.url_health = reverse("site-health")
 
     def assertHealthStatus(self, response):
         self.assertEqual(response.data["status"], "GOOD")
