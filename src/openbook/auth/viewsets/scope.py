@@ -38,10 +38,10 @@ class ScopeObjectSerializer(Serializer):
     name = CharField()
 
 class ScopeTypeRetrieveSerializer(Serializer):
-    pk            = IntegerField()
-    id            = CharField()
-    label         = CharField()
-    objects       = ScopeObjectSerializer(many=True, required=False)
+    pk                  = IntegerField()
+    id                  = CharField()
+    label               = CharField()
+    objects             = ScopeObjectSerializer(many=True, required=False)
     allowed_permissions = AllowedPermissionSerializer(many=True, required=False)
 
 class ScopeTypeListSerializer(Serializer):

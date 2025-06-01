@@ -12,11 +12,12 @@ from django.db                            import models
 from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.i18n     import TranslatableMixin
+from openbook.core.models.mixins.uuid     import UUIDMixin
 from ..utils                              import app_name_for_permission
 from ..utils                              import perm_name_for_permission
 from ..utils                              import perm_string_for_permission
-    
-class Permission_T(TranslatableMixin):
+
+class Permission_T(UUIDMixin, TranslatableMixin):
     """
     Translated permission name.
     """
@@ -26,6 +27,10 @@ class Permission_T(TranslatableMixin):
     class Meta(TranslatableMixin.Meta):
         verbose_name        = _("Translated Permission")
         verbose_name_plural = _("Translated Permissions")
+
+        constraints = (
+            models.UniqueConstraint(fields=("parent", "language"), name="unique_permission_translation"),
+        )
     
     @admin.display(description=_("Application"))
     def appname(self, obj=None):

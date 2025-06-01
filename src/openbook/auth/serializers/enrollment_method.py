@@ -57,25 +57,3 @@ class EnrollmentMethodWithRoleReadSerializer(
         )
         read_only_fields = fields
 
-@extend_schema_field(EnrollmentMethodWithoutRoleReadSerializer)
-class EnrollmentMethodWithoutRoleReadField(Field):
-    """
-    Serializer field for reading an enrollment method (without role).
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("EnrollmentMethodWithoutRoleReadField to write data, which is not supported.")
-
-    def to_representation(self, obj):
-        return EnrollmentMethodWithoutRoleReadSerializer(obj).data
-    
-@extend_schema_field(EnrollmentMethodWithRoleReadSerializer)
-class EnrollmentMethodWithRoleReadField(Field):
-    """
-    Serializer field for reading an enrollment method (with role).
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("EnrollmentMethodWithRoleReadField to write data, which is not supported.")
-
-    def to_representation(self, obj):
-        return EnrollmentMethodWithRoleReadSerializer(obj).data
-

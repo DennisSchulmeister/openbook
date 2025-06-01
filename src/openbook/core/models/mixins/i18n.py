@@ -47,8 +47,8 @@ class TranslatableMixin(models.Model):
         abstract            = True
         verbose_name        = _("Translation")
         verbose_name_plural = _("Translations")
-        ordering            = ["parent", "language"]
-        indexes             = [models.Index(fields=["parent", "language"])]
+        ordering            = ("parent", "language")
+        indexes             = (models.Index(fields=("parent", "language")),)
 
     def __str__(self):
         return self.language.name

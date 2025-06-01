@@ -15,16 +15,15 @@ from rest_framework.serializers import ModelSerializer
 
 from openbook.drf               import AllowAnonymousListViewSetMixin
 from ..models.permission        import Permission_T
-from ..serializers.permission   import PermissionReadField
-from ..serializers.permission   import PermissionWriteField
+from ..serializers.permission   import PermissionReadSerializer
 from ..utils                    import permission_for_perm_string
 
 class PermissionTSerializer(ModelSerializer):
-    permission = PermissionReadField(read_only=True, source="parent")
+    permission = PermissionReadSerializer(read_only=True, source="parent")
 
     class Meta:
         model  = Permission_T
-        fields = ("permission", "language", "name")
+        fields = ("id", "permission", "language", "name")
 
 class PermissionTFilter(FilterSet):
     perm_string = CharFilter(label="Permission String", method="filter_perm_string")

@@ -24,7 +24,7 @@ class RoleAssignment_Test_Mixin:
         reset_current_user()
 
         self.user            = User.objects.create_user(username="test-new", email="test-new@example.com", password="password")
-        self.course          = Course.objects.create(name="Test Course", slug="test-course", text_format=Course.TextFormatChoices.MARKDOWN)
+        self.course          = Course.objects.create(name="Test Course", slug="test-course")
         self.role_student    = Role.from_obj(self.course, name="Student", slug="student", priority=0)
         self.role_assistant  = Role.from_obj(self.course, name="Assistant", slug="assistant", priority=1)
         self.role_teacher    = Role.from_obj(self.course, name="Teacher", slug="teacher", priority=2)

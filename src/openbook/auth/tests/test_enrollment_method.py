@@ -31,6 +31,13 @@ class EnrollmentMethod_Test_Mixin:
         self.owner  = User.objects.create_user(username="owner", email="owner@test.com", password="password")
         self.course = Course.objects.create(name="Test Course 1", slug="test-course1", text_format=Course.TextFormatChoices.MARKDOWN, owner=self.owner)
 
+        self.owner.user_permissions.set([
+            permission_for_perm_string("openbook_auth.add_enrollmentmethod"),
+            permission_for_perm_string("openbook_auth.change_enrollmentmethod"),
+            permission_for_perm_string("openbook_auth.delete_enrollmentmethod"),
+            permission_for_perm_string("openbook_auth.view_enrollmentmethod"),
+        ])
+
         self.course.public_permissions.add(
             permission_for_perm_string("openbook_auth.self_enroll"),
         )

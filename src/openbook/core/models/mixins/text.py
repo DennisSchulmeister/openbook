@@ -50,9 +50,9 @@ class NameDescriptionMixin(models.Model):
         it will be converted to HTML first. If it is in plain text format, it will be wrapped in a
         `<pre>` tag.
         """
-        if self.text_format == TextFormatChoices.MARKDOWN:
+        if self.text_format == self.TextFormatChoices.MARKDOWN:
             return markdown.markdown(self.description)
-        elif self.text_format == TextFormatChoices.PLAIN_TEXT:
+        elif self.text_format == self.TextFormatChoices.PLAIN_TEXT:
             return "<pre>{}</pre>".format(self.description)
         else:
             return self.description

@@ -25,7 +25,7 @@ from ..filters.mixins.scope                  import ScopeFilterMixin
 from ..models.role                           import Role
 from ..serializers.mixins.audit              import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope              import ScopeSerializerMixin
-from ..serializers.permission                import PermissionReadField
+from ..serializers.permission                import PermissionReadSerializer
 from ..serializers.permission                import PermissionWriteField
 from ..validators                            import validate_permissions
 
@@ -64,7 +64,7 @@ class RoleSerializer(
     """
     Full list of fields for retrieving a single role.
     """
-    permissions        = ListField(child=PermissionReadField(), read_only=True)
+    permissions        = PermissionReadSerializer(many=True, read_only=True)
     permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="permissions")
 
     class Meta:

@@ -10,11 +10,8 @@ from django.contrib.auth.models import Permission
 from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
 from rest_framework.serializers import Serializer
-from rest_framework.serializers import Field
+from rest_framework.serializers import RelatedField
 from rest_framework.serializers import CharField
-from rest_framework.serializers import ListField
-from rest_framework.serializers import ListSerializer
-from rest_framework.serializers import ValidationError
 
 from ..utils                    import app_label_for_permission
 from ..utils                    import app_name_for_permission
@@ -26,7 +23,7 @@ from ..utils                    import permission_for_perm_string
 
 class PermissionReadSerializer(Serializer):
     """
-    Serializer for permission objects.
+    Serializer for reading permission objects. Returns a custom object structure.
     """
     __doc__ = "Permission"
 
@@ -42,17 +39,8 @@ class PermissionReadSerializer(Serializer):
         fields   = ("perm_string", "perm_display_name", "app", "app_display_name", "model", "model_display_name", "codename")
         read_only_fields = fields
 
-@extend_schema_field(PermissionReadSerializer)
-class PermissionReadField(Field):
-    """
-    Serializer field for reading a permission. Use this to output a nice structure with
-    permission data in your response.
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("PermissionReadField to write data. Use PermissionWriteField, instead.")
-
     def to_representation(self, obj):
-        return PermissionReadSerializer({
+        return {
             "perm_string":        perm_string_for_permission(obj),
             "perm_display_name":  perm_name_for_permission(obj),
             "app":                app_label_for_permission(obj),
@@ -60,14 +48,14 @@ class PermissionReadField(Field):
             "model":              model_for_permission(obj),
             "model_display_name": model_name_for_permission(obj),
             "codename":           obj.codename,
-        }).data
+        }
 
 @extend_schema_field({
     "type":        "string",
     "description": "Permission string",
     "example":     "app.model_codename"
 })
-class PermissionWriteField(Field):
+class PermissionWriteField(RelatedField):
     """
     Serializer field for writing permissions. Use this to accept a permission string
     in the request that will be looked up in the database.
@@ -77,6 +65,8 @@ class PermissionWriteField(Field):
         "invalid":   _("Invalid format: Expected a permission string."),
         "required":  _("Permission string is required."),
     }
+
+    queryset = Permission.objects.all()
 
     def to_internal_value(self, data):
         if data is None:
@@ -94,5 +84,5 @@ class PermissionWriteField(Field):
             self.fail("not_found", value=data)
     
     def to_representation(self, obj):
-        raise RuntimeError("PermissionWriteField used to deserialize data. Use PermissionReadField, instead.")
+        raise RuntimeError("PermissionWriteField used to deserialize data. Use PermissionReadSerializer, instead.")
 

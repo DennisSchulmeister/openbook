@@ -19,9 +19,9 @@ class NonUniqueSlugMixin(models.Model):
     class MyModel(models.Model, NonUniqueSlugMixin):
         ...
         class Meta:
-            constraints = [
-                models.UniqueConstraint(fields=["course", "slug"], name="unique_course_slug")
-            ]
+            constraints = (
+                models.UniqueConstraint(fields=("course", "slug"), name="unique_course_slug"),
+            )
     ```
     """
     slug = models.SlugField(verbose_name=_("Slug"), unique=False, null=False, blank=False)

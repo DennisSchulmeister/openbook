@@ -22,8 +22,8 @@ from ..filters.mixins.audit                    import CreatedModifiedByFilterMix
 from ..filters.mixins.scope                    import ScopeFilterMixin
 from ..models.role                             import Role
 from ..models.role_assignment                  import RoleAssignment
-from ..serializers.access_request              import AccessRequestWithoutRoleReadField
-from ..serializers.enrollment_method           import EnrollmentMethodWithoutRoleReadField
+from ..serializers.access_request              import AccessRequestWithoutRoleReadSerializer
+from ..serializers.enrollment_method           import EnrollmentMethodWithoutRoleReadSerializer
 from ..serializers.mixins.audit                import CreatedModifiedBySerializerMixin
 from ..serializers.mixins.scope                import ScopeSerializerMixin
 from ..serializers.role                        import RoleReadField
@@ -69,8 +69,8 @@ class RoleAssignmentSerializer(
     role_slug         = CharField(write_only=True)
     user              = UserReadField(read_only=True)
     user_username     = UserWriteField(write_only=True, source="user")
-    enrollment_method = EnrollmentMethodWithoutRoleReadField(read_only=True)
-    access_request    = AccessRequestWithoutRoleReadField(read_only=True)
+    enrollment_method = EnrollmentMethodWithoutRoleReadSerializer(read_only=True)
+    access_request    = AccessRequestWithoutRoleReadSerializer(read_only=True)
 
     class Meta:
         model  = RoleAssignment

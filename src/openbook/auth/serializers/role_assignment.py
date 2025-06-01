@@ -37,14 +37,3 @@ class RoleAssignmentReadSerializer(
             *ActiveInactiveSerializerMixin.Meta.fields,
         )
         read_only_fields = fields
-
-@extend_schema_field(RoleAssignmentReadSerializer)
-class RoleAssignmentReadField(Field):
-    """
-    Serializer field for reading a role assignment.
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("RoleAssignmentReadField to write data. Use RoleAssignmentWriteField, instead.")
-
-    def to_representation(self, obj):
-        return RoleAssignmentReadSerializer(obj).data

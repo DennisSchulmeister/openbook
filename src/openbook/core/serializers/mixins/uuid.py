@@ -6,7 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from rest_framework.serializers import ModelSerializer
+from openbook.drf import ModelSerializer
 
 class UUIDSerializerMixin(ModelSerializer):
     """

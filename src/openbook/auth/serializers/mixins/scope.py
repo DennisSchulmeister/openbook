@@ -11,17 +11,15 @@ from django.contrib.contenttypes.models import ContentType
 from drf_spectacular.utils              import extend_schema_field
 from rest_framework.serializers         import Field
 from rest_framework.serializers         import ListField
-from rest_framework.serializers         import ListSerializer
-from rest_framework.serializers         import ModelSerializer
-from rest_framework.serializers         import ValidationError
 
-from ..access_request                   import AccessRequestWithRoleReadField
-from ..enrollment_method                import EnrollmentMethodWithRoleReadField
+from openbook.drf                       import ModelSerializer
+from ..access_request                   import AccessRequestWithRoleReadSerializer
+from ..enrollment_method                import EnrollmentMethodWithRoleReadSerializer
 from ..user                             import UserReadField
 from ..user                             import UserWriteField
-from ..permission                       import PermissionReadField
+from ..permission                       import PermissionReadSerializer
 from ..permission                       import PermissionWriteField
-from ..role_assignment                  import RoleAssignmentReadField
+from ..role_assignment                  import RoleAssignmentReadSerializer
 from ...utils                           import content_type_for_model_string
 from ...utils                           import model_string_for_content_type
 from ...validators                      import validate_scope_type
@@ -44,16 +42,17 @@ class ScopedRolesSerializerMixin(ModelSerializer):
     """
     owner                     = UserReadField(read_only=True)
     owner_username            = UserWriteField(write_only=True, source="owner")
-    public_permissions        = ListField(child=PermissionReadField(), read_only=True)
+    public_permissions        = PermissionReadSerializer(many=True, read_only=True)
     public_permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="public_permissions")
-    role_assignments          = ListField(child=RoleAssignmentReadField(), read_only=True)
-    enrollment_methods        = ListField(child=EnrollmentMethodWithRoleReadField(), read_only=True)
-    access_requests           = ListField(child=AccessRequestWithRoleReadField(), read_only=True)
+    role_assignments          = RoleAssignmentReadSerializer(many=True, read_only=True)
+    enrollment_methods        = EnrollmentMethodWithRoleReadSerializer(many=True, read_only=True)
+    access_requests           = AccessRequestWithRoleReadSerializer(many=True, read_only=True)
 
     class Meta:
         fields = (
             "owner", "owner_username",
             "public_permissions", "public_permission_strings",
+            "role_assignments",
             "role_assignments", "enrollment_methods", "access_requests",
         )
 

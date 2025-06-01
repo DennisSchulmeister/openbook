@@ -15,12 +15,12 @@ from ..filters.mixins.scope                  import ScopeTypeFilterMixin
 from ..filters.mixins.permission             import PermissionFilterMixin
 from ..models.allowed_role_permission        import AllowedRolePermission
 from ..serializers.mixins.scope              import ScopeTypeField
-from ..serializers.permission                import PermissionReadField
+from ..serializers.permission                import PermissionReadSerializer
 from ..models.allowed_role_permission        import AllowedRolePermission
 
 class AllowedRolePermissionSerializer(UUIDSerializerMixin):
     scope_type = ScopeTypeField()
-    permission = PermissionReadField(read_only=True)
+    permission = PermissionReadSerializer(read_only=True)
 
     class Meta:
         model = AllowedRolePermission

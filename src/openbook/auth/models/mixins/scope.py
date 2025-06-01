@@ -78,9 +78,8 @@ class ScopedRolesMixin(RoleBasedObjectPermissionsMixin):
         settings.AUTH_USER_MODEL,
         verbose_name = _("Owner"),
         help_text    = _("The owner always has full permissions."),
-        on_delete    = models.SET_DEFAULT,
+        on_delete    = models.SET_NULL,
         related_name = "+",
-        default      = "",
         blank        = True,
         null         = True
     )

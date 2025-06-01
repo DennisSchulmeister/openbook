@@ -49,24 +49,3 @@ class AccessRequestWithRoleReadSerializer(UUIDSerializerMixin):
         )
         read_only_fields = fields
 
-@extend_schema_field(AccessRequestWithoutRoleReadSerializer)
-class AccessRequestWithoutRoleReadField(Field):
-    """
-    Serializer field for reading an access request (without role).
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("AccessRequestWithoutRoleReadField to write data, which is not supported.")
-
-    def to_representation(self, obj):
-        return AccessRequestWithoutRoleReadSerializer(obj).data
-    
-@extend_schema_field(AccessRequestWithRoleReadSerializer)
-class AccessRequestWithRoleReadField(Field):
-    """
-    Serializer field for reading an access request (with role).
-    """
-    def to_internal_value(self, data):
-        raise RuntimeError("AccessRequestWithRoleReadField to write data, which is not supported.")
-
-    def to_representation(self, obj):
-        return AccessRequestWithRoleReadSerializer(obj).data

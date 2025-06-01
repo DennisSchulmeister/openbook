@@ -11,8 +11,10 @@ import functools
 import json
 import typing
 
+from collections.abc                       import Iterable
 from django.contrib.auth                   import get_user_model
 from django.contrib.auth.models            import AbstractUser
+from django.db.models.manager              import Manager
 from django.db.models                      import Model
 from django.db.models                      import Manager
 from django.db.models                      import QuerySet
@@ -517,6 +519,7 @@ class ModelViewSetTestMixin:
     def setUp(self):
         super().setUp()
         self.client = APIClient()
+        reset_current_user()
     
     def login(self, username: str = None, password: str = None):
         """
@@ -622,8 +625,23 @@ class ModelViewSetTestMixin:
                 full_key  = f"{full_key}.{key}" if full_key else key
                 new_value = getattr(obj, key)
 
+                if isinstance(new_value, Manager):
+                    new_value = new_value.all()
+
                 if isinstance(value, dict):
                     assert_updates(new_value, value, full_key)
+                elif isinstance(value, Iterable) and not isinstance(value, str):
+                    for child_value in value:
+                        found = False
+
+                        for new_child_value in new_value:
+                            try:
+                                assert_updates(new_child_value, child_value, full_key)
+                                found = True
+                            except AssertionError:
+                                pass
+
+                        self.assertTrue(found, f"No child value was updated for key {full_key}")
                 else:
                     self.assertEqual(new_value, value, f"Update expected for key {full_key}")
 
