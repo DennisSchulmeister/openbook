@@ -23,15 +23,6 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     search_count  = 1
     sort_field    = "brand_color"
 
-    operations = {
-        "list":           {"requires_auth": False},
-        "retrieve":       {"requires_auth": False},
-        "create":         {"supported": False},
-        "update":         {"supported": False},
-        "partial_update": {"supported": False},
-        "destroy":        {"supported": False},
-    }
-
     def setUp(self):
         super().setUp()
 
@@ -57,12 +48,24 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         self.url_site1  = reverse("site-detail", args=(self.site1.id,))
         self.url_health = reverse("site-health")
 
-######################
-#     def test_health_endpoint(self):
-#         """
-#         Health endpoint should return status GOOD.
-#         """
-#         response = self.client.get(self.url_health)
-# 
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response.data["status"], "GOOD")
+    def assertHealthStatus(self, response):
+        self.assertEqual(response.data["status"], "GOOD")
+
+    operations = {
+        "list":           {"requires_auth": False},
+        "retrieve":       {"requires_auth": False},
+        "create":         {"supported": False},
+        "update":         {"supported": False},
+        "partial_update": {"supported": False},
+        "destroy":        {"supported": False},
+
+        "health": {
+            "supported":          True,
+            "http_method":        ModelViewSetTestMixin.HttpMethod.GET,
+            "status_code":        200,      # Okay
+            "url_suffix":         "health",
+            "requires_auth":      False,
+            "model_permission":   (),
+            "assertions":         (assertHealthStatus,),
+        },
+    }

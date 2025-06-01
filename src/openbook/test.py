@@ -98,6 +98,17 @@ class ModelViewSetTestMixin:
             "delete": {
                 "supported": False,
             },
+
+            # Custom action (without authentication/authorization)
+            "custom": {
+                "supported":          True,
+                "http_method":        ModelViewSetTestMixin.HttpMethod.GET,
+                "status_code":        200,      # Okay
+                "url_suffix":         "custom",
+                "requires_auth":      False,
+                "model_permission":   (),
+                "assertions":         (assertHealthStatus,),
+            },
         }
     ```
 
@@ -289,12 +300,14 @@ class ModelViewSetTestMixin:
                 else:
                     # Remove (disable) the whole operation
                     operations_merged[operation] = overrides
-            else:
+        
+        for operation, overrides in operations_subclass.items():
+            if not operation in operations_merged:
                 # New operation defined in subclass
-                if not "list" in cls.operations:
+                if not "list" in operations_merged:
                     raise KeyError(f"Cannot test custom action {operation}. Custom operations require the list operation as a template.")
 
-                operations_merged[operation] = copy.deepcopy(cls.operations["list"])
+                operations_merged[operation] = copy.deepcopy(operations_merged["list"])
                 operations_merged[operation].update(overrides)
 
         cls.operations = operations_merged
@@ -347,25 +360,26 @@ class ModelViewSetTestMixin:
 
             if not configuration["requires_auth"]:
                 # Unauthenticated usage is allowed, but still anonymous permissions must be set
-                if operation == "list":
-                    setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        pk_value        = cls.pk_found,
-                        query_params    = {"_sort": cls.sort_field},
-                        status_code     = 200,          # Empty list expected if no permission
-                        assertions      = assertions_empty_list
-                    ))
-                else:
-                    setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
-                        configuration   = configuration,
-                        create_user     = False,
-                        add_permissions = False,
-                        pk_value        = cls.pk_found,
-                        query_params    = {"_sort": cls.sort_field},
-                        status_code     = [403, 404],   # Forbidden (permission missing) or Not Found (hidden by permission)
-                    ))
+                if configuration["model_permission"] or configuration["custom_permissions"]:
+                    if operation == "list":
+                        setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
+                            configuration   = configuration,
+                            create_user     = False,
+                            add_permissions = False,
+                            pk_value        = cls.pk_found,
+                            query_params    = {"_sort": cls.sort_field},
+                            status_code     = 200,          # Empty list expected if no permission
+                            assertions      = assertions_empty_list
+                        ))
+                    else:
+                        setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
+                            configuration   = configuration,
+                            create_user     = False,
+                            add_permissions = False,
+                            pk_value        = cls.pk_found,
+                            query_params    = {"_sort": cls.sort_field},
+                            status_code     = [403, 404],   # Forbidden (permission missing) or Not Found (hidden by permission)
+                        ))
 
                 setattr(cls, f"test_{operation}_anonymous_authorized", cls._create_test_method(
                     configuration   = configuration,
