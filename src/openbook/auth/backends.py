@@ -27,11 +27,23 @@ class RoleBasedObjectPermissionsBackend(ModelBackend):
     in the Django settings, as its function is already covered here.
     """
     def has_perm(self, user_obj: AbstractUser, perm: str, obj=None) -> bool:
+        # Superuser can do anything
         if user_obj.is_superuser:
             return True
         
         result = False
 
+        # Anonymous permission always apply
+        from openbook.auth.models import AnonymousPermission
+        from openbook.auth.utils  import permission_for_perm_string
+
+        try:
+            AnonymousPermission.objects.get(permission=permission_for_perm_string(perm))
+            return True
+        except AnonymousPermission.DoesNotExist:
+            pass
+
+        # Check object permissions
         if obj is not None:
             if obj == user_obj:
                 result = True
@@ -40,12 +52,12 @@ class RoleBasedObjectPermissionsBackend(ModelBackend):
             elif hasattr(obj, "has_obj_perm"):
                 result = obj.has_obj_perm(user_obj, perm)
         
+        # Fallback to regular permission check
         if not result:
-            # Fallback to regular permission check
             result = super().has_perm(user_obj, perm)
 
+        # Fallback to "change" permission when "view" fails
         if not result and ".view_" in perm:
-            # Fallback to "change" permission when "view" fails
             change_perm = perm.replace(".view_", ".change_")
             result = self.has_perm(user_obj, change_perm, obj)
 

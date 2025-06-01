@@ -2,11 +2,13 @@
 ## Taken from https://github.com/github/gitignore/blob/main/Python.gitignore ##
 ###############################################################################
 
+TODO
+
 # Node.js
 node_modules/
 
-# Redis
 *.rdb
+# Redis
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

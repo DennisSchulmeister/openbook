@@ -15,6 +15,8 @@ class Command(BaseCommand):
     FIXTURES = [
         "openbook_core/site",
         "openbook_core/languages",
+        "openbook_auth/anonymous_permissions",
+        "openbook_course/test_course_1",
     ]
 
     def handle(self, *args, **options):

@@ -10,6 +10,7 @@ from openbook.admin           import admin_site
 
 from .access_request          import AccessRequestAdmin
 from .allowed_role_permission import AllowedRolePermissionAdmin
+from .anonymous_permission    import AnonymousPermissionAdmin
 from .enrollment_method       import EnrollmentMethodAdmin
 from .group                   import GroupAdmin
 from .permission              import PermissionTextAdmin
@@ -22,6 +23,7 @@ from ..                       import models
 admin_site.register(models.User, UserAdmin)
 admin_site.register(models.Group, GroupAdmin)
 admin_site.register(models.Permission_T, PermissionTextAdmin)
+admin_site.register(models.AnonymousPermission, AnonymousPermissionAdmin)
 admin_site.register(models.AllowedRolePermission, AllowedRolePermissionAdmin)
 admin_site.register(models.Role, RoleAdmin)
 admin_site.register(models.RoleAssignment, RoleAssignmentAdmin)

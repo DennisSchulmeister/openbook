@@ -6,11 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test                import TestCase
-from django.urls                import reverse
-from rest_framework.test        import APIClient
+from django.test          import TestCase
+from django.urls          import reverse
+from rest_framework.test  import APIClient
 
-from ..models.site              import Site
+from openbook.auth.models import AnonymousPermission
+from openbook.auth.utils  import permission_for_perm_string
+from ..models.site        import Site
 
 class Site_ViewSet_Tests(TestCase):
     """
@@ -36,6 +38,8 @@ class Site_ViewSet_Tests(TestCase):
             about_url   = "https://test.com/about",
             brand_color = "#471115",
         )
+
+        AnonymousPermission.objects.create(permission=permission_for_perm_string("openbook_core.view_site"))
 
     def test_list_returns_all_sites(self):
         """

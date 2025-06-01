@@ -167,7 +167,7 @@ class User_ViewSet_Test(TestCase):
             "profile_picture": "",
         })
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_partial_update_own_user(self):
         """
@@ -183,7 +183,7 @@ class User_ViewSet_Test(TestCase):
         PATCH method to partially update another user is not allowed.
         """
         response = self.client.patch(self.url_user2, {"description": "Partially Updated"}, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_own_user(self):
         """
@@ -199,7 +199,7 @@ class User_ViewSet_Test(TestCase):
         DELETE method to delete another user is not allowed.
         """
         response = self.client.delete(self.url_user2)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_404_for_nonexistent(self):
         """

@@ -1,0 +1,28 @@
+- model: openbook_auth.anonymouspermission
+  pk: 0636aa21-c7cb-4899-92dd-a3b9851cf3b6
+  fields:
+    permission:
+    - view_enrollmentmethod
+    - openbook_auth
+    - enrollmentmethod
+- model: openbook_auth.anonymouspermission
+  pk: 331a7b94-135a-4dc0-bfff-d14c62079af8
+  fields:
+    permission:
+    - self_enroll
+    - openbook_auth
+    - enrollmentmethod
+- model: openbook_auth.anonymouspermission
+  pk: b5b3ef36-6123-4369-b408-9fa8eef09db7
+  fields:
+    permission:
+    - view_site
+    - sites
+    - site
+- model: openbook_auth.anonymouspermission
+  pk: cec63e79-a467-4346-9f8b-ef843a40a311
+  fields:
+    permission:
+    - view_language
+    - openbook_core
+    - language

@@ -6,10 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test         import TestCase
-from django.urls         import reverse
-from rest_framework.test import APIClient
-from ..models.language   import Language
+from django.test          import TestCase
+from django.urls          import reverse
+from rest_framework.test  import APIClient
+
+from openbook.auth.models import AnonymousPermission
+from openbook.auth.utils  import permission_for_perm_string
+from ..models.language    import Language
 
 class Language_ViewSet_Tests(TestCase):
     """
@@ -19,6 +22,8 @@ class Language_ViewSet_Tests(TestCase):
         Language.objects.create(language="en", name="English")
         Language.objects.create(language="de", name="Deutsch")
         Language.objects.create(language="fr", name="Français")
+
+        AnonymousPermission.objects.create(permission=permission_for_perm_string("openbook_core.view_language"))
 
         self.client = APIClient()
 

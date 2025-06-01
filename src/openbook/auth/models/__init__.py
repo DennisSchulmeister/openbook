@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 from .access_request          import AccessRequest
+from .anonymous_permission    import AnonymousPermission
 from .allowed_role_permission import AllowedRolePermission
 from .enrollment_method       import EnrollmentMethod
 from .group                   import Group

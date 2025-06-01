@@ -32,6 +32,10 @@ class AllowedRolePermission(UUIDMixin):
             models.Index(fields=("scope_type",)),
         ]
 
+        constraints = [
+            models.UniqueConstraint(fields=("scope_type", "permission",), name="unique_allowed_role_permission"),
+        ]
+
     def __str__(self):
         scope_name = f"{self.scope_type.name} |" if self.scope_type else ""
         perm_name  = f"{self.permission}" if self.permission else ""

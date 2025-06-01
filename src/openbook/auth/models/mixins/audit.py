@@ -19,9 +19,9 @@ class CreatedModifiedByMixin(models.Model):
     the time and user of the last modification.
     """
     created_by  = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Created By"), on_delete=models.SET_NULL, blank=True, null=True)
-    created_at  = models.DateTimeField(verbose_name=_("Created At"), auto_now_add=True)
+    created_at  = models.DateTimeField(verbose_name=_("Created At"), auto_now_add=True, blank=True, null=True)
     modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Modified By"), on_delete=models.SET_NULL, blank=True, null=True, related_name="+")
-    modified_at = models.DateTimeField(verbose_name=_("Modified At"), auto_now=True)
+    modified_at = models.DateTimeField(verbose_name=_("Modified At"), auto_now=True, blank=True, null=True)
 
     class Meta:
         abstract = True

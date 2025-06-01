@@ -232,11 +232,11 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         if not principally_allowed:
             return False
 
-        # Special case self-enrollment, the use likely has no role assigned, yet
+        # Special case self-enrollment, the user likely has no role assigned, yet
         if perm == "openbook_auth.self_enroll":
-            return True 
+            return True
                 
-        # Viewing the information os okay, even the role is of higher priority
+        # Viewing the information os okay, even if the role is of higher priority
         if ".view_" in perm:
             return True
         
