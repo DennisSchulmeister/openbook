@@ -15,6 +15,7 @@ from rest_framework.test           import APIClient
 from rest_framework.reverse        import reverse
 
 from openbook.course.models.course import Course
+from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
 from ..models.access_request       import AccessRequest
 from ..models.role                 import Role

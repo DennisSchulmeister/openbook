@@ -13,6 +13,7 @@ from django.test                        import TestCase
 from rest_framework.test                import APIClient
 from rest_framework.reverse             import reverse
 
+from openbook.test                      import ModelViewSetTestMixin
 from ..middleware.current_user          import reset_current_user
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..models.user                      import User
