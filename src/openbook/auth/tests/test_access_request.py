@@ -344,7 +344,7 @@ class AccessRequest_ViewSet_Tests(ModelViewSetTestMixin, AccessRequest_Test_Mixi
                 "decision": AccessRequest.Decision.ACCEPTED,
             },
 
-            # Use pre-configured user with correcet permissions
+            # Use pre-configured user with correct permissions
             "username":         "owner",
             "password":         "password",
             "model_permission": (),
@@ -353,7 +353,7 @@ class AccessRequest_ViewSet_Tests(ModelViewSetTestMixin, AccessRequest_Test_Mixi
             "request_data":     {"decision": AccessRequest.Decision.DENIED},
             "updates":          {"decision": AccessRequest.Decision.DENIED},
 
-            # Use pre-configured user with correcet permissions
+            # Use pre-configured user with correct permissions
             "username":         "owner",
             "password":         "password",
             "model_permission": (),

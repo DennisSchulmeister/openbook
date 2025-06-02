@@ -58,3 +58,9 @@ class User(AbstractUser):
                 "squared":    True,
             }
         )
+
+    def has_obj_perm(self, user_obj: AbstractUser, perm: str) -> bool:
+        """
+        Allow users to update and delete their account.
+        """
+        return self.username == user_obj.username

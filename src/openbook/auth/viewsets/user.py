@@ -11,8 +11,6 @@ from django_filters.filterset   import FilterSet
 from django_filters.filters     import BooleanFilter
 from django_filters.filters     import CharFilter
 from rest_framework.viewsets    import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import BasePermission
 
 from openbook.drf               import ModelViewSetMixin
 from ..models.user              import User
@@ -34,13 +32,6 @@ class UserFilter(FilterSet):
     class Meta:
         model  = User
         fields = ("username", "first_name", "last_name", "email", "is_staff")
-
-class IsSelf(BasePermission):
-    """
-    Allows access only to the users themselves.
-    """
-    def has_object_permission(self, request, view, obj):
-        return request.user == obj
 
 @extend_schema(
     extensions={
@@ -68,9 +59,3 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
             return UserDetailsUpdateSerializer
         else:
             return UserDetailsReadSerializer
-
-    def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy"]:
-            return [IsAuthenticated(), IsSelf()]
-        
-        return super().get_permissions()

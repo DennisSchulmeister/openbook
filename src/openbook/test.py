@@ -338,6 +338,12 @@ class ModelViewSetTestMixin:
         assertions_create     = (functools.partial(cls.assertObjectCreated, pk_field=cls.pk_field, pk_found=cls.pk_found),)
         assertions_destroy    = (functools.partial(cls.assertObjectDeleted, pk_field=cls.pk_field, pk_found=cls.pk_found),)
 
+        if cls.model and issubclass(cls.model, AbstractUser):
+            # Special case: Unit testing a model viewset for the User model.
+            # In this case even without permissions the temporary test user
+            # will be returned for the list operation.
+            assertions_empty_list = assertions_one_item
+
         for operation, configuration in operations_merged.items():
             # Operation not supported
             if not configuration["supported"]:
@@ -683,28 +689,28 @@ class ModelViewSetTestMixin:
 
         def assert_updates(obj, upd: dict, full_key: str):
             for key, value in upd.items():
-                full_key  = f"{full_key}.{key}" if full_key else key
-                new_value = getattr(obj, key)
+                new_full_key = f"{full_key}.{key}" if full_key else key
+                new_value    = getattr(obj, key)
 
                 if isinstance(new_value, Manager):
                     new_value = new_value.all()
 
                 if isinstance(value, dict):
-                    assert_updates(new_value, value, full_key)
+                    assert_updates(new_value, value, new_full_key)
                 elif isinstance(value, Iterable) and not isinstance(value, str):
                     for child_value in value:
                         found = False
 
                         for new_child_value in new_value:
                             try:
-                                assert_updates(new_child_value, child_value, full_key)
+                                assert_updates(new_child_value, child_value, new_full_key)
                                 found = True
                             except AssertionError:
                                 pass
 
-                        self.assertTrue(found, f"No child value was updated for key {full_key}")
+                        self.assertTrue(found, f"No child value was updated for key {new_full_key}")
                 else:
-                    self.assertEqual(new_value, value, f"Update expected for key {full_key}")
+                    self.assertEqual(new_value, value, f"Update expected for key {new_full_key}")
 
         obj = self.model.objects.get(**{pk_field: pk_found})
         assert_updates(obj, updates, "")
