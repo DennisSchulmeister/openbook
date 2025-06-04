@@ -68,7 +68,7 @@ export interface CourseList {
      * @type {Date}
      * @memberof CourseList
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -80,7 +80,7 @@ export interface CourseList {
      * @type {Date}
      * @memberof CourseList
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 /**
@@ -115,9 +115,9 @@ export function CourseListFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'isTemplate': json['is_template'],
         'owner': UserReadFromJSON(json['owner']),
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

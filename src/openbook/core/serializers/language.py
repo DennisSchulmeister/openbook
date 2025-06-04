@@ -6,8 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from rest_flex_fields  import FlexFieldsModelSerializer
+from ..models.language import Language
 
-def register_api_routes(router, prefix):
-    pass
-    # router.register(f"{prefix}/courses", viewsets.CourseViewSet, basename="course")
+class LanguageSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Language"
+
+    class Meta:
+        model  = Language
+        fields = ("language", "name")

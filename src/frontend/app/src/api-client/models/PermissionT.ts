@@ -29,6 +29,12 @@ import {
 export interface PermissionT {
     /**
      * 
+     * @type {string}
+     * @memberof PermissionT
+     */
+    readonly id: string;
+    /**
+     * 
      * @type {PermissionRead}
      * @memberof PermissionT
      */
@@ -51,6 +57,7 @@ export interface PermissionT {
  * Check if a given object implements the PermissionT interface.
  */
 export function instanceOfPermissionT(value: object): value is PermissionT {
+    if (!('id' in value) || value['id'] === undefined) return false;
     if (!('permission' in value) || value['permission'] === undefined) return false;
     if (!('language' in value) || value['language'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
@@ -67,6 +74,7 @@ export function PermissionTFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
+        'id': json['id'],
         'permission': PermissionReadFromJSON(json['permission']),
         'language': json['language'],
         'name': json['name'],
@@ -77,7 +85,7 @@ export function PermissionTToJSON(json: any): PermissionT {
     return PermissionTToJSONTyped(json, false);
 }
 
-export function PermissionTToJSONTyped(value?: Omit<PermissionT, 'permission'> | null, ignoreDiscriminator: boolean = false): any {
+export function PermissionTToJSONTyped(value?: Omit<PermissionT, 'id'|'permission'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

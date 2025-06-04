@@ -144,7 +144,7 @@ export interface PatchedRoleAssignment {
      * @type {Date}
      * @memberof PatchedRoleAssignment
      */
-    readonly createdAt?: Date;
+    readonly createdAt?: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -156,7 +156,7 @@ export interface PatchedRoleAssignment {
      * @type {Date}
      * @memberof PatchedRoleAssignment
      */
-    readonly modifiedAt?: Date;
+    readonly modifiedAt?: Date | null;
 }
 
 

@@ -11,6 +11,7 @@ from rest_framework.viewsets                import ModelViewSet
 
 from openbook.drf                           import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf                           import ModelViewSetMixin
+from openbook.drf                           import with_flex_fields_parameters
 from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
 from openbook.auth.filters.mixins.scope     import ScopedRolesFilterMixin
 from openbook.auth.serializers.mixins.audit import CreatedModifiedBySerializerMixin
@@ -25,56 +26,56 @@ from openbook.core.serializers.mixins.uuid  import UUIDSerializerMixin
 
 from ..models.course                        import Course
 
-class CourseListSerializer(
-    UUIDSerializerMixin,
-    SlugSerializerMixin,
-    NameDescriptionListSerializerMixin,
-    ScopedRolesListSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Reduced list of fields for filtering a list of courses.
-    """
-    class Meta:
-        model = Course
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *SlugSerializerMixin.Meta.fields,
-            *NameDescriptionListSerializerMixin.Meta.fields,
-            "is_template",
-            *ScopedRolesListSerializerMixin.Meta.fields,
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-        read_only_fields = fields
-
-class CourseSerializer(
-    UUIDSerializerMixin,
-    SlugSerializerMixin,
-    NameDescriptionSerializerMixin,
-    ScopedRolesSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Full list of fields for retrieving a single course.
-    """
-    class Meta:
-        model  = Course
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *SlugSerializerMixin.Meta.fields,
-            *NameDescriptionSerializerMixin.Meta.fields,
-            "is_template",
-            *ScopedRolesSerializerMixin.Meta.fields,
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-
-        read_only_fields = (
-            *UUIDSerializerMixin.Meta.read_only_fields,
-            *SlugSerializerMixin.Meta.read_only_fields,
-            *NameDescriptionSerializerMixin.Meta.read_only_fields,
-            *ScopedRolesSerializerMixin.Meta.read_only_fields,
-            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-        )
+# class CourseListSerializer(
+#     UUIDSerializerMixin,
+#     SlugSerializerMixin,
+#     NameDescriptionListSerializerMixin,
+#     ScopedRolesListSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Reduced list of fields for filtering a list of courses.
+#     """
+#     class Meta:
+#         model = Course
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *SlugSerializerMixin.Meta.fields,
+#             *NameDescriptionListSerializerMixin.Meta.fields,
+#             "is_template",
+#             *ScopedRolesListSerializerMixin.Meta.fields,
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+#         read_only_fields = fields
+# 
+# class CourseSerializer(
+#     UUIDSerializerMixin,
+#     SlugSerializerMixin,
+#     NameDescriptionSerializerMixin,
+#     ScopedRolesSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Full list of fields for retrieving a single course.
+#     """
+#     class Meta:
+#         model  = Course
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *SlugSerializerMixin.Meta.fields,
+#             *NameDescriptionSerializerMixin.Meta.fields,
+#             "is_template",
+#             *ScopedRolesSerializerMixin.Meta.fields,
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+# 
+#         read_only_fields = (
+#             *UUIDSerializerMixin.Meta.read_only_fields,
+#             *SlugSerializerMixin.Meta.read_only_fields,
+#             *NameDescriptionSerializerMixin.Meta.read_only_fields,
+#             *ScopedRolesSerializerMixin.Meta.read_only_fields,
+#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
+#         )
 
 class CourseFilter(
     SlugFilterMixin,
@@ -98,6 +99,7 @@ class CourseFilter(
         "x-model-name": "Courses",
     }
 )
+@with_flex_fields_parameters()
 class CourseViewSet(
     AllowAnonymousListRetrieveViewSetMixin,
     ModelViewSetMixin,

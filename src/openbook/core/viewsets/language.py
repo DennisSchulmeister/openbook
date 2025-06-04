@@ -13,12 +13,13 @@ from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.serializers import ModelSerializer
 
 from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf               import with_flex_fields_parameters
 from ..models.language          import Language
 
-class LanguageSerializer(ModelSerializer):
-    class Meta:
-        model  = Language
-        fields = ("language", "name")
+# class LanguageSerializer(ModelSerializer):
+#     class Meta:
+#         model  = Language
+#         fields = ("language", "name")
 
 class LanguageFilter(FilterSet):
     name = CharFilter(lookup_expr="icontains")
@@ -33,6 +34,7 @@ class LanguageFilter(FilterSet):
         "x-model-name": "Available Languages",
     }
 )
+@with_flex_fields_parameters()
 class LanguageViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     ___doc__ = "Available Languages"
 

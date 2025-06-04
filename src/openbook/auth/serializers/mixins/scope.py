@@ -9,6 +9,7 @@
 from django.utils.translation           import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from drf_spectacular.utils              import extend_schema_field
+from rest_flex_fields                   import FlexFieldsModelSerializer
 from rest_framework.serializers         import Field
 from rest_framework.serializers         import ListField
 
@@ -25,7 +26,7 @@ from ...utils                           import model_string_for_content_type
 from ...validators                      import validate_scope_type
 from ...validators                      import validate_permissions
 
-class ScopedRolesListSerializerMixin(ModelSerializer):
+class ScopedRolesListSerializerMixin(FlexFieldsModelSerializer):
     """
     Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
     act as permission scope for user roles. List serializer, which only adds the `owner` field.
@@ -35,7 +36,7 @@ class ScopedRolesListSerializerMixin(ModelSerializer):
     class Meta:
         fields = ("owner",)
 
-class ScopedRolesSerializerMixin(ModelSerializer):
+class ScopedRolesSerializerMixin(FlexFieldsModelSerializer):
     """
     Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
     act as permission scope for user roles. Default serializer, that adds all scope fields.
@@ -91,7 +92,7 @@ class ScopeTypeField(Field):
     def to_representation(self, obj):
         return model_string_for_content_type(obj)
         
-class ScopeSerializerMixin(ModelSerializer):
+class ScopeSerializerMixin(FlexFieldsModelSerializer):
     """
     Mixin class for model serializers whose models implement the `ScopeMixin` and as such have
     the fields `scope_type` and `scope_uuid`.

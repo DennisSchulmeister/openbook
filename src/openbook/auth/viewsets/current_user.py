@@ -12,13 +12,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response    import Response
 from rest_framework.viewsets    import ViewSet
 
+from openbook.drf               import with_flex_fields_parameters
 from ..models.user              import User
 from ..serializers.user         import UserDetailsReadSerializer
 
-class CurrentUserReadSerializer(UserDetailsReadSerializer):
-    class Meta:
-        model  = User
-        fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
+# class CurrentUserReadSerializer(UserDetailsReadSerializer):
+#     class Meta:
+#         model  = User
+#         fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
 
 @extend_schema(
     extensions={
@@ -27,6 +28,7 @@ class CurrentUserReadSerializer(UserDetailsReadSerializer):
     }
 )
 @extend_schema_view(retrieve=extend_schema(exclude=True))
+@with_flex_fields_parameters()
 class CurrentUserViewSet(ViewSet):
     """
     GET endpoint to retrieve the user profile of the currently logged-in user. If the

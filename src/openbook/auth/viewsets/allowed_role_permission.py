@@ -10,6 +10,7 @@ from drf_spectacular.utils                   import extend_schema
 from rest_framework.viewsets                 import ReadOnlyModelViewSet
 
 from openbook.drf                            import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf                            import with_flex_fields_parameters
 from openbook.core.serializers.mixins.uuid   import UUIDSerializerMixin
 from ..filters.mixins.scope                  import ScopeTypeFilterMixin
 from ..filters.mixins.permission             import PermissionFilterMixin
@@ -18,13 +19,13 @@ from ..serializers.mixins.scope              import ScopeTypeField
 from ..serializers.permission                import PermissionReadSerializer
 from ..models.allowed_role_permission        import AllowedRolePermission
 
-class AllowedRolePermissionSerializer(UUIDSerializerMixin):
-    scope_type = ScopeTypeField()
-    permission = PermissionReadSerializer(read_only=True)
-
-    class Meta:
-        model = AllowedRolePermission
-        fields = (*UUIDSerializerMixin.Meta.fields, "scope_type", "permission")
+# class AllowedRolePermissionSerializer(UUIDSerializerMixin):
+#     scope_type = ScopeTypeField()
+#     permission = PermissionReadSerializer(read_only=True)
+# 
+#     class Meta:
+#         model = AllowedRolePermission
+#         fields = (*UUIDSerializerMixin.Meta.fields, "scope_type", "permission")
 
 class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
     class Meta:
@@ -38,6 +39,7 @@ class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin):
         "x-model-name": "Allowed Role Permissions",
     }
 )
+@with_flex_fields_parameters()
 class AllowedRolePermissionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Allowed permissions for the roles of a given scope type"
 

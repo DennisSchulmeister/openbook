@@ -6,8 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from rest_flex_fields import FlexFieldsModelSerializer
+from ..models.site    import Site
 
-def register_api_routes(router, prefix):
-    pass
-    # router.register(f"{prefix}/courses", viewsets.CourseViewSet, basename="course")
+class SiteSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Site"
+
+    class Meta:
+        model  = Site
+        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")

@@ -93,7 +93,7 @@ export interface RoleAssignmentList {
      * @type {Date}
      * @memberof RoleAssignmentList
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -105,7 +105,7 @@ export interface RoleAssignmentList {
      * @type {Date}
      * @memberof RoleAssignmentList
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 /**
@@ -146,9 +146,9 @@ export function RoleAssignmentListFromJSONTyped(json: any, ignoreDiscriminator: 
         'startDate': (json['start_date'] == null ? null : new Date(json['start_date'])),
         'endDate': (json['end_date'] == null ? null : new Date(json['end_date'])),
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

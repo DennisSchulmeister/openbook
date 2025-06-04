@@ -70,7 +70,7 @@ export interface AccessRequestWithoutRoleRead {
      * @type {Date}
      * @memberof AccessRequestWithoutRoleRead
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
 }
 
 
@@ -103,7 +103,7 @@ export function AccessRequestWithoutRoleReadFromJSONTyped(json: any, ignoreDiscr
         'role': json['role'],
         'decision': DecisionEnumFromJSON(json['decision']),
         'decisionDate': (json['decision_date'] == null ? null : new Date(json['decision_date'])),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
     };
 }
 

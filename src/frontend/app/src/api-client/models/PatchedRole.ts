@@ -118,7 +118,7 @@ export interface PatchedRole {
      * @type {Date}
      * @memberof PatchedRole
      */
-    readonly createdAt?: Date;
+    readonly createdAt?: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -130,7 +130,7 @@ export interface PatchedRole {
      * @type {Date}
      * @memberof PatchedRole
      */
-    readonly modifiedAt?: Date;
+    readonly modifiedAt?: Date | null;
 }
 
 

@@ -43,7 +43,7 @@ export interface CoreLanguagesRetrieveRequest {
 export class AvailableLanguagesApi extends runtime.BaseAPI {
 
     /**
-     * Small view set mixin class that allows unrestricted access to the `list` action while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
+     * Small view set mixin class that allows unrestricted access to the `list` and `retrieve` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
      * List
      */
     async coreLanguagesListRaw(requestParameters: CoreLanguagesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedLanguageList>> {
@@ -82,7 +82,7 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Small view set mixin class that allows unrestricted access to the `list` action while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
+     * Small view set mixin class that allows unrestricted access to the `list` and `retrieve` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
      * List
      */
     async coreLanguagesList(requestParameters: CoreLanguagesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedLanguageList> {
@@ -91,7 +91,7 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Small view set mixin class that allows unrestricted access to the `list` action while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
+     * Small view set mixin class that allows unrestricted access to the `list` and `retrieve` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
      * Retrieve
      */
     async coreLanguagesRetrieveRaw(requestParameters: CoreLanguagesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Language>> {
@@ -117,7 +117,7 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Small view set mixin class that allows unrestricted access to the `list` action while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
+     * Small view set mixin class that allows unrestricted access to the `list` and `retrieve` actions while deferring permission checks for all other actions to the permission classes of the view set (usually defined in `settings.py`).
      * Retrieve
      */
     async coreLanguagesRetrieve(requestParameters: CoreLanguagesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Language> {

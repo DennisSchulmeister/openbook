@@ -17,7 +17,6 @@ from openbook.core.models.mixins.uuid   import UUIDMixin
 
 from .mixins.audit                      import CreatedModifiedByMixin
 from .mixins.scope                      import ScopeMixin
-from ..validators                       import validate_permissions
 
 class Role(UUIDMixin, ScopeMixin, NonUniqueSlugMixin, NameDescriptionMixin, ActiveInactiveMixin, CreatedModifiedByMixin):
     """

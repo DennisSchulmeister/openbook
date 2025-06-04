@@ -131,7 +131,7 @@ export interface PatchedAccessRequest {
      * @type {Date}
      * @memberof PatchedAccessRequest
      */
-    readonly createdAt?: Date;
+    readonly createdAt?: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -143,7 +143,7 @@ export interface PatchedAccessRequest {
      * @type {Date}
      * @memberof PatchedAccessRequest
      */
-    readonly modifiedAt?: Date;
+    readonly modifiedAt?: Date | null;
 }
 
 

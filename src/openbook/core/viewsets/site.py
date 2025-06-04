@@ -18,12 +18,13 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import AllowAny
 
 from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf               import with_flex_fields_parameters
 from ..models.site              import Site
 
-class SiteSerializer(ModelSerializer):
-    class Meta:
-        model  = Site
-        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
+# class SiteSerializer(ModelSerializer):
+#     class Meta:
+#         model  = Site
+#         fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
 
 class SiteFilter(FilterSet):
     domain     = CharFilter(lookup_expr="icontains")
@@ -40,6 +41,7 @@ class SiteFilter(FilterSet):
         "x-model-name": "Websites",
     }
 )
+@with_flex_fields_parameters()
 class SiteViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "General Website Settings"
 

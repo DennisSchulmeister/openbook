@@ -6,8 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from rest_flex_fields      import FlexFieldsModelSerializer
+from ..models.file_uploads import MediaFile
 
-def register_api_routes(router, prefix):
-    pass
-    # router.register(f"{prefix}/courses", viewsets.CourseViewSet, basename="course")
+class MediaFileSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Media File"
+
+    class Meta:
+        model  = MediaFile
+        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")

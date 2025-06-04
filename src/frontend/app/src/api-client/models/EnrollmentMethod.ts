@@ -137,7 +137,7 @@ export interface EnrollmentMethod {
      * @type {Date}
      * @memberof EnrollmentMethod
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -149,7 +149,7 @@ export interface EnrollmentMethod {
      * @type {Date}
      * @memberof EnrollmentMethod
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 
@@ -195,9 +195,9 @@ export function EnrollmentMethodFromJSONTyped(json: any, ignoreDiscriminator: bo
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
         'passphrase': json['passphrase'] == null ? undefined : json['passphrase'],
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

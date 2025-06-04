@@ -138,6 +138,8 @@ CHANNEL_LAYERS = {
 }
 
 # Django REST framework
+from rest_flex_fields.filter_backends import FlexFieldsFilterBackend    # To resolve circular import!
+
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "openbook.drf.PageNumberPagination",
@@ -156,10 +158,11 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_FILTER_BACKENDS": (
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "openbook.drf.DjangoObjectPermissionsFilter",
-        "rest_framework.filters.OrderingFilter",
+        "rest_flex_fields.filter_backends.FlexFieldsFilterBackend",     # drf-flex-fields: Automatic query optimization
+        "django_filters.rest_framework.DjangoFilterBackend",            # Query filters
+        "rest_framework.filters.SearchFilter",                          # _search query parameter
+        "openbook.drf.DjangoObjectPermissionsFilter",                   # Object-permission based filter
+        "rest_framework.filters.OrderingFilter",                        # _sort query parameter
     ),
 
     "SEARCH_PARAM": "_search",
@@ -189,6 +192,13 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.postprocess_schema_enums",
         "openbook.drf.add_tag_groups",
     ],
+}
+
+# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
+REST_FLEX_FIELDS = {
+    "EXPAND_PARAM": "_expand",
+    "FIELDS_PARAM": "_fields",
+    "OMIT_PARAM": "_omit",
 }
 
 # Password validation

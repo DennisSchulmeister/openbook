@@ -16,6 +16,7 @@ from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
 from openbook.drf                              import ModelViewSetMixin
+from openbook.drf                              import with_flex_fields_parameters
 from openbook.core.filters.mixins.active       import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.text         import NameDescriptionFilterMixin
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
@@ -33,77 +34,77 @@ from ..serializers.mixins.scope                import ScopeSerializerMixin
 from ..serializers.role_assignment             import RoleAssignmentReadSerializer
 from ..serializers.role                        import RoleReadField
 
-class EnrollmentMethodListSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    NameDescriptionListSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Reduced list of fields for getting a list of enrollment methods.
-    """
-    role = RoleReadField(read_only=True)
-
-    class Meta:
-        model = EnrollmentMethod
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            "role",
-            *NameDescriptionListSerializerMixin.Meta.fields,
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-        read_only_fields = fields
-
-class EnrollmentMethodSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    NameDescriptionSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    DurationSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Full list of fields for retrieving a single enrollment method.
-    """
-    role      = RoleReadField(read_only=True)
-    role_slug = CharField(write_only=True)
-
-    class Meta:
-        model = EnrollmentMethod
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            *NameDescriptionSerializerMixin.Meta.fields,
-            "role", "role_slug",
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            *DurationSerializerMixin.Meta.fields,
-            "end_date", "passphrase",
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-
-        read_only_fields = (
-            *UUIDSerializerMixin.Meta.read_only_fields,
-            *ScopeSerializerMixin.Meta.read_only_fields,
-            *NameDescriptionSerializerMixin.Meta.read_only_fields,
-            *ActiveInactiveSerializerMixin.Meta.read_only_fields,
-            *DurationSerializerMixin.Meta.read_only_fields,
-            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-        )
-
-    def validate(self, attributes):        
-        if "scope_type"  in attributes \
-        and "scope_uuid" in attributes \
-        and "role_slug"  in attributes:
-            attributes["role"] = Role.objects.get(
-                scope_type = attributes["scope_type"],
-                scope_uuid = attributes["scope_uuid"],
-                slug       = attributes.pop("role_slug"),
-            )
-
-        return attributes
+# class EnrollmentMethodListSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     NameDescriptionListSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Reduced list of fields for getting a list of enrollment methods.
+#     """
+#     role = RoleReadField(read_only=True)
+# 
+#     class Meta:
+#         model = EnrollmentMethod
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             "role",
+#             *NameDescriptionListSerializerMixin.Meta.fields,
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+#         read_only_fields = fields
+# 
+# class EnrollmentMethodSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     NameDescriptionSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     DurationSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Full list of fields for retrieving a single enrollment method.
+#     """
+#     role      = RoleReadField(read_only=True)
+#     role_slug = CharField(write_only=True)
+# 
+#     class Meta:
+#         model = EnrollmentMethod
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             *NameDescriptionSerializerMixin.Meta.fields,
+#             "role", "role_slug",
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             *DurationSerializerMixin.Meta.fields,
+#             "end_date", "passphrase",
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+# 
+#         read_only_fields = (
+#             *UUIDSerializerMixin.Meta.read_only_fields,
+#             *ScopeSerializerMixin.Meta.read_only_fields,
+#             *NameDescriptionSerializerMixin.Meta.read_only_fields,
+#             *ActiveInactiveSerializerMixin.Meta.read_only_fields,
+#             *DurationSerializerMixin.Meta.read_only_fields,
+#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
+#         )
+# 
+#     def validate(self, attributes):        
+#         if "scope_type"  in attributes \
+#         and "scope_uuid" in attributes \
+#         and "role_slug"  in attributes:
+#             attributes["role"] = Role.objects.get(
+#                 scope_type = attributes["scope_type"],
+#                 scope_uuid = attributes["scope_uuid"],
+#                 slug       = attributes.pop("role_slug"),
+#             )
+# 
+#         return attributes
 
 class EnrollmentMethodFilter(
     ScopeFilterMixin,
@@ -132,6 +133,7 @@ class EnrollmentMethodFilter(
         "x-model-name": "Enrollment Methods",
     }
 )
+@with_flex_fields_parameters()
 class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Enrollment methods for self-registration"
 

@@ -6,11 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-
 from collections                import defaultdict
 
 from django.conf                import settings
 from django.core.exceptions     import ValidationError as DjangoValidationError
+from drf_spectacular.utils      import extend_schema
+from drf_spectacular.types      import OpenApiTypes
+from drf_spectacular.utils      import OpenApiParameter
 from rest_framework             import status
 from rest_framework.exceptions  import ValidationError as DRFValidationError
 from rest_framework.filters     import BaseFilterBackend
@@ -151,6 +153,19 @@ class AllowAnonymousListRetrieveViewSetMixin:
             return (AllowAny(),)
         else:
             return super().get_permissions()
+
+def with_flex_fields_parameters():
+    """
+    Decorator for view set classes to add the `drf-flex-fields?` query parameters, with which
+    clients can choose the fields they want to receive, to the OpenAPI description.
+    """
+    return extend_schema(
+        parameters=[
+            OpenApiParameter("_fields", OpenApiTypes.STR, location=OpenApiParameter.QUERY, description="Fields to be included in the response"),
+            OpenApiParameter("_omit",   OpenApiTypes.STR, location=OpenApiParameter.QUERY, description="Fields to be removed from the response"),
+            OpenApiParameter("_expand", OpenApiTypes.STR, location=OpenApiParameter.QUERY, description="Relationships to be expanded in the response"),
+        ]
+    )
 
 OPERATION_ID_SUMMARY = {
     "list":           "List",

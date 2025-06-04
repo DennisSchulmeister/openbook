@@ -9,6 +9,7 @@
 from . import viewsets
 
 def register_api_routes(router, prefix):
-    router.register(f"{prefix}/languages",   viewsets.LanguageViewSet,  basename="language")
-    router.register(f"{prefix}/media_files", viewsets.MediaFileViewSet, basename="media_file")
-    router.register(f"{prefix}/sites",       viewsets.SiteViewSet,      basename="site")
+    pass
+    # router.register(f"{prefix}/languages",   viewsets.LanguageViewSet,  basename="language")
+    # router.register(f"{prefix}/media_files", viewsets.MediaFileViewSet, basename="media_file")
+    # router.register(f"{prefix}/sites",       viewsets.SiteViewSet,      basename="site")

@@ -151,7 +151,7 @@ export interface Course {
      * @type {Date}
      * @memberof Course
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -163,7 +163,7 @@ export interface Course {
      * @type {Date}
      * @memberof Course
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 
@@ -213,9 +213,9 @@ export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
         'enrollmentMethods': ((json['enrollment_methods'] as Array<any>).map(EnrollmentMethodWithRoleReadFromJSON)),
         'accessRequests': ((json['access_requests'] as Array<any>).map(AccessRequestWithRoleReadFromJSON)),
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

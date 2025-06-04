@@ -40,9 +40,11 @@ export interface AuthUsersListRequest {
     pageSize?: number;
     search?: string;
     sort?: string;
+    email?: string;
     firstName?: string;
     isStaff?: boolean;
     lastName?: string;
+    username?: string;
 }
 
 export interface AuthUsersPartialUpdateRequest {
@@ -121,6 +123,10 @@ export class UserProfilesApi extends runtime.BaseAPI {
             queryParameters['_sort'] = requestParameters['sort'];
         }
 
+        if (requestParameters['email'] != null) {
+            queryParameters['email'] = requestParameters['email'];
+        }
+
         if (requestParameters['firstName'] != null) {
             queryParameters['first_name'] = requestParameters['firstName'];
         }
@@ -131,6 +137,10 @@ export class UserProfilesApi extends runtime.BaseAPI {
 
         if (requestParameters['lastName'] != null) {
             queryParameters['last_name'] = requestParameters['lastName'];
+        }
+
+        if (requestParameters['username'] != null) {
+            queryParameters['username'] = requestParameters['username'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

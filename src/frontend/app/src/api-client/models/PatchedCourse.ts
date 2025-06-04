@@ -151,7 +151,7 @@ export interface PatchedCourse {
      * @type {Date}
      * @memberof PatchedCourse
      */
-    readonly createdAt?: Date;
+    readonly createdAt?: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -163,7 +163,7 @@ export interface PatchedCourse {
      * @type {Date}
      * @memberof PatchedCourse
      */
-    readonly modifiedAt?: Date;
+    readonly modifiedAt?: Date | null;
 }
 
 

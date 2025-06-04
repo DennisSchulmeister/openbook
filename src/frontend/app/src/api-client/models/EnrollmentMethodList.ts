@@ -81,7 +81,7 @@ export interface EnrollmentMethodList {
      * @type {Date}
      * @memberof EnrollmentMethodList
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -93,7 +93,7 @@ export interface EnrollmentMethodList {
      * @type {Date}
      * @memberof EnrollmentMethodList
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 /**
@@ -130,9 +130,9 @@ export function EnrollmentMethodListFromJSONTyped(json: any, ignoreDiscriminator
         'name': json['name'],
         'isActive': json['is_active'],
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

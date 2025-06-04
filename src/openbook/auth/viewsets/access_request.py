@@ -14,6 +14,7 @@ from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
 from openbook.drf                              import ModelViewSetMixin
+from openbook.drf                              import with_flex_fields_parameters
 from openbook.core.serializers.mixins.datetime import DurationSerializerMixin
 from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
 
@@ -27,77 +28,77 @@ from ..serializers.role                        import RoleReadField
 from ..serializers.user                        import UserReadField
 from ..serializers.user                        import UserWriteField
 
-class AccessRequestListSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Reduced list of fields for getting a list of access request.
-    """
-    user = UserReadField(read_only=True)
-    role = RoleReadField(read_only=True)
-
-    class Meta:
-        model = AccessRequest
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            "role", "user",
-            "decision", "decision_date",
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-        read_only_fields = fields
-
-class AccessRequestSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    DurationSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Full list of fields for retrieving a single access request.
-    """
-    role          = RoleReadField(read_only=True)
-    role_slug     = CharField(write_only=True)
-    user          = UserReadField(read_only=True)
-    user_username = UserWriteField(write_only=True, source="user")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model  = AccessRequest
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            "role", "role_slug",
-            "user", "user_username",
-            "end_date",
-            *DurationSerializerMixin.Meta.fields,
-            "decision", "decision_date",
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-
-        read_only_fields = (
-            *UUIDSerializerMixin.Meta.read_only_fields,
-            *ScopeSerializerMixin.Meta.read_only_fields,
-            *DurationSerializerMixin.Meta.read_only_fields,
-            "decision_date",
-            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-        )
-
-    def validate(self, attributes):        
-        if "scope_type"  in attributes \
-        and "scope_uuid" in attributes \
-        and "role_slug"  in attributes:
-            attributes["role"] = Role.objects.get(
-                scope_type = attributes["scope_type"],
-                scope_uuid = attributes["scope_uuid"],
-                slug       = attributes.pop("role_slug"),
-            )
-            
-        return attributes
+# class AccessRequestListSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Reduced list of fields for getting a list of access request.
+#     """
+#     user = UserReadField(read_only=True)
+#     role = RoleReadField(read_only=True)
+# 
+#     class Meta:
+#         model = AccessRequest
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             "role", "user",
+#             "decision", "decision_date",
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+#         read_only_fields = fields
+# 
+# class AccessRequestSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     DurationSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Full list of fields for retrieving a single access request.
+#     """
+#     role          = RoleReadField(read_only=True)
+#     role_slug     = CharField(write_only=True)
+#     user          = UserReadField(read_only=True)
+#     user_username = UserWriteField(write_only=True, source="user")
+# 
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+# 
+#     class Meta:
+#         model  = AccessRequest
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             "role", "role_slug",
+#             "user", "user_username",
+#             "end_date",
+#             *DurationSerializerMixin.Meta.fields,
+#             "decision", "decision_date",
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+# 
+#         read_only_fields = (
+#             *UUIDSerializerMixin.Meta.read_only_fields,
+#             *ScopeSerializerMixin.Meta.read_only_fields,
+#             *DurationSerializerMixin.Meta.read_only_fields,
+#             "decision_date",
+#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
+#         )
+# 
+#     def validate(self, attributes):        
+#         if "scope_type"  in attributes \
+#         and "scope_uuid" in attributes \
+#         and "role_slug"  in attributes:
+#             attributes["role"] = Role.objects.get(
+#                 scope_type = attributes["scope_type"],
+#                 scope_uuid = attributes["scope_uuid"],
+#                 slug       = attributes.pop("role_slug"),
+#             )
+#             
+#         return attributes
     
 class AccessRequestFilter(
     ScopeFilterMixin,
@@ -129,6 +130,7 @@ class AccessRequestFilter(
         "x-model-name": "Access Requests",
     }
 )
+@with_flex_fields_parameters()
 class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Access requests to get a scoped role assigned"
 

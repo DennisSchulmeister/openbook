@@ -106,7 +106,7 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/enroll/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'POST',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: EnrollActionRequestToJSON(requestParameters['enrollActionRequest']),

@@ -11,6 +11,7 @@ from rest_framework.serializers              import ListField
 from rest_framework.viewsets                 import ModelViewSet
 
 from openbook.drf                            import ModelViewSetMixin
+from openbook.drf                            import with_flex_fields_parameters
 from openbook.core.filters.mixins.active     import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.slug       import SlugFilterMixin
 from openbook.core.filters.mixins.text       import NameDescriptionFilterMixin
@@ -29,74 +30,74 @@ from ..serializers.permission                import PermissionReadSerializer
 from ..serializers.permission                import PermissionWriteField
 from ..validators                            import validate_permissions
 
-class RoleListSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    SlugSerializerMixin,
-    NameDescriptionListSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Reduced list of fields for getting a list of roles.
-    """
-    class Meta:
-        model = Role
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *SlugSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            *NameDescriptionListSerializerMixin.Meta.fields,
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            "priority",
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-        read_only_fields = fields
-
-class RoleSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    SlugSerializerMixin,
-    NameDescriptionSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Full list of fields for retrieving a single role.
-    """
-    permissions        = PermissionReadSerializer(many=True, read_only=True)
-    permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="permissions")
-
-    class Meta:
-        model  = Role
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *SlugSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            *NameDescriptionSerializerMixin.Meta.fields,
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            "priority", "permissions", "permission_strings",
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-
-        read_only_fields = (
-            *UUIDSerializerMixin.Meta.read_only_fields,
-            *SlugSerializerMixin.Meta.read_only_fields,
-            *ScopeSerializerMixin.Meta.read_only_fields,
-            *NameDescriptionSerializerMixin.Meta.read_only_fields,
-            *ActiveInactiveSerializerMixin.Meta.read_only_fields,
-            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-        )
-
-    def validate(self, attributes):
-        """
-        Check that only allowed permissions are assigned.
-        """
-        scope_type  = attributes.get("scope_type", None)
-        permissions = attributes.get("permissions", None)
-
-        validate_permissions(scope_type, permissions)
-        return attributes
+# class RoleListSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     SlugSerializerMixin,
+#     NameDescriptionListSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Reduced list of fields for getting a list of roles.
+#     """
+#     class Meta:
+#         model = Role
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *SlugSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             *NameDescriptionListSerializerMixin.Meta.fields,
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             "priority",
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+#         read_only_fields = fields
+# 
+# class RoleSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     SlugSerializerMixin,
+#     NameDescriptionSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Full list of fields for retrieving a single role.
+#     """
+#     permissions        = PermissionReadSerializer(many=True, read_only=True)
+#     permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="permissions")
+# 
+#     class Meta:
+#         model  = Role
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *SlugSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             *NameDescriptionSerializerMixin.Meta.fields,
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             "priority", "permissions", "permission_strings",
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+# 
+#         read_only_fields = (
+#             *UUIDSerializerMixin.Meta.read_only_fields,
+#             *SlugSerializerMixin.Meta.read_only_fields,
+#             *ScopeSerializerMixin.Meta.read_only_fields,
+#             *NameDescriptionSerializerMixin.Meta.read_only_fields,
+#             *ActiveInactiveSerializerMixin.Meta.read_only_fields,
+#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
+#         )
+# 
+#     def validate(self, attributes):
+#         """
+#         Check that only allowed permissions are assigned.
+#         """
+#         scope_type  = attributes.get("scope_type", None)
+#         permissions = attributes.get("permissions", None)
+# 
+#         validate_permissions(scope_type, permissions)
+#         return attributes
 
 class RoleFilter(
     SlugFilterMixin,
@@ -122,6 +123,7 @@ class RoleFilter(
         "x-model-name": "Roles",
     }
 )
+@with_flex_fields_parameters()
 class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Authenticated users only as we don't want the world to scrap our role list.

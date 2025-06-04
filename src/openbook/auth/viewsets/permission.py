@@ -14,16 +14,17 @@ from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.serializers import ModelSerializer
 
 from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf               import with_flex_fields_parameters
 from ..models.permission        import Permission_T
 from ..serializers.permission   import PermissionReadSerializer
 from ..utils                    import permission_for_perm_string
 
-class PermissionTSerializer(ModelSerializer):
-    permission = PermissionReadSerializer(read_only=True, source="parent")
-
-    class Meta:
-        model  = Permission_T
-        fields = ("id", "permission", "language", "name")
+# class PermissionTSerializer(ModelSerializer):
+#     permission = PermissionReadSerializer(read_only=True, source="parent")
+# 
+#     class Meta:
+#         model  = Permission_T
+#         fields = ("id", "permission", "language", "name")
 
 class PermissionTFilter(FilterSet):
     perm_string = CharFilter(label="Permission String", method="filter_perm_string")
@@ -50,6 +51,7 @@ class PermissionTFilter(FilterSet):
         "x-model-name": "Translated Permissions",
     }
 )
+@with_flex_fields_parameters()
 class PermissionTViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Translated Permissions"
 

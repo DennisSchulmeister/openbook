@@ -7,82 +7,69 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.models import Permission
-from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
-from rest_framework.serializers import Serializer
-from rest_framework.serializers import RelatedField
-from rest_framework.serializers import CharField
+from rest_flex_fields           import FlexFieldsModelSerializer
+from rest_framework.serializers import SerializerMethodField
 
+from ..models.permission        import Permission_T
 from ..utils                    import app_label_for_permission
 from ..utils                    import app_name_for_permission
 from ..utils                    import model_for_permission
 from ..utils                    import model_name_for_permission
 from ..utils                    import perm_name_for_permission
 from ..utils                    import perm_string_for_permission
-from ..utils                    import permission_for_perm_string
 
-class PermissionReadSerializer(Serializer):
-    """
-    Serializer for reading permission objects. Returns a custom object structure.
-    """
+class PermissionSerializer(FlexFieldsModelSerializer):
     __doc__ = "Permission"
 
-    perm_string        = CharField()
-    perm_display_name  = CharField()
-    app                = CharField()
-    app_display_name   = CharField()
-    model              = CharField()
-    model_display_name = CharField()
-    codename           = CharField()
+    perm_string        = SerializerMethodField()
+    perm_display_name  = SerializerMethodField()
+    app                = SerializerMethodField()
+    app_display_name   = SerializerMethodField()
+    model              = SerializerMethodField()
+    model_display_name = SerializerMethodField()
 
     class Meta:
-        fields   = ("perm_string", "perm_display_name", "app", "app_display_name", "model", "model_display_name", "codename")
-        read_only_fields = fields
+        model = Permission
 
-    def to_representation(self, obj):
-        return {
-            "perm_string":        perm_string_for_permission(obj),
-            "perm_display_name":  perm_name_for_permission(obj),
-            "app":                app_label_for_permission(obj),
-            "app_display_name":   app_name_for_permission(obj),
-            "model":              model_for_permission(obj),
-            "model_display_name": model_name_for_permission(obj),
-            "codename":           obj.codename,
-        }
+        fields = (
+            "id",
+            "name", "codename",
+            "perm_string", "perm_display_name",
+            "app", "app_display_name",
+            "model", "model_display_name",
+        )
 
-@extend_schema_field({
-    "type":        "string",
-    "description": "Permission string",
-    "example":     "app.model_codename"
-})
-class PermissionWriteField(RelatedField):
-    """
-    Serializer field for writing permissions. Use this to accept a permission string
-    in the request that will be looked up in the database.
-    """
-    default_error_messages = {
-        "not_found": _("Permission '{value}' not found."),
-        "invalid":   _("Invalid format: Expected a permission string."),
-        "required":  _("Permission string is required."),
-    }
-
-    queryset = Permission.objects.all()
-
-    def to_internal_value(self, data):
-        if data is None:
-            if self.required:
-                self.fail("required")
-            else:
-                return None
-            
-        if not isinstance(data, str):
-            self.fail("invalid")
-
-        try:
-            return permission_for_perm_string(data)
-        except Permission.DoesNotExist:
-            self.fail("not_found", value=data)
+        read_only_fields = ("id",)
     
-    def to_representation(self, obj):
-        raise RuntimeError("PermissionWriteField used to deserialize data. Use PermissionReadSerializer, instead.")
+    @extend_schema_field(str)
+    def get_perm_string(self, obj: Permission) -> str:
+        return perm_string_for_permission(obj)
 
+    @extend_schema_field(str)
+    def get_perm_display_name(self, obj: Permission) -> str:
+        return perm_name_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_app(self, obj: Permission) -> str:
+        return app_label_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_app_display_name(self, obj: Permission) -> str:
+        return app_name_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_model(self, obj: Permission) -> str:
+        return model_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_model_display_name(self, obj: Permission) -> str:
+        return model_name_for_permission(obj)
+
+class PermissionTSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Permission Label"
+
+    class Meta:
+        model  = Permission_T
+        fields = ("id", "language", "parent", "name")
+        expandable_fields = {"parent": PermissionSerializer}

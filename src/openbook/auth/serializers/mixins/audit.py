@@ -6,17 +6,18 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from openbook.drf import ModelSerializer
-from ..user       import UserReadField
+from rest_flex_fields import FlexFieldsModelSerializer
 
-class CreatedModifiedBySerializerMixin(ModelSerializer):
+class CreatedModifiedBySerializerMixin(FlexFieldsModelSerializer):
     """
     Mixin class for model serializers whose model implement the `CreatedModifiedByMixin` and
     therefor contain the audit fields `created_by`, `created_at`, `modified_by` and `modified_at`.
     """
-    created_by  = UserReadField(read_only=True)
-    modified_by = UserReadField(read_only=True)
-
     class Meta:
         fields = ("created_by", "created_at", "modified_by", "modified_at")
-        read_only_fields = ("created_at", "modified_at")
+        read_only_fields = fields
+
+        expandable_fields = {
+            "created_by":  "openbook.auth.serializers.user.UserSerializer",
+            "modified_by": "openbook.auth.serializers.user.UserSerializer",
+        }

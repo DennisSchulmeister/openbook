@@ -6,6 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .file_uploads import MediaFileViewSet
-from .language     import LanguageViewSet
-from .site         import SiteViewSet
+# from .file_uploads import MediaFileViewSet
+# from .language     import LanguageViewSet
+# from .site         import SiteViewSet

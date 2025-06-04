@@ -8,3 +8,9 @@
 
 from rest_flex_fields import FlexFieldsModelSerializer
 from .                import models
+
+class AllowedRolePermissionSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model  = models.AllowedRolePermission
+        fields = ("id", "scope_type", "permission")
+        expandable_fields = {"permission": "openbook.auth.serializers.permission.PermissionSerializer"}

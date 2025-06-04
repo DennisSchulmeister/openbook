@@ -94,7 +94,7 @@ export interface AccessRequestList {
      * @type {Date}
      * @memberof AccessRequestList
      */
-    readonly createdAt: Date;
+    readonly createdAt: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -106,7 +106,7 @@ export interface AccessRequestList {
      * @type {Date}
      * @memberof AccessRequestList
      */
-    readonly modifiedAt: Date;
+    readonly modifiedAt: Date | null;
 }
 
 
@@ -147,9 +147,9 @@ export function AccessRequestListFromJSONTyped(json: any, ignoreDiscriminator: b
         'decision': DecisionEnumFromJSON(json['decision']),
         'decisionDate': (json['decision_date'] == null ? null : new Date(json['decision_date'])),
         'createdBy': UserReadFromJSON(json['created_by']),
-        'createdAt': (new Date(json['created_at'])),
+        'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': UserReadFromJSON(json['modified_by']),
-        'modifiedAt': (new Date(json['modified_at'])),
+        'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
 

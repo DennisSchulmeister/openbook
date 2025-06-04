@@ -12,6 +12,7 @@ from rest_framework.serializers                import CharField
 from rest_framework.viewsets                   import ModelViewSet
 
 from openbook.drf                              import ModelViewSetMixin
+from openbook.drf                              import with_flex_fields_parameters
 from openbook.core.filters.mixins.active       import ActiveInactiveFilterMixin
 from openbook.core.filters.mixins.datetime     import ValidityTimeSpanFilterMixin
 from openbook.core.serializers.mixins.active   import ActiveInactiveSerializerMixin
@@ -30,81 +31,81 @@ from ..serializers.role                        import RoleReadField
 from ..serializers.user                        import UserReadField
 from ..serializers.user                        import UserWriteField
 
-class RoleAssignmentListSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    ValidityTimeSpanSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Reduced list of fields for getting a list of role assignments.
-    """
-    user = UserReadField(read_only=True)
-    role = RoleReadField(read_only=True)
-
-    class Meta:
-        model = RoleAssignment
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            "role", "user",
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            *ValidityTimeSpanSerializerMixin.Meta.fields,
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-        read_only_fields = fields
-
-class RoleAssignmentSerializer(
-    UUIDSerializerMixin,
-    ScopeSerializerMixin,
-    ActiveInactiveSerializerMixin,
-    ValidityTimeSpanSerializerMixin,
-    CreatedModifiedBySerializerMixin,
-):
-    """
-    Full list of fields for retrieving a single role assignment.
-    """
-    role              = RoleReadField(read_only=True)
-    role_slug         = CharField(write_only=True)
-    user              = UserReadField(read_only=True)
-    user_username     = UserWriteField(write_only=True, source="user")
-    enrollment_method = EnrollmentMethodWithoutRoleReadSerializer(read_only=True)
-    access_request    = AccessRequestWithoutRoleReadSerializer(read_only=True)
-
-    class Meta:
-        model  = RoleAssignment
-        fields = (
-            *UUIDSerializerMixin.Meta.fields,
-            *ScopeSerializerMixin.Meta.fields,
-            "role", "role_slug",
-            "user", "user_username",
-            "assignment_method", "enrollment_method", "access_request",
-            *ActiveInactiveSerializerMixin.Meta.fields,
-            *ValidityTimeSpanSerializerMixin.Meta.fields,
-            *CreatedModifiedBySerializerMixin.Meta.fields,
-        )
-
-        read_only_fields = (
-            *UUIDSerializerMixin.Meta.read_only_fields,
-            *ScopeSerializerMixin.Meta.read_only_fields,
-            "assignment_method",
-            *ActiveInactiveSerializerMixin.Meta.read_only_fields,
-            *ValidityTimeSpanSerializerMixin.Meta.read_only_fields,
-            *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-        )
-
-    def validate(self, attributes):        
-        if "scope_type"  in attributes \
-        and "scope_uuid" in attributes \
-        and "role_slug"  in attributes:
-            attributes["role"] = Role.objects.get(
-                scope_type = attributes["scope_type"],
-                scope_uuid = attributes["scope_uuid"],
-                slug       = attributes.pop("role_slug"),
-            )
-
-        return attributes
+# class RoleAssignmentListSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     ValidityTimeSpanSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Reduced list of fields for getting a list of role assignments.
+#     """
+#     user = UserReadField(read_only=True)
+#     role = RoleReadField(read_only=True)
+# 
+#     class Meta:
+#         model = RoleAssignment
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             "role", "user",
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             *ValidityTimeSpanSerializerMixin.Meta.fields,
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+#         read_only_fields = fields
+# 
+# class RoleAssignmentSerializer(
+#     UUIDSerializerMixin,
+#     ScopeSerializerMixin,
+#     ActiveInactiveSerializerMixin,
+#     ValidityTimeSpanSerializerMixin,
+#     CreatedModifiedBySerializerMixin,
+# ):
+#     """
+#     Full list of fields for retrieving a single role assignment.
+#     """
+#     role              = RoleReadField(read_only=True)
+#     role_slug         = CharField(write_only=True)
+#     user              = UserReadField(read_only=True)
+#     user_username     = UserWriteField(write_only=True, source="user")
+#     enrollment_method = EnrollmentMethodWithoutRoleReadSerializer(read_only=True)
+#     access_request    = AccessRequestWithoutRoleReadSerializer(read_only=True)
+# 
+#     class Meta:
+#         model  = RoleAssignment
+#         fields = (
+#             *UUIDSerializerMixin.Meta.fields,
+#             *ScopeSerializerMixin.Meta.fields,
+#             "role", "role_slug",
+#             "user", "user_username",
+#             "assignment_method", "enrollment_method", "access_request",
+#             *ActiveInactiveSerializerMixin.Meta.fields,
+#             *ValidityTimeSpanSerializerMixin.Meta.fields,
+#             *CreatedModifiedBySerializerMixin.Meta.fields,
+#         )
+# 
+#         read_only_fields = (
+#             *UUIDSerializerMixin.Meta.read_only_fields,
+#             *ScopeSerializerMixin.Meta.read_only_fields,
+#             "assignment_method",
+#             *ActiveInactiveSerializerMixin.Meta.read_only_fields,
+#             *ValidityTimeSpanSerializerMixin.Meta.read_only_fields,
+#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
+#         )
+# 
+#     def validate(self, attributes):        
+#         if "scope_type"  in attributes \
+#         and "scope_uuid" in attributes \
+#         and "role_slug"  in attributes:
+#             attributes["role"] = Role.objects.get(
+#                 scope_type = attributes["scope_type"],
+#                 scope_uuid = attributes["scope_uuid"],
+#                 slug       = attributes.pop("role_slug"),
+#             )
+# 
+#         return attributes
 
 class RoleAssignmentFilter(
     ScopeFilterMixin,
@@ -138,6 +139,7 @@ class RoleAssignmentFilter(
         "x-model-name": "Role Assignments",
     }
 )
+@with_flex_fields_parameters()
 class RoleAssignmentViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Users and their roles in a scope"
 

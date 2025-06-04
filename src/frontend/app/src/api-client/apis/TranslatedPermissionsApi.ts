@@ -39,7 +39,7 @@ export interface AuthPermissionsListRequest {
 }
 
 export interface AuthPermissionsRetrieveRequest {
-    id: number;
+    id: string;
 }
 
 /**

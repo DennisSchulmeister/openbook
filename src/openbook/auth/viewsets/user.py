@@ -13,15 +13,16 @@ from django_filters.filters     import CharFilter
 from rest_framework.viewsets    import ModelViewSet
 
 from openbook.drf               import ModelViewSetMixin
+from openbook.drf               import with_flex_fields_parameters
 from ..models.user              import User
 from ..serializers.user         import UserDetailsReadSerializer
 from ..serializers.user         import UserDetailsUpdateSerializer
 from ..serializers.user         import UserReadSerializer
 
-class CurrentUserReadSerializer(UserDetailsReadSerializer):
-    class Meta:
-        model  = User
-        fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
+# class CurrentUserReadSerializer(UserDetailsReadSerializer):
+#     class Meta:
+#         model  = User
+#         fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
 
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
@@ -39,6 +40,7 @@ class UserFilter(FilterSet):
         "x-model-name": "User Profiles",
     }
 )
+@with_flex_fields_parameters()
 class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users and update/delete the own user profile.

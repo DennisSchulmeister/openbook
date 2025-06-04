@@ -137,7 +137,7 @@ export interface PatchedEnrollmentMethod {
      * @type {Date}
      * @memberof PatchedEnrollmentMethod
      */
-    readonly createdAt?: Date;
+    readonly createdAt?: Date | null;
     /**
      * 
      * @type {UserRead}
@@ -149,7 +149,7 @@ export interface PatchedEnrollmentMethod {
      * @type {Date}
      * @memberof PatchedEnrollmentMethod
      */
-    readonly modifiedAt?: Date;
+    readonly modifiedAt?: Date | null;
 }
 
 

@@ -13,18 +13,19 @@ from rest_framework.viewsets  import ModelViewSet
 
 from openbook.drf             import ModelViewSetMixin
 from openbook.drf             import ModelSerializer
+from openbook.drf             import with_flex_fields_parameters
 
 from ..models.file_uploads    import MediaFile
 
-class MediaFileListSerializer(ModelSerializer):
-    class Meta:
-        model  = MediaFile
-        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type")
-
-class MediaFileSerializer(ModelSerializer):
-    class Meta:
-        model  = MediaFile
-        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
+# class MediaFileListSerializer(ModelSerializer):
+#     class Meta:
+#         model  = MediaFile
+#         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type")
+# 
+# class MediaFileSerializer(ModelSerializer):
+#     class Meta:
+#         model  = MediaFile
+#         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
 
 class MediaFileFilter(FilterSet):
     file_name = CharFilter(lookup_expr="icontains")
@@ -39,6 +40,7 @@ class MediaFileFilter(FilterSet):
         "x-model-name": "Media Files",
     }
 )
+@with_flex_fields_parameters()
 class MediaFileViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Attached Media Files"
 
