@@ -138,6 +138,15 @@ CHANNEL_LAYERS = {
 }
 
 # Django REST framework
+
+# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
+# Must be defined before the first import of rest_flex_field!
+REST_FLEX_FIELDS = {
+    "EXPAND_PARAM": "_expand",
+    "FIELDS_PARAM": "_fields",
+    "OMIT_PARAM":   "_omit",
+}
+
 from rest_flex_fields.filter_backends import FlexFieldsFilterBackend    # To resolve circular import!
 
 REST_FRAMEWORK = {
@@ -192,13 +201,6 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.postprocess_schema_enums",
         "openbook.drf.add_tag_groups",
     ],
-}
-
-# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
-REST_FLEX_FIELDS = {
-    "EXPAND_PARAM": "_expand",
-    "FIELDS_PARAM": "_fields",
-    "OMIT_PARAM": "_omit",
 }
 
 # Password validation

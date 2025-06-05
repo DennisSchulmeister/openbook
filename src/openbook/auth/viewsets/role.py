@@ -9,7 +9,6 @@
 from django_filters.filterset   import FilterSet
 from drf_spectacular.utils      import extend_schema
 from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.serializers import ListField
 from rest_framework.viewsets    import ModelViewSet
 
 from openbook.drf               import ModelViewSetMixin
@@ -26,7 +25,7 @@ class RoleSerializer(FlexFieldsModelSerializer):
     __doc__ = "Role"
 
     scope_type  = ScopeTypeField()
-    permissions = ListField(child=PermissionField())
+    permissions = PermissionField(many=True)
     created_by  = UserField(read_only=True)
     modified_by = UserField(read_only=True)
 
@@ -36,16 +35,20 @@ class RoleSerializer(FlexFieldsModelSerializer):
         fields = (
             "id", "scope_type", "scope_uuid", "slug",
             "name", "description", "text_format",
-            "priority", "permissions", "is_active",
+            "priority", "is_active", "permissions",
+            "role_assignments", "enrollment_methods", "access_requests",
             "created_by", "created_at", "modified_by", "modified_at",
         )
 
         read_only_fields = ("id", "created_at", "modified_at")
 
         expandable_fields = {
-            "permissions": ("openbook.auth.viewsets.permission.PermissionSerializer", {"many": True}),
-            "created_by":  "openbook.auth.viewsets.user.UserSerializer",
-            "modified_by": "openbook.auth.viewsets.user.UserSerializer",
+            "permissions":        ("openbook.auth.viewsets.permission.PermissionSerializer", {"many": True}),
+            "created_by":         "openbook.auth.viewsets.user.UserSerializer",
+            "modified_by":        "openbook.auth.viewsets.user.UserSerializer",
+            "role_assignments":   ("openbook.auth.viewsets.role_assignment.RoleAssignmentSerializer",     {"many": True}),
+            "enrollment_methods": ("openbook.auth.viewsets.enrollment_method.EnrollmentMethodSerializer", {"many": True}),
+            "access_requests":    ("openbook.auth.viewsets.access_request.AccessRequestSerializer",       {"many": True}),
         }
 
     def validate(self, attributes):

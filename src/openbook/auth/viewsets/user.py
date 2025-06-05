@@ -46,6 +46,19 @@ class UserSerializer(FlexFieldsModelSerializer):
     def get_full_name(self, obj):
         return obj.get_full_name() if hasattr(obj, "get_full_name") else ""
 
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile")
+        instance = super().update(instance, validated_data)
+        profile = UserProfile.objects.get_or_create(user=instance)
+
+        if hasattr(profile_data, "description"):
+            profile.description = profile_data.description
+        
+        if hasattr(profile_data, "picture"):
+            profile.picture = profile_data.picture
+        
+        return instance
+
 class CurrentUserSerializer(UserSerializer):
     __doc__ = "Current User"
 

@@ -9,8 +9,9 @@
 from django.utils.translation           import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from drf_spectacular.utils              import extend_schema_field
-from rest_framework.serializers         import Field
-from rest_framework.serializers         import ListField
+from rest_flex_fields                   import FlexFieldsModelSerializer
+from rest_framework.serializers         import PrimaryKeyRelatedField
+from rest_framework.serializers         import RelatedField
 
 from ..user                             import UserField
 from ..permission                       import PermissionField
@@ -19,13 +20,16 @@ from ...utils                           import model_string_for_content_type
 from ...validators                      import validate_scope_type
 from ...validators                      import validate_permissions
 
-class ScopedRolesSerializerMixin:
+class ScopedRolesSerializerMixin(FlexFieldsModelSerializer):
     """
     Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
     act as permission scope for user roles. Default serializer, that adds all scope fields.
     """
-    owner             = UserField(read_only=True)
-    public_permission = ListField(child=PermissionField())
+    owner              = UserField(read_only=True)
+    public_permissions = PermissionField(many=True)
+    role_assignments   = PrimaryKeyRelatedField(many=True, read_only=True)
+    enrollment_methods = PrimaryKeyRelatedField(many=True, read_only=True)
+    access_requests    = PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         fields = (
@@ -53,7 +57,7 @@ class ScopedRolesSerializerMixin:
         return super().validate(attributes)
 
 @extend_schema_field(str)
-class ScopeTypeField(Field):
+class ScopeTypeField(RelatedField):
     """
     Serializer field for the `scope_type` to use the fully-qualified model name instead
     of the PK for input and output.
@@ -62,6 +66,10 @@ class ScopeTypeField(Field):
         "not_found": _("Scope type '{value}' not found."),
         "invalid":   _("Invalid format: Expected a scope type string.")
     }
+
+    def get_queryset(self):
+        if not self.read_only:
+            return ContentType.objects.all()
 
     def to_internal_value(self, data):
         if not isinstance(data, str):

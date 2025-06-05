@@ -24,6 +24,7 @@ class RoleAssignmentSerializer(FlexFieldsModelSerializer):
     __doc__ = "Role Assignment"
 
     scope_type  = ScopeTypeField()
+    user        = UserField()
     created_by  = UserField(read_only=True)
     modified_by = UserField(read_only=True)
 

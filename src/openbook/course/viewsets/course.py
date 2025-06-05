@@ -42,6 +42,7 @@ class CourseSerializer(ScopedRolesSerializerMixin, FlexFieldsModelSerializer):
         )
 
         expandable_fields = {
+            **ScopedRolesSerializerMixin.Meta.expandable_fields,
             "created_by":  "openbook.auth.viewsets.user.UserSerializer",
             "modified_by": "openbook.auth.viewsets.user.UserSerializer",
         }

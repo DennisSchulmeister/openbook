@@ -11,12 +11,12 @@ from django.core.exceptions             import FieldError
 from drf_spectacular.utils              import extend_schema
 from drf_spectacular.utils              import OpenApiParameter
 from rest_framework                     import status
-from rest_framework.fields              import CharField
-from rest_framework.fields              import IntegerField
-from rest_framework.fields              import UUIDField
 from rest_framework.permissions         import IsAuthenticated
 from rest_framework.response            import Response
+from rest_framework.serializers         import CharField
+from rest_framework.serializers         import IntegerField
 from rest_framework.serializers         import Serializer
+from rest_framework.serializers         import UUIDField
 from rest_framework.viewsets            import ViewSet
 
 from openbook.drf                       import with_flex_fields_parameters

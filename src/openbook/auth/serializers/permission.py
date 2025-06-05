@@ -9,14 +9,14 @@
 from django.contrib.auth.models import Permission
 from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
-from rest_framework.serializers import Field
+from rest_framework.serializers import RelatedField
 
 from ..utils                    import perm_string_for_permission
 from ..utils                    import permission_for_perm_string
 
 
 @extend_schema_field(str)
-class PermissionField(Field):
+class PermissionField(RelatedField):
     """
     Serializer field to use permission string as input and output instead of a
     permission's raw PK.
@@ -26,6 +26,11 @@ class PermissionField(Field):
         "invalid":   _("Invalid format: Expected a permission string."),
         "required":  _("Permission string is required."),
     }
+
+    def get_queryset(self):
+        if not self.read_only:
+            return Permission.objects.all()
+
     def to_internal_value(self, data):
         if data is None:
             if self.required:
