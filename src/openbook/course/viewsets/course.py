@@ -6,7 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django_filters.filterset               import FilterSet
 from drf_spectacular.utils                  import extend_schema
+from rest_flex_fields                       import FlexFieldsModelSerializer
 from rest_framework.viewsets                import ModelViewSet
 
 from openbook.drf                           import AllowAnonymousListRetrieveViewSetMixin
@@ -14,105 +16,53 @@ from openbook.drf                           import ModelViewSetMixin
 from openbook.drf                           import with_flex_fields_parameters
 from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
 from openbook.auth.filters.mixins.scope     import ScopedRolesFilterMixin
-from openbook.auth.serializers.mixins.audit import CreatedModifiedBySerializerMixin
 from openbook.auth.serializers.mixins.scope import ScopedRolesSerializerMixin
-from openbook.auth.serializers.mixins.scope import ScopedRolesListSerializerMixin
-from openbook.core.filters.mixins.slug      import SlugFilterMixin
-from openbook.core.filters.mixins.text      import NameDescriptionFilterMixin
-from openbook.core.serializers.mixins.slug  import SlugSerializerMixin
-from openbook.core.serializers.mixins.text  import NameDescriptionListSerializerMixin
-from openbook.core.serializers.mixins.text  import NameDescriptionSerializerMixin
-from openbook.core.serializers.mixins.uuid  import UUIDSerializerMixin
-
+from openbook.auth.serializers.user         import UserField
 from ..models.course                        import Course
 
-# class CourseListSerializer(
-#     UUIDSerializerMixin,
-#     SlugSerializerMixin,
-#     NameDescriptionListSerializerMixin,
-#     ScopedRolesListSerializerMixin,
-#     CreatedModifiedBySerializerMixin,
-# ):
-#     """
-#     Reduced list of fields for filtering a list of courses.
-#     """
-#     class Meta:
-#         model = Course
-#         fields = (
-#             *UUIDSerializerMixin.Meta.fields,
-#             *SlugSerializerMixin.Meta.fields,
-#             *NameDescriptionListSerializerMixin.Meta.fields,
-#             "is_template",
-#             *ScopedRolesListSerializerMixin.Meta.fields,
-#             *CreatedModifiedBySerializerMixin.Meta.fields,
-#         )
-#         read_only_fields = fields
-# 
-# class CourseSerializer(
-#     UUIDSerializerMixin,
-#     SlugSerializerMixin,
-#     NameDescriptionSerializerMixin,
-#     ScopedRolesSerializerMixin,
-#     CreatedModifiedBySerializerMixin,
-# ):
-#     """
-#     Full list of fields for retrieving a single course.
-#     """
-#     class Meta:
-#         model  = Course
-#         fields = (
-#             *UUIDSerializerMixin.Meta.fields,
-#             *SlugSerializerMixin.Meta.fields,
-#             *NameDescriptionSerializerMixin.Meta.fields,
-#             "is_template",
-#             *ScopedRolesSerializerMixin.Meta.fields,
-#             *CreatedModifiedBySerializerMixin.Meta.fields,
-#         )
-# 
-#         read_only_fields = (
-#             *UUIDSerializerMixin.Meta.read_only_fields,
-#             *SlugSerializerMixin.Meta.read_only_fields,
-#             *NameDescriptionSerializerMixin.Meta.read_only_fields,
-#             *ScopedRolesSerializerMixin.Meta.read_only_fields,
-#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-#         )
+class CourseSerializer(ScopedRolesSerializerMixin, FlexFieldsModelSerializer):
+    created_by  = UserField(read_only=True)
+    modified_by = UserField(read_only=True)
 
-class CourseFilter(
-    SlugFilterMixin,
-    NameDescriptionFilterMixin,
-    CreatedModifiedByFilterMixin,
-    ScopedRolesFilterMixin,
-):
+    class Meta:
+        model = Course
+
+        fields = (
+            "id", "slug",
+            "name", "description", "text_format",
+            "is_template",
+            *ScopedRolesSerializerMixin.Meta.fields,
+            "created_by", "created_at", "modified_by", "modified_at",
+        )
+
+        read_only_fields = (
+            "id",
+            *ScopedRolesSerializerMixin.Meta.read_only_fields,
+            "created_at", "modified_at",
+        )
+
+        expandable_fields = {
+            "created_by":  "openbook.auth.viewsets.user.UserSerializer",
+            "modified_by": "openbook.auth.viewsets.user.UserSerializer",
+        }
+
+class CourseFilter(CreatedModifiedByFilterMixin, ScopedRolesFilterMixin, FilterSet):
     class Meta:
         model  = Course
         fields = {
-            **SlugFilterMixin.Meta.fields,
-            **NameDescriptionFilterMixin.Meta.fields,
+            "slug":        ("exact",),
+            "name":        ("exact",),
             "is_template": ("exact",),
             **ScopedRolesFilterMixin.Meta.fields,
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
-@extend_schema(
-    extensions={
-        "x-app-name":   "Courses",
-        "x-model-name": "Courses",
-    }
-)
+@extend_schema(extensions={"x-app-name": "Courses", "x-model-name": "Courses"})
 @with_flex_fields_parameters()
-class CourseViewSet(
-    AllowAnonymousListRetrieveViewSetMixin,
-    ModelViewSetMixin,
-    ModelViewSet,
-):
+class CourseViewSet(AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin, ModelViewSet):
     __doc__ = "Courses"
 
     queryset         = Course.objects.all()
     filterset_class  = CourseFilter
+    serializer_class = CourseSerializer
     search_fields    = ("slug", "name", "description")
-
-    def get_serializer_class(self):
-        if self.action == "list":
-            return CourseListSerializer
-        else:
-            return CourseSerializer

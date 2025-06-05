@@ -14,10 +14,8 @@ from django.utils.translation             import gettext_lazy as _
 
 from openbook.core.models.mixins.datetime import DurationMixin
 from openbook.core.models.mixins.uuid     import UUIDMixin
-
 from .mixins.audit                        import CreatedModifiedByMixin
 from .mixins.scope                        import ScopeMixin
-from ..middleware.current_user            import get_current_user
 
 class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin):
     """

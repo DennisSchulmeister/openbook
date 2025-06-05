@@ -7,22 +7,51 @@
 # License, or (at your option) any later version.
 
 from drf_spectacular.utils      import extend_schema
+from drf_spectacular.utils      import extend_schema_field
+from drf_spectacular.utils      import extend_schema_view
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import BooleanFilter
 from django_filters.filters     import CharFilter
+from rest_flex_fields           import FlexFieldsModelSerializer
+from rest_framework.permissions import AllowAny
+from rest_framework.serializers import SerializerMethodField
+from rest_framework.response    import Response
 from rest_framework.viewsets    import ModelViewSet
+from rest_framework.viewsets    import ViewSet
 
 from openbook.drf               import ModelViewSetMixin
 from openbook.drf               import with_flex_fields_parameters
 from ..models.user              import User
-from ..serializers.user         import UserDetailsReadSerializer
-from ..serializers.user         import UserDetailsUpdateSerializer
-from ..serializers.user         import UserReadSerializer
+from ..models.user_profile      import UserProfile
 
-# class CurrentUserReadSerializer(UserDetailsReadSerializer):
-#     class Meta:
-#         model  = User
-#         fields = (*UserDetailsReadSerializer.Meta.fields, "email", "is_authenticated")
+class UserProfileSerializer(FlexFieldsModelSerializer):
+    __doc__ = "User Profile"
+
+    class Meta:
+        model  = UserProfile
+        fields = ("user", "description", "picture")
+
+class UserSerializer(FlexFieldsModelSerializer):
+    __doc__ = "User"
+
+    full_name = SerializerMethodField()
+
+    class Meta:
+        model    = User
+        fields   = ("username", "full_name", "first_name", "last_name", "profile")
+        filterset_fields = ("first_name", "last_name", "is_staff")
+        expandable_fields = {"profile": UserProfileSerializer}
+    
+    @extend_schema_field(str)
+    def get_full_name(self, obj):
+        return obj.get_full_name() if hasattr(obj, "get_full_name") else ""
+
+class CurrentUserSerializer(UserSerializer):
+    __doc__ = "Current User"
+
+    class Meta:
+        model  = User
+        fields = (*UserSerializer.Meta.fields, "email", "is_authenticated")
 
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
@@ -45,19 +74,48 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     """
     Read/write view set to query active users and update/delete the own user profile.
     """
-    __doc__ = "User Profiles"
+    __doc__ = "Users"
 
     lookup_field       = "username"
     queryset           = User.objects.filter(is_active = True)
     http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
     filterset_class    = UserFilter
+    serializer_class   = UserSerializer
     ordering           = ("username",)
     search_fields      = ("username", "first_name", "last_name", "email")
 
-    def get_serializer_class(self):
-        if self.action == "list":
-            return UserReadSerializer
-        elif self.action in ("update", "partial_update"):
-            return UserDetailsUpdateSerializer
+@extend_schema(
+    extensions={
+        "x-app-name":   "User Management",
+        "x-model-name": "Current User",
+    }
+)
+@extend_schema_view(retrieve=extend_schema(exclude=True))
+@with_flex_fields_parameters()
+class CurrentUserViewSet(ViewSet):
+    """
+    GET endpoint to retrieve the user profile of the currently logged-in user. If the
+    user is not logged in, a simple response with `is_authenticated = false` is returned.
+    """
+    __doc__ = "Current User"
+
+    permission_classes = [AllowAny]
+
+    def get_view_name(self):
+        return "Current User"
+
+    @extend_schema(
+        operation_id= "auth_current_user",
+        description = "Returns the currently authenticated user or a fallback response.",
+        responses   = CurrentUserSerializer,
+        summary     = "Retrieve",
+    )
+    def list(self, request):
+        if request.user.is_authenticated:
+            return Response(CurrentUserSerializer(request.user).data)
         else:
-            return UserDetailsReadSerializer
+            return Response({"is_authenticated": False})
+
+    def retrieve(self, request, pk=None):
+        # Disable detail route
+        raise NotImplementedError()

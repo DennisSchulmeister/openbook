@@ -10,21 +10,23 @@ from django_filters.filters     import CharFilter
 from django_filters.filterset   import FilterSet
 from drf_spectacular.utils      import extend_schema
 from drf_spectacular.utils      import inline_serializer
+from rest_flex_fields           import FlexFieldsModelSerializer
 from rest_framework.viewsets    import ReadOnlyModelViewSet
 from rest_framework.decorators  import action
 from rest_framework.response    import Response
 from rest_framework.serializers import CharField
-from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import AllowAny
 
 from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf               import with_flex_fields_parameters
 from ..models.site              import Site
 
-# class SiteSerializer(ModelSerializer):
-#     class Meta:
-#         model  = Site
-#         fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
+class SiteSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Site"
+
+    class Meta:
+        model  = Site
+        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
 
 class SiteFilter(FilterSet):
     domain     = CharFilter(lookup_expr="icontains")

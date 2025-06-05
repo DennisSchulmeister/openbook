@@ -7,69 +7,39 @@
 # License, or (at your option) any later version.
 
 from django.contrib.auth.models import Permission
+from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import Field
 
-from ..models.permission        import Permission_T
-from ..utils                    import app_label_for_permission
-from ..utils                    import app_name_for_permission
-from ..utils                    import model_for_permission
-from ..utils                    import model_name_for_permission
-from ..utils                    import perm_name_for_permission
 from ..utils                    import perm_string_for_permission
+from ..utils                    import permission_for_perm_string
 
-class PermissionSerializer(FlexFieldsModelSerializer):
-    __doc__ = "Permission"
 
-    perm_string        = SerializerMethodField()
-    perm_display_name  = SerializerMethodField()
-    app                = SerializerMethodField()
-    app_display_name   = SerializerMethodField()
-    model              = SerializerMethodField()
-    model_display_name = SerializerMethodField()
+@extend_schema_field(str)
+class PermissionField(Field):
+    """
+    Serializer field to use permission string as input and output instead of a
+    permission's raw PK.
+    """
+    default_error_messages = {
+        "not_found": _("Permission '{value}' not found."),
+        "invalid":   _("Invalid format: Expected a permission string."),
+        "required":  _("Permission string is required."),
+    }
+    def to_internal_value(self, data):
+        if data is None:
+            if self.required:
+                self.fail("required")
+            else:
+                return None
+            
+        if not isinstance(data, str):
+            self.fail("invalid")
 
-    class Meta:
-        model = Permission
+        try:
+            return permission_for_perm_string(data)
+        except Permission.DoesNotExist:
+            self.fail("not_found", value=data)
 
-        fields = (
-            "id",
-            "name", "codename",
-            "perm_string", "perm_display_name",
-            "app", "app_display_name",
-            "model", "model_display_name",
-        )
-
-        read_only_fields = ("id",)
-    
-    @extend_schema_field(str)
-    def get_perm_string(self, obj: Permission) -> str:
+    def to_representation(self, obj):
         return perm_string_for_permission(obj)
-
-    @extend_schema_field(str)
-    def get_perm_display_name(self, obj: Permission) -> str:
-        return perm_name_for_permission(obj)
-
-    @extend_schema_field(str)
-    def get_app(self, obj: Permission) -> str:
-        return app_label_for_permission(obj)
-
-    @extend_schema_field(str)
-    def get_app_display_name(self, obj: Permission) -> str:
-        return app_name_for_permission(obj)
-
-    @extend_schema_field(str)
-    def get_model(self, obj: Permission) -> str:
-        return model_for_permission(obj)
-
-    @extend_schema_field(str)
-    def get_model_display_name(self, obj: Permission) -> str:
-        return model_name_for_permission(obj)
-
-class PermissionTSerializer(FlexFieldsModelSerializer):
-    __doc__ = "Permission Label"
-
-    class Meta:
-        model  = Permission_T
-        fields = ("id", "language", "parent", "name")
-        expandable_fields = {"parent": PermissionSerializer}

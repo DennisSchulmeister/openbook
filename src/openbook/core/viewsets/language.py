@@ -6,20 +6,22 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters     import CharFilter
-from django_filters.filterset   import FilterSet
-from drf_spectacular.utils      import extend_schema
-from rest_framework.viewsets    import ReadOnlyModelViewSet
-from rest_framework.serializers import ModelSerializer
+from django_filters.filters   import CharFilter
+from django_filters.filterset import FilterSet
+from drf_spectacular.utils    import extend_schema
+from rest_flex_fields         import FlexFieldsModelSerializer
+from rest_framework.viewsets  import ReadOnlyModelViewSet
 
-from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..models.language          import Language
+from openbook.drf             import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf             import with_flex_fields_parameters
+from ..models.language        import Language
 
-# class LanguageSerializer(ModelSerializer):
-#     class Meta:
-#         model  = Language
-#         fields = ("language", "name")
+class LanguageSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Language"
+
+    class Meta:
+        model  = Language
+        fields = ("language", "name")
 
 class LanguageFilter(FilterSet):
     name = CharFilter(lookup_expr="icontains")

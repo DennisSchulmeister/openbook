@@ -6,7 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models         import Permission
 from django.utils.translation           import gettext_lazy as _
 from import_export.fields               import Field
 from import_export.widgets              import ForeignKeyWidget
@@ -15,20 +14,18 @@ from openbook.admin                     import CustomModelAdmin
 from openbook.admin                     import ImportExportModelResource
 from openbook.core.models.language      import Language
 from ..import_export.permission         import PermissionForeignKeyWidget
-from ..models.permission                import Permission_T
-from ..utils                            import perm_string_for_permission
-from ..utils                            import permission_for_perm_string
+from ..models.permission_text           import PermissionText
 
 class PermissionTextResource(ImportExportModelResource):
     parent   = Field(attribute="parent",   widget=PermissionForeignKeyWidget())
     language = Field(attribute="language", widget=ForeignKeyWidget(model=Language, field="language"))
 
     class Meta:
-        model  = Permission_T
+        model  = PermissionText
         fields = ("id", "delete", "parent", "language", "name")
 
 class PermissionTextAdmin(CustomModelAdmin):
-    model              = Permission_T
+    model              = PermissionText
     resource_classes   = (PermissionTextResource,)
     list_display       = ("appname", "perm_name", "perm", "language", "name")
     list_display_links = ("appname", "perm_name", "perm", "language")

@@ -6,8 +6,8 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.db                   import models
-from django.utils.translation    import gettext_lazy as _
+from django.db                         import models
+from django.utils.translation          import gettext_lazy as _
 
 from openbook.auth.models.mixins.audit import CreatedModifiedByMixin
 from openbook.auth.models.mixins.scope import ScopedRolesMixin

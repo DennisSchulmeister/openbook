@@ -9,55 +9,38 @@
 from django.utils.translation           import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from drf_spectacular.utils              import extend_schema_field
-from rest_flex_fields                   import FlexFieldsModelSerializer
 from rest_framework.serializers         import Field
 from rest_framework.serializers         import ListField
 
-from openbook.drf                       import ModelSerializer
-from ..access_request                   import AccessRequestWithRoleReadSerializer
-from ..enrollment_method                import EnrollmentMethodWithRoleReadSerializer
-from ..user                             import UserReadField
-from ..user                             import UserWriteField
-from ..permission                       import PermissionReadSerializer
-from ..permission                       import PermissionWriteField
-from ..role_assignment                  import RoleAssignmentReadSerializer
+from ..user                             import UserField
+from ..permission                       import PermissionField
 from ...utils                           import content_type_for_model_string
 from ...utils                           import model_string_for_content_type
 from ...validators                      import validate_scope_type
 from ...validators                      import validate_permissions
 
-class ScopedRolesListSerializerMixin(FlexFieldsModelSerializer):
-    """
-    Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
-    act as permission scope for user roles. List serializer, which only adds the `owner` field.
-    """
-    owner = UserReadField(read_only=True)
-
-    class Meta:
-        fields = ("owner",)
-
-class ScopedRolesSerializerMixin(FlexFieldsModelSerializer):
+class ScopedRolesSerializerMixin:
     """
     Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
     act as permission scope for user roles. Default serializer, that adds all scope fields.
     """
-    owner                     = UserReadField(read_only=True)
-    owner_username            = UserWriteField(write_only=True, source="owner")
-    public_permissions        = PermissionReadSerializer(many=True, read_only=True)
-    public_permission_strings = ListField(child=PermissionWriteField(), write_only=True, source="public_permissions")
-    role_assignments          = RoleAssignmentReadSerializer(many=True, read_only=True)
-    enrollment_methods        = EnrollmentMethodWithRoleReadSerializer(many=True, read_only=True)
-    access_requests           = AccessRequestWithRoleReadSerializer(many=True, read_only=True)
+    owner             = UserField(read_only=True)
+    public_permission = ListField(child=PermissionField())
 
     class Meta:
         fields = (
-            "owner", "owner_username",
-            "public_permissions", "public_permission_strings",
-            "role_assignments",
+            "owner", "public_permissions",
             "role_assignments", "enrollment_methods", "access_requests",
         )
 
-        read_only_fields = ()
+        read_only_fields = ("role_assignments", "enrollment_methods", "access_requests")
+
+        expandable_fields = {
+            "public_permissions": ("openbook.auth.viewsets.permission.PermissionSerializer",              {"many": True}),
+            "role_assignments":   ("openbook.auth.viewsets.role_assignment.RoleAssignmentSerializer",     {"many": True}),
+            "enrollment_methods": ("openbook.auth.viewsets.enrollment_method.EnrollmentMethodSerializer", {"many": True}),
+            "access_requests":    ("openbook.auth.viewsets.access_request.AccessRequestSerializer",       {"many": True}),
+        }
 
     def validate(self, attributes):
         """
@@ -67,12 +50,12 @@ class ScopedRolesSerializerMixin(FlexFieldsModelSerializer):
         public_permissions = attributes.get("public_permissions", None)
 
         validate_permissions(scope_type, public_permissions)
-        return attributes
+        return super().validate(attributes)
 
 @extend_schema_field(str)
 class ScopeTypeField(Field):
     """
-    Serializer field for the scope_type. Uses the fully-qualified model name instead
+    Serializer field for the `scope_type` to use the fully-qualified model name instead
     of the PK for input and output.
     """
     default_error_messages = {
@@ -85,29 +68,12 @@ class ScopeTypeField(Field):
             self.fail("invalid")
 
         try:
-            return content_type_for_model_string(data)
+            scope_type = content_type_for_model_string(data)
         except ContentType.DoesNotExist:
             self.fail("not_found", value=data)
+        
+        validate_scope_type(scope_type)
+        return scope_type
 
     def to_representation(self, obj):
         return model_string_for_content_type(obj)
-        
-class ScopeSerializerMixin(FlexFieldsModelSerializer):
-    """
-    Mixin class for model serializers whose models implement the `ScopeMixin` and as such have
-    the fields `scope_type` and `scope_uuid`.
-    """
-    scope_type = ScopeTypeField()
-
-    class Meta:
-        fields = ("scope_type", "scope_uuid")
-        read_only_fields = ()
-    
-    def validate(self, attributes):
-        """
-        Check that only valid scope types are assigned, whose model class implements
-        the `ScopedRolesMixin`.
-        """
-        scope_type = attributes.get("scope_type", None)
-        validate_scope_type(scope_type)
-        return attributes

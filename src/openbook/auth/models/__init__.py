@@ -11,7 +11,7 @@ from .anonymous_permission    import AnonymousPermission
 from .allowed_role_permission import AllowedRolePermission
 from .enrollment_method       import EnrollmentMethod
 from .group                   import Group
-from .permission              import Permission_T
+from .permission_text         import PermissionText
 from .role_assignment         import RoleAssignment
 from .role                    import Role
 from .user                    import User

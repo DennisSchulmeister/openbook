@@ -13,14 +13,14 @@ from django.urls                   import reverse
 from openbook.core.models.language import Language
 from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
-from ..models.permission           import Permission_T
+from ..models.permission_text      import PermissionText
 
-class PermissionT_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
+class PermissionText_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `PermissionTViewSet` REST API.
     """
     base_name     = "permission"
-    model         = Permission_T
+    model         = PermissionText
     search_string = "Permission"
     search_count  = 1
     sort_field    = "name"
@@ -42,13 +42,13 @@ class PermissionT_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         language_en   = Language.objects.create(language="en", name="English")
         language_de   = Language.objects.create(language="de", name="Deutsch")
 
-        self.translated_en = Permission_T.objects.create(
+        self.translated_en = PermissionText.objects.create(
             parent  = permission,
             language= language_en,
             name    = "Test Permission Name",
         )
         
-        Permission_T.objects.create(
+        PermissionText.objects.create(
             parent  = permission,
             language= language_de,
             name    = "Test Berechtigung",

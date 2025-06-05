@@ -14,7 +14,7 @@ def perm_name_for_permission(permission: "Permission") -> str:
     """
     Get clear-text, translated permission name from permission object.
     """
-    from .models.permission import Permission_T
+    from .models.permission_text import PermissionText
     language = get_current_language()
 
     if not permission:
@@ -22,11 +22,11 @@ def perm_name_for_permission(permission: "Permission") -> str:
 
     if language:
         try:
-            translation = Permission_T.objects.get(parent = permission, language = language)
+            translation = PermissionText.objects.get(parent = permission, language = language)
 
             if translation.name:
                 return translation.name
-        except Permission_T.DoesNotExist:
+        except PermissionText.DoesNotExist:
             pass
     
     return permission.name

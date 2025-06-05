@@ -6,15 +6,25 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from .viewsets.access_request          import AccessRequestViewSet
+from .viewsets.allowed_role_permission import AllowedRolePermissionViewSet
+from .viewsets.enrollment_method       import EnrollmentMethodViewSet
+from .viewsets.permission              import PermissionViewSet
+from .viewsets.permission_text         import PermissionTextViewSet
+from .viewsets.role_assignment         import RoleAssignmentViewSet
+from .viewsets.role                    import RoleViewSet
+from .viewsets.scope                   import ScopeTypeViewSet
+from .viewsets.user                    import CurrentUserViewSet
+from .viewsets.user                    import UserViewSet
 
 def register_api_routes(router, prefix):
-    # router.register(f"{prefix}/access_requests",          viewsets.AccessRequestViewSet,         basename="access_request")
-    # router.register(f"{prefix}/allowed_role_permissions", viewsets.AllowedRolePermissionViewSet, basename="allowed_role_permission")
-    # router.register(f"{prefix}/current_user",             viewsets.CurrentUserViewSet,           basename="current_user")
-    # router.register(f"{prefix}/enrollment_methods",       viewsets.EnrollmentMethodViewSet,      basename="enrollment_method")
-    # router.register(f"{prefix}/users",                    viewsets.UserViewSet,                  basename="user")
-    # router.register(f"{prefix}/permissions",              viewsets.PermissionTViewSet,           basename="permission")
-    # router.register(f"{prefix}/roles",                    viewsets.RoleViewSet,                  basename="role")
-    # router.register(f"{prefix}/role_assignments",         viewsets.RoleAssignmentViewSet,        basename="role_assignment")
-    router.register(f"{prefix}/scope_types",              viewsets.ScopeTypeViewSet,             basename="scope_type")
+    router.register(f"{prefix}/access_requests",          AccessRequestViewSet,         basename="access_request")
+    router.register(f"{prefix}/allowed_role_permissions", AllowedRolePermissionViewSet, basename="allowed_role_permission")
+    router.register(f"{prefix}/current_user",             CurrentUserViewSet,           basename="current_user")
+    router.register(f"{prefix}/enrollment_methods",       EnrollmentMethodViewSet,      basename="enrollment_method")
+    router.register(f"{prefix}/users",                    UserViewSet,                  basename="user")
+    router.register(f"{prefix}/permissions",              PermissionViewSet,            basename="permission")
+    router.register(f"{prefix}/permission_texts"          PermissionTextViewSet,        basename="permission_text")
+    router.register(f"{prefix}/roles",                    RoleViewSet,                  basename="role")
+    router.register(f"{prefix}/role_assignments",         RoleAssignmentViewSet,        basename="role_assignment")
+    router.register(f"{prefix}/scope_types",              ScopeTypeViewSet,             basename="scope_type")

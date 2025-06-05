@@ -6,10 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filterset import FilterSet
-from django_filters.filters   import CharFilter
+from django_filters.filters import CharFilter
 
-class ScopedRolesFilterMixin(FilterSet):
+class ScopedRolesFilterMixin:
     """
     Mixin filter class for any model that implements the `ScopedRolesMixin` and as such has
     an `owner` field.
@@ -22,7 +21,7 @@ class ScopedRolesFilterMixin(FilterSet):
     def owner_filter(self, queryset, name, value):
         return queryset.filter(owner__username=value)
 
-class ScopeTypeFilterMixin(FilterSet):
+class ScopeTypeFilterMixin:
     """
     Mixin filter class for any model that has a `scope_type` field.
     """

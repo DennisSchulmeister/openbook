@@ -21,7 +21,7 @@ from rest_framework.viewsets            import ViewSet
 
 from openbook.drf                       import with_flex_fields_parameters
 from ..models.allowed_role_permission   import AllowedRolePermission
-from ..models.permission                import Permission_T
+from ..models.permission_text           import PermissionText
 from ..models.mixins.scope              import ScopedRolesMixin
 from ..utils                            import perm_string_for_permission
 from ..utils                            import content_type_for_model_string
@@ -145,7 +145,7 @@ class ScopeTypeViewSet(ViewSet):
             if allowed_role_permission.permission:
                 allowed_permissions.append(allowed_role_permission.permission)
         
-        translations = Permission_T.objects.filter(parent__in=allowed_permissions).all()
+        translations = PermissionText.objects.filter(parent__in=allowed_permissions).all()
 
         for allowed_role_permission in allowed_role_permissions:
             permission = allowed_role_permission.permission

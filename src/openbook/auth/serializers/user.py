@@ -6,32 +6,37 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.utils.translation   import gettext_lazy as _
 from drf_spectacular.utils      import extend_schema_field
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import Field
 
 from ..models.user              import User
-from ..models.user_profile      import UserProfile
 
-class UserProfileSerializer(FlexFieldsModelSerializer):
-    __doc__ = "User Profile"
+@extend_schema_field(str)
+class UserField(Field):
+    """
+    Serializer field to use the username for input and output instead of a user's raw PK.
+    """
+    default_error_messages = {
+        "not_found": _("User '{value}' not found."),
+        "invalid":   _("Invalid format: Expected a username string."),
+        "required":  _("Username is required"),
+    }
 
-    class Meta:
-        model  = UserProfile
-        fields = ("user", "description", "picture")
+    def to_internal_value(self, data):
+        if data is None:
+            if self.required:
+                self.fail("required")
+            else:
+                return None
+            
+        if not isinstance(data, str):
+            self.fail("invalid")
 
-class UserSerializer(FlexFieldsModelSerializer):
-    __doc__ = "User"
+        try:
+            return User.objects.get(username=data)
+        except User.DoesNotExist:
+            self.fail("not_found", value=data)
 
-    full_name = SerializerMethodField()
-
-    class Meta:
-        model    = User
-        fields   = ("username", "full_name", "first_name", "last_name", "profile")
-        filterset_fields = ("first_name", "last_name", "is_staff")
-        expandable_fields = {"profile": UserProfileSerializer}
-    
-    @extend_schema_field(str)
-    def get_full_name(self, obj):
-        return obj.get_full_name() if hasattr(obj, "get_full_name") else ""
-    
+    def to_representation(self, obj):
+        return obj.username

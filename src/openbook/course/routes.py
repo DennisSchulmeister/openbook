@@ -6,8 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from . import viewsets
+from .viewsets.course import CourseViewSet
 
 def register_api_routes(router, prefix):
-    pass
-    # router.register(f"{prefix}/courses", viewsets.CourseViewSet, basename="course")
+    router.register(f"{prefix}/courses", CourseViewSet, basename="course")

@@ -17,7 +17,7 @@ from ..utils                              import app_name_for_permission
 from ..utils                              import perm_name_for_permission
 from ..utils                              import perm_string_for_permission
 
-class Permission_T(UUIDMixin, TranslatableMixin):
+class PermissionText(UUIDMixin, TranslatableMixin):
     """
     Translated permission name.
     """
@@ -29,7 +29,7 @@ class Permission_T(UUIDMixin, TranslatableMixin):
         verbose_name_plural = _("Translated Permissions")
 
         constraints = (
-            models.UniqueConstraint(fields=("parent", "language"), name="unique_permission_translation"),
+            models.UniqueConstraint(fields=("parent", "language"), name="unique_PermissionTextranslation"),
         )
     
     @admin.display(description=_("Application"))

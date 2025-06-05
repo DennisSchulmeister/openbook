@@ -6,10 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filterset import FilterSet
-from django_filters.filters   import CharFilter
+from django_filters.filters import CharFilter
 
-class PermissionsFilterMixin(FilterSet):
+class PermissionsFilterMixin:
     """
     Mixin filter class for any model that has a M2M relationship on the Django permission object.
     This allows to filter queries by the full permission string. Use it like this:

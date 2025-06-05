@@ -13,19 +13,19 @@ from .allowed_role_permission import AllowedRolePermissionAdmin
 from .anonymous_permission    import AnonymousPermissionAdmin
 from .enrollment_method       import EnrollmentMethodAdmin
 from .group                   import GroupAdmin
-from .permission              import PermissionTextAdmin
+from .permission_text         import PermissionTextAdmin
 from .role                    import RoleAdmin
 from .role_assignment         import RoleAssignmentAdmin
 from .user                    import UserAdmin
 
 from ..                       import models
 
-admin_site.register(models.User, UserAdmin)
-admin_site.register(models.Group, GroupAdmin)
-admin_site.register(models.Permission_T, PermissionTextAdmin)
-admin_site.register(models.AnonymousPermission, AnonymousPermissionAdmin)
+admin_site.register(models.User,                  UserAdmin)
+admin_site.register(models.Group,                 GroupAdmin)
+admin_site.register(models.PermissionText,        PermissionTextAdmin)
+admin_site.register(models.AnonymousPermission,   AnonymousPermissionAdmin)
 admin_site.register(models.AllowedRolePermission, AllowedRolePermissionAdmin)
-admin_site.register(models.Role, RoleAdmin)
-admin_site.register(models.RoleAssignment, RoleAssignmentAdmin)
-admin_site.register(models.EnrollmentMethod, EnrollmentMethodAdmin)
-admin_site.register(models.AccessRequest, AccessRequestAdmin)
+admin_site.register(models.Role,                  RoleAdmin)
+admin_site.register(models.RoleAssignment,        RoleAssignmentAdmin)
+admin_site.register(models.EnrollmentMethod,      EnrollmentMethodAdmin)
+admin_site.register(models.AccessRequest,         AccessRequestAdmin)

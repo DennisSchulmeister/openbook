@@ -16,7 +16,7 @@ from ..utils                          import permission_for_perm_string
 from ..validators                     import validate_permissions
 from ..utils                          import content_type_for_model_string
 
-class AllowedRolePermission_Test_Mixin:
+class AllowedRolePermissionTextest_Mixin:
     def setUp(self):
         super().setUp()
         reset_current_user()
@@ -33,7 +33,7 @@ class AllowedRolePermission_Test_Mixin:
             permission = permission_for_perm_string("admin.view_logentry"),
         )
 
-class AllowedRolePermission_Model_Tests(AllowedRolePermission_Test_Mixin, TestCase):
+class AllowedRolePermission_Model_Tests(AllowedRolePermissionTextest_Mixin, TestCase):
     """
     Tests for the `AllowedRolePermission` model.
     """
@@ -59,7 +59,7 @@ class AllowedRolePermission_Model_Tests(AllowedRolePermission_Test_Mixin, TestCa
         with self.assertRaises(ValidationError):
             validate_permissions(self.scope_type, disallowed)
     
-class AllowedRolePermission_ViewSet_Tests(ModelViewSetTestMixin, AllowedRolePermission_Test_Mixin, TestCase):
+class AllowedRolePermission_ViewSet_Tests(ModelViewSetTestMixin, AllowedRolePermissionTextest_Mixin, TestCase):
     """
     Tests for the `AllowedRolePermissionViewSet` REST API.
     """

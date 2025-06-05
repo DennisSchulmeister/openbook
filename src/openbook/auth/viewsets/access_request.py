@@ -6,104 +6,49 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters                    import CharFilter
-from drf_spectacular.utils                     import extend_schema
-from rest_framework.decorators                 import action
-from rest_framework.response                   import Response
-from rest_framework.serializers                import CharField
-from rest_framework.viewsets                   import ModelViewSet
+from django_filters.filters     import CharFilter
+from django_filters.filterset   import FilterSet
+from drf_spectacular.utils      import extend_schema
+from rest_flex_fields           import FlexFieldsModelSerializer
+from rest_framework.decorators  import action
+from rest_framework.response    import Response
+from rest_framework.viewsets    import ModelViewSet
 
-from openbook.drf                              import ModelViewSetMixin
-from openbook.drf                              import with_flex_fields_parameters
-from openbook.core.serializers.mixins.datetime import DurationSerializerMixin
-from openbook.core.serializers.mixins.uuid     import UUIDSerializerMixin
+from openbook.drf               import ModelViewSetMixin
+from openbook.drf               import with_flex_fields_parameters
+from ..filters.mixins.audit     import CreatedModifiedByFilterMixin
+from ..filters.mixins.scope     import ScopeFilterMixin
+from ..models.access_request    import AccessRequest
+from ..serializers.mixins.scope import ScopeTypeField
+from ..serializers.user         import UserField
 
-from ..filters.mixins.audit                    import CreatedModifiedByFilterMixin
-from ..filters.mixins.scope                    import ScopeFilterMixin
-from ..models.access_request                   import AccessRequest
-from ..models.role                             import Role
-from ..serializers.mixins.audit                import CreatedModifiedBySerializerMixin
-from ..serializers.mixins.scope                import ScopeSerializerMixin
-from ..serializers.role                        import RoleReadField
-from ..serializers.user                        import UserReadField
-from ..serializers.user                        import UserWriteField
+class AccessRequestSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Access Request"
 
-# class AccessRequestListSerializer(
-#     UUIDSerializerMixin,
-#     ScopeSerializerMixin,
-#     CreatedModifiedBySerializerMixin,
-# ):
-#     """
-#     Reduced list of fields for getting a list of access request.
-#     """
-#     user = UserReadField(read_only=True)
-#     role = RoleReadField(read_only=True)
-# 
-#     class Meta:
-#         model = AccessRequest
-#         fields = (
-#             *UUIDSerializerMixin.Meta.fields,
-#             *ScopeSerializerMixin.Meta.fields,
-#             "role", "user",
-#             "decision", "decision_date",
-#             *CreatedModifiedBySerializerMixin.Meta.fields,
-#         )
-#         read_only_fields = fields
-# 
-# class AccessRequestSerializer(
-#     UUIDSerializerMixin,
-#     ScopeSerializerMixin,
-#     DurationSerializerMixin,
-#     CreatedModifiedBySerializerMixin,
-# ):
-#     """
-#     Full list of fields for retrieving a single access request.
-#     """
-#     role          = RoleReadField(read_only=True)
-#     role_slug     = CharField(write_only=True)
-#     user          = UserReadField(read_only=True)
-#     user_username = UserWriteField(write_only=True, source="user")
-# 
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-# 
-#     class Meta:
-#         model  = AccessRequest
-#         fields = (
-#             *UUIDSerializerMixin.Meta.fields,
-#             *ScopeSerializerMixin.Meta.fields,
-#             "role", "role_slug",
-#             "user", "user_username",
-#             "end_date",
-#             *DurationSerializerMixin.Meta.fields,
-#             "decision", "decision_date",
-#             *CreatedModifiedBySerializerMixin.Meta.fields,
-#         )
-# 
-#         read_only_fields = (
-#             *UUIDSerializerMixin.Meta.read_only_fields,
-#             *ScopeSerializerMixin.Meta.read_only_fields,
-#             *DurationSerializerMixin.Meta.read_only_fields,
-#             "decision_date",
-#             *CreatedModifiedBySerializerMixin.Meta.read_only_fields,
-#         )
-# 
-#     def validate(self, attributes):        
-#         if "scope_type"  in attributes \
-#         and "scope_uuid" in attributes \
-#         and "role_slug"  in attributes:
-#             attributes["role"] = Role.objects.get(
-#                 scope_type = attributes["scope_type"],
-#                 scope_uuid = attributes["scope_uuid"],
-#                 slug       = attributes.pop("role_slug"),
-#             )
-#             
-#         return attributes
-    
-class AccessRequestFilter(
-    ScopeFilterMixin,
-    CreatedModifiedByFilterMixin,
-):
+    scope_type  = ScopeTypeField()
+    user        = UserField()
+    created_by  = UserField(read_only=True)
+    modified_by = UserField(read_only=True)
+
+    class Meta:
+        model = AccessRequest
+
+        fields = (
+            "id", "scope_type", "scope_uuid",
+            "user", "role", "decision", "decision_date",
+            "created_by", "created_at", "modified_by", "modified_at",
+        )
+
+        read_only_fields = ("id", "decision_date", "created_at", "modified_at")
+
+        expandable_fields = {
+            "user":        "openbook.auth.serializers.user.UserSerializer",
+            "role":        "openbook.auth.serializers.role.RoleSerializer",
+            "created_by":  "openbook.auth.viewsets.user.UserSerializer",
+            "modified_by": "openbook.auth.viewsets.user.UserSerializer",
+        }
+
+class AccessRequestFilter(ScopeFilterMixin, CreatedModifiedByFilterMixin, FilterSet):
     role = CharFilter(method="role_filter")
     user = CharFilter(method="user_filter")
 
@@ -134,16 +79,15 @@ class AccessRequestFilter(
 class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Access requests to get a scoped role assigned"
 
-    queryset        = AccessRequest.objects.all()
-    filterset_class = AccessRequestFilter
-    ordering        = ("scope_type", "scope_uuid", "user__username", "role__slug")
-    search_fields   = ("user__username", "user__first_name", "user__last_name", "user__email", "role__slug", "role__name", "role__description")
+    queryset         = AccessRequest.objects.all()
+    filterset_class  = AccessRequestFilter
+    serializer_class = AccessRequestSerializer
+    ordering         = ("scope_type", "scope_uuid", "user__username", "role__slug")
 
-    def get_serializer_class(self):
-        if self.action == "list":
-            return AccessRequestListSerializer
-        else:
-            return AccessRequestSerializer
+    search_fields = (
+        "user__username", "user__first_name", "user__last_name", "user__email",
+        "role__slug", "role__name", "role__description"
+    )
 
     @extend_schema(
         operation_id = "auth_access_requests_accept",

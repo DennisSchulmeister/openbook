@@ -7,35 +7,81 @@
 # License, or (at your option) any later version.
 
 from drf_spectacular.utils      import extend_schema
+from drf_spectacular.utils      import extend_schema_field
 from django.contrib.auth.models import Permission
 from django_filters.filterset   import FilterSet
 from django_filters.filters     import CharFilter
+from rest_flex_fields           import FlexFieldsModelSerializer
 from rest_framework.viewsets    import ReadOnlyModelViewSet
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import SerializerMethodField
 
 from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf               import with_flex_fields_parameters
-from ..models.permission        import Permission_T
-from ..serializers.permission   import PermissionReadSerializer
+from ..models.permission_text   import PermissionText
+from ..utils                    import app_label_for_permission
+from ..utils                    import app_name_for_permission
+from ..utils                    import model_for_permission
+from ..utils                    import model_name_for_permission
+from ..utils                    import perm_name_for_permission
+from ..utils                    import perm_string_for_permission
 from ..utils                    import permission_for_perm_string
 
-# class PermissionTSerializer(ModelSerializer):
-#     permission = PermissionReadSerializer(read_only=True, source="parent")
-# 
-#     class Meta:
-#         model  = Permission_T
-#         fields = ("id", "permission", "language", "name")
+class PermissionSerializer(FlexFieldsModelSerializer):
+    __doc__ = "Permission"
 
-class PermissionTFilter(FilterSet):
-    perm_string = CharFilter(label="Permission String", method="filter_perm_string")
-    app         = CharFilter(label="App",   field_name="parent__content_type__app_label", lookup_expr="icontains")
-    model       = CharFilter(label="Model", field_name="parent__content_type__model",     lookup_expr="icontains")
-    codename    = CharFilter(label="Code",  field_name="parent__codename",                lookup_expr="icontains")
-    name        = CharFilter(lookup_expr="icontains")
+    perm_string        = SerializerMethodField()
+    perm_display_name  = SerializerMethodField()
+    app                = SerializerMethodField()
+    app_display_name   = SerializerMethodField()
+    model              = SerializerMethodField()
+    model_display_name = SerializerMethodField()
 
     class Meta:
-        model  = Permission_T
-        fields = ("app", "model", "codename", "language", "name")
+        model = Permission
+
+        fields = (
+            "id",
+            "name", "codename",
+            "perm_string", "perm_display_name",
+            "app", "app_display_name",
+            "model", "model_display_name",
+        )
+
+        read_only_fields = ("id",)
+    
+    @extend_schema_field(str)
+    def get_perm_string(self, obj: Permission) -> str:
+        return perm_string_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_perm_display_name(self, obj: Permission) -> str:
+        return perm_name_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_app(self, obj: Permission) -> str:
+        return app_label_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_app_display_name(self, obj: Permission) -> str:
+        return app_name_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_model(self, obj: Permission) -> str:
+        return model_for_permission(obj)
+
+    @extend_schema_field(str)
+    def get_model_display_name(self, obj: Permission) -> str:
+        return model_name_for_permission(obj)
+
+class PermissionFilter(FilterSet):
+    perm_string = CharFilter(label="Permission String", method="filter_perm_string")
+    app         = CharFilter(label="App",   field_name="content_type__app_label", lookup_expr="icontains")
+    model       = CharFilter(label="Model", field_name="content_type__model",     lookup_expr="icontains")
+    codename    = CharFilter(label="Code",  field_name="codename",                lookup_expr="icontains")
+
+    class Meta:
+        model  = PermissionText
+        fields = ("app", "model", "codename")
     
     def filter_perm_string(self, queryset, name, value):
         try:
@@ -52,15 +98,11 @@ class PermissionTFilter(FilterSet):
     }
 )
 @with_flex_fields_parameters()
-class PermissionTViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
-    __doc__ = "Translated Permissions"
+class PermissionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
+    __doc__ = "Permissions"
 
-    queryset         = Permission_T.objects.all()
-    filterset_class  = PermissionTFilter
-    serializer_class = PermissionTSerializer
-    ordering         = ("parent__content_type__app_label", "parent__codename", "language__language")
-    search_fields    = (
-        "parent__content_type__app_label", "parent__codename",
-        "language__language", "language__name",
-        "name",
-    )
+    queryset         = Permission.objects.all()
+    filterset_class  = PermissionFilter
+    serializer_class = PermissionSerializer
+    ordering         = ("content_type__app_label", "codename")
+    search_fields    = ("content_type__app_label", "codename")
