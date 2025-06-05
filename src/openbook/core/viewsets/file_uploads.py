@@ -28,7 +28,7 @@ class MediaFileFilter(FilterSet):
 
     class Meta:
         model  = MediaFile
-        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
+        fields = ("content_type", "object_id", "file_name", "file_size", "mime_type")
 
 @extend_schema(
     extensions={

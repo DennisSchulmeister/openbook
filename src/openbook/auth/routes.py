@@ -24,7 +24,7 @@ def register_api_routes(router, prefix):
     router.register(f"{prefix}/enrollment_methods",       EnrollmentMethodViewSet,      basename="enrollment_method")
     router.register(f"{prefix}/users",                    UserViewSet,                  basename="user")
     router.register(f"{prefix}/permissions",              PermissionViewSet,            basename="permission")
-    router.register(f"{prefix}/permission_texts"          PermissionTextViewSet,        basename="permission_text")
+    router.register(f"{prefix}/permission_texts",         PermissionTextViewSet,        basename="permission_text")
     router.register(f"{prefix}/roles",                    RoleViewSet,                  basename="role")
     router.register(f"{prefix}/role_assignments",         RoleAssignmentViewSet,        basename="role_assignment")
     router.register(f"{prefix}/scope_types",              ScopeTypeViewSet,             basename="scope_type")
