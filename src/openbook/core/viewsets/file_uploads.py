@@ -6,15 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters   import CharFilter
-from django_filters.filterset import FilterSet
-from drf_spectacular.utils    import extend_schema
-from rest_flex_fields         import FlexFieldsModelSerializer
-from rest_framework.viewsets  import ModelViewSet
+from django_filters.filters        import CharFilter
+from django_filters.filterset      import FilterSet
+from drf_spectacular.utils         import extend_schema
+from rest_framework.viewsets       import ModelViewSet
 
-from openbook.drf             import ModelViewSetMixin
-from openbook.drf             import with_flex_fields_parameters
-from ..models.file_uploads    import MediaFile
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import ModelViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..models.file_uploads         import MediaFile
 
 class MediaFileSerializer(FlexFieldsModelSerializer):
     __doc__ = "Media File"

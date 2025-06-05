@@ -6,23 +6,22 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from drf_spectacular.utils      import extend_schema
-from drf_spectacular.utils      import extend_schema_field
-from drf_spectacular.utils      import extend_schema_view
-from django_filters.filterset   import FilterSet
-from django_filters.filters     import BooleanFilter
-from django_filters.filters     import CharFilter
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.serializers import SerializerMethodField
-from rest_framework.response    import Response
-from rest_framework.viewsets    import ModelViewSet
-from rest_framework.viewsets    import ViewSet
+from drf_spectacular.utils         import extend_schema
+from drf_spectacular.utils         import extend_schema_field
+from drf_spectacular.utils         import extend_schema_view
+from django_filters.filterset      import FilterSet
+from django_filters.filters        import BooleanFilter
+from django_filters.filters        import CharFilter
+from rest_framework.permissions    import AllowAny
+from rest_framework.serializers    import SerializerMethodField
+from rest_framework.response       import Response
+from rest_framework.viewsets       import ModelViewSet
 
-from openbook.drf               import ModelViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..models.user              import User
-from ..models.user_profile      import UserProfile
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import ModelViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..models.user                 import User
+from ..models.user_profile         import UserProfile
 
 class UserProfileSerializer(FlexFieldsModelSerializer):
     __doc__ = "User Profile"
@@ -37,9 +36,9 @@ class UserSerializer(FlexFieldsModelSerializer):
     full_name = SerializerMethodField()
 
     class Meta:
-        model    = User
-        fields   = ("username", "full_name", "first_name", "last_name", "profile")
-        filterset_fields = ("first_name", "last_name", "is_staff")
+        model             = User
+        fields            = ("id", "username", "full_name", "first_name", "last_name", "profile")
+        filterset_fields  = ("first_name", "last_name", "is_staff")
         expandable_fields = {"profile": UserProfileSerializer}
     
     @extend_schema_field(str)
@@ -63,8 +62,10 @@ class CurrentUserSerializer(UserSerializer):
     __doc__ = "Current User"
 
     class Meta:
-        model  = User
-        fields = (*UserSerializer.Meta.fields, "email", "is_authenticated")
+        model             = User
+        fields            = (*UserSerializer.Meta.fields, "email", "is_authenticated")
+        filterset_fields  = (*UserSerializer.Meta.filterset_fields,)
+        expandable_fields = {**UserSerializer.Meta.expandable_fields,}
 
 class UserFilter(FilterSet):
     first_name = CharFilter(lookup_expr="icontains")
@@ -105,7 +106,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
 )
 @extend_schema_view(retrieve=extend_schema(exclude=True))
 @with_flex_fields_parameters()
-class CurrentUserViewSet(ViewSet):
+class CurrentUserViewSet(ModelViewSet):
     """
     GET endpoint to retrieve the user profile of the currently logged-in user. If the
     user is not logged in, a simple response with `is_authenticated = false` is returned.
@@ -113,6 +114,7 @@ class CurrentUserViewSet(ViewSet):
     __doc__ = "Current User"
 
     permission_classes = [AllowAny]
+    serializer_class   = CurrentUserSerializer
 
     def get_view_name(self):
         return "Current User"
@@ -125,7 +127,8 @@ class CurrentUserViewSet(ViewSet):
     )
     def list(self, request):
         if request.user.is_authenticated:
-            return Response(CurrentUserSerializer(request.user).data)
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
         else:
             return Response({"is_authenticated": False})
 

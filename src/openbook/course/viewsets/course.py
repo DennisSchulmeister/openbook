@@ -8,12 +8,12 @@
 
 from django_filters.filterset               import FilterSet
 from drf_spectacular.utils                  import extend_schema
-from rest_flex_fields                       import FlexFieldsModelSerializer
 from rest_framework.viewsets                import ModelViewSet
 
-from openbook.drf                           import AllowAnonymousListRetrieveViewSetMixin
-from openbook.drf                           import ModelViewSetMixin
-from openbook.drf                           import with_flex_fields_parameters
+from openbook.drf.flex_serializers          import FlexFieldsModelSerializer
+from openbook.drf.viewsets                  import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf.viewsets                  import ModelViewSetMixin
+from openbook.drf.viewsets                  import with_flex_fields_parameters
 from openbook.auth.filters.mixins.audit     import CreatedModifiedByFilterMixin
 from openbook.auth.filters.mixins.scope     import ScopedRolesFilterMixin
 from openbook.auth.serializers.mixins.scope import ScopedRolesSerializerMixin

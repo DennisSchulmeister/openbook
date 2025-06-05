@@ -19,7 +19,6 @@ from rest_framework.serializers         import Serializer
 from rest_framework.serializers         import UUIDField
 from rest_framework.viewsets            import ViewSet
 
-from openbook.drf                       import with_flex_fields_parameters
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..models.permission_text           import PermissionText
 from ..models.mixins.scope              import ScopedRolesMixin
@@ -56,13 +55,14 @@ class ScopeTypeListSerializer(Serializer):
         "x-model-name": "Scope Types",
     }
 )
-@with_flex_fields_parameters()
 class ScopeTypeViewSet(ViewSet):
     """
     Permission scopes. When a list is requested, a flat list of scope types will be returned.
     If a single object is requested, full details including all scopes and allowed permissions
     will be returned.
     """
+    __doc__ = "Permission Scopes"
+    
     permission_classes = (IsAuthenticated,)
     pagination_class   = None
     filter_backends    = ()

@@ -6,19 +6,19 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from drf_spectacular.utils      import extend_schema
-from django_filters.filters     import CharFilter
-from django_filters.filterset   import FilterSet
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.viewsets    import ModelViewSet
+from drf_spectacular.utils         import extend_schema
+from django_filters.filters        import CharFilter
+from django_filters.filterset      import FilterSet
+from rest_framework.viewsets       import ModelViewSet
 
-from openbook.drf               import ModelViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..filters.mixins.audit     import CreatedModifiedByFilterMixin
-from ..filters.mixins.scope     import ScopeFilterMixin
-from ..models.role_assignment   import RoleAssignment
-from ..serializers.mixins.scope import ScopeTypeField
-from ..serializers.user         import UserField
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import ModelViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..filters.mixins.audit        import CreatedModifiedByFilterMixin
+from ..filters.mixins.scope        import ScopeFilterMixin
+from ..models.role_assignment      import RoleAssignment
+from ..serializers.mixins.scope    import ScopeTypeField
+from ..serializers.user            import UserField
 
 class RoleAssignmentSerializer(FlexFieldsModelSerializer):
     __doc__ = "Role Assignment"

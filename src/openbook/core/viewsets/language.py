@@ -6,15 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters   import CharFilter
-from django_filters.filterset import FilterSet
-from drf_spectacular.utils    import extend_schema
-from rest_flex_fields         import FlexFieldsModelSerializer
-from rest_framework.viewsets  import ReadOnlyModelViewSet
+from django_filters.filters        import CharFilter
+from django_filters.filterset      import FilterSet
+from drf_spectacular.utils         import extend_schema
+from rest_framework.viewsets       import ReadOnlyModelViewSet
 
-from openbook.drf             import AllowAnonymousListRetrieveViewSetMixin
-from openbook.drf             import with_flex_fields_parameters
-from ..models.language        import Language
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..models.language             import Language
 
 class LanguageSerializer(FlexFieldsModelSerializer):
     __doc__ = "Language"

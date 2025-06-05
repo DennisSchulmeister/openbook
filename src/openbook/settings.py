@@ -138,20 +138,9 @@ CHANNEL_LAYERS = {
 }
 
 # Django REST framework
-
-# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
-# Must be defined before the first import of rest_flex_field!
-REST_FLEX_FIELDS = {
-    "EXPAND_PARAM": "_expand",
-    "FIELDS_PARAM": "_fields",
-    "OMIT_PARAM":   "_omit",
-}
-
-from rest_flex_fields.filter_backends import FlexFieldsFilterBackend    # To resolve circular import!
-
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": "openbook.drf.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "openbook.drf.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 
     # Remember authenticated user (complimenting our custom middleware)
@@ -163,14 +152,14 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-        "openbook.drf.DjangoObjectPermissionsOnly",
+        "openbook.drf.permissions.DjangoObjectPermissionsOnly",
     ],
 
     "DEFAULT_FILTER_BACKENDS": (
-        "rest_flex_fields.filter_backends.FlexFieldsFilterBackend",     # drf-flex-fields: Automatic query optimization
+        #"rest_flex_fields.filter_backends.FlexFieldsFilterBackend",    # (Not possible here due to circular import): drf-flex-fields: Automatic query optimization
         "django_filters.rest_framework.DjangoFilterBackend",            # Query filters
         "rest_framework.filters.SearchFilter",                          # _search query parameter
-        "openbook.drf.DjangoObjectPermissionsFilter",                   # Object-permission based filter
+        "openbook.drf.filters.DjangoObjectPermissionsFilter",           # Object-permission based filter
         "rest_framework.filters.OrderingFilter",                        # _sort query parameter
     ),
 
@@ -195,12 +184,20 @@ SPECTACULAR_SETTINGS = {
     "DEBUG": True,
 
     # Create a custom group in the ReDoc documentation for each app, using the custom
-    # tags set on each viewset class. Because otherwise drf-spectacular createas a group
+    # tags set on each viewset class. Because otherwise drf-spectacular creates a group
     # for each app using the app label and puts all operations in one large group.
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
         "openbook.drf.add_tag_groups",
     ],
+}
+
+# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
+# Must be defined before the first import of rest_flex_field!
+REST_FLEX_FIELDS = {
+    "EXPAND_PARAM": "_expand",
+    "FIELDS_PARAM": "_fields",
+    "OMIT_PARAM": "_omit",
 }
 
 # Password validation

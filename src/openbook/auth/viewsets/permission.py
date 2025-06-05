@@ -6,25 +6,24 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from drf_spectacular.utils      import extend_schema
-from drf_spectacular.utils      import extend_schema_field
-from django.contrib.auth.models import Permission
-from django_filters.filterset   import FilterSet
-from django_filters.filters     import CharFilter
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.viewsets    import ReadOnlyModelViewSet
-from rest_framework.serializers import SerializerMethodField
+from drf_spectacular.utils         import extend_schema
+from drf_spectacular.utils         import extend_schema_field
+from django.contrib.auth.models    import Permission
+from django_filters.filterset      import FilterSet
+from django_filters.filters        import CharFilter
+from rest_framework.viewsets       import ReadOnlyModelViewSet
+from rest_framework.serializers    import SerializerMethodField
 
-from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..models.permission_text   import PermissionText
-from ..utils                    import app_label_for_permission
-from ..utils                    import app_name_for_permission
-from ..utils                    import model_for_permission
-from ..utils                    import model_name_for_permission
-from ..utils                    import perm_name_for_permission
-from ..utils                    import perm_string_for_permission
-from ..utils                    import permission_for_perm_string
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..utils                       import app_label_for_permission
+from ..utils                       import app_name_for_permission
+from ..utils                       import model_for_permission
+from ..utils                       import model_name_for_permission
+from ..utils                       import perm_name_for_permission
+from ..utils                       import perm_string_for_permission
+from ..utils                       import permission_for_perm_string
 
 class PermissionSerializer(FlexFieldsModelSerializer):
     __doc__ = "Permission"
@@ -80,7 +79,7 @@ class PermissionFilter(FilterSet):
     codename    = CharFilter(label="Code",  field_name="codename",                lookup_expr="icontains")
 
     class Meta:
-        model  = PermissionText
+        model  = Permission
         fields = ("app", "model", "codename")
     
     def filter_perm_string(self, queryset, name, value):

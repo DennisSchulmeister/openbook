@@ -6,18 +6,18 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from drf_spectacular.utils      import extend_schema
-from django.contrib.auth.models import Permission
-from django_filters.filterset   import FilterSet
-from django_filters.filters     import CharFilter
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.viewsets    import ReadOnlyModelViewSet
+from drf_spectacular.utils         import extend_schema
+from django.contrib.auth.models    import Permission
+from django_filters.filterset      import FilterSet
+from django_filters.filters        import CharFilter
+from rest_framework.viewsets       import ReadOnlyModelViewSet
 
-from openbook.drf               import AllowAnonymousListRetrieveViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..models.permission_text   import PermissionText
-from ..serializers.permission   import PermissionField
-from ..utils                    import permission_for_perm_string
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..models.permission_text      import PermissionText
+from ..serializers.permission      import PermissionField
+from ..utils                       import permission_for_perm_string
 
 class PermissionTextSerializer(FlexFieldsModelSerializer):
     __doc__ = "Permission Label"

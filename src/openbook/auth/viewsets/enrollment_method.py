@@ -6,25 +6,25 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filters     import CharFilter
-from django_filters.filterset   import FilterSet
-from drf_spectacular.utils      import extend_schema
-from drf_spectacular.utils      import inline_serializer
-from rest_flex_fields           import FlexFieldsModelSerializer
-from rest_framework.decorators  import action
-from rest_framework.response    import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.serializers import CharField
-from rest_framework.viewsets    import ModelViewSet
+from django_filters.filters        import CharFilter
+from django_filters.filterset      import FilterSet
+from drf_spectacular.utils         import extend_schema
+from drf_spectacular.utils         import inline_serializer
+from rest_framework.decorators     import action
+from rest_framework.response       import Response
+from rest_framework.permissions    import AllowAny
+from rest_framework.serializers    import CharField
+from rest_framework.viewsets       import ModelViewSet
 
-from openbook.drf               import ModelViewSetMixin
-from openbook.drf               import with_flex_fields_parameters
-from ..filters.mixins.audit     import CreatedModifiedByFilterMixin
-from ..filters.mixins.scope     import ScopeFilterMixin
-from ..models.enrollment_method import EnrollmentMethod
-from .role_assignment           import RoleAssignmentSerializer
-from ..serializers.mixins.scope import ScopeTypeField
-from ..serializers.user         import UserField
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import ModelViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..filters.mixins.audit        import CreatedModifiedByFilterMixin
+from ..filters.mixins.scope        import ScopeFilterMixin
+from ..models.enrollment_method    import EnrollmentMethod
+from .role_assignment              import RoleAssignmentSerializer
+from ..serializers.mixins.scope    import ScopeTypeField
+from ..serializers.user            import UserField
 
 class EnrollmentMethodSerializer(FlexFieldsModelSerializer):
     __doc__ = "Enrollment Method"
