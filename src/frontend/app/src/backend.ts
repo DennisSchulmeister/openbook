@@ -8,7 +8,7 @@
  * License, or (at your option) any later version.
  */
 
-import {CoreApi}       from "./api-client/index.js";
+import * as apiClient  from "./api-client/index.js";
 import {Configuration} from "./api-client/index.js";
 
 // Fetch backend URL
@@ -31,5 +31,22 @@ let configuration = new Configuration({
  * The clients objects automatically use the correct base URL of the server.
  */
 export default {
-    core: new CoreApi(configuration),
+    // Core App
+    availableLanguages:     new apiClient.AvailableLanguagesApi(configuration),
+    mediaFiles:             new apiClient.MediaFilesApi(configuration),
+    websites:               new apiClient.WebsitesApi(configuration),
+
+    // Auth App
+    accessRequests:         new apiClient.AccessRequestsApi(configuration),
+    allowedRolePermissions: new apiClient.AllowedRolePermissionsApi(configuration),
+    currentUser:            new apiClient.CurrentUserApi(configuration),
+    enrollmentMethods:      new apiClient.EnrollmentMethodsApi(configuration),
+    roleAssignments:        new apiClient.RoleAssignmentsApi(configuration),
+    roles:                  new apiClient.RolesApi(configuration),
+    scopeTypes:             new apiClient.ScopeTypesApi(configuration),
+    translatedPermissions:  new apiClient.TranslatedPermissionsApi(configuration),
+    userProfiles:           new apiClient.UserProfilesApi(configuration),
+
+    // Course App
+    courses:                new apiClient.CoursesApi(configuration),
 }
