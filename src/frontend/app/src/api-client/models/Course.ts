@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { RoleAssignmentRead } from './RoleAssignmentRead';
-import {
-    RoleAssignmentReadFromJSON,
-    RoleAssignmentReadFromJSONTyped,
-    RoleAssignmentReadToJSON,
-    RoleAssignmentReadToJSONTyped,
-} from './RoleAssignmentRead';
 import type { TextFormatEnum } from './TextFormatEnum';
 import {
     TextFormatEnumFromJSON,
@@ -27,37 +20,10 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
-import type { EnrollmentMethodWithRoleRead } from './EnrollmentMethodWithRoleRead';
-import {
-    EnrollmentMethodWithRoleReadFromJSON,
-    EnrollmentMethodWithRoleReadFromJSONTyped,
-    EnrollmentMethodWithRoleReadToJSON,
-    EnrollmentMethodWithRoleReadToJSONTyped,
-} from './EnrollmentMethodWithRoleRead';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { PermissionRead } from './PermissionRead';
-import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
-import type { AccessRequestWithRoleRead } from './AccessRequestWithRoleRead';
-import {
-    AccessRequestWithRoleReadFromJSON,
-    AccessRequestWithRoleReadFromJSONTyped,
-    AccessRequestWithRoleReadToJSON,
-    AccessRequestWithRoleReadToJSONTyped,
-} from './AccessRequestWithRoleRead';
 
 /**
- * Full list of fields for retrieving a single course.
+ * Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
+ * act as permission scope for user roles. Default serializer, that adds all scope fields.
  * @export
  * @interface Course
  */
@@ -100,52 +66,40 @@ export interface Course {
     isTemplate?: boolean;
     /**
      * 
-     * @type {UserRead}
-     * @memberof Course
-     */
-    readonly owner: UserRead;
-    /**
-     * User name
      * @type {string}
      * @memberof Course
      */
-    ownerUsername: string;
-    /**
-     * 
-     * @type {Array<PermissionRead>}
-     * @memberof Course
-     */
-    readonly publicPermissions: Array<PermissionRead>;
+    readonly owner: string;
     /**
      * 
      * @type {Array<string>}
      * @memberof Course
      */
-    publicPermissionStrings: Array<string>;
+    publicPermissions: Array<string>;
     /**
      * 
-     * @type {Array<RoleAssignmentRead>}
+     * @type {Array<string>}
      * @memberof Course
      */
-    readonly roleAssignments: Array<RoleAssignmentRead>;
+    readonly roleAssignments: Array<string>;
     /**
      * 
-     * @type {Array<EnrollmentMethodWithRoleRead>}
+     * @type {Array<string>}
      * @memberof Course
      */
-    readonly enrollmentMethods: Array<EnrollmentMethodWithRoleRead>;
+    readonly enrollmentMethods: Array<string>;
     /**
      * 
-     * @type {Array<AccessRequestWithRoleRead>}
+     * @type {Array<string>}
      * @memberof Course
      */
-    readonly accessRequests: Array<AccessRequestWithRoleRead>;
+    readonly accessRequests: Array<string>;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof Course
      */
-    readonly createdBy: UserRead;
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -154,10 +108,10 @@ export interface Course {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof Course
      */
-    readonly modifiedBy: UserRead;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -176,9 +130,7 @@ export function instanceOfCourse(value: object): value is Course {
     if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('owner' in value) || value['owner'] === undefined) return false;
-    if (!('ownerUsername' in value) || value['ownerUsername'] === undefined) return false;
     if (!('publicPermissions' in value) || value['publicPermissions'] === undefined) return false;
-    if (!('publicPermissionStrings' in value) || value['publicPermissionStrings'] === undefined) return false;
     if (!('roleAssignments' in value) || value['roleAssignments'] === undefined) return false;
     if (!('enrollmentMethods' in value) || value['enrollmentMethods'] === undefined) return false;
     if (!('accessRequests' in value) || value['accessRequests'] === undefined) return false;
@@ -205,16 +157,14 @@ export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
         'isTemplate': json['is_template'] == null ? undefined : json['is_template'],
-        'owner': UserReadFromJSON(json['owner']),
-        'ownerUsername': json['owner_username'],
-        'publicPermissions': ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'publicPermissionStrings': json['public_permission_strings'],
-        'roleAssignments': ((json['role_assignments'] as Array<any>).map(RoleAssignmentReadFromJSON)),
-        'enrollmentMethods': ((json['enrollment_methods'] as Array<any>).map(EnrollmentMethodWithRoleReadFromJSON)),
-        'accessRequests': ((json['access_requests'] as Array<any>).map(AccessRequestWithRoleReadFromJSON)),
-        'createdBy': UserReadFromJSON(json['created_by']),
+        'owner': json['owner'],
+        'publicPermissions': json['public_permissions'],
+        'roleAssignments': json['role_assignments'],
+        'enrollmentMethods': json['enrollment_methods'],
+        'accessRequests': json['access_requests'],
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -223,7 +173,7 @@ export function CourseToJSON(json: any): Course {
     return CourseToJSONTyped(json, false);
 }
 
-export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -235,8 +185,7 @@ export function CourseToJSONTyped(value?: Omit<Course, 'id'|'owner'|'public_perm
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
         'is_template': value['isTemplate'],
-        'owner_username': value['ownerUsername'],
-        'public_permission_strings': value['publicPermissionStrings'],
+        'public_permissions': value['publicPermissions'],
     };
 }
 

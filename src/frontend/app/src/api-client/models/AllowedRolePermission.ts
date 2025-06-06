@@ -13,17 +13,11 @@
  */
 
 import { mapValues } from '../runtime';
-import type { PermissionRead } from './PermissionRead';
-import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
-
 /**
- * Mixin class for model serializers whose models implement the `UUIDMixin` and therefor
- * have a `id` field of type uuid.
+ * Reuse full cleaning and validation logic of the models in the REST API, including
+ * `full_clean()`, `clean()`, field validation and uniqueness checks. Also make sure,
+ * that the pre-filled model instance can be accessed in the DRF view.
+ * ```
  * @export
  * @interface AllowedRolePermission
  */
@@ -42,10 +36,10 @@ export interface AllowedRolePermission {
     scopeType: string;
     /**
      * 
-     * @type {PermissionRead}
+     * @type {string}
      * @memberof AllowedRolePermission
      */
-    readonly permission: PermissionRead;
+    permission: string;
 }
 
 /**
@@ -70,7 +64,7 @@ export function AllowedRolePermissionFromJSONTyped(json: any, ignoreDiscriminato
         
         'id': json['id'],
         'scopeType': json['scope_type'],
-        'permission': PermissionReadFromJSON(json['permission']),
+        'permission': json['permission'],
     };
 }
 
@@ -78,7 +72,7 @@ export function AllowedRolePermissionToJSON(json: any): AllowedRolePermission {
     return AllowedRolePermissionToJSONTyped(json, false);
 }
 
-export function AllowedRolePermissionToJSONTyped(value?: Omit<AllowedRolePermission, 'id'|'permission'> | null, ignoreDiscriminator: boolean = false): any {
+export function AllowedRolePermissionToJSONTyped(value?: Omit<AllowedRolePermission, 'id'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -86,6 +80,7 @@ export function AllowedRolePermissionToJSONTyped(value?: Omit<AllowedRolePermiss
     return {
         
         'scope_type': value['scopeType'],
+        'permission': value['permission'],
     };
 }
 

@@ -13,27 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AccessRequestWithoutRoleRead } from './AccessRequestWithoutRoleRead';
-import {
-    AccessRequestWithoutRoleReadFromJSON,
-    AccessRequestWithoutRoleReadFromJSONTyped,
-    AccessRequestWithoutRoleReadToJSON,
-    AccessRequestWithoutRoleReadToJSONTyped,
-} from './AccessRequestWithoutRoleRead';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { EnrollmentMethodWithoutRoleRead } from './EnrollmentMethodWithoutRoleRead';
-import {
-    EnrollmentMethodWithoutRoleReadFromJSON,
-    EnrollmentMethodWithoutRoleReadFromJSONTyped,
-    EnrollmentMethodWithoutRoleReadToJSON,
-    EnrollmentMethodWithoutRoleReadToJSONTyped,
-} from './EnrollmentMethodWithoutRoleRead';
 import type { AssignmentMethodEnum } from './AssignmentMethodEnum';
 import {
     AssignmentMethodEnumFromJSON,
@@ -41,16 +20,9 @@ import {
     AssignmentMethodEnumToJSON,
     AssignmentMethodEnumToJSONTyped,
 } from './AssignmentMethodEnum';
-import type { RoleRead } from './RoleRead';
-import {
-    RoleReadFromJSON,
-    RoleReadFromJSONTyped,
-    RoleReadToJSON,
-    RoleReadToJSONTyped,
-} from './RoleRead';
 
 /**
- * Full list of fields for retrieving a single role assignment.
+ * Role Assignment
  * @export
  * @interface PatchedRoleAssignment
  */
@@ -75,46 +47,34 @@ export interface PatchedRoleAssignment {
     scopeUuid?: string;
     /**
      * 
-     * @type {RoleRead}
+     * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    readonly role?: RoleRead;
+    role?: string;
     /**
      * 
      * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    roleSlug?: string;
-    /**
-     * 
-     * @type {UserRead}
-     * @memberof PatchedRoleAssignment
-     */
-    readonly user?: UserRead;
-    /**
-     * User name
-     * @type {string}
-     * @memberof PatchedRoleAssignment
-     */
-    userUsername?: string;
+    user?: string;
     /**
      * 
      * @type {AssignmentMethodEnum}
      * @memberof PatchedRoleAssignment
      */
-    readonly assignmentMethod?: AssignmentMethodEnum;
+    assignmentMethod?: AssignmentMethodEnum;
     /**
      * 
-     * @type {EnrollmentMethodWithoutRoleRead}
+     * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    readonly enrollmentMethod?: EnrollmentMethodWithoutRoleRead;
+    enrollmentMethod?: string | null;
     /**
      * 
-     * @type {AccessRequestWithoutRoleRead}
+     * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    readonly accessRequest?: AccessRequestWithoutRoleRead;
+    accessRequest?: string | null;
     /**
      * 
      * @type {boolean}
@@ -135,10 +95,10 @@ export interface PatchedRoleAssignment {
     endDate?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    readonly createdBy?: UserRead;
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -147,10 +107,10 @@ export interface PatchedRoleAssignment {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedRoleAssignment
      */
-    readonly modifiedBy?: UserRead;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -181,19 +141,17 @@ export function PatchedRoleAssignmentFromJSONTyped(json: any, ignoreDiscriminato
         'id': json['id'] == null ? undefined : json['id'],
         'scopeType': json['scope_type'] == null ? undefined : json['scope_type'],
         'scopeUuid': json['scope_uuid'] == null ? undefined : json['scope_uuid'],
-        'role': json['role'] == null ? undefined : RoleReadFromJSON(json['role']),
-        'roleSlug': json['role_slug'] == null ? undefined : json['role_slug'],
-        'user': json['user'] == null ? undefined : UserReadFromJSON(json['user']),
-        'userUsername': json['user_username'] == null ? undefined : json['user_username'],
+        'role': json['role'] == null ? undefined : json['role'],
+        'user': json['user'] == null ? undefined : json['user'],
         'assignmentMethod': json['assignment_method'] == null ? undefined : AssignmentMethodEnumFromJSON(json['assignment_method']),
-        'enrollmentMethod': json['enrollment_method'] == null ? undefined : EnrollmentMethodWithoutRoleReadFromJSON(json['enrollment_method']),
-        'accessRequest': json['access_request'] == null ? undefined : AccessRequestWithoutRoleReadFromJSON(json['access_request']),
+        'enrollmentMethod': json['enrollment_method'] == null ? undefined : json['enrollment_method'],
+        'accessRequest': json['access_request'] == null ? undefined : json['access_request'],
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
-        'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': json['modified_at'] == null ? undefined : (new Date(json['modified_at'])),
     };
 }
@@ -202,7 +160,7 @@ export function PatchedRoleAssignmentToJSON(json: any): PatchedRoleAssignment {
     return PatchedRoleAssignmentToJSONTyped(json, false);
 }
 
-export function PatchedRoleAssignmentToJSONTyped(value?: Omit<PatchedRoleAssignment, 'id'|'role'|'user'|'assignment_method'|'enrollment_method'|'access_request'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedRoleAssignmentToJSONTyped(value?: Omit<PatchedRoleAssignment, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -211,8 +169,11 @@ export function PatchedRoleAssignmentToJSONTyped(value?: Omit<PatchedRoleAssignm
         
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
-        'role_slug': value['roleSlug'],
-        'user_username': value['userUsername'],
+        'role': value['role'],
+        'user': value['user'],
+        'assignment_method': AssignmentMethodEnumToJSON(value['assignmentMethod']),
+        'enrollment_method': value['enrollmentMethod'],
+        'access_request': value['accessRequest'],
         'is_active': value['isActive'],
         'start_date': value['startDate'] == null ? undefined : ((value['startDate'] as any).toISOString()),
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),

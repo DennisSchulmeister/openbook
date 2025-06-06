@@ -188,7 +188,7 @@ SPECTACULAR_SETTINGS = {
     # for each app using the app label and puts all operations in one large group.
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
-        "openbook.drf.add_tag_groups",
+        "openbook.drf.viewsets.add_tag_groups",
     ],
 }
 

@@ -16,27 +16,36 @@
 import * as runtime from '../runtime';
 import type {
   Course,
-  PaginatedCourseListList,
+  PaginatedCourseList,
   PatchedCourse,
 } from '../models/index';
 import {
     CourseFromJSON,
     CourseToJSON,
-    PaginatedCourseListListFromJSON,
-    PaginatedCourseListListToJSON,
+    PaginatedCourseListFromJSON,
+    PaginatedCourseListToJSON,
     PatchedCourseFromJSON,
     PatchedCourseToJSON,
 } from '../models/index';
 
 export interface CourseCoursesCreateRequest {
-    course: Omit<Course, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    course: Omit<Course, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CourseCoursesDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CourseCoursesListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -51,22 +60,31 @@ export interface CourseCoursesListRequest {
     modifiedAtLte?: Date;
     modifiedBy?: string;
     name?: string;
-    owner?: string;
+    owner?: number;
     slug?: string;
 }
 
 export interface CourseCoursesPartialUpdateRequest {
     id: string;
-    patchedCourse?: Omit<PatchedCourse, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedCourse?: Omit<PatchedCourse, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface CourseCoursesRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CourseCoursesUpdateRequest {
     id: string;
-    course: Omit<Course, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    course: Omit<Course, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -88,9 +106,25 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/course/courses/`,
@@ -126,7 +160,23 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -150,8 +200,20 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * List
      */
-    async courseCoursesListRaw(requestParameters: CourseCoursesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedCourseListList>> {
+    async courseCoursesListRaw(requestParameters: CourseCoursesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedCourseList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -219,6 +281,10 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/course/courses/`,
             method: 'GET',
@@ -226,14 +292,14 @@ export class CoursesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedCourseListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedCourseListFromJSON(jsonValue));
     }
 
     /**
      * Courses
      * List
      */
-    async courseCoursesList(requestParameters: CourseCoursesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedCourseListList> {
+    async courseCoursesList(requestParameters: CourseCoursesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedCourseList> {
         const response = await this.courseCoursesListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -252,9 +318,25 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -290,7 +372,23 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -332,9 +430,25 @@ export class CoursesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

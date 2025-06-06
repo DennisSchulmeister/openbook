@@ -7,6 +7,7 @@
 # License, or (at your option) any later version.
 
 import threading
+from drf_spectacular.extensions    import OpenApiAuthenticationExtension
 from rest_framework.authentication import SessionAuthentication
 
 thread_local = threading.local()
@@ -51,3 +52,23 @@ def reset_current_user():
     user as it is probably not even existing anymore.
     """
     thread_local.current_user = None
+
+class CurrentUserTrackingAuthExtension(OpenApiAuthenticationExtension):
+    """
+    To resolve the following warning: "could not resolve authenticator
+    <class 'openbook.auth.middleware.current_user.CurrentUserTrackingAuthentication'>.
+    There was no OpenApiAuthenticationExtension registered for that class.
+    Try creating one by subclassing it. Ignoring for now."
+    
+    As it is defined, we are using session authentication despite our custom
+    permission class (wich doesn't affect authentication at all)
+    """
+    target_class = CurrentUserTrackingAuthentication
+    name         = "SessionAuthentication"  # name used in the schema"
+
+    def get_security_definition(self, auto_schema):
+        return {
+            "type": "apiKey",
+            "in":   "header",
+            "name": "sessionId",
+        }

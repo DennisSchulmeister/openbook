@@ -15,17 +15,26 @@
 
 import * as runtime from '../runtime';
 import type {
-  PaginatedPermissionTList,
-  PermissionT,
+  PaginatedPermissionList,
+  PaginatedPermissionTextList,
+  Permission,
+  PermissionText,
 } from '../models/index';
 import {
-    PaginatedPermissionTListFromJSON,
-    PaginatedPermissionTListToJSON,
-    PermissionTFromJSON,
-    PermissionTToJSON,
+    PaginatedPermissionListFromJSON,
+    PaginatedPermissionListToJSON,
+    PaginatedPermissionTextListFromJSON,
+    PaginatedPermissionTextListToJSON,
+    PermissionFromJSON,
+    PermissionToJSON,
+    PermissionTextFromJSON,
+    PermissionTextToJSON,
 } from '../models/index';
 
-export interface AuthPermissionsListRequest {
+export interface AuthPermissionTextsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -38,8 +47,32 @@ export interface AuthPermissionsListRequest {
     permString?: string;
 }
 
-export interface AuthPermissionsRetrieveRequest {
+export interface AuthPermissionTextsRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface AuthPermissionsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sort?: string;
+    app?: string;
+    codename?: string;
+    model?: string;
+    permString?: string;
+}
+
+export interface AuthPermissionsRetrieveRequest {
+    id: number;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -48,11 +81,23 @@ export interface AuthPermissionsRetrieveRequest {
 export class TranslatedPermissionsApi extends runtime.BaseAPI {
 
     /**
-     * Translated Permissions
+     * Permission Labels
      * List
      */
-    async authPermissionsListRaw(requestParameters: AuthPermissionsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedPermissionTList>> {
+    async authPermissionTextsListRaw(requestParameters: AuthPermissionTextsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedPermissionTextList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -96,6 +141,137 @@ export class TranslatedPermissionsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/auth/permission_texts/`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedPermissionTextListFromJSON(jsonValue));
+    }
+
+    /**
+     * Permission Labels
+     * List
+     */
+    async authPermissionTextsList(requestParameters: AuthPermissionTextsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedPermissionTextList> {
+        const response = await this.authPermissionTextsListRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Permission Labels
+     * Retrieve
+     */
+    async authPermissionTextsRetrieveRaw(requestParameters: AuthPermissionTextsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionText>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling authPermissionTextsRetrieve().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/auth/permission_texts/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTextFromJSON(jsonValue));
+    }
+
+    /**
+     * Permission Labels
+     * Retrieve
+     */
+    async authPermissionTextsRetrieve(requestParameters: AuthPermissionTextsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionText> {
+        const response = await this.authPermissionTextsRetrieveRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Permissions
+     * List
+     */
+    async authPermissionsListRaw(requestParameters: AuthPermissionsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedPermissionList>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['_page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['_page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['_search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['_sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['app'] != null) {
+            queryParameters['app'] = requestParameters['app'];
+        }
+
+        if (requestParameters['codename'] != null) {
+            queryParameters['codename'] = requestParameters['codename'];
+        }
+
+        if (requestParameters['model'] != null) {
+            queryParameters['model'] = requestParameters['model'];
+        }
+
+        if (requestParameters['permString'] != null) {
+            queryParameters['perm_string'] = requestParameters['permString'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/permissions/`,
             method: 'GET',
@@ -103,23 +279,23 @@ export class TranslatedPermissionsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedPermissionTListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedPermissionListFromJSON(jsonValue));
     }
 
     /**
-     * Translated Permissions
+     * Permissions
      * List
      */
-    async authPermissionsList(requestParameters: AuthPermissionsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedPermissionTList> {
+    async authPermissionsList(requestParameters: AuthPermissionsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedPermissionList> {
         const response = await this.authPermissionsListRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Translated Permissions
+     * Permissions
      * Retrieve
      */
-    async authPermissionsRetrieveRaw(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermissionT>> {
+    async authPermissionsRetrieveRaw(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Permission>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -129,7 +305,23 @@ export class TranslatedPermissionsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -138,14 +330,14 @@ export class TranslatedPermissionsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionTFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PermissionFromJSON(jsonValue));
     }
 
     /**
-     * Translated Permissions
+     * Permissions
      * Retrieve
      */
-    async authPermissionsRetrieve(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermissionT> {
+    async authPermissionsRetrieve(requestParameters: AuthPermissionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Permission> {
         const response = await this.authPermissionsRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -16,27 +16,36 @@
 import * as runtime from '../runtime';
 import type {
   MediaFile,
-  PaginatedMediaFileListList,
+  PaginatedMediaFileList,
   PatchedMediaFile,
 } from '../models/index';
 import {
     MediaFileFromJSON,
     MediaFileToJSON,
-    PaginatedMediaFileListListFromJSON,
-    PaginatedMediaFileListListToJSON,
+    PaginatedMediaFileListFromJSON,
+    PaginatedMediaFileListToJSON,
     PatchedMediaFileFromJSON,
     PatchedMediaFileToJSON,
 } from '../models/index';
 
 export interface CoreMediaFilesCreateRequest {
     mediaFile: MediaFile;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CoreMediaFilesDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CoreMediaFilesListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -50,16 +59,25 @@ export interface CoreMediaFilesListRequest {
 
 export interface CoreMediaFilesPartialUpdateRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
     patchedMediaFile?: PatchedMediaFile;
 }
 
 export interface CoreMediaFilesRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface CoreMediaFilesUpdateRequest {
     id: string;
     mediaFile: MediaFile;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -81,9 +99,25 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/media_files/`,
@@ -119,7 +153,23 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/media_files/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -143,8 +193,20 @@ export class MediaFilesApi extends runtime.BaseAPI {
      * Attached Media Files
      * List
      */
-    async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileListList>> {
+    async coreMediaFilesListRaw(requestParameters: CoreMediaFilesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedMediaFileList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -184,6 +246,10 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/core/media_files/`,
             method: 'GET',
@@ -191,14 +257,14 @@ export class MediaFilesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedMediaFileListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedMediaFileListFromJSON(jsonValue));
     }
 
     /**
      * Attached Media Files
      * List
      */
-    async coreMediaFilesList(requestParameters: CoreMediaFilesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedMediaFileListList> {
+    async coreMediaFilesList(requestParameters: CoreMediaFilesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedMediaFileList> {
         const response = await this.coreMediaFilesListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -217,9 +283,25 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/media_files/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -255,7 +337,23 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/media_files/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -297,9 +395,25 @@ export class MediaFilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/media_files/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

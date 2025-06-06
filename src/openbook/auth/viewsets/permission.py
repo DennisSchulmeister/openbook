@@ -46,7 +46,8 @@ class PermissionSerializer(FlexFieldsModelSerializer):
             "model", "model_display_name",
         )
 
-        read_only_fields = ("id",)
+        read_only_fields  = ("id",)
+        expandable_fields = {}
     
     @extend_schema_field(str)
     def get_perm_string(self, obj: Permission) -> str:

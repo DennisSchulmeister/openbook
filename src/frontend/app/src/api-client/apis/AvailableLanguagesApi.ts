@@ -26,6 +26,9 @@ import {
 } from '../models/index';
 
 export interface CoreLanguagesListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -35,6 +38,9 @@ export interface CoreLanguagesListRequest {
 
 export interface CoreLanguagesRetrieveRequest {
     language: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -48,6 +54,18 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
      */
     async coreLanguagesListRaw(requestParameters: CoreLanguagesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedLanguageList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -70,6 +88,10 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/languages/`,
@@ -104,7 +126,23 @@ export class AvailableLanguagesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/languages/{language}/`.replace(`{${"language"}}`, encodeURIComponent(String(requestParameters['language']))),

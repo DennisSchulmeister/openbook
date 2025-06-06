@@ -14,73 +14,85 @@
 
 import { mapValues } from '../runtime';
 /**
- * User
+ * Current User
  * @export
- * @interface PatchedUser
+ * @interface PatchedCurrentUser
  */
-export interface PatchedUser {
+export interface PatchedCurrentUser {
     /**
      * 
      * @type {number}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     readonly id?: number;
     /**
      * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
-    readonly username?: string;
+    username?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     readonly fullName?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     firstName?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     lastName?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     description?: string;
     /**
      * 
      * @type {string}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
     picture?: string | null;
     /**
      * Designates whether the user can log into this admin site.
      * @type {boolean}
-     * @memberof PatchedUser
+     * @memberof PatchedCurrentUser
      */
-    readonly isStaff?: boolean;
+    isStaff?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedCurrentUser
+     */
+    email?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PatchedCurrentUser
+     */
+    readonly isAuthenticated?: boolean;
 }
 
 /**
- * Check if a given object implements the PatchedUser interface.
+ * Check if a given object implements the PatchedCurrentUser interface.
  */
-export function instanceOfPatchedUser(value: object): value is PatchedUser {
+export function instanceOfPatchedCurrentUser(value: object): value is PatchedCurrentUser {
     return true;
 }
 
-export function PatchedUserFromJSON(json: any): PatchedUser {
-    return PatchedUserFromJSONTyped(json, false);
+export function PatchedCurrentUserFromJSON(json: any): PatchedCurrentUser {
+    return PatchedCurrentUserFromJSONTyped(json, false);
 }
 
-export function PatchedUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): PatchedUser {
+export function PatchedCurrentUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): PatchedCurrentUser {
     if (json == null) {
         return json;
     }
@@ -94,24 +106,29 @@ export function PatchedUserFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'description': json['description'] == null ? undefined : json['description'],
         'picture': json['picture'] == null ? undefined : json['picture'],
         'isStaff': json['is_staff'] == null ? undefined : json['is_staff'],
+        'email': json['email'] == null ? undefined : json['email'],
+        'isAuthenticated': json['is_authenticated'] == null ? undefined : json['is_authenticated'],
     };
 }
 
-export function PatchedUserToJSON(json: any): PatchedUser {
-    return PatchedUserToJSONTyped(json, false);
+export function PatchedCurrentUserToJSON(json: any): PatchedCurrentUser {
+    return PatchedCurrentUserToJSONTyped(json, false);
 }
 
-export function PatchedUserToJSONTyped(value?: Omit<PatchedUser, 'id'|'username'|'full_name'|'is_staff'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedCurrentUserToJSONTyped(value?: Omit<PatchedCurrentUser, 'id'|'full_name'|'is_authenticated'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
+        'username': value['username'],
         'first_name': value['firstName'],
         'last_name': value['lastName'],
         'description': value['description'],
         'picture': value['picture'],
+        'is_staff': value['isStaff'],
+        'email': value['email'],
     };
 }
 

@@ -15,50 +15,63 @@
 
 import * as runtime from '../runtime';
 import type {
-  PaginatedUserReadList,
-  PatchedUserDetailsUpdate,
-  UserDetailsRead,
-  UserDetailsUpdate,
+  PaginatedUserList,
+  PatchedUser,
+  User,
 } from '../models/index';
 import {
-    PaginatedUserReadListFromJSON,
-    PaginatedUserReadListToJSON,
-    PatchedUserDetailsUpdateFromJSON,
-    PatchedUserDetailsUpdateToJSON,
-    UserDetailsReadFromJSON,
-    UserDetailsReadToJSON,
-    UserDetailsUpdateFromJSON,
-    UserDetailsUpdateToJSON,
+    PaginatedUserListFromJSON,
+    PaginatedUserListToJSON,
+    PatchedUserFromJSON,
+    PatchedUserToJSON,
+    UserFromJSON,
+    UserToJSON,
 } from '../models/index';
 
 export interface AuthUsersDestroyRequest {
     username: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthUsersListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
     sort?: string;
-    email?: string;
-    firstName?: string;
+    descriptionIcontains?: string;
+    emailIcontains?: string;
+    firstNameIcontains?: string;
     isStaff?: boolean;
-    lastName?: string;
-    username?: string;
+    lastNameIcontains?: string;
+    usernameIcontains?: string;
 }
 
 export interface AuthUsersPartialUpdateRequest {
     username: string;
-    patchedUserDetailsUpdate?: PatchedUserDetailsUpdate;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedUser?: Omit<PatchedUser, 'id'|'username'|'full_name'|'is_staff'>;
 }
 
 export interface AuthUsersRetrieveRequest {
     username: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthUsersUpdateRequest {
     username: string;
-    userDetailsUpdate: UserDetailsUpdate;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    user?: Omit<User, 'id'|'username'|'full_name'|'is_staff'>;
 }
 
 /**
@@ -67,7 +80,7 @@ export interface AuthUsersUpdateRequest {
 export class UserProfilesApi extends runtime.BaseAPI {
 
     /**
-     * User Profiles
+     * Users
      * Delete
      */
     async authUsersDestroyRaw(requestParameters: AuthUsersDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -80,7 +93,23 @@ export class UserProfilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/users/{username}/`.replace(`{${"username"}}`, encodeURIComponent(String(requestParameters['username']))),
@@ -93,7 +122,7 @@ export class UserProfilesApi extends runtime.BaseAPI {
     }
 
     /**
-     * User Profiles
+     * Users
      * Delete
      */
     async authUsersDestroy(requestParameters: AuthUsersDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -101,11 +130,23 @@ export class UserProfilesApi extends runtime.BaseAPI {
     }
 
     /**
-     * User Profiles
+     * Users
      * List
      */
-    async authUsersListRaw(requestParameters: AuthUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserReadList>> {
+    async authUsersListRaw(requestParameters: AuthUsersListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedUserList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -123,27 +164,35 @@ export class UserProfilesApi extends runtime.BaseAPI {
             queryParameters['_sort'] = requestParameters['sort'];
         }
 
-        if (requestParameters['email'] != null) {
-            queryParameters['email'] = requestParameters['email'];
+        if (requestParameters['descriptionIcontains'] != null) {
+            queryParameters['description__icontains'] = requestParameters['descriptionIcontains'];
         }
 
-        if (requestParameters['firstName'] != null) {
-            queryParameters['first_name'] = requestParameters['firstName'];
+        if (requestParameters['emailIcontains'] != null) {
+            queryParameters['email__icontains'] = requestParameters['emailIcontains'];
+        }
+
+        if (requestParameters['firstNameIcontains'] != null) {
+            queryParameters['first_name__icontains'] = requestParameters['firstNameIcontains'];
         }
 
         if (requestParameters['isStaff'] != null) {
             queryParameters['is_staff'] = requestParameters['isStaff'];
         }
 
-        if (requestParameters['lastName'] != null) {
-            queryParameters['last_name'] = requestParameters['lastName'];
+        if (requestParameters['lastNameIcontains'] != null) {
+            queryParameters['last_name__icontains'] = requestParameters['lastNameIcontains'];
         }
 
-        if (requestParameters['username'] != null) {
-            queryParameters['username'] = requestParameters['username'];
+        if (requestParameters['usernameIcontains'] != null) {
+            queryParameters['username__icontains'] = requestParameters['usernameIcontains'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/users/`,
@@ -152,23 +201,23 @@ export class UserProfilesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedUserReadListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedUserListFromJSON(jsonValue));
     }
 
     /**
-     * User Profiles
+     * Users
      * List
      */
-    async authUsersList(requestParameters: AuthUsersListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedUserReadList> {
+    async authUsersList(requestParameters: AuthUsersListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedUserList> {
         const response = await this.authUsersListRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * User Profiles
+     * Users
      * Partial Update
      */
-    async authUsersPartialUpdateRaw(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDetailsUpdate>> {
+    async authUsersPartialUpdateRaw(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -178,35 +227,51 @@ export class UserProfilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/users/{username}/`.replace(`{${"username"}}`, encodeURIComponent(String(requestParameters['username']))),
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: PatchedUserDetailsUpdateToJSON(requestParameters['patchedUserDetailsUpdate']),
+            body: PatchedUserToJSON(requestParameters['patchedUser']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsUpdateFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
-     * User Profiles
+     * Users
      * Partial Update
      */
-    async authUsersPartialUpdate(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDetailsUpdate> {
+    async authUsersPartialUpdate(requestParameters: AuthUsersPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.authUsersPartialUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * User Profiles
+     * Users
      * Retrieve
      */
-    async authUsersRetrieveRaw(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDetailsRead>> {
+    async authUsersRetrieveRaw(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -216,7 +281,23 @@ export class UserProfilesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/users/{username}/`.replace(`{${"username"}}`, encodeURIComponent(String(requestParameters['username']))),
@@ -225,23 +306,23 @@ export class UserProfilesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsReadFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
-     * User Profiles
+     * Users
      * Retrieve
      */
-    async authUsersRetrieve(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDetailsRead> {
+    async authUsersRetrieve(requestParameters: AuthUsersRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.authUsersRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * User Profiles
+     * Users
      * Update
      */
-    async authUsersUpdateRaw(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDetailsUpdate>> {
+    async authUsersUpdateRaw(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -249,35 +330,44 @@ export class UserProfilesApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['userDetailsUpdate'] == null) {
-            throw new runtime.RequiredError(
-                'userDetailsUpdate',
-                'Required parameter "userDetailsUpdate" was null or undefined when calling authUsersUpdate().'
-            );
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
         }
 
-        const queryParameters: any = {};
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/users/{username}/`.replace(`{${"username"}}`, encodeURIComponent(String(requestParameters['username']))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UserDetailsUpdateToJSON(requestParameters['userDetailsUpdate']),
+            body: UserToJSON(requestParameters['user']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsUpdateFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
-     * User Profiles
+     * Users
      * Update
      */
-    async authUsersUpdate(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDetailsUpdate> {
+    async authUsersUpdate(requestParameters: AuthUsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.authUsersUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }

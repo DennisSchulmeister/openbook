@@ -20,13 +20,6 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
 import type { AccessRequestDurationPeriod } from './AccessRequestDurationPeriod';
 import {
     AccessRequestDurationPeriodFromJSON,
@@ -34,16 +27,9 @@ import {
     AccessRequestDurationPeriodToJSON,
     AccessRequestDurationPeriodToJSONTyped,
 } from './AccessRequestDurationPeriod';
-import type { RoleRead } from './RoleRead';
-import {
-    RoleReadFromJSON,
-    RoleReadFromJSONTyped,
-    RoleReadToJSON,
-    RoleReadToJSONTyped,
-} from './RoleRead';
 
 /**
- * Full list of fields for retrieving a single enrollment method.
+ * Enrollment Method
  * @export
  * @interface EnrollmentMethod
  */
@@ -86,34 +72,10 @@ export interface EnrollmentMethod {
     textFormat?: TextFormatEnum;
     /**
      * 
-     * @type {RoleRead}
-     * @memberof EnrollmentMethod
-     */
-    readonly role: RoleRead;
-    /**
-     * 
      * @type {string}
      * @memberof EnrollmentMethod
      */
-    roleSlug: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof EnrollmentMethod
-     */
-    isActive?: boolean;
-    /**
-     * 
-     * @type {number}
-     * @memberof EnrollmentMethod
-     */
-    durationValue?: number;
-    /**
-     * 
-     * @type {AccessRequestDurationPeriod}
-     * @memberof EnrollmentMethod
-     */
-    durationPeriod?: AccessRequestDurationPeriod;
+    role: string;
     /**
      * 
      * @type {Date}
@@ -122,16 +84,34 @@ export interface EnrollmentMethod {
     endDate?: Date | null;
     /**
      * 
+     * @type {AccessRequestDurationPeriod}
+     * @memberof EnrollmentMethod
+     */
+    durationPeriod?: AccessRequestDurationPeriod;
+    /**
+     * 
+     * @type {number}
+     * @memberof EnrollmentMethod
+     */
+    durationValue?: number;
+    /**
+     * 
      * @type {string}
      * @memberof EnrollmentMethod
      */
     passphrase?: string;
     /**
      * 
-     * @type {UserRead}
+     * @type {boolean}
      * @memberof EnrollmentMethod
      */
-    readonly createdBy: UserRead;
+    isActive?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof EnrollmentMethod
+     */
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -140,10 +120,10 @@ export interface EnrollmentMethod {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof EnrollmentMethod
      */
-    readonly modifiedBy: UserRead;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -163,7 +143,6 @@ export function instanceOfEnrollmentMethod(value: object): value is EnrollmentMe
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('role' in value) || value['role'] === undefined) return false;
-    if (!('roleSlug' in value) || value['roleSlug'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -187,16 +166,15 @@ export function EnrollmentMethodFromJSONTyped(json: any, ignoreDiscriminator: bo
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
-        'role': RoleReadFromJSON(json['role']),
-        'roleSlug': json['role_slug'],
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
-        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
-        'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
+        'role': json['role'],
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
+        'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
+        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
         'passphrase': json['passphrase'] == null ? undefined : json['passphrase'],
-        'createdBy': UserReadFromJSON(json['created_by']),
+        'isActive': json['is_active'] == null ? undefined : json['is_active'],
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -205,7 +183,7 @@ export function EnrollmentMethodToJSON(json: any): EnrollmentMethod {
     return EnrollmentMethodToJSONTyped(json, false);
 }
 
-export function EnrollmentMethodToJSONTyped(value?: Omit<EnrollmentMethod, 'id'|'role'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function EnrollmentMethodToJSONTyped(value?: Omit<EnrollmentMethod, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -217,12 +195,12 @@ export function EnrollmentMethodToJSONTyped(value?: Omit<EnrollmentMethod, 'id'|
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
-        'role_slug': value['roleSlug'],
-        'is_active': value['isActive'],
-        'duration_value': value['durationValue'],
-        'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
+        'role': value['role'],
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),
+        'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
+        'duration_value': value['durationValue'],
         'passphrase': value['passphrase'],
+        'is_active': value['isActive'],
     };
 }
 

@@ -14,77 +14,90 @@
 
 import { mapValues } from '../runtime';
 /**
- * User
+ * Current User
  * @export
- * @interface User
+ * @interface CurrentUser
  */
-export interface User {
+export interface CurrentUser {
     /**
      * 
      * @type {number}
-     * @memberof User
+     * @memberof CurrentUser
      */
     readonly id: number;
     /**
      * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
-    readonly username: string;
+    username: string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
     readonly fullName: string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
     firstName?: string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
     lastName?: string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
     description?: string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof CurrentUser
      */
     picture?: string | null;
     /**
      * Designates whether the user can log into this admin site.
      * @type {boolean}
-     * @memberof User
+     * @memberof CurrentUser
      */
-    readonly isStaff: boolean;
+    isStaff?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof CurrentUser
+     */
+    email: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CurrentUser
+     */
+    readonly isAuthenticated: boolean;
 }
 
 /**
- * Check if a given object implements the User interface.
+ * Check if a given object implements the CurrentUser interface.
  */
-export function instanceOfUser(value: object): value is User {
+export function instanceOfCurrentUser(value: object): value is CurrentUser {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('username' in value) || value['username'] === undefined) return false;
     if (!('fullName' in value) || value['fullName'] === undefined) return false;
-    if (!('isStaff' in value) || value['isStaff'] === undefined) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
+    if (!('isAuthenticated' in value) || value['isAuthenticated'] === undefined) return false;
     return true;
 }
 
-export function UserFromJSON(json: any): User {
-    return UserFromJSONTyped(json, false);
+export function CurrentUserFromJSON(json: any): CurrentUser {
+    return CurrentUserFromJSONTyped(json, false);
 }
 
-export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User {
+export function CurrentUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): CurrentUser {
     if (json == null) {
         return json;
     }
@@ -97,25 +110,30 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         'lastName': json['last_name'] == null ? undefined : json['last_name'],
         'description': json['description'] == null ? undefined : json['description'],
         'picture': json['picture'] == null ? undefined : json['picture'],
-        'isStaff': json['is_staff'],
+        'isStaff': json['is_staff'] == null ? undefined : json['is_staff'],
+        'email': json['email'],
+        'isAuthenticated': json['is_authenticated'],
     };
 }
 
-export function UserToJSON(json: any): User {
-    return UserToJSONTyped(json, false);
+export function CurrentUserToJSON(json: any): CurrentUser {
+    return CurrentUserToJSONTyped(json, false);
 }
 
-export function UserToJSONTyped(value?: Omit<User, 'id'|'username'|'full_name'|'is_staff'> | null, ignoreDiscriminator: boolean = false): any {
+export function CurrentUserToJSONTyped(value?: Omit<CurrentUser, 'id'|'full_name'|'is_authenticated'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
+        'username': value['username'],
         'first_name': value['firstName'],
         'last_name': value['lastName'],
         'description': value['description'],
         'picture': value['picture'],
+        'is_staff': value['isStaff'],
+        'email': value['email'],
     };
 }
 

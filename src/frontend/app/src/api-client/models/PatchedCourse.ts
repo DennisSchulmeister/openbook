@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { RoleAssignmentRead } from './RoleAssignmentRead';
-import {
-    RoleAssignmentReadFromJSON,
-    RoleAssignmentReadFromJSONTyped,
-    RoleAssignmentReadToJSON,
-    RoleAssignmentReadToJSONTyped,
-} from './RoleAssignmentRead';
 import type { TextFormatEnum } from './TextFormatEnum';
 import {
     TextFormatEnumFromJSON,
@@ -27,37 +20,10 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
-import type { EnrollmentMethodWithRoleRead } from './EnrollmentMethodWithRoleRead';
-import {
-    EnrollmentMethodWithRoleReadFromJSON,
-    EnrollmentMethodWithRoleReadFromJSONTyped,
-    EnrollmentMethodWithRoleReadToJSON,
-    EnrollmentMethodWithRoleReadToJSONTyped,
-} from './EnrollmentMethodWithRoleRead';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { PermissionRead } from './PermissionRead';
-import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
-import type { AccessRequestWithRoleRead } from './AccessRequestWithRoleRead';
-import {
-    AccessRequestWithRoleReadFromJSON,
-    AccessRequestWithRoleReadFromJSONTyped,
-    AccessRequestWithRoleReadToJSON,
-    AccessRequestWithRoleReadToJSONTyped,
-} from './AccessRequestWithRoleRead';
 
 /**
- * Full list of fields for retrieving a single course.
+ * Mixin class for model serializers whose models implement the `ScopedRolesMixin` and as such
+ * act as permission scope for user roles. Default serializer, that adds all scope fields.
  * @export
  * @interface PatchedCourse
  */
@@ -100,52 +66,40 @@ export interface PatchedCourse {
     isTemplate?: boolean;
     /**
      * 
-     * @type {UserRead}
-     * @memberof PatchedCourse
-     */
-    readonly owner?: UserRead;
-    /**
-     * User name
      * @type {string}
      * @memberof PatchedCourse
      */
-    ownerUsername?: string;
-    /**
-     * 
-     * @type {Array<PermissionRead>}
-     * @memberof PatchedCourse
-     */
-    readonly publicPermissions?: Array<PermissionRead>;
+    readonly owner?: string;
     /**
      * 
      * @type {Array<string>}
      * @memberof PatchedCourse
      */
-    publicPermissionStrings?: Array<string>;
+    publicPermissions?: Array<string>;
     /**
      * 
-     * @type {Array<RoleAssignmentRead>}
+     * @type {Array<string>}
      * @memberof PatchedCourse
      */
-    readonly roleAssignments?: Array<RoleAssignmentRead>;
+    readonly roleAssignments?: Array<string>;
     /**
      * 
-     * @type {Array<EnrollmentMethodWithRoleRead>}
+     * @type {Array<string>}
      * @memberof PatchedCourse
      */
-    readonly enrollmentMethods?: Array<EnrollmentMethodWithRoleRead>;
+    readonly enrollmentMethods?: Array<string>;
     /**
      * 
-     * @type {Array<AccessRequestWithRoleRead>}
+     * @type {Array<string>}
      * @memberof PatchedCourse
      */
-    readonly accessRequests?: Array<AccessRequestWithRoleRead>;
+    readonly accessRequests?: Array<string>;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedCourse
      */
-    readonly createdBy?: UserRead;
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -154,10 +108,10 @@ export interface PatchedCourse {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedCourse
      */
-    readonly modifiedBy?: UserRead;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -191,16 +145,14 @@ export function PatchedCourseFromJSONTyped(json: any, ignoreDiscriminator: boole
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
         'isTemplate': json['is_template'] == null ? undefined : json['is_template'],
-        'owner': json['owner'] == null ? undefined : UserReadFromJSON(json['owner']),
-        'ownerUsername': json['owner_username'] == null ? undefined : json['owner_username'],
-        'publicPermissions': json['public_permissions'] == null ? undefined : ((json['public_permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'publicPermissionStrings': json['public_permission_strings'] == null ? undefined : json['public_permission_strings'],
-        'roleAssignments': json['role_assignments'] == null ? undefined : ((json['role_assignments'] as Array<any>).map(RoleAssignmentReadFromJSON)),
-        'enrollmentMethods': json['enrollment_methods'] == null ? undefined : ((json['enrollment_methods'] as Array<any>).map(EnrollmentMethodWithRoleReadFromJSON)),
-        'accessRequests': json['access_requests'] == null ? undefined : ((json['access_requests'] as Array<any>).map(AccessRequestWithRoleReadFromJSON)),
-        'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
+        'owner': json['owner'] == null ? undefined : json['owner'],
+        'publicPermissions': json['public_permissions'] == null ? undefined : json['public_permissions'],
+        'roleAssignments': json['role_assignments'] == null ? undefined : json['role_assignments'],
+        'enrollmentMethods': json['enrollment_methods'] == null ? undefined : json['enrollment_methods'],
+        'accessRequests': json['access_requests'] == null ? undefined : json['access_requests'],
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': json['modified_at'] == null ? undefined : (new Date(json['modified_at'])),
     };
 }
@@ -209,7 +161,7 @@ export function PatchedCourseToJSON(json: any): PatchedCourse {
     return PatchedCourseToJSONTyped(json, false);
 }
 
-export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner'|'public_permissions'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -221,8 +173,7 @@ export function PatchedCourseToJSONTyped(value?: Omit<PatchedCourse, 'id'|'owner
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
         'is_template': value['isTemplate'],
-        'owner_username': value['ownerUsername'],
-        'public_permission_strings': value['publicPermissionStrings'],
+        'public_permissions': value['publicPermissions'],
     };
 }
 

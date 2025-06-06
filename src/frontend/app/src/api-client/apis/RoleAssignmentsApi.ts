@@ -15,13 +15,13 @@
 
 import * as runtime from '../runtime';
 import type {
-  PaginatedRoleAssignmentListList,
+  PaginatedRoleAssignmentList,
   PatchedRoleAssignment,
   RoleAssignment,
 } from '../models/index';
 import {
-    PaginatedRoleAssignmentListListFromJSON,
-    PaginatedRoleAssignmentListListToJSON,
+    PaginatedRoleAssignmentListFromJSON,
+    PaginatedRoleAssignmentListToJSON,
     PatchedRoleAssignmentFromJSON,
     PatchedRoleAssignmentToJSON,
     RoleAssignmentFromJSON,
@@ -29,14 +29,23 @@ import {
 } from '../models/index';
 
 export interface AuthRoleAssignmentsCreateRequest {
-    roleAssignment: Omit<RoleAssignment, 'id'|'role'|'user'|'assignment_method'|'enrollment_method'|'access_request'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    roleAssignment: Omit<RoleAssignment, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRoleAssignmentsDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRoleAssignmentsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -54,7 +63,7 @@ export interface AuthRoleAssignmentsListRequest {
     modifiedAtLte?: Date;
     modifiedBy?: string;
     role?: string;
-    scopeType?: string;
+    scopeType?: number;
     scopeUuid?: string;
     startDate?: Date;
     startDateGte?: Date;
@@ -64,16 +73,25 @@ export interface AuthRoleAssignmentsListRequest {
 
 export interface AuthRoleAssignmentsPartialUpdateRequest {
     id: string;
-    patchedRoleAssignment?: Omit<PatchedRoleAssignment, 'id'|'role'|'user'|'assignment_method'|'enrollment_method'|'access_request'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedRoleAssignment?: Omit<PatchedRoleAssignment, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthRoleAssignmentsRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRoleAssignmentsUpdateRequest {
     id: string;
-    roleAssignment: Omit<RoleAssignment, 'id'|'role'|'user'|'assignment_method'|'enrollment_method'|'access_request'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    roleAssignment: Omit<RoleAssignment, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -95,9 +113,25 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/role_assignments/`,
@@ -133,7 +167,23 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/role_assignments/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -157,8 +207,20 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
      * Users and their roles in a scope
      * List
      */
-    async authRoleAssignmentsListRaw(requestParameters: AuthRoleAssignmentsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedRoleAssignmentListList>> {
+    async authRoleAssignmentsListRaw(requestParameters: AuthRoleAssignmentsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedRoleAssignmentList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -254,6 +316,10 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/role_assignments/`,
             method: 'GET',
@@ -261,14 +327,14 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedRoleAssignmentListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedRoleAssignmentListFromJSON(jsonValue));
     }
 
     /**
      * Users and their roles in a scope
      * List
      */
-    async authRoleAssignmentsList(requestParameters: AuthRoleAssignmentsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedRoleAssignmentListList> {
+    async authRoleAssignmentsList(requestParameters: AuthRoleAssignmentsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedRoleAssignmentList> {
         const response = await this.authRoleAssignmentsListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -287,9 +353,25 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/role_assignments/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -325,7 +407,23 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/role_assignments/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -367,9 +465,25 @@ export class RoleAssignmentsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/role_assignments/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

@@ -28,7 +28,16 @@ import {
     SiteToJSON,
 } from '../models/index';
 
+export interface CoreSitesHealthRetrieveRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
 export interface CoreSitesListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -40,6 +49,9 @@ export interface CoreSitesListRequest {
 
 export interface CoreSitesRetrieveRequest {
     id: number;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -51,10 +63,26 @@ export class WebsitesApi extends runtime.BaseAPI {
      * Return a simple health status that the API is up and running.
      * Health Status
      */
-    async coreSitesHealthRetrieveRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthResponse>> {
+    async coreSitesHealthRetrieveRaw(requestParameters: CoreSitesHealthRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthResponse>> {
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/sites/health/`,
@@ -70,8 +98,8 @@ export class WebsitesApi extends runtime.BaseAPI {
      * Return a simple health status that the API is up and running.
      * Health Status
      */
-    async coreSitesHealthRetrieve(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthResponse> {
-        const response = await this.coreSitesHealthRetrieveRaw(initOverrides);
+    async coreSitesHealthRetrieve(requestParameters: CoreSitesHealthRetrieveRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthResponse> {
+        const response = await this.coreSitesHealthRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -81,6 +109,18 @@ export class WebsitesApi extends runtime.BaseAPI {
      */
     async coreSitesListRaw(requestParameters: CoreSitesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedSiteList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -111,6 +151,10 @@ export class WebsitesApi extends runtime.BaseAPI {
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/sites/`,
@@ -145,7 +189,23 @@ export class WebsitesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/core/sites/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

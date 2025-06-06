@@ -22,6 +22,7 @@ class LanguageSerializer(FlexFieldsModelSerializer):
     class Meta:
         model  = Language
         fields = ("language", "name")
+        expandable_fields = {}
 
 class LanguageFilter(FilterSet):
     name = CharFilter(lookup_expr="icontains")

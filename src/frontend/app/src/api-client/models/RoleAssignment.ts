@@ -13,27 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AccessRequestWithoutRoleRead } from './AccessRequestWithoutRoleRead';
-import {
-    AccessRequestWithoutRoleReadFromJSON,
-    AccessRequestWithoutRoleReadFromJSONTyped,
-    AccessRequestWithoutRoleReadToJSON,
-    AccessRequestWithoutRoleReadToJSONTyped,
-} from './AccessRequestWithoutRoleRead';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { EnrollmentMethodWithoutRoleRead } from './EnrollmentMethodWithoutRoleRead';
-import {
-    EnrollmentMethodWithoutRoleReadFromJSON,
-    EnrollmentMethodWithoutRoleReadFromJSONTyped,
-    EnrollmentMethodWithoutRoleReadToJSON,
-    EnrollmentMethodWithoutRoleReadToJSONTyped,
-} from './EnrollmentMethodWithoutRoleRead';
 import type { AssignmentMethodEnum } from './AssignmentMethodEnum';
 import {
     AssignmentMethodEnumFromJSON,
@@ -41,16 +20,9 @@ import {
     AssignmentMethodEnumToJSON,
     AssignmentMethodEnumToJSONTyped,
 } from './AssignmentMethodEnum';
-import type { RoleRead } from './RoleRead';
-import {
-    RoleReadFromJSON,
-    RoleReadFromJSONTyped,
-    RoleReadToJSON,
-    RoleReadToJSONTyped,
-} from './RoleRead';
 
 /**
- * Full list of fields for retrieving a single role assignment.
+ * Role Assignment
  * @export
  * @interface RoleAssignment
  */
@@ -75,46 +47,34 @@ export interface RoleAssignment {
     scopeUuid: string;
     /**
      * 
-     * @type {RoleRead}
+     * @type {string}
      * @memberof RoleAssignment
      */
-    readonly role: RoleRead;
+    role: string;
     /**
      * 
      * @type {string}
      * @memberof RoleAssignment
      */
-    roleSlug: string;
-    /**
-     * 
-     * @type {UserRead}
-     * @memberof RoleAssignment
-     */
-    readonly user: UserRead;
-    /**
-     * User name
-     * @type {string}
-     * @memberof RoleAssignment
-     */
-    userUsername: string;
+    user: string;
     /**
      * 
      * @type {AssignmentMethodEnum}
      * @memberof RoleAssignment
      */
-    readonly assignmentMethod: AssignmentMethodEnum;
+    assignmentMethod?: AssignmentMethodEnum;
     /**
      * 
-     * @type {EnrollmentMethodWithoutRoleRead}
+     * @type {string}
      * @memberof RoleAssignment
      */
-    readonly enrollmentMethod: EnrollmentMethodWithoutRoleRead;
+    enrollmentMethod?: string | null;
     /**
      * 
-     * @type {AccessRequestWithoutRoleRead}
+     * @type {string}
      * @memberof RoleAssignment
      */
-    readonly accessRequest: AccessRequestWithoutRoleRead;
+    accessRequest?: string | null;
     /**
      * 
      * @type {boolean}
@@ -135,10 +95,10 @@ export interface RoleAssignment {
     endDate?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof RoleAssignment
      */
-    readonly createdBy: UserRead;
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -147,10 +107,10 @@ export interface RoleAssignment {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof RoleAssignment
      */
-    readonly modifiedBy: UserRead;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -169,12 +129,7 @@ export function instanceOfRoleAssignment(value: object): value is RoleAssignment
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
     if (!('role' in value) || value['role'] === undefined) return false;
-    if (!('roleSlug' in value) || value['roleSlug'] === undefined) return false;
     if (!('user' in value) || value['user'] === undefined) return false;
-    if (!('userUsername' in value) || value['userUsername'] === undefined) return false;
-    if (!('assignmentMethod' in value) || value['assignmentMethod'] === undefined) return false;
-    if (!('enrollmentMethod' in value) || value['enrollmentMethod'] === undefined) return false;
-    if (!('accessRequest' in value) || value['accessRequest'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -195,19 +150,17 @@ export function RoleAssignmentFromJSONTyped(json: any, ignoreDiscriminator: bool
         'id': json['id'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
-        'role': RoleReadFromJSON(json['role']),
-        'roleSlug': json['role_slug'],
-        'user': UserReadFromJSON(json['user']),
-        'userUsername': json['user_username'],
-        'assignmentMethod': AssignmentMethodEnumFromJSON(json['assignment_method']),
-        'enrollmentMethod': EnrollmentMethodWithoutRoleReadFromJSON(json['enrollment_method']),
-        'accessRequest': AccessRequestWithoutRoleReadFromJSON(json['access_request']),
+        'role': json['role'],
+        'user': json['user'],
+        'assignmentMethod': json['assignment_method'] == null ? undefined : AssignmentMethodEnumFromJSON(json['assignment_method']),
+        'enrollmentMethod': json['enrollment_method'] == null ? undefined : json['enrollment_method'],
+        'accessRequest': json['access_request'] == null ? undefined : json['access_request'],
         'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
-        'createdBy': UserReadFromJSON(json['created_by']),
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -216,7 +169,7 @@ export function RoleAssignmentToJSON(json: any): RoleAssignment {
     return RoleAssignmentToJSONTyped(json, false);
 }
 
-export function RoleAssignmentToJSONTyped(value?: Omit<RoleAssignment, 'id'|'role'|'user'|'assignment_method'|'enrollment_method'|'access_request'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function RoleAssignmentToJSONTyped(value?: Omit<RoleAssignment, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -225,8 +178,11 @@ export function RoleAssignmentToJSONTyped(value?: Omit<RoleAssignment, 'id'|'rol
         
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
-        'role_slug': value['roleSlug'],
-        'user_username': value['userUsername'],
+        'role': value['role'],
+        'user': value['user'],
+        'assignment_method': AssignmentMethodEnumToJSON(value['assignmentMethod']),
+        'enrollment_method': value['enrollmentMethod'],
+        'access_request': value['accessRequest'],
         'is_active': value['isActive'],
         'start_date': value['startDate'] == null ? undefined : ((value['startDate'] as any).toISOString()),
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),

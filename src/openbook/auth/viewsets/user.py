@@ -10,9 +10,8 @@ from drf_spectacular.utils         import extend_schema
 from drf_spectacular.utils         import extend_schema_field
 from drf_spectacular.utils         import extend_schema_view
 from django_filters.filterset      import FilterSet
-from django_filters.filters        import BooleanFilter
-from django_filters.filters        import CharFilter
 from rest_framework.permissions    import AllowAny
+from rest_framework.serializers    import BooleanField
 from rest_framework.serializers    import SerializerMethodField
 from rest_framework.response       import Response
 from rest_framework.viewsets       import ModelViewSet
@@ -37,9 +36,9 @@ class UserSerializer(FlexFieldsModelSerializer):
             "is_staff",
         )
 
-        read_only_fields = ("username", "is_staff")
-
+        read_only_fields  = ("username", "is_staff")
         filterset_fields  = ("first_name", "last_name", "is_staff")
+        expandable_fields = {}
     
     @extend_schema_field(str)
     def get_full_name(self, obj):
@@ -47,6 +46,8 @@ class UserSerializer(FlexFieldsModelSerializer):
 
 class CurrentUserSerializer(UserSerializer):
     __doc__ = "Current User"
+
+    is_authenticated = BooleanField(read_only=True)
 
     class Meta:
         model             = User
@@ -103,6 +104,7 @@ class CurrentUserViewSet(ModelViewSet):
 
     permission_classes = [AllowAny]
     serializer_class   = CurrentUserSerializer
+    queryset           = User.objects.none()
 
     def get_view_name(self):
         return "Current User"

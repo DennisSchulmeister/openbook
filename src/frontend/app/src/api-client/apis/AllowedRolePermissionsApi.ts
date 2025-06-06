@@ -26,16 +26,22 @@ import {
 } from '../models/index';
 
 export interface AuthAllowedRolePermissionsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
     sort?: string;
-    permission?: string;
-    scopeType?: string;
+    permission?: number;
+    scopeType?: number;
 }
 
 export interface AuthAllowedRolePermissionsRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -49,6 +55,18 @@ export class AllowedRolePermissionsApi extends runtime.BaseAPI {
      */
     async authAllowedRolePermissionsListRaw(requestParameters: AuthAllowedRolePermissionsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedAllowedRolePermissionList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -75,6 +93,10 @@ export class AllowedRolePermissionsApi extends runtime.BaseAPI {
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/allowed_role_permissions/`,
@@ -109,7 +131,23 @@ export class AllowedRolePermissionsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/allowed_role_permissions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

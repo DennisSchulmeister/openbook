@@ -14,29 +14,23 @@
 
 import { mapValues } from '../runtime';
 /**
- * Permissions
+ * Permission
  * @export
  * @interface Permission
  */
 export interface Permission {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof Permission
      */
-    readonly perm: string;
+    readonly id: number;
     /**
      * 
      * @type {string}
      * @memberof Permission
      */
-    readonly appLabel: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Permission
-     */
-    readonly modelName: string;
+    name: string;
     /**
      * 
      * @type {string}
@@ -48,18 +42,52 @@ export interface Permission {
      * @type {string}
      * @memberof Permission
      */
-    name: string;
+    readonly permString: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly permDisplayName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly app: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly appDisplayName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly model: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Permission
+     */
+    readonly modelDisplayName: string;
 }
 
 /**
  * Check if a given object implements the Permission interface.
  */
 export function instanceOfPermission(value: object): value is Permission {
-    if (!('perm' in value) || value['perm'] === undefined) return false;
-    if (!('appLabel' in value) || value['appLabel'] === undefined) return false;
-    if (!('modelName' in value) || value['modelName'] === undefined) return false;
-    if (!('codename' in value) || value['codename'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('codename' in value) || value['codename'] === undefined) return false;
+    if (!('permString' in value) || value['permString'] === undefined) return false;
+    if (!('permDisplayName' in value) || value['permDisplayName'] === undefined) return false;
+    if (!('app' in value) || value['app'] === undefined) return false;
+    if (!('appDisplayName' in value) || value['appDisplayName'] === undefined) return false;
+    if (!('model' in value) || value['model'] === undefined) return false;
+    if (!('modelDisplayName' in value) || value['modelDisplayName'] === undefined) return false;
     return true;
 }
 
@@ -73,11 +101,15 @@ export function PermissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'perm': json['perm'],
-        'appLabel': json['app_label'],
-        'modelName': json['model_name'],
-        'codename': json['codename'],
+        'id': json['id'],
         'name': json['name'],
+        'codename': json['codename'],
+        'permString': json['perm_string'],
+        'permDisplayName': json['perm_display_name'],
+        'app': json['app'],
+        'appDisplayName': json['app_display_name'],
+        'model': json['model'],
+        'modelDisplayName': json['model_display_name'],
     };
 }
 
@@ -85,15 +117,15 @@ export function PermissionToJSON(json: any): Permission {
     return PermissionToJSONTyped(json, false);
 }
 
-export function PermissionToJSONTyped(value?: Omit<Permission, 'perm'|'app_label'|'model_name'> | null, ignoreDiscriminator: boolean = false): any {
+export function PermissionToJSONTyped(value?: Omit<Permission, 'id'|'perm_string'|'perm_display_name'|'app'|'app_display_name'|'model'|'model_display_name'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'codename': value['codename'],
         'name': value['name'],
+        'codename': value['codename'],
     };
 }
 

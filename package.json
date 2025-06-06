@@ -9,7 +9,7 @@
     ],
     "scripts": {
         "redis": "redis-server",
-        "runserver": "src/manage.py runserver",
+        "runserver": "cd src && python manage.py runserver",
         "maildev": "maildev -s 1025 -w 8887",
         "frontend": "cd src/frontend && npm run watch",
         "libraries": "cd src/libraries && npm run watch",

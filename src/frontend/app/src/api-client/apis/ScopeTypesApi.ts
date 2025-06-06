@@ -43,6 +43,10 @@ export class ScopeTypesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/scope_types/`,
             method: 'GET',
@@ -77,6 +81,10 @@ export class ScopeTypesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/scope_types/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

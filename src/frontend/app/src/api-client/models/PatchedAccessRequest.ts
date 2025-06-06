@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
 import type { AccessRequestDurationPeriod } from './AccessRequestDurationPeriod';
 import {
     AccessRequestDurationPeriodFromJSON,
@@ -27,13 +20,6 @@ import {
     AccessRequestDurationPeriodToJSON,
     AccessRequestDurationPeriodToJSONTyped,
 } from './AccessRequestDurationPeriod';
-import type { RoleRead } from './RoleRead';
-import {
-    RoleReadFromJSON,
-    RoleReadFromJSONTyped,
-    RoleReadToJSON,
-    RoleReadToJSONTyped,
-} from './RoleRead';
 import type { DecisionEnum } from './DecisionEnum';
 import {
     DecisionEnumFromJSON,
@@ -43,7 +29,7 @@ import {
 } from './DecisionEnum';
 
 /**
- * Full list of fields for retrieving a single access request.
+ * Access Request
  * @export
  * @interface PatchedAccessRequest
  */
@@ -68,28 +54,16 @@ export interface PatchedAccessRequest {
     scopeUuid?: string;
     /**
      * 
-     * @type {RoleRead}
+     * @type {string}
      * @memberof PatchedAccessRequest
      */
-    readonly role?: RoleRead;
+    user?: string;
     /**
      * 
      * @type {string}
      * @memberof PatchedAccessRequest
      */
-    roleSlug?: string;
-    /**
-     * 
-     * @type {UserRead}
-     * @memberof PatchedAccessRequest
-     */
-    readonly user?: UserRead;
-    /**
-     * User name
-     * @type {string}
-     * @memberof PatchedAccessRequest
-     */
-    userUsername?: string;
+    role?: string;
     /**
      * 
      * @type {Date}
@@ -98,16 +72,16 @@ export interface PatchedAccessRequest {
     endDate?: Date | null;
     /**
      * 
-     * @type {number}
-     * @memberof PatchedAccessRequest
-     */
-    durationValue?: number;
-    /**
-     * 
      * @type {AccessRequestDurationPeriod}
      * @memberof PatchedAccessRequest
      */
     durationPeriod?: AccessRequestDurationPeriod;
+    /**
+     * 
+     * @type {number}
+     * @memberof PatchedAccessRequest
+     */
+    durationValue?: number;
     /**
      * 
      * @type {DecisionEnum}
@@ -122,10 +96,10 @@ export interface PatchedAccessRequest {
     readonly decisionDate?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedAccessRequest
      */
-    readonly createdBy?: UserRead;
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -134,10 +108,10 @@ export interface PatchedAccessRequest {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedAccessRequest
      */
-    readonly modifiedBy?: UserRead;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -168,18 +142,16 @@ export function PatchedAccessRequestFromJSONTyped(json: any, ignoreDiscriminator
         'id': json['id'] == null ? undefined : json['id'],
         'scopeType': json['scope_type'] == null ? undefined : json['scope_type'],
         'scopeUuid': json['scope_uuid'] == null ? undefined : json['scope_uuid'],
-        'role': json['role'] == null ? undefined : RoleReadFromJSON(json['role']),
-        'roleSlug': json['role_slug'] == null ? undefined : json['role_slug'],
-        'user': json['user'] == null ? undefined : UserReadFromJSON(json['user']),
-        'userUsername': json['user_username'] == null ? undefined : json['user_username'],
+        'user': json['user'] == null ? undefined : json['user'],
+        'role': json['role'] == null ? undefined : json['role'],
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
-        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
         'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
+        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
         'decision': json['decision'] == null ? undefined : DecisionEnumFromJSON(json['decision']),
         'decisionDate': json['decision_date'] == null ? undefined : (new Date(json['decision_date'])),
-        'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': json['modified_at'] == null ? undefined : (new Date(json['modified_at'])),
     };
 }
@@ -188,7 +160,7 @@ export function PatchedAccessRequestToJSON(json: any): PatchedAccessRequest {
     return PatchedAccessRequestToJSONTyped(json, false);
 }
 
-export function PatchedAccessRequestToJSONTyped(value?: Omit<PatchedAccessRequest, 'id'|'role'|'user'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedAccessRequestToJSONTyped(value?: Omit<PatchedAccessRequest, 'id'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -197,11 +169,11 @@ export function PatchedAccessRequestToJSONTyped(value?: Omit<PatchedAccessReques
         
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
-        'role_slug': value['roleSlug'],
-        'user_username': value['userUsername'],
+        'user': value['user'],
+        'role': value['role'],
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),
-        'duration_value': value['durationValue'],
         'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
+        'duration_value': value['durationValue'],
         'decision': DecisionEnumToJSON(value['decision']),
     };
 }

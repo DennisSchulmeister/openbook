@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
 import type { AccessRequestDurationPeriod } from './AccessRequestDurationPeriod';
 import {
     AccessRequestDurationPeriodFromJSON,
@@ -27,13 +20,6 @@ import {
     AccessRequestDurationPeriodToJSON,
     AccessRequestDurationPeriodToJSONTyped,
 } from './AccessRequestDurationPeriod';
-import type { RoleRead } from './RoleRead';
-import {
-    RoleReadFromJSON,
-    RoleReadFromJSONTyped,
-    RoleReadToJSON,
-    RoleReadToJSONTyped,
-} from './RoleRead';
 import type { DecisionEnum } from './DecisionEnum';
 import {
     DecisionEnumFromJSON,
@@ -43,7 +29,7 @@ import {
 } from './DecisionEnum';
 
 /**
- * Full list of fields for retrieving a single access request.
+ * Access Request
  * @export
  * @interface AccessRequest
  */
@@ -68,28 +54,16 @@ export interface AccessRequest {
     scopeUuid: string;
     /**
      * 
-     * @type {RoleRead}
+     * @type {string}
      * @memberof AccessRequest
      */
-    readonly role: RoleRead;
+    user: string;
     /**
      * 
      * @type {string}
      * @memberof AccessRequest
      */
-    roleSlug: string;
-    /**
-     * 
-     * @type {UserRead}
-     * @memberof AccessRequest
-     */
-    readonly user: UserRead;
-    /**
-     * User name
-     * @type {string}
-     * @memberof AccessRequest
-     */
-    userUsername: string;
+    role: string;
     /**
      * 
      * @type {Date}
@@ -98,16 +72,16 @@ export interface AccessRequest {
     endDate?: Date | null;
     /**
      * 
-     * @type {number}
-     * @memberof AccessRequest
-     */
-    durationValue?: number;
-    /**
-     * 
      * @type {AccessRequestDurationPeriod}
      * @memberof AccessRequest
      */
     durationPeriod?: AccessRequestDurationPeriod;
+    /**
+     * 
+     * @type {number}
+     * @memberof AccessRequest
+     */
+    durationValue?: number;
     /**
      * 
      * @type {DecisionEnum}
@@ -122,10 +96,10 @@ export interface AccessRequest {
     readonly decisionDate: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof AccessRequest
      */
-    readonly createdBy: UserRead;
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -134,10 +108,10 @@ export interface AccessRequest {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof AccessRequest
      */
-    readonly modifiedBy: UserRead;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -155,10 +129,8 @@ export function instanceOfAccessRequest(value: object): value is AccessRequest {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
-    if (!('role' in value) || value['role'] === undefined) return false;
-    if (!('roleSlug' in value) || value['roleSlug'] === undefined) return false;
     if (!('user' in value) || value['user'] === undefined) return false;
-    if (!('userUsername' in value) || value['userUsername'] === undefined) return false;
+    if (!('role' in value) || value['role'] === undefined) return false;
     if (!('decisionDate' in value) || value['decisionDate'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
@@ -180,18 +152,16 @@ export function AccessRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         'id': json['id'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
-        'role': RoleReadFromJSON(json['role']),
-        'roleSlug': json['role_slug'],
-        'user': UserReadFromJSON(json['user']),
-        'userUsername': json['user_username'],
+        'user': json['user'],
+        'role': json['role'],
         'endDate': json['end_date'] == null ? undefined : (new Date(json['end_date'])),
-        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
         'durationPeriod': json['duration_period'] == null ? undefined : AccessRequestDurationPeriodFromJSON(json['duration_period']),
+        'durationValue': json['duration_value'] == null ? undefined : json['duration_value'],
         'decision': json['decision'] == null ? undefined : DecisionEnumFromJSON(json['decision']),
         'decisionDate': (json['decision_date'] == null ? null : new Date(json['decision_date'])),
-        'createdBy': UserReadFromJSON(json['created_by']),
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -200,7 +170,7 @@ export function AccessRequestToJSON(json: any): AccessRequest {
     return AccessRequestToJSONTyped(json, false);
 }
 
-export function AccessRequestToJSONTyped(value?: Omit<AccessRequest, 'id'|'role'|'user'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function AccessRequestToJSONTyped(value?: Omit<AccessRequest, 'id'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -209,11 +179,11 @@ export function AccessRequestToJSONTyped(value?: Omit<AccessRequest, 'id'|'role'
         
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
-        'role_slug': value['roleSlug'],
-        'user_username': value['userUsername'],
+        'user': value['user'],
+        'role': value['role'],
         'end_date': value['endDate'] == null ? undefined : ((value['endDate'] as any).toISOString()),
-        'duration_value': value['durationValue'],
         'duration_period': AccessRequestDurationPeriodToJSON(value['durationPeriod']),
+        'duration_value': value['durationValue'],
         'decision': DecisionEnumToJSON(value['decision']),
     };
 }

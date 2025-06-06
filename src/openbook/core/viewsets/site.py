@@ -27,6 +27,7 @@ class SiteSerializer(FlexFieldsModelSerializer):
     class Meta:
         model  = Site
         fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
+        expandable_fields = {}
 
 class SiteFilter(FilterSet):
     domain     = CharFilter(lookup_expr="icontains")

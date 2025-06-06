@@ -17,37 +17,49 @@ import * as runtime from '../runtime';
 import type {
   EnrollActionRequest,
   EnrollmentMethod,
-  PaginatedEnrollmentMethodListList,
+  PaginatedEnrollmentMethodList,
   PatchedEnrollmentMethod,
-  RoleAssignmentRead,
+  RoleAssignment,
 } from '../models/index';
 import {
     EnrollActionRequestFromJSON,
     EnrollActionRequestToJSON,
     EnrollmentMethodFromJSON,
     EnrollmentMethodToJSON,
-    PaginatedEnrollmentMethodListListFromJSON,
-    PaginatedEnrollmentMethodListListToJSON,
+    PaginatedEnrollmentMethodListFromJSON,
+    PaginatedEnrollmentMethodListToJSON,
     PatchedEnrollmentMethodFromJSON,
     PatchedEnrollmentMethodToJSON,
-    RoleAssignmentReadFromJSON,
-    RoleAssignmentReadToJSON,
+    RoleAssignmentFromJSON,
+    RoleAssignmentToJSON,
 } from '../models/index';
 
 export interface AuthEnrollmentMethodEnrollRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
     enrollActionRequest?: EnrollActionRequest;
 }
 
 export interface AuthEnrollmentMethodsCreateRequest {
-    enrollmentMethod: Omit<EnrollmentMethod, 'id'|'role'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    enrollmentMethod: Omit<EnrollmentMethod, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthEnrollmentMethodsDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthEnrollmentMethodsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -63,22 +75,31 @@ export interface AuthEnrollmentMethodsListRequest {
     modifiedBy?: string;
     name?: string;
     role?: string;
-    scopeType?: string;
+    scopeType?: number;
     scopeUuid?: string;
 }
 
 export interface AuthEnrollmentMethodsPartialUpdateRequest {
     id: string;
-    patchedEnrollmentMethod?: Omit<PatchedEnrollmentMethod, 'id'|'role'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedEnrollmentMethod?: Omit<PatchedEnrollmentMethod, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthEnrollmentMethodsRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthEnrollmentMethodsUpdateRequest {
     id: string;
-    enrollmentMethod: Omit<EnrollmentMethod, 'id'|'role'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    enrollmentMethod: Omit<EnrollmentMethod, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -90,7 +111,7 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
      * Self-enrollment of the current user via given enrollment method.
      * Enroll User
      */
-    async authEnrollmentMethodEnrollRaw(requestParameters: AuthEnrollmentMethodEnrollRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleAssignmentRead>> {
+    async authEnrollmentMethodEnrollRaw(requestParameters: AuthEnrollmentMethodEnrollRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RoleAssignment>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -100,9 +121,25 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/enroll/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -112,14 +149,14 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
             body: EnrollActionRequestToJSON(requestParameters['enrollActionRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RoleAssignmentReadFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RoleAssignmentFromJSON(jsonValue));
     }
 
     /**
      * Self-enrollment of the current user via given enrollment method.
      * Enroll User
      */
-    async authEnrollmentMethodEnroll(requestParameters: AuthEnrollmentMethodEnrollRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleAssignmentRead> {
+    async authEnrollmentMethodEnroll(requestParameters: AuthEnrollmentMethodEnrollRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RoleAssignment> {
         const response = await this.authEnrollmentMethodEnrollRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -138,9 +175,25 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/`,
@@ -176,7 +229,23 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -200,8 +269,20 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
      * Enrollment methods for self-registration
      * List
      */
-    async authEnrollmentMethodsListRaw(requestParameters: AuthEnrollmentMethodsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedEnrollmentMethodListList>> {
+    async authEnrollmentMethodsListRaw(requestParameters: AuthEnrollmentMethodsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedEnrollmentMethodList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -273,6 +354,10 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/enrollment_methods/`,
             method: 'GET',
@@ -280,14 +365,14 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedEnrollmentMethodListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedEnrollmentMethodListFromJSON(jsonValue));
     }
 
     /**
      * Enrollment methods for self-registration
      * List
      */
-    async authEnrollmentMethodsList(requestParameters: AuthEnrollmentMethodsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedEnrollmentMethodListList> {
+    async authEnrollmentMethodsList(requestParameters: AuthEnrollmentMethodsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedEnrollmentMethodList> {
         const response = await this.authEnrollmentMethodsListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -306,9 +391,25 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -344,7 +445,23 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -386,9 +503,25 @@ export class EnrollmentMethodsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/enrollment_methods/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

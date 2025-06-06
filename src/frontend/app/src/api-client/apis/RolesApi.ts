@@ -15,13 +15,13 @@
 
 import * as runtime from '../runtime';
 import type {
-  PaginatedRoleListList,
+  PaginatedRoleList,
   PatchedRole,
   Role,
 } from '../models/index';
 import {
-    PaginatedRoleListListFromJSON,
-    PaginatedRoleListListToJSON,
+    PaginatedRoleListFromJSON,
+    PaginatedRoleListToJSON,
     PatchedRoleFromJSON,
     PatchedRoleToJSON,
     RoleFromJSON,
@@ -29,14 +29,23 @@ import {
 } from '../models/index';
 
 export interface AuthRolesCreateRequest {
-    role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRolesDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRolesListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -54,23 +63,32 @@ export interface AuthRolesListRequest {
     priority?: number;
     priorityGte?: number;
     priorityLte?: number;
-    scopeType?: string;
+    scopeType?: number;
     scopeUuid?: string;
     slug?: string;
 }
 
 export interface AuthRolesPartialUpdateRequest {
     id: string;
-    patchedRole?: Omit<PatchedRole, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedRole?: Omit<PatchedRole, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthRolesRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthRolesUpdateRequest {
     id: string;
-    role: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    role: Omit<Role, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -92,9 +110,25 @@ export class RolesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/roles/`,
@@ -130,7 +164,23 @@ export class RolesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -154,8 +204,20 @@ export class RolesApi extends runtime.BaseAPI {
      * User Roles Within a Scope
      * List
      */
-    async authRolesListRaw(requestParameters: AuthRolesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedRoleListList>> {
+    async authRolesListRaw(requestParameters: AuthRolesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedRoleList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -239,6 +301,10 @@ export class RolesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/roles/`,
             method: 'GET',
@@ -246,14 +312,14 @@ export class RolesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedRoleListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedRoleListFromJSON(jsonValue));
     }
 
     /**
      * User Roles Within a Scope
      * List
      */
-    async authRolesList(requestParameters: AuthRolesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedRoleListList> {
+    async authRolesList(requestParameters: AuthRolesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedRoleList> {
         const response = await this.authRolesListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -272,9 +338,25 @@ export class RolesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -310,7 +392,23 @@ export class RolesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -352,9 +450,25 @@ export class RolesApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/roles/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

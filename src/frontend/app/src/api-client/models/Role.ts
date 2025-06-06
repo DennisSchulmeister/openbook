@@ -20,23 +20,9 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { PermissionRead } from './PermissionRead';
-import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
 
 /**
- * Full list of fields for retrieving a single role.
+ * Role
  * @export
  * @interface Role
  */
@@ -52,12 +38,6 @@ export interface Role {
      * @type {string}
      * @memberof Role
      */
-    slug: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Role
-     */
     scopeType: string;
     /**
      * 
@@ -65,6 +45,12 @@ export interface Role {
      * @memberof Role
      */
     scopeUuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Role
+     */
+    slug: string;
     /**
      * 
      * @type {string}
@@ -84,12 +70,6 @@ export interface Role {
      */
     textFormat?: TextFormatEnum;
     /**
-     * 
-     * @type {boolean}
-     * @memberof Role
-     */
-    isActive?: boolean;
-    /**
      * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
      * @type {number}
      * @memberof Role
@@ -97,22 +77,40 @@ export interface Role {
     priority: number;
     /**
      * 
-     * @type {Array<PermissionRead>}
+     * @type {boolean}
      * @memberof Role
      */
-    readonly permissions: Array<PermissionRead>;
+    isActive?: boolean;
     /**
      * 
      * @type {Array<string>}
      * @memberof Role
      */
-    permissionStrings: Array<string>;
+    permissions: Array<string>;
     /**
      * 
-     * @type {UserRead}
+     * @type {Array<string>}
      * @memberof Role
      */
-    readonly createdBy: UserRead;
+    roleAssignments: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof Role
+     */
+    enrollmentMethods: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof Role
+     */
+    accessRequests: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof Role
+     */
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -121,10 +119,10 @@ export interface Role {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof Role
      */
-    readonly modifiedBy: UserRead;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -140,13 +138,15 @@ export interface Role {
  */
 export function instanceOfRole(value: object): value is Role {
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('scopeType' in value) || value['scopeType'] === undefined) return false;
     if (!('scopeUuid' in value) || value['scopeUuid'] === undefined) return false;
+    if (!('slug' in value) || value['slug'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('priority' in value) || value['priority'] === undefined) return false;
     if (!('permissions' in value) || value['permissions'] === undefined) return false;
-    if (!('permissionStrings' in value) || value['permissionStrings'] === undefined) return false;
+    if (!('roleAssignments' in value) || value['roleAssignments'] === undefined) return false;
+    if (!('enrollmentMethods' in value) || value['enrollmentMethods'] === undefined) return false;
+    if (!('accessRequests' in value) || value['accessRequests'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -165,19 +165,21 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
     return {
         
         'id': json['id'],
-        'slug': json['slug'],
         'scopeType': json['scope_type'],
         'scopeUuid': json['scope_uuid'],
+        'slug': json['slug'],
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'priority': json['priority'],
-        'permissions': ((json['permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'permissionStrings': json['permission_strings'],
-        'createdBy': UserReadFromJSON(json['created_by']),
+        'isActive': json['is_active'] == null ? undefined : json['is_active'],
+        'permissions': json['permissions'],
+        'roleAssignments': json['role_assignments'],
+        'enrollmentMethods': json['enrollment_methods'],
+        'accessRequests': json['access_requests'],
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -186,22 +188,25 @@ export function RoleToJSON(json: any): Role {
     return RoleToJSONTyped(json, false);
 }
 
-export function RoleToJSONTyped(value?: Omit<Role, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function RoleToJSONTyped(value?: Omit<Role, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'slug': value['slug'],
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
+        'slug': value['slug'],
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
-        'is_active': value['isActive'],
         'priority': value['priority'],
-        'permission_strings': value['permissionStrings'],
+        'is_active': value['isActive'],
+        'permissions': value['permissions'],
+        'role_assignments': value['roleAssignments'],
+        'enrollment_methods': value['enrollmentMethods'],
+        'access_requests': value['accessRequests'],
     };
 }
 

@@ -20,23 +20,9 @@ import {
     TextFormatEnumToJSON,
     TextFormatEnumToJSONTyped,
 } from './TextFormatEnum';
-import type { UserRead } from './UserRead';
-import {
-    UserReadFromJSON,
-    UserReadFromJSONTyped,
-    UserReadToJSON,
-    UserReadToJSONTyped,
-} from './UserRead';
-import type { PermissionRead } from './PermissionRead';
-import {
-    PermissionReadFromJSON,
-    PermissionReadFromJSONTyped,
-    PermissionReadToJSON,
-    PermissionReadToJSONTyped,
-} from './PermissionRead';
 
 /**
- * Full list of fields for retrieving a single role.
+ * Role
  * @export
  * @interface PatchedRole
  */
@@ -52,12 +38,6 @@ export interface PatchedRole {
      * @type {string}
      * @memberof PatchedRole
      */
-    slug?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PatchedRole
-     */
     scopeType?: string;
     /**
      * 
@@ -65,6 +45,12 @@ export interface PatchedRole {
      * @memberof PatchedRole
      */
     scopeUuid?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedRole
+     */
+    slug?: string;
     /**
      * 
      * @type {string}
@@ -84,12 +70,6 @@ export interface PatchedRole {
      */
     textFormat?: TextFormatEnum;
     /**
-     * 
-     * @type {boolean}
-     * @memberof PatchedRole
-     */
-    isActive?: boolean;
-    /**
      * Low values mean less privileges. Make sure to correctly prioritize the rolls to avoid privilege escalation.
      * @type {number}
      * @memberof PatchedRole
@@ -97,22 +77,40 @@ export interface PatchedRole {
     priority?: number;
     /**
      * 
-     * @type {Array<PermissionRead>}
+     * @type {boolean}
      * @memberof PatchedRole
      */
-    readonly permissions?: Array<PermissionRead>;
+    isActive?: boolean;
     /**
      * 
      * @type {Array<string>}
      * @memberof PatchedRole
      */
-    permissionStrings?: Array<string>;
+    permissions?: Array<string>;
     /**
      * 
-     * @type {UserRead}
+     * @type {Array<string>}
      * @memberof PatchedRole
      */
-    readonly createdBy?: UserRead;
+    roleAssignments?: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PatchedRole
+     */
+    enrollmentMethods?: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PatchedRole
+     */
+    accessRequests?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PatchedRole
+     */
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -121,10 +119,10 @@ export interface PatchedRole {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {UserRead}
+     * @type {string}
      * @memberof PatchedRole
      */
-    readonly modifiedBy?: UserRead;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -153,19 +151,21 @@ export function PatchedRoleFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'id': json['id'] == null ? undefined : json['id'],
-        'slug': json['slug'] == null ? undefined : json['slug'],
         'scopeType': json['scope_type'] == null ? undefined : json['scope_type'],
         'scopeUuid': json['scope_uuid'] == null ? undefined : json['scope_uuid'],
+        'slug': json['slug'] == null ? undefined : json['slug'],
         'name': json['name'] == null ? undefined : json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'textFormat': json['text_format'] == null ? undefined : TextFormatEnumFromJSON(json['text_format']),
-        'isActive': json['is_active'] == null ? undefined : json['is_active'],
         'priority': json['priority'] == null ? undefined : json['priority'],
-        'permissions': json['permissions'] == null ? undefined : ((json['permissions'] as Array<any>).map(PermissionReadFromJSON)),
-        'permissionStrings': json['permission_strings'] == null ? undefined : json['permission_strings'],
-        'createdBy': json['created_by'] == null ? undefined : UserReadFromJSON(json['created_by']),
+        'isActive': json['is_active'] == null ? undefined : json['is_active'],
+        'permissions': json['permissions'] == null ? undefined : json['permissions'],
+        'roleAssignments': json['role_assignments'] == null ? undefined : json['role_assignments'],
+        'enrollmentMethods': json['enrollment_methods'] == null ? undefined : json['enrollment_methods'],
+        'accessRequests': json['access_requests'] == null ? undefined : json['access_requests'],
+        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : UserReadFromJSON(json['modified_by']),
+        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
         'modifiedAt': json['modified_at'] == null ? undefined : (new Date(json['modified_at'])),
     };
 }
@@ -174,22 +174,25 @@ export function PatchedRoleToJSON(json: any): PatchedRole {
     return PatchedRoleToJSONTyped(json, false);
 }
 
-export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'permissions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedRoleToJSONTyped(value?: Omit<PatchedRole, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'slug': value['slug'],
         'scope_type': value['scopeType'],
         'scope_uuid': value['scopeUuid'],
+        'slug': value['slug'],
         'name': value['name'],
         'description': value['description'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
-        'is_active': value['isActive'],
         'priority': value['priority'],
-        'permission_strings': value['permissionStrings'],
+        'is_active': value['isActive'],
+        'permissions': value['permissions'],
+        'role_assignments': value['roleAssignments'],
+        'enrollment_methods': value['enrollmentMethods'],
+        'access_requests': value['accessRequests'],
     };
 }
 

@@ -16,35 +16,50 @@
 import * as runtime from '../runtime';
 import type {
   AccessRequest,
-  PaginatedAccessRequestListList,
+  PaginatedAccessRequestList,
   PatchedAccessRequest,
 } from '../models/index';
 import {
     AccessRequestFromJSON,
     AccessRequestToJSON,
-    PaginatedAccessRequestListListFromJSON,
-    PaginatedAccessRequestListListToJSON,
+    PaginatedAccessRequestListFromJSON,
+    PaginatedAccessRequestListToJSON,
     PatchedAccessRequestFromJSON,
     PatchedAccessRequestToJSON,
 } from '../models/index';
 
 export interface AuthAccessRequestsAcceptRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthAccessRequestsCreateRequest {
-    accessRequest: Omit<AccessRequest, 'id'|'role'|'user'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    accessRequest: Omit<AccessRequest, 'id'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthAccessRequestsDenyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthAccessRequestsDestroyRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthAccessRequestsListRequest {
+    expand?: string;
+    fields?: string;
+    omit?: string;
     page?: number;
     pageSize?: number;
     search?: string;
@@ -62,23 +77,32 @@ export interface AuthAccessRequestsListRequest {
     modifiedAtLte?: Date;
     modifiedBy?: string;
     role?: string;
-    scopeType?: string;
+    scopeType?: number;
     scopeUuid?: string;
     user?: string;
 }
 
 export interface AuthAccessRequestsPartialUpdateRequest {
     id: string;
-    patchedAccessRequest?: Omit<PatchedAccessRequest, 'id'|'role'|'user'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+    patchedAccessRequest?: Omit<PatchedAccessRequest, 'id'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface AuthAccessRequestsRetrieveRequest {
     id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 export interface AuthAccessRequestsUpdateRequest {
     id: string;
-    accessRequest: Omit<AccessRequest, 'id'|'role'|'user'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    accessRequest: Omit<AccessRequest, 'id'|'decision_date'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
 }
 
 /**
@@ -100,7 +124,23 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/accept/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -135,9 +175,25 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/`,
@@ -173,7 +229,23 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/deny/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -208,7 +280,23 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -232,8 +320,20 @@ export class AccessRequestsApi extends runtime.BaseAPI {
      * Access requests to get a scoped role assigned
      * List
      */
-    async authAccessRequestsListRaw(requestParameters: AuthAccessRequestsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedAccessRequestListList>> {
+    async authAccessRequestsListRaw(requestParameters: AuthAccessRequestsListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedAccessRequestList>> {
         const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
 
         if (requestParameters['page'] != null) {
             queryParameters['_page'] = requestParameters['page'];
@@ -317,6 +417,10 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
         const response = await this.request({
             path: `/api/auth/access_requests/`,
             method: 'GET',
@@ -324,14 +428,14 @@ export class AccessRequestsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedAccessRequestListListFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PaginatedAccessRequestListFromJSON(jsonValue));
     }
 
     /**
      * Access requests to get a scoped role assigned
      * List
      */
-    async authAccessRequestsList(requestParameters: AuthAccessRequestsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedAccessRequestListList> {
+    async authAccessRequestsList(requestParameters: AuthAccessRequestsListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedAccessRequestList> {
         const response = await this.authAccessRequestsListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -350,9 +454,25 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -388,7 +508,23 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
@@ -430,9 +566,25 @@ export class AccessRequestsApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
 
         const response = await this.request({
             path: `/api/auth/access_requests/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),

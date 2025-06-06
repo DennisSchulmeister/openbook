@@ -13,3 +13,7 @@ class AuthApp(AppConfig):
     name         = "openbook.auth"
     label        = "openbook_auth"
     verbose_name = _("User Management")
+
+    def ready(self):
+        # Load OpenAPI auth extensions
+        from .middleware.current_user import CurrentUserTrackingAuthExtension

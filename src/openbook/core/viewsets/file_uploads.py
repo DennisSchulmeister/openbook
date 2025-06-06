@@ -22,6 +22,7 @@ class MediaFileSerializer(FlexFieldsModelSerializer):
     class Meta:
         model  = MediaFile
         fields = ("content_type", "object_id", "file_name", "file_size", "mime_type", "file_data")
+        expandable_fields = {}
 
 class MediaFileFilter(FilterSet):
     file_name = CharFilter(lookup_expr="icontains")
