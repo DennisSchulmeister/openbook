@@ -7,7 +7,6 @@
 # License, or (at your option) any later version.
 
 from openbook.admin           import admin_site
-
 from .access_request          import AccessRequestAdmin
 from .allowed_role_permission import AllowedRolePermissionAdmin
 from .anonymous_permission    import AnonymousPermissionAdmin
@@ -17,7 +16,6 @@ from .permission_text         import PermissionTextAdmin
 from .role                    import RoleAdmin
 from .role_assignment         import RoleAssignmentAdmin
 from .user                    import UserAdmin
-
 from ..                       import models
 
 admin_site.register(models.User,                  UserAdmin)
@@ -29,3 +27,24 @@ admin_site.register(models.Role,                  RoleAdmin)
 admin_site.register(models.RoleAssignment,        RoleAssignmentAdmin)
 admin_site.register(models.EnrollmentMethod,      EnrollmentMethodAdmin)
 admin_site.register(models.AccessRequest,         AccessRequestAdmin)
+
+# Hacking django-allauth to use the Django Unfold styling
+# Template: https://codeberg.org/allauth/django-allauth/src/branch/main/allauth/account/admin.py
+# Template: https://codeberg.org/allauth/django-allauth/src/branch/main/allauth/idp/oidc/admin.py
+from allauth.account       import app_settings as allauth_app_settings
+from allauth.account       import models       as allauth_account_models
+from allauth.idp.oidc      import models       as allauth_idp_oidc_models
+from allauth.socialaccount import models       as allauth_socialaccount_models
+from .                     import allauth
+
+admin_site.register(allauth_account_models.EmailAddress, allauth.EmailAddressAdmin)
+
+if not allauth_app_settings.EMAIL_CONFIRMATION_HMAC:
+    admin_site.register(allauth_account_models.EmailConfirmation, allauth.EmailConfirmationAdmin)
+
+admin_site.register(allauth_idp_oidc_models.Client, allauth.ClientAdmin)
+admin_site.register(allauth_idp_oidc_models.Token,  allauth.TokenAdmin)
+
+admin_site.register(allauth_socialaccount_models.SocialApp,     allauth.SocialAppAdmin)
+admin_site.register(allauth_socialaccount_models.SocialAccount, allauth.SocialAccountAdmin)
+admin_site.register(allauth_socialaccount_models.SocialToken,   allauth.SocialTokenAdmin)

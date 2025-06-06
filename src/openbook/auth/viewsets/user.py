@@ -33,7 +33,7 @@ class UserSerializer(FlexFieldsModelSerializer):
             "id", "username",
             "full_name", "first_name", "last_name",
             "description", "picture",
-            "is_staff",
+            "is_staff", "last_login", "date_joined",
         )
 
         read_only_fields  = ("username", "is_staff")
@@ -80,7 +80,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     __doc__ = "Users"
 
     lookup_field       = "username"
-    queryset           = User.objects.filter(is_active = True)
+    queryset           = User.objects.filter(is_active=True)
     http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
     filterset_class    = UserFilter
     serializer_class   = UserSerializer

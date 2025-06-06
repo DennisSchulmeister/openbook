@@ -6,15 +6,16 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.apps              import apps
-from django.conf              import settings
-from django.utils.translation import gettext_lazy as _
-from djangoql.admin           import DjangoQLSearchMixin
-from import_export.resources  import ModelResource
-from import_export.admin      import ImportExportModelAdmin
-from import_export.fields     import Field
-from unfold.sites             import UnfoldAdminSite
-from unfold.admin             import ModelAdmin as UnfoldModelAdmin
+from allauth.account.decorators import secure_admin_login
+from django.apps                import apps
+from django.conf                import settings
+from django.utils.translation   import gettext_lazy as _
+from djangoql.admin             import DjangoQLSearchMixin
+from import_export.resources    import ModelResource
+from import_export.admin        import ImportExportModelAdmin
+from import_export.fields       import Field
+from unfold.sites               import UnfoldAdminSite
+from unfold.admin               import ModelAdmin as UnfoldModelAdmin
 
 class ImportExportModelResource(ModelResource):
     """
@@ -120,3 +121,4 @@ class CustomAdminSite(UnfoldAdminSite):
         return app_list
 
 admin_site = CustomAdminSite()
+admin_site.login = secure_admin_login(admin_site.login)

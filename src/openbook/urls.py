@@ -36,13 +36,21 @@ register_textbook_api_routes(api_router, "textbook")
 register_ui_library_api_routes(api_router, "ui_library")
 
 urlpatterns = [
+    # REST API
     path("api/",              include(api_router.urls)),
     path("api-auth/",         include("rest_framework.urls")),
     path("api/schema/",       SpectacularAPIView.as_view(), name="api-schema"),
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="api-schema"), name="api-redoc"),
+
+    # Admin Panel
     path("admin/",            admin_site.urls),
 
-    path("", RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),
+    # User Accounts
+    path('accounts/',         include('allauth.urls')),
+    path("",                  include("allauth.idp.urls")),
+
+    # Single Page App
+    path("",                  RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),
 ]
 
 if settings.DEBUG:

@@ -2,6 +2,7 @@ Installation Notes for Administrators
 =====================================
 
 1. [System Overview](#system-overview)
+1. [Installation Notes (xmlsec1, ltdl)](#installation-notes-xmlsec1-ltdl)
 1. [Local Settings](#local-settings)
 1. [Web Server](#web-server)
 1. [Docker Compose](#docker-compose)
@@ -60,6 +61,33 @@ can easily start multiple backend instances to fully utilize the hardware. It is
 distribute the components to individual machines/VMs/containers or not. Even a basic setup on a single
 machine can go very far. To keep things simple we recommend to start small and only scale-up when the
 need arises.
+
+Installation Notes (xmlsec1, ltdl)
+----------------------------------
+
+Before installing the Python dependencies with `poetry install` make sure the following packages are
+installed on your system. On Linux you can use your local package manager like `apt` or `dfn` for this.
+
+ * `xmlsec1` (with development headers)
+ * `libtool-ltdl` (with development headers)
+
+These are needed for the SAML integration. If you cannot install these packages and don't plan to use
+SAML anyway (e.g. to integrate in your school/university's identity management) you can manually edit
+`pyproject.yml` and remove `"saml"` from the `django-allauth` dependency, instead.
+
+If the server crashes with `xmlsec.InternalError: (-1, 'lxml & xmlsec libxml2 library version mismatch')`,
+this could mean:
+
+* The system has multiple versions of `libxml2` installed (unlikely).
+* `lxml` and/or `xmlsec` were compiled against different versions of `libxml2`.
+* You upgraded/downgraded `libxml2`, `lxml`, or `xmlsec` without rebuilding the others.
+* Poetry installed binary wheels that are incompatible with your system libraries.
+
+The following command should hopefuly fix it:
+
+```sh
+poetry run pip uninstall lxml xmlsec -y && poetry run pip install --no-binary=:all: lxml xmlsec
+```
 
 Local Settings
 --------------
