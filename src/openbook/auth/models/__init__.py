@@ -15,6 +15,5 @@ from .permission_text         import PermissionText
 from .role_assignment         import RoleAssignment
 from .role                    import Role
 from .user                    import User
-from .user_profile            import UserProfile
 
 from . import mixins

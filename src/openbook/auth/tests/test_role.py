@@ -51,24 +51,24 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
 
     def get_create_request_data(self):
         return {
-            "scope_type":         model_string_for_content_type(self.role_student.scope_type),
-            "scope_uuid":         str(self.role_student.scope_uuid),
-            "priority":           3,
-            "name":               "Course Administrator",
-            "slug":               "course-administrator",
-            "permission_strings": ["admin.add_logentry", "admin.change_logentry"],
+            "scope_type":  model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid":  str(self.role_student.scope_uuid),
+            "priority":    3,
+            "name":        "Course Administrator",
+            "slug":        "course-administrator",
+            "permissions": ["admin.add_logentry", "admin.change_logentry"],
         }
 
     def get_update_request_data(self):
         return {
-            "scope_type":         model_string_for_content_type(self.role_student.scope_type),
-            "scope_uuid":         str(self.role_student.scope_uuid),
-            "priority":           99,
-            "name":               "Updated Name",
-            "slug":               "updated-name",
-            "description":        "Updated Description",
-            "is_active":          False,
-            "permission_strings": ["admin.delete_logentry", "admin.view_logentry"],
+            "scope_type":  model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid":  str(self.role_student.scope_uuid),
+            "priority":    99,
+            "name":        "Updated Name",
+            "slug":        "updated-name",
+            "description": "Updated Description",
+            "is_active":   False,
+            "permissions": ["admin.delete_logentry", "admin.view_logentry"],
         }
 
     operations = {

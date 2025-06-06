@@ -18,6 +18,7 @@ from ..filters.mixins.audit        import CreatedModifiedByFilterMixin
 from ..filters.mixins.scope        import ScopeFilterMixin
 from ..models.role_assignment      import RoleAssignment
 from ..serializers.mixins.scope    import ScopeTypeField
+from ..serializers.role            import RoleField
 from ..serializers.user            import UserField
 
 class RoleAssignmentSerializer(FlexFieldsModelSerializer):
@@ -25,6 +26,7 @@ class RoleAssignmentSerializer(FlexFieldsModelSerializer):
 
     scope_type  = ScopeTypeField()
     user        = UserField()
+    role        = RoleField()
     created_by  = UserField(read_only=True)
     modified_by = UserField(read_only=True)
 
@@ -33,17 +35,21 @@ class RoleAssignmentSerializer(FlexFieldsModelSerializer):
 
         fields = (
             "id", "scope_type", "scope_uuid",
-            "role", "user", "assignment_method", "is_active",
+            "role", "user", "assignment_method",
+            "enrollment_method", "access_request",
+            "is_active", "start_date", "end_date",
             "created_by", "created_at", "modified_by", "modified_at",
         )
 
         read_only_fields = ("id", "created_at", "modified_at")
 
         expandable_fields = {
-            "user":        "openbook.auth.viewsets.user.UserSerializer",
-            "role":        "openbook.auth.viewsets.role.RoleSerializer",
-            "created_by":  "openbook.auth.viewsets.user.UserSerializer",
-            "modified_by": "openbook.auth.viewsets.user.UserSerializer",
+            "user":              "openbook.auth.viewsets.user.UserSerializer",
+            "role":              "openbook.auth.viewsets.role.RoleSerializer",
+            "enrollment_method": "openbook.auth.viewsets.enrollment_method.EnrollmentMethodSerializer",
+            "access_request":    "openbook.auth.viewsets.access_request.AccessRequestSerializer",
+            "created_by":        "openbook.auth.viewsets.user.UserSerializer",
+            "modified_by":       "openbook.auth.viewsets.user.UserSerializer",
         }
 
 class RoleAssignmentFilter(ScopeFilterMixin, CreatedModifiedByFilterMixin, FilterSet):

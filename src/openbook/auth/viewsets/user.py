@@ -21,14 +21,6 @@ from openbook.drf.flex_serializers import FlexFieldsModelSerializer
 from openbook.drf.viewsets         import ModelViewSetMixin
 from openbook.drf.viewsets         import with_flex_fields_parameters
 from ..models.user                 import User
-from ..models.user_profile         import UserProfile
-
-class UserProfileSerializer(FlexFieldsModelSerializer):
-    __doc__ = "User Profile"
-
-    class Meta:
-        model  = UserProfile
-        fields = ("user", "description", "picture")
 
 class UserSerializer(FlexFieldsModelSerializer):
     __doc__ = "User"
@@ -36,27 +28,22 @@ class UserSerializer(FlexFieldsModelSerializer):
     full_name = SerializerMethodField()
 
     class Meta:
-        model             = User
-        fields            = ("id", "username", "full_name", "first_name", "last_name", "profile")
+        model = User
+
+        fields = (
+            "id", "username",
+            "full_name", "first_name", "last_name",
+            "description", "picture",
+            "is_staff",
+        )
+
+        read_only_fields = ("username", "is_staff")
+
         filterset_fields  = ("first_name", "last_name", "is_staff")
-        expandable_fields = {"profile": UserProfileSerializer}
     
     @extend_schema_field(str)
     def get_full_name(self, obj):
         return obj.get_full_name() if hasattr(obj, "get_full_name") else ""
-
-    def update(self, instance, validated_data):
-        profile_data = validated_data.pop("profile")
-        instance = super().update(instance, validated_data)
-        profile = UserProfile.objects.get_or_create(user=instance)
-
-        if hasattr(profile_data, "description"):
-            profile.description = profile_data.description
-        
-        if hasattr(profile_data, "picture"):
-            profile.picture = profile_data.picture
-        
-        return instance
 
 class CurrentUserSerializer(UserSerializer):
     __doc__ = "Current User"
@@ -65,17 +52,18 @@ class CurrentUserSerializer(UserSerializer):
         model             = User
         fields            = (*UserSerializer.Meta.fields, "email", "is_authenticated")
         filterset_fields  = (*UserSerializer.Meta.filterset_fields,)
-        expandable_fields = {**UserSerializer.Meta.expandable_fields,}
 
 class UserFilter(FilterSet):
-    first_name = CharFilter(lookup_expr="icontains")
-    last_name  = CharFilter(lookup_expr="icontains")
-    email      = CharFilter(lookup_expr="icontains")
-    is_staff   = BooleanFilter()
-    
     class Meta:
         model  = User
-        fields = ("username", "first_name", "last_name", "email", "is_staff")
+        fields = {
+            "username":    ("icontains",),
+            "first_name":  ("icontains",),
+            "last_name":   ("icontains",),
+            "email":       ("icontains",),
+            "description": ("icontains",),
+            "is_staff":    ("exact",),
+        }
 
 @extend_schema(
     extensions={
@@ -96,7 +84,7 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class    = UserFilter
     serializer_class   = UserSerializer
     ordering           = ("username",)
-    search_fields      = ("username", "first_name", "last_name", "email")
+    search_fields      = ("username", "first_name", "last_name", "description")
 
 @extend_schema(
     extensions={

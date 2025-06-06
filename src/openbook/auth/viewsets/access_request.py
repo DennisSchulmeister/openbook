@@ -20,6 +20,7 @@ from ..filters.mixins.audit        import CreatedModifiedByFilterMixin
 from ..filters.mixins.scope        import ScopeFilterMixin
 from ..models.access_request       import AccessRequest
 from ..serializers.mixins.scope    import ScopeTypeField
+from ..serializers.role            import RoleField
 from ..serializers.user            import UserField
 
 class AccessRequestSerializer(FlexFieldsModelSerializer):
@@ -27,6 +28,7 @@ class AccessRequestSerializer(FlexFieldsModelSerializer):
 
     scope_type  = ScopeTypeField()
     user        = UserField()
+    role        = RoleField()
     created_by  = UserField(read_only=True)
     modified_by = UserField(read_only=True)
 
@@ -35,15 +37,17 @@ class AccessRequestSerializer(FlexFieldsModelSerializer):
 
         fields = (
             "id", "scope_type", "scope_uuid",
-            "user", "role", "decision", "decision_date",
+            "user", "role",
+            "end_date", "duration_period", "duration_value",
+            "decision", "decision_date",
             "created_by", "created_at", "modified_by", "modified_at",
         )
 
         read_only_fields = ("id", "decision_date", "created_at", "modified_at")
 
         expandable_fields = {
-            "user":        "openbook.auth.serializers.user.UserSerializer",
-            "role":        "openbook.auth.serializers.role.RoleSerializer",
+            "user":        "openbook.auth.viewsets.user.UserSerializer",
+            "role":        "openbook.auth.viewsets.role.RoleSerializer",
             "created_by":  "openbook.auth.viewsets.user.UserSerializer",
             "modified_by": "openbook.auth.viewsets.user.UserSerializer",
         }

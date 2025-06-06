@@ -169,7 +169,7 @@ class EnrollmentMethod_ViewSet_Tests(ModelViewSetTestMixin, EnrollmentMethod_Tes
             "scope_type": model_string_for_content_type(self.em_passphrase.scope_type),
             "scope_uuid": str(self.em_passphrase.scope_uuid),
             "name":       "Test Name",
-            "role_slug":  "student",
+            "role":       "student",
         }
 
     def get_update_request_data(self):
@@ -179,7 +179,7 @@ class EnrollmentMethod_ViewSet_Tests(ModelViewSetTestMixin, EnrollmentMethod_Tes
                 "name":            "Changed Name",
                 "description":     "Changed Description",
                 "text_format":     EnrollmentMethod.TextFormatChoices.HTML,
-                "role_slug":       "student",
+                "role":            "student",
                 "is_active":       False,
                 "duration_value":  1,
                 "duration_period": EnrollmentMethod.DurationPeriod.YEARS,

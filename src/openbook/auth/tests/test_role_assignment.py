@@ -70,7 +70,7 @@ class RoleAssignment_ViewSet_Tests(ModelViewSetTestMixin, RoleAssignment_Test_Mi
     model         = RoleAssignment
     search_string = "test-new"
     search_count  = 2
-    sort_field    = "user__username"
+    sort_field    = "user"
 
     def setUp(self):
         super().setUp()
@@ -86,21 +86,21 @@ class RoleAssignment_ViewSet_Tests(ModelViewSetTestMixin, RoleAssignment_Test_Mi
     
     def get_create_request_data(self):
         return {
-            "scope_type":    model_string_for_content_type(self.ra_student.scope_type),
-            "scope_uuid":    str(self.ra_student.scope_uuid),
-            "role_slug":     "teacher",
-            "user_username": "test-new",
+            "scope_type": model_string_for_content_type(self.ra_student.scope_type),
+            "scope_uuid": str(self.ra_student.scope_uuid),
+            "role":       "teacher",
+            "user":       "test-new",
         }
 
     def get_update_request_data(self):
         return {
-                "scope_type":    model_string_for_content_type(self.ra_student.scope_type),
-                "scope_uuid":    str(self.ra_student.scope_uuid),
-                "role_slug":     "teacher",
-                "user_username": "test-new",
-                "is_active":     False,
-                "start_date":    "",
-                "end_date":      "",
+                "scope_type": model_string_for_content_type(self.ra_student.scope_type),
+                "scope_uuid": str(self.ra_student.scope_uuid),
+                "role":       "teacher",
+                "user":       "test-new",
+                "is_active":  False,
+                "start_date": "",
+                "end_date":   "",
             }
 
     operations = {

@@ -17,9 +17,9 @@ from ..models.permission_text      import PermissionText
 
 class PermissionText_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
-    Tests for the `PermissionTViewSet` REST API.
+    Tests for the `PermissionTextViewSet` REST API.
     """
-    base_name     = "permission"
+    base_name     = "permission_text"
     model         = PermissionText
     search_string = "Permission"
     search_count  = 1

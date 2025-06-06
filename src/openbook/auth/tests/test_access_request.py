@@ -318,19 +318,19 @@ class AccessRequest_ViewSet_Tests(ModelViewSetTestMixin, AccessRequest_Test_Mixi
 
     def get_create_request_data(self):
         return {
-            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
-            "scope_uuid":    str(self.role_student.scope_uuid),
-            "role_slug":     "student",
-            "user_username": "new",
+            "scope_type": model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid": str(self.role_student.scope_uuid),
+            "role":       "student",
+            "user":       "new",
         }
 
     def get_update_request_data(self):
         return {
-            "scope_type":    model_string_for_content_type(self.role_student.scope_type),
-            "scope_uuid":    str(self.role_student.scope_uuid),
-            "role_slug":     "student",
-            "user_username": "dummy",
-            "decision":      AccessRequest.Decision.ACCEPTED,
+            "scope_type": model_string_for_content_type(self.role_student.scope_type),
+            "scope_uuid": str(self.role_student.scope_uuid),
+            "role":       "student",
+            "user":       "dummy",
+            "decision":   AccessRequest.Decision.ACCEPTED,
         }
 
     operations = {

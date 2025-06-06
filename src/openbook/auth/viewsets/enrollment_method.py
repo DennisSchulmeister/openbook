@@ -24,12 +24,14 @@ from ..filters.mixins.scope        import ScopeFilterMixin
 from ..models.enrollment_method    import EnrollmentMethod
 from .role_assignment              import RoleAssignmentSerializer
 from ..serializers.mixins.scope    import ScopeTypeField
+from ..serializers.role            import RoleField
 from ..serializers.user            import UserField
 
 class EnrollmentMethodSerializer(FlexFieldsModelSerializer):
     __doc__ = "Enrollment Method"
 
     scope_type  = ScopeTypeField()
+    role        = RoleField()
     created_by  = UserField(read_only=True)
     modified_by = UserField(read_only=True)
 
@@ -39,8 +41,8 @@ class EnrollmentMethodSerializer(FlexFieldsModelSerializer):
         fields = (
             "id", "scope_type", "scope_uuid",
             "name", "description", "text_format",
-            "role",
-            "is_active",
+            "role", "end_date", "duration_period", "duration_value",
+            "passphrase", "is_active",
             "created_by", "created_at", "modified_by", "modified_at",
         )
 

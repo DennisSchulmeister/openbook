@@ -20,7 +20,7 @@ from .mixins.scope                        import ScopeMixin
 class AccessRequest(UUIDMixin, ScopeMixin, DurationMixin, CreatedModifiedByMixin):
     """
     To gain access, users may send access requests to the owners of a given scope. This contains the
-    scope and the requested role, so that the request can be converted into a role assignment, if th
+    scope and the requested role, so that the request can be converted into a role assignment, if the
     request is granted.
 
     NOTE: Take care to exclude `decision` and `decision_date` when creating and modifying objects.

@@ -20,7 +20,6 @@ from openbook.admin                      import ImportExportModelResource
 from openbook.core.import_export.boolean import BooleanWidget
 from ..models.group                      import Group
 from ..models.user                       import User
-from ..models.user_profile               import UserProfile
 from ..import_export.permission          import PermissionManyToManyWidget
 
 class UserResource(ImportExportModelResource):
@@ -38,34 +37,8 @@ class UserResource(ImportExportModelResource):
             "first_name", "last_name", "date_joined",
             "is_active", "is_staff", "is_superuser",
             "groups", "user_permissions",
-            "profile__description", "profile__picture"
+            "description", "picture"
         )
-
-    def after_save_instance(self, instance, row, **kwargs):
-        """
-        Save user profile after the user itself has been created/updated. Required because
-        the user profile model has a foreign key on user, so that `user.profile` is just
-        a backlink that can only be created once the user is there.
-        """
-        if instance.profile:
-            instance.profile.description = row["profile__description"]
-            instance.profile.picture     = row["profile__picture"]
-            instance.profile.save()
-        else:
-            UserProfile.objects.create(
-                user        = instance,
-                description = row["profile__description"],
-                picture     = row["profile__picture"],
-            )
-
-class UserProfileInline(StackedInline):
-    model               = UserProfile
-    fk_name             = "user"
-    can_delete          = False
-    verbose_name        = _("User Profile")
-    verbose_name_plural = _("User Profiles")
-    tab                 = True
-    hide_title          = True
 
 class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     """
@@ -80,16 +53,15 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     list_display         = ("full_name", "username", "is_staff", "is_superuser", "user_type")
     list_display_links   = ("full_name", "username")
     list_filter          = DjangoUserAdmin.list_filter + ("is_superuser", "user_type")
-    inlines              = (UserProfileInline,)
 
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("username", "usable_password", "password1", "password2"),
+            "fields": ("user_type", "username", "usable_password", "password1", "password2"),
         }),
-        (_("Additional Information"), {
+        (_("Personal Information"), {
             "classes": ("wide",),
-            "fields": ("user_type", "email",),
+            "fields": ("first_name", "last_name", "email", "description", "picture",),
         }),
     )
 
@@ -104,18 +76,9 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
             form.base_fields["email"].required = True
 
         return form
-
-    def get_inline_instances(self, request, obj=None):
-        """
-        Handle case when no user profile exists.
-        """
-        if obj and not hasattr(obj, "profile"):
-            UserProfile.objects.create(user=obj)
-
-        return super().get_inline_instances(request, obj)
     
 UserAdmin.fieldsets[0][1]["fields"] += ("user_type",)
 
 UserAdmin.fieldsets[1][1]["classes"] = ("tab",)
+UserAdmin.fieldsets[1][1]["fields"] += ("description", "picture")
 UserAdmin.fieldsets[2][1]["classes"] = ("tab",)
-UserAdmin.fieldsets[3][1]["classes"] = ("tab",)

@@ -38,8 +38,8 @@ class RoleAssignment(UUIDMixin, ScopeMixin, ActiveInactiveMixin, ValidityTimeSpa
     role              = models.ForeignKey("Role", on_delete=models.CASCADE, related_name="role_assignments")
     user              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="role_assignments")
     assignment_method = models.CharField(verbose_name=_("Assignment Method"), max_length=20, choices=AssignmentMethod, null=False, blank=False, default=AssignmentMethod.SELF_ENROLLMENT)
-    enrollment_method = models.ForeignKey("EnrollmentMethod", on_delete=models.SET_NULL, null=True, related_name="role_assignments")
-    access_request    = models.OneToOneField("AccessRequest", on_delete=models.SET_NULL, null=True, related_name="role_assignment")
+    enrollment_method = models.ForeignKey("EnrollmentMethod", on_delete=models.SET_NULL, null=True, blank=True, related_name="role_assignments")
+    access_request    = models.OneToOneField("AccessRequest", on_delete=models.SET_NULL, null=True, blank=True, related_name="role_assignment")
 
     class Meta:
         verbose_name        = _("Role Assignment")

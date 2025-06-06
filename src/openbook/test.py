@@ -638,7 +638,13 @@ class ModelViewSetTestMixin:
             self.assertIsInstance(response.data["results"], list)
 
             if expected_count >= 0:
-                self.assertEqual(len(response.data["results"]), expected_count, f"Expected {expected_count} results but got {response.data["count"]}")
+                # Beware of paging for large result sets!
+                real_count = response.data["count"]
+
+                if len(response.data["results"]) == expected_count:
+                    real_count = len(response.data["results"])
+
+                self.assertEqual(real_count, expected_count, f"Expected {expected_count} results but got {real_count}")
     
     def assertSortOrder(self, response: Response, sort_field: str):
         """

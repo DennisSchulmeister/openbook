@@ -14,7 +14,6 @@ from rest_framework.serializers import RelatedField
 from ..utils                    import perm_string_for_permission
 from ..utils                    import permission_for_perm_string
 
-
 @extend_schema_field(str)
 class PermissionField(RelatedField):
     """
