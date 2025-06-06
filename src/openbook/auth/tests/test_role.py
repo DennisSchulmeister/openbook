@@ -11,8 +11,12 @@ from django.test                      import TestCase
 from openbook.course.models.course    import Course
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user
+from ..models.access_request          import AccessRequest
 from ..models.allowed_role_permission import AllowedRolePermission
+from ..models.enrollment_method       import EnrollmentMethod
 from ..models.role                    import Role
+from ..models.role_assignment         import RoleAssignment
+from ..models.user                    import User
 from ..utils                          import content_type_for_model_string
 from ..utils                          import model_string_for_content_type
 from ..utils                          import permission_for_perm_string
@@ -21,11 +25,12 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `RoleViewSet` REST API.
     """
-    base_name     = "role"
-    model         = Role
-    search_string = "teacher"
-    search_count  = 1
-    sort_field    = "name"
+    base_name         = "role"
+    model             = Role
+    search_string     = "teacher"
+    search_count      = 1
+    sort_field        = "name"
+    expandable_fields = ("permissions[]", "created_by", "modified_by", "role_assignments[]", "enrollment_methods[]", "access_requests[]")
 
     def setUp(self):
         super().setUp()
@@ -45,6 +50,19 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.change_logentry"))
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.delete_logentry"))
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.view_logentry"))
+
+        # For testing the expandable fields
+        self.role_student.permissions.set([
+            permission_for_perm_string("admin.view_logentry")
+        ])
+
+        user_student1 = User.objects.create_user("student1", password="password", email="student1@test.com")
+        RoleAssignment.from_obj(self.course, role=self.role_student, user=user_student1).save()
+
+        user_student2 = User.objects.create_user("student2", password="password", email="student2@test.com")
+        AccessRequest.from_obj(self.course, role=self.role_student, user=user_student2).save()
+
+        EnrollmentMethod.from_obj(self.course, name="test", role=self.role_student, passphrase="test!").save()
 
     def pk_found(self):
         return self.role_student.id

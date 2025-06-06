@@ -71,12 +71,13 @@ class ModelViewSetTestMixin:
 
     ```python
     class MyModel_ViewSet_Test(ModelViewSetTestMixin, TestCase):
-        base_name     = "my_model"
-        model         = MyModel
-        pk_found      = 4711,
-        search_string = "test"
-        search_count  = 2
-        sort_field    = "fieldname"
+        base_name         = "my_model"
+        model             = MyModel
+        pk_found          = 4711,
+        search_string     = "test"
+        search_count      = 2
+        sort_field        = "fieldname"
+        expandable_fields = ("fk_relation", "m2m_relation[]")
 
         def get_create_data(self):
             return {...}
@@ -160,6 +161,9 @@ class ModelViewSetTestMixin:
 
     sort_field = ""
     """Fieldname to test the `_sort` query parameter (will not be tested if string is empty)"""
+
+    expandable_fields = ()
+    """List of expandable relation fields to test that expansion doesn't crash. Fields ending with `[]` are tested as lists."""
 
     operations = {
         "list": {
@@ -337,6 +341,7 @@ class ModelViewSetTestMixin:
         assertions_sort       = (functools.partial(cls.assertSortOrder, sort_field=cls.sort_field),)
         assertions_create     = (functools.partial(cls.assertObjectCreated, pk_field=cls.pk_field, pk_found=cls.pk_found),)
         assertions_destroy    = (functools.partial(cls.assertObjectDeleted, pk_field=cls.pk_field, pk_found=cls.pk_found),)
+        assertions_expanded   = (functools.partial(cls.assertFieldsExpanded, expandable_fields=cls.expandable_fields),)
 
         if cls.model and issubclass(cls.model, AbstractUser):
             # Special case: Unit testing a model viewset for the User model.
@@ -487,6 +492,23 @@ class ModelViewSetTestMixin:
                     pk_value        = cls.pk_not_found,
                     status_code     = 404,      # Not Found
                 ))
+
+                if cls.expandable_fields:
+                    query_expand = ""
+
+                    for fieldname in cls.expandable_fields:
+                        fieldname    = fieldname[:-2] if fieldname.endswith("[]") else fieldname
+                        query_expand = f"{query_expand},{fieldname}" if query_expand else fieldname
+
+                    setattr(cls, f"test_{operation}_expand_fields", cls._create_test_method(
+                        configuration   = configuration,
+                        create_user     = True,
+                        add_permissions = True,
+                        pk_value        = cls.pk_found,
+                        status_code     = 200,      # Okay
+                        query_params    = {"_expand": query_expand},
+                        assertions      = assertions_expanded,
+                    ))
 
     @classmethod
     def _create_test_method(cls,
@@ -664,6 +686,27 @@ class ModelViewSetTestMixin:
         results = response.data["results"]
         sorted_results = sorted(results, key=sort_key)
         self.assertEqual(results, sorted_results, f"Results are not sorted by {sort_field}")
+
+    def assertFieldsExpanded(self, response: Response, expandable_fields: Iterable[str]):
+        """
+        Assert the the given fields have been to objects or lists with objects.
+        """
+        for fieldname in expandable_fields:
+            if fieldname.endswith("[]"):
+                fieldname = fieldname[:-2]
+                many = True
+            else:
+                many = False
+
+            expanded_field = response.data[fieldname]
+
+            if many:
+                self.assertTrue(len(expanded_field) > 0, f"Expanded list {fieldname} has no entries")
+
+                for child in expanded_field:
+                    self.assertIsInstance(child, (dict, type(None)), f"Value {child} in expanded list {fieldname} is no object")
+            else:
+                self.assertIsInstance(expanded_field, (dict, type(None)), f"Value {expanded_field} of expanded field {fieldname} is no object")
 
     def assertObjectCreated(self, response: Response, pk_field: str, pk_found: str):
         """

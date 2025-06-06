@@ -19,11 +19,12 @@ class PermissionText_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `PermissionTextViewSet` REST API.
     """
-    base_name     = "permission_text"
-    model         = PermissionText
-    search_string = "Permission"
-    search_count  = 1
-    sort_field    = "name"
+    base_name         = "permission_text"
+    model             = PermissionText
+    search_string     = "Permission"
+    search_count      = 1
+    sort_field        = "name"
+    expandable_fields = ("parent",)
 
     operations = {
         "list":           {"requires_auth": False},

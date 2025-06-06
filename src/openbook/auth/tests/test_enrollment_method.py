@@ -144,12 +144,13 @@ class EnrollmentMethod_ViewSet_Tests(ModelViewSetTestMixin, EnrollmentMethod_Tes
     """
     Tests for the `EnrollmentMethodViewSet` REST API.
     """
-    base_name     = "enrollment_method"
-    model         = EnrollmentMethod
-    count         = 2       # Only the two from self.course are visible!
-    search_string = "passphrase"
-    search_count  = 1
-    sort_field    = "name"
+    base_name         = "enrollment_method"
+    model             = EnrollmentMethod
+    count             = 2       # Only the two from self.course are visible!
+    search_string     = "passphrase"
+    search_count      = 1
+    sort_field        = "name"
+    expandable_fields = ("role", "created_by", "modified_by")
 
     def setUp(self):
         super().setUp()
