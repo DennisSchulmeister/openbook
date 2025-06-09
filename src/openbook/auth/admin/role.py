@@ -10,6 +10,7 @@ from django.contrib.contenttypes.admin   import GenericTabularInline
 from django.utils.translation            import gettext_lazy as _
 from import_export.fields                import Field
 from unfold.admin                        import TabularInline
+from unfold.sections                     import TableSection
 
 from openbook.admin                      import CustomModelAdmin
 from openbook.core.import_export.boolean import BooleanWidget
@@ -74,15 +75,6 @@ class RoleInline(GenericTabularInline, TabularInline):
     show_change_link    = True
     tab                 = True
 
-class _RoleAssignmentInline(TabularInline):
-    model            = RoleAssignment
-    fields           = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
-    ordering         = ("user",)
-    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
-    extra            = 0
-    show_change_link = True
-    tab              = True
-
 class _EnrollmentMethodInline(TabularInline):
     model               = EnrollmentMethod
     fields              = ("name", "is_active", "passphrase")
@@ -90,6 +82,11 @@ class _EnrollmentMethodInline(TabularInline):
     extra               = 0
     show_change_link    = True
     tab                 = True
+
+class _EnrollmentMethodSection(TableSection):
+    verbose_name = _("Enrollment Methods")
+    related_name = "enrollment_methods"
+    fields       = ("name", "is_active", "passphrase")
 
 class _AccessRequestInline(TabularInline):
     model               = AccessRequest
@@ -103,6 +100,25 @@ class _AccessRequestInline(TabularInline):
     def has_add_permission(self, *args, **kwargs):
         return False
 
+class _AccessRequestSection(TableSection):
+    verbose_name = _("Access Requests")
+    related_name = "access_requests"
+    fields       = ("user", "decision", "decision_date")
+
+class _RoleAssignmentInline(TabularInline):
+    model            = RoleAssignment
+    fields           = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
+    ordering         = ("user",)
+    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
+    extra            = 0
+    show_change_link = True
+    tab              = True
+
+class _RoleAssignmentSection(TableSection):
+    verbose_name = _("Role Assignments")
+    related_name = "role_assignments"
+    fields       = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
+    
 class RoleAdmin(CustomModelAdmin):
     model               = Role
     form                = RoleForm
@@ -110,13 +126,24 @@ class RoleAdmin(CustomModelAdmin):
     list_display        = ("scope_type", "scope_object", "priority", "name", "slug", "is_active", *created_modified_by_fields)
     list_display_links  = ("scope_type", "scope_object", "priority", "name", "slug")
     list_filter         = (scope_type_filter, "name", "slug", *created_modified_by_filter)
+    list_sections       = (_EnrollmentMethodSection, _AccessRequestSection, _RoleAssignmentSection,)
     ordering            = ("scope_type", "scope_uuid", "priority", "name")
     search_fields       = ("name", "slug", "description")
     readonly_fields     = (*created_modified_by_fields,)
     prepopulated_fields = {"slug": ["name"]}
     filter_horizontal   = ("permissions",)
-    inlines             = (_RoleAssignmentInline, _EnrollmentMethodInline, _AccessRequestInline)
+    inlines             = (_EnrollmentMethodInline, _AccessRequestInline, _RoleAssignmentInline)
 
+    def get_queryset(self, request):
+        """
+        Prefetch relations to optimize database performance for the changelist sections.
+        """
+        return super().get_queryset(request).prefetch_related(
+            "enrollment_methods",
+            "access_requests",
+            "role_assignments",
+        )
+    
     fieldsets = (
         (None, {
             "fields": (

@@ -6,8 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.utils.translation   import gettext_lazy as _
 from django.templatetags.static import static
+from django.urls                import reverse_lazy
+from django.utils.translation   import gettext_lazy as _
 from pathlib                    import Path
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
@@ -80,9 +81,14 @@ INSTALLED_APPS = [
     "import_export",                        # Django Import/Export: Import and export data in the Django Admin
     "djangoql",                             # Django QL: Advanced search language for Django
     "colorfield",                           # Django Color Field: Color field for models with color-picker in the admin
+    "debug_toolbar",                        # Django Debug Toolbar: See SQL queries and more
 ]
 
 MIDDLEWARE = [
+    # Django Debug Toolbar
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+
+    # Django
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -278,8 +284,145 @@ UNFOLD = {
     ],
     "SCRIPTS": [
         lambda request: static("openbook/admin/bundle.js"),
+    ],
+
+    "SIDEBAR": {
+        "show_search": True,
+    },
+
+    # Icons: https://fonts.google.com/icons
+    "SITE_DROPDOWN": [
+        {
+            "icon": "settings",
+            "title": _("Administration"),
+            "link": reverse_lazy("admin:index"),
+        },
+        {
+            "icon": "home",
+            "title": _("Website"),
+            "link": "/",
+        },
+        {
+            "icon": "api",
+            "title": _("API Explorer"),
+            "link": reverse_lazy("api-root"),
+        },
+        {
+            "icon": "menu_book",
+            "title": _("Documentation"),
+            "link": "https://github.com/DennisSchulmeister/openbook/blob/main/README.md",
+        },
+        {
+            "icon": "code",
+            "title": _("GitHub"),
+            "link": "https://github.com/DennisSchulmeister/openbook/",
+        },
+    ],
+
+    # Changelist tabs to clean-up the menu structure
+    # See: https://unfoldadmin.com/docs/tabs/changelist/
+    #
+    # Note: In openbook.admin.CustomAdminSite we have a custom logic that hides all models
+    # from the menu structure, that are listed as the non-first tab here, to tidy up the menus.
+    "TABS": [
+        {
+            "ob_group_name": _("Users and Groups"),
+            "models": [
+                "openbook_auth.user",
+                "openbook_auth.group",
+                "account.emailaddress",
+                "allauth_idp_oidc.client",
+                "allauth_idp_oidc.token",
+            ],
+            "items": [
+                {
+                    "title":      _("Users"),
+                    "link":       reverse_lazy("admin:openbook_auth_user_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_user"),
+                },
+                {
+                    "title":      _("User Groups"),
+                    "link":       reverse_lazy("admin:openbook_auth_group_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_group"),
+                },
+                {
+                    "title":      _("E-Mail Addresses"),
+                    "link":       reverse_lazy("admin:account_emailaddress_changelist"),
+                    "permission": lambda req: req.user.has_perm("account.view_emailaddress"),
+                },
+                {
+                    "title":      _("Client Applications"),
+                    "link":       reverse_lazy("admin:allauth_idp_oidc_client_changelist"),
+                    "permission": lambda req: req.user.has_perm("allauth_idp_oidc.view_client"),
+                },
+                {
+                    "title":      _("Client Tokens"),
+                    "link":       reverse_lazy("admin:allauth_idp_oidc_token_changelist"),
+                    "permission": lambda req: req.user.has_perm("allauth_idp_oidc.view_token"),
+                },
+            ],
+        },
+        {
+            "ob_group_name": _("Permissions"),
+            "models": [
+                "openbook_auth.permissiontext",
+                "openbook_auth.anonymouspermission",
+                "openbook_auth.allowedrolepermission",
+            ],
+            "items": [
+                {
+                    "title":      _("Translated Permissions"),
+                    "link":       reverse_lazy("admin:openbook_auth_permissiontext_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_permissiontext"),
+                },
+                {
+                    "title":      _("Anonymous Permissions"),
+                    "link":       reverse_lazy("admin:openbook_auth_anonymouspermission_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_anonymouspermission"),
+                },
+                {
+                    "title":      _("Allowed Role Permissions"),
+                    "link":       reverse_lazy("admin:openbook_auth_allowedrolepermission_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_allowedrolepermission"),
+                },
+            ],
+        },
+        {
+            "ob_group_name": _("Scopes and Roles"),
+            "models": [
+                "openbook_auth.role",
+                "openbook_auth.enrollmentmethod",
+                "openbook_auth.accessrequest",
+                "openbook_auth.roleassignment",
+            ],
+            "items": [
+                {
+                    "title":      _("Roles"),
+                    "link":       reverse_lazy("admin:openbook_auth_role_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_role"),
+                },
+                {
+                    "title":      _("Enrollment Methods"),
+                    "link":       reverse_lazy("admin:openbook_auth_enrollmentmethod_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_enrollmentmethod"),
+                },
+                {
+                    "title":      _("Access Requests"),
+                    "link":       reverse_lazy("admin:openbook_auth_accessrequest_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_accessrequest"),
+                },
+                {
+                    "title":      _("Role Assignments"),
+                    "link":       reverse_lazy("admin:openbook_auth_roleassignment_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_roleassignment"),
+                },
+            ],
+        }
     ]
 }
+
+# Interlal IPs (required by Django Debug Toolbar)
+INTERNAL_IPS = ["127.0.0.1"]
 
 # E-Mail Settings
 # See: https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-EMAIL_BACKEND

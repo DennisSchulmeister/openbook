@@ -69,6 +69,18 @@ export interface PatchedCurrentUser {
     isStaff?: boolean;
     /**
      * 
+     * @type {Date}
+     * @memberof PatchedCurrentUser
+     */
+    lastLogin?: Date | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof PatchedCurrentUser
+     */
+    dateJoined?: Date;
+    /**
+     * 
      * @type {string}
      * @memberof PatchedCurrentUser
      */
@@ -106,6 +118,8 @@ export function PatchedCurrentUserFromJSONTyped(json: any, ignoreDiscriminator: 
         'description': json['description'] == null ? undefined : json['description'],
         'picture': json['picture'] == null ? undefined : json['picture'],
         'isStaff': json['is_staff'] == null ? undefined : json['is_staff'],
+        'lastLogin': json['last_login'] == null ? undefined : (new Date(json['last_login'])),
+        'dateJoined': json['date_joined'] == null ? undefined : (new Date(json['date_joined'])),
         'email': json['email'] == null ? undefined : json['email'],
         'isAuthenticated': json['is_authenticated'] == null ? undefined : json['is_authenticated'],
     };
@@ -128,6 +142,8 @@ export function PatchedCurrentUserToJSONTyped(value?: Omit<PatchedCurrentUser, '
         'description': value['description'],
         'picture': value['picture'],
         'is_staff': value['isStaff'],
+        'last_login': value['lastLogin'] == null ? undefined : ((value['lastLogin'] as any).toISOString()),
+        'date_joined': value['dateJoined'] == null ? undefined : ((value['dateJoined']).toISOString()),
         'email': value['email'],
     };
 }

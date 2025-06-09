@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from debug_toolbar.toolbar           import debug_toolbar_urls
 from django.conf                     import settings
 from django.conf.urls.static         import static
 from django.views.generic.base       import RedirectView
@@ -51,7 +52,7 @@ urlpatterns = [
 
     # Single Page App
     path("",                  RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),
-]
+] + debug_toolbar_urls()
 
 if settings.DEBUG:
     # NOTE: Static files are automatically served by runserver from the configured

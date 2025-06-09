@@ -10,10 +10,10 @@ from django.contrib.auth.admin           import UserAdmin as DjangoUserAdmin
 from django.utils.translation            import gettext_lazy as _
 from import_export.fields                import Field
 from import_export.widgets               import ManyToManyWidget
-from unfold.admin                        import StackedInline
 from unfold.forms                        import AdminPasswordChangeForm
 from unfold.forms                        import UserChangeForm
 from unfold.forms                        import UserCreationForm
+from unfold.sections                     import TableSection
 
 from openbook.admin                      import CustomModelAdmin
 from openbook.admin                      import ImportExportModelResource
@@ -21,6 +21,21 @@ from openbook.core.import_export.boolean import BooleanWidget
 from ..models.group                      import Group
 from ..models.user                       import User
 from ..import_export.permission          import PermissionManyToManyWidget
+
+class _GroupSection(TableSection):
+    verbose_name = _("User Groups")
+    related_name = "groups"
+    fields       = ("name", "slug")
+
+class _PermissionSection(TableSection):
+    verbose_name = _("User Permissions")
+    related_name = "user_permissions"
+    fields       = ("name", "content_type__app_label", "codename")
+
+class _EmailAddressSection(TableSection):
+    verbose_name = _("E-Mail Addresses")
+    related_name = "emailaddress_set"
+    fields       = ("email", "verified", "primary")
 
 class UserResource(ImportExportModelResource):
     is_active        = Field(attribute="is_active",        widget=BooleanWidget())
@@ -53,7 +68,19 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     list_display         = ("full_name", "username", "is_staff", "is_superuser", "user_type")
     list_display_links   = ("full_name", "username")
     list_filter          = DjangoUserAdmin.list_filter + ("is_superuser", "user_type")
+    list_sections        = (_GroupSection, _PermissionSection, _EmailAddressSection)
 
+    def get_queryset(self, request):
+        """
+        Prefetch relations to optimize database performance for the changelist sections.
+        """
+        return super().get_queryset(request).prefetch_related(
+            "groups",
+            "user_permissions",
+            "user_permissions__content_type",
+            "emailaddress_set",
+        )
+    
     add_fieldsets = (
         (None, {
             "classes": ("wide",),

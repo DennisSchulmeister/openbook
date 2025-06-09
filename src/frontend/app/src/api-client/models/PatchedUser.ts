@@ -67,6 +67,18 @@ export interface PatchedUser {
      * @memberof PatchedUser
      */
     readonly isStaff?: boolean;
+    /**
+     * 
+     * @type {Date}
+     * @memberof PatchedUser
+     */
+    lastLogin?: Date | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof PatchedUser
+     */
+    dateJoined?: Date;
 }
 
 /**
@@ -94,6 +106,8 @@ export function PatchedUserFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'description': json['description'] == null ? undefined : json['description'],
         'picture': json['picture'] == null ? undefined : json['picture'],
         'isStaff': json['is_staff'] == null ? undefined : json['is_staff'],
+        'lastLogin': json['last_login'] == null ? undefined : (new Date(json['last_login'])),
+        'dateJoined': json['date_joined'] == null ? undefined : (new Date(json['date_joined'])),
     };
 }
 
@@ -112,6 +126,8 @@ export function PatchedUserToJSONTyped(value?: Omit<PatchedUser, 'id'|'username'
         'last_name': value['lastName'],
         'description': value['description'],
         'picture': value['picture'],
+        'last_login': value['lastLogin'] == null ? undefined : ((value['lastLogin'] as any).toISOString()),
+        'date_joined': value['dateJoined'] == null ? undefined : ((value['dateJoined']).toISOString()),
     };
 }
 

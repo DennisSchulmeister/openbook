@@ -69,6 +69,18 @@ export interface CurrentUser {
     isStaff?: boolean;
     /**
      * 
+     * @type {Date}
+     * @memberof CurrentUser
+     */
+    lastLogin?: Date | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof CurrentUser
+     */
+    dateJoined?: Date;
+    /**
+     * 
      * @type {string}
      * @memberof CurrentUser
      */
@@ -111,6 +123,8 @@ export function CurrentUserFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'description': json['description'] == null ? undefined : json['description'],
         'picture': json['picture'] == null ? undefined : json['picture'],
         'isStaff': json['is_staff'] == null ? undefined : json['is_staff'],
+        'lastLogin': json['last_login'] == null ? undefined : (new Date(json['last_login'])),
+        'dateJoined': json['date_joined'] == null ? undefined : (new Date(json['date_joined'])),
         'email': json['email'],
         'isAuthenticated': json['is_authenticated'],
     };
@@ -133,6 +147,8 @@ export function CurrentUserToJSONTyped(value?: Omit<CurrentUser, 'id'|'full_name
         'description': value['description'],
         'picture': value['picture'],
         'is_staff': value['isStaff'],
+        'last_login': value['lastLogin'] == null ? undefined : ((value['lastLogin'] as any).toISOString()),
+        'date_joined': value['dateJoined'] == null ? undefined : ((value['dateJoined']).toISOString()),
         'email': value['email'],
     };
 }
