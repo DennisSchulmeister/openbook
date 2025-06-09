@@ -15,7 +15,7 @@ class Site(models.Model):
     Custom version of Django's built-in Site model with some custom fields.
     """
     id          = models.PositiveIntegerField(verbose_name=_("Id"), primary_key=True, editable=True)
-    domain      = models.CharField(verbose_name=_("Domain Name"), max_length=100, null=False, blank=False)
+    domain      = models.CharField(verbose_name=_("Domain Name"), max_length=100, null=False, blank=False, unique=True)
     name        = models.CharField(verbose_name=_("Display Name"), max_length=255, null=False, blank=False)
     short_name  = models.CharField(verbose_name=_("Short Name"), max_length=50, null=False, blank=False)
     about_url   = models.URLField(verbose_name=_("Information Website"), help_text=_("URL of your website with information for your users"))

@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='permissiontext',
-            constraint=models.UniqueConstraint(fields=('parent', 'language'), name='unique_PermissionTextranslation'),
+            constraint=models.UniqueConstraint(fields=('parent', 'language'), name='unique_permission_text_translation'),
         ),
         migrations.AddIndex(
             model_name='role',

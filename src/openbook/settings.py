@@ -286,6 +286,15 @@ UNFOLD = {
         lambda request: static("openbook/admin/bundle.js"),
     ],
 
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "sizes": "128x128",
+            "type": "image/vnd",
+            "href": lambda request: static("favicon.ico"),
+        },
+    ],
+
     "SIDEBAR": {
         "show_search": True,
     },
@@ -325,6 +334,37 @@ UNFOLD = {
     # Note: In openbook.admin.CustomAdminSite we have a custom logic that hides all models
     # from the menu structure, that are listed as the non-first tab here, to tidy up the menus.
     "TABS": [
+        {
+            "ob_group_name": _("Authentication Methods"),
+            "models": [
+                "openbook_auth.authconfig",
+                "socialaccount.socialapp",
+                "socialaccount.socialtoken",
+                "socialaccount.socialaccount",
+            ],
+            "items": [
+                {
+                    "title":      _("Authentication Settings"),
+                    "link":       reverse_lazy("admin:openbook_auth_authconfig_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_authconfig"),
+                },
+                {
+                    "title":      _("Social Applications"),
+                    "link":       reverse_lazy("admin:socialaccount_socialapp_changelist"),
+                    "permission": lambda req: req.user.has_perm("socialaccount.view_socialapp"),
+                },
+                {
+                    "title":      _("Social Application Tokens"),
+                    "link":       reverse_lazy("admin:socialaccount_socialtoken_changelist"),
+                    "permission": lambda req: req.user.has_perm("socialaccount.view_socialtoken"),
+                },
+                {
+                    "title":      _("Social Accounts"),
+                    "link":       reverse_lazy("admin:socialaccount_socialaccount_changelist"),
+                    "permission": lambda req: req.user.has_perm("socialaccount.view_socialaccount"),
+                },
+            ],
+        },
         {
             "ob_group_name": _("Users and Groups"),
             "models": [

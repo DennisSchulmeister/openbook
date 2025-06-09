@@ -1,0 +1,79 @@
+# OpenBook: Interactive Online Textbooks - Server
+# © 2025 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+from django.db                        import models
+from django.utils.translation         import gettext_lazy as _
+
+from openbook.core.models.mixins.i18n import TranslatableMixin
+from openbook.core.models.mixins.uuid import UUIDMixin
+from openbook.core.models.site        import Site
+from openbook.core.models.utils.file  import calc_file_path
+
+class AuthConfig(UUIDMixin):
+    """
+    Authentication related configuration for the site.
+    """
+    def _calc_file_path(self, filename):
+        return calc_file_path(self._meta, self.site.id, filename)
+
+    site = models.ForeignKey(
+        to           =  Site,
+        verbose_name = _("Site"),
+        on_delete    = models.CASCADE,
+        related_name = "auth_settings",
+        null         = False,
+        blank        = False
+    )
+
+    local_signup_allowed = models.BooleanField(
+        verbose_name = _("Local Sign-Up Allowed"),
+        default      = True,
+        help_text    = _("This only affects registration of local users without social authentication or federated identities."),
+    )
+
+    signup_email_suffix = models.CharField(
+        verbose_name = _("E-Mail Suffix"),
+        blank        = True,
+        null         = False,
+        help_text    = _("This limits local user registration to e-mail addresses ending with a given suffix."),
+    )
+
+    logout_next_url = models.CharField(
+        verbose_name = _("Next URL after logout"),
+        default      = "/",
+        blank        = False,
+        null         = False,
+        help_text    = _("Link on the confirmation page shown after logout."),
+    )
+
+    signup_image = models.FileField(verbose_name=_("Sign-Up Page Image"), upload_to=_calc_file_path, null=True, blank=True)
+    login_image  = models.FileField(verbose_name=_("Login Page Image"),   upload_to=_calc_file_path, null=True, blank=True)
+    logout_image = models.FileField(verbose_name=_("Logout Page Image"),  upload_to=_calc_file_path, null=True, blank=True)
+
+    class Meta:
+        verbose_name        = _("Authentication Settings")
+        verbose_name_plural = _("Authentication Settings")
+
+        constraints = [
+            models.UniqueConstraint(fields=("site",), name="unique_auth_settings_site"),
+        ]
+
+    def __str__(self):
+        return self.site.__str__() if self.site else "---"
+
+class AuthConfigText(UUIDMixin, TranslatableMixin):
+    parent           = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="translations")
+    logout_next_text = models.CharField(verbose_name=_("Link Text after Logout"), max_length=255, null=False, blank=False)
+
+    class Meta(TranslatableMixin.Meta):
+        verbose_name        = _("Translation")
+        verbose_name_plural = _("Translations")
+
+        constraints = (
+            models.UniqueConstraint(fields=("parent", "language"), name="unique_auth_config_translation"),
+        )

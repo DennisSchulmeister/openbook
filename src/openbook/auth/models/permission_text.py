@@ -29,7 +29,7 @@ class PermissionText(UUIDMixin, TranslatableMixin):
         verbose_name_plural = _("Translated Permissions")
 
         constraints = (
-            models.UniqueConstraint(fields=("parent", "language"), name="unique_PermissionTextranslation"),
+            models.UniqueConstraint(fields=("parent", "language"), name="unique_permission_text_translation"),
         )
     
     @admin.display(description=_("Application"))
