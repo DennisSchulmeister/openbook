@@ -26,8 +26,10 @@ class SiteSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model  = Site
-        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color")
-        expandable_fields = {}
+        fields = ("id", "domain", "name", "short_name", "about_url", "brand_color", "auth_config")
+        expandable_fields = {
+            "auth_config": "openbook.auth.viewsets.auth_config.AuthConfigSerializer"
+        }
 
 class SiteFilter(FilterSet):
     domain     = CharFilter(lookup_expr="icontains")

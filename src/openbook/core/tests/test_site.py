@@ -6,27 +6,28 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.test   import TestCase
-from django.urls   import reverse
+from django.test                      import TestCase
 
-from openbook.test import ModelViewSetTestMixin
-from ..models.site import Site
+from openbook.auth.models.auth_config import AuthConfig
+from openbook.test                    import ModelViewSetTestMixin
+from ..models.site                    import Site
 
 class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `SiteViewSet` REST API.
     """
-    base_name     = "site"
-    model         = Site
-    pk_found      = 1
-    search_string = "test"
-    search_count  = 1
-    sort_field    = "brand_color"
+    base_name         = "site"
+    model             = Site
+    pk_found          = 1
+    search_string     = "test"
+    search_count      = 1
+    sort_field        = "brand_color"
+    expandable_fields = ("auth_config",)
 
     def setUp(self):
         super().setUp()
 
-        Site.objects.create(
+        site1 = Site.objects.create(
             id          = 1,
             domain      = "example.com",
             name        = "Example Site",
@@ -35,7 +36,7 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             brand_color = "#FFFFFF",
         )
 
-        Site.objects.create(
+        site2 = Site.objects.create(
             id          = 2,
             domain      = "test.com",
             name        = "Test Site",
@@ -43,6 +44,9 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             about_url   = "https://test.com/about",
             brand_color = "#777777",
         )
+
+        AuthConfig.objects.create(site=site1)
+        AuthConfig.objects.create(site=site2)
 
     def assertHealthStatus(self, response):
         self.assertEqual(response.data["status"], "GOOD")

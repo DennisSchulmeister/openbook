@@ -15,6 +15,7 @@ from openbook.admin                   import CustomModelAdmin
 from openbook.admin                   import ImportExportModelResource
 from openbook.core.import_export.site import SiteForeignKeyWidget
 from openbook.core.models.language    import Language
+from ..import_export.auth_config      import AuthConfigForeignKeyWidget
 from ..models.auth_config             import AuthConfig
 from ..models.auth_config             import AuthConfigText
 
@@ -24,23 +25,23 @@ class AuthConfigResource(ImportExportModelResource):
     class Meta:
         model  = AuthConfig
         fields = (
-            "id", "delete",
-            "site",
+            "site", "delete",
             "local_signup_allowed", "signup_email_suffix", "logout_next_url",
-            "signup_image", "login_image", "logout_image",
+            "signup_image", "login_image", "logout_image", "password_reset_image",
         )
+        import_id_fields = ("site",)
 
     @classmethod
     def get_display_name(cls):
         return _("Authentication Settings")
-    
+
 class AuthConfigTextResource(ImportExportModelResource):
-    parent   = Field(attribute="parent", widget=ForeignKeyWidget(model=AuthConfig))
+    parent   = Field(attribute="parent", widget=AuthConfigForeignKeyWidget())
     language = Field(attribute="language", widget=ForeignKeyWidget(model=Language, field="language"))
 
     class Meta:
         model  = AuthConfigText
-        fields = ("id", "delete", "parent", "language", "logout_next_text")
+        fields = ("id", "parent", "delete", "language", "logout_next_text")
     
     @classmethod
     def get_display_name(cls):
@@ -86,6 +87,6 @@ class AuthConfigAdmin(CustomModelAdmin):
         }),
         (_("Pages"), {
             "classes": ("tab",),
-            "fields": ("signup_image", "login_image", "logout_image", "logout_next_url")
+            "fields": ("signup_image", "login_image", "logout_image", "password_reset_image", "logout_next_url")
         }),
     )

@@ -1,0 +1,24 @@
+- model: openbook_auth.authconfig
+  pk: 1
+  fields:
+    local_signup_allowed: true
+    signup_email_suffix: ''
+    logout_next_url: /
+    signup_image: openbook_auth/AuthConfig/1/sign-up.jpg
+    login_image: openbook_auth/AuthConfig/1/login.jpg
+    logout_image: openbook_auth/AuthConfig/1/logout.jpg
+    password_reset_image: openbook_auth/AuthConfig/1/password-reset.jpg
+
+- model: openbook_auth.authconfigtext
+  pk: 23c32495-f70c-4d65-b406-42b3f5b79e23
+  fields:
+    parent: 1
+    language: de
+    logout_next_text: Startseite
+
+- model: openbook_auth.authconfigtext
+  pk: 427687b8-bf0a-4423-85fb-09a2d0201bc3
+  fields:
+    parent: 1
+    language: en
+    logout_next_text: Start Page

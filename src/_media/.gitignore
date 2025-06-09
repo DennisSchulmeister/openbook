@@ -1,2 +1,6 @@
 *
 !.gitignore
+!openbook_auth
+!openbook_auth/AuthConfig
+!openbook_auth/AuthConfig/1
+!openbook_auth/AuthConfig/1/*

@@ -14,20 +14,19 @@ from openbook.core.models.mixins.uuid import UUIDMixin
 from openbook.core.models.site        import Site
 from openbook.core.models.utils.file  import calc_file_path
 
-class AuthConfig(UUIDMixin):
+class AuthConfig(models.Model):
     """
     Authentication related configuration for the site.
     """
     def _calc_file_path(self, filename):
         return calc_file_path(self._meta, self.site.id, filename)
 
-    site = models.ForeignKey(
+    site = models.OneToOneField(
         to           =  Site,
         verbose_name = _("Site"),
+        primary_key  = True,
         on_delete    = models.CASCADE,
-        related_name = "auth_settings",
-        null         = False,
-        blank        = False
+        related_name = "auth_config",
     )
 
     local_signup_allowed = models.BooleanField(
@@ -51,17 +50,14 @@ class AuthConfig(UUIDMixin):
         help_text    = _("Link on the confirmation page shown after logout."),
     )
 
-    signup_image = models.FileField(verbose_name=_("Sign-Up Page Image"), upload_to=_calc_file_path, null=True, blank=True)
-    login_image  = models.FileField(verbose_name=_("Login Page Image"),   upload_to=_calc_file_path, null=True, blank=True)
-    logout_image = models.FileField(verbose_name=_("Logout Page Image"),  upload_to=_calc_file_path, null=True, blank=True)
+    signup_image         = models.FileField(verbose_name=_("Sign-Up Page Image"), upload_to=_calc_file_path, null=True, blank=True)
+    login_image          = models.FileField(verbose_name=_("Login Page Image"), upload_to=_calc_file_path, null=True, blank=True)
+    logout_image         = models.FileField(verbose_name=_("Logout Page Image"), upload_to=_calc_file_path, null=True, blank=True)
+    password_reset_image = models.FileField(verbose_name=_("Password Reset Page Image"), upload_to=_calc_file_path, null=True, blank=True)
 
     class Meta:
         verbose_name        = _("Authentication Settings")
         verbose_name_plural = _("Authentication Settings")
-
-        constraints = [
-            models.UniqueConstraint(fields=("site",), name="unique_auth_settings_site"),
-        ]
 
     def __str__(self):
         return self.site.__str__() if self.site else "---"

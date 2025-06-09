@@ -1,5 +1,5 @@
 # OpenBook: Interactive Online Textbooks - Server
-# © 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
+# © 2025 Dennis Schulmeister-Zimolong <dennis@wpvs.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -7,17 +7,14 @@
 # License, or (at your option) any later version.
 
 from import_export.widgets import ForeignKeyWidget
-from ..models.site         import Site
+from ..models.auth_config  import AuthConfig
 
-class SiteForeignKeyWidget(ForeignKeyWidget):
-    """
-    A customized foreign-key widget that exports and imports sites as domain strings.
-    """
+class AuthConfigForeignKeyWidget(ForeignKeyWidget):
     def __init__(self, *args, **kwargs):
-        super().__init__(model=Site, *args, **kwargs)
+        super().__init__(model=AuthConfig, *args, **kwargs)
 
     def render(self, value, row=None, **kwargs):
-        return value.domain
+        return value.site.domain
     
     def clean(self, value, obj=None, **kwargs):
-        return Site.objects.get(domain=value)
+        return AuthConfig.objects.get(site__domain=value)
