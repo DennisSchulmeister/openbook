@@ -8,8 +8,10 @@
  * License, or (at your option) any later version.
  */
 
-import * as apiClient  from "./api-client/index.js";
-import {Configuration} from "./api-client/index.js";
+import * as authClient                      from "./auth-client/index.js";
+import * as apiClient                       from "./api-client/index.js";
+import {Configuration as AuthConfiguration} from "./auth-client/index.js";
+import {Configuration as ApiConfiguration}  from "./api-client/index.js";
 
 // Fetch backend URL
 let response  = await fetch("server.url");
@@ -19,7 +21,14 @@ while (serverUrl.endsWith("/")) {
     serverUrl = serverUrl.slice(0, serverUrl.length - 1);
 }
 
-let configuration = new Configuration({
+let apiConfiguration = new ApiConfiguration({
+    basePath: serverUrl,
+    headers: {
+        "X-CSRFToken": document.cookie.match(/csrftoken=([\w]+)/)?.[1] || "",
+    },
+});
+
+let authConfiguration = new AuthConfiguration({
     basePath: serverUrl,
     headers: {
         "X-CSRFToken": document.cookie.match(/csrftoken=([\w]+)/)?.[1] || "",
@@ -31,22 +40,44 @@ let configuration = new Configuration({
  * The clients objects automatically use the correct base URL of the server.
  */
 export default {
+    // Auth API
+    account: {
+        email:                  new authClient.AccountEmailApi(authConfiguration),
+        password:               new authClient.AccountPasswordApi(authConfiguration),
+        phone:                  new authClient.AccountPhoneApi(authConfiguration),
+        providers:              new authClient.AccountProvidersApi(authConfiguration),
+    },
+
+    authentication: {
+        account:                new authClient.AuthenticationAccountApi(authConfiguration),
+        currentSession:         new authClient.AuthenticationCurrentSessionApi(authConfiguration),
+        loginByCode:            new authClient.AuthenticationLoginByCodeApi(authConfiguration),
+        passwordReset:          new authClient.AuthenticationPasswordResetApi(authConfiguration),
+        providers:              new authClient.AuthenticationProvidersApi(authConfiguration),
+    },
+
     // Core App
-    availableLanguages:     new apiClient.AvailableLanguagesApi(configuration),
-    mediaFiles:             new apiClient.MediaFilesApi(configuration),
-    websites:               new apiClient.WebsitesApi(configuration),
+    core: {
+        availableLanguages:     new apiClient.AvailableLanguagesApi(apiConfiguration),
+        mediaFiles:             new apiClient.MediaFilesApi(apiConfiguration),
+        websites:               new apiClient.WebsitesApi(apiConfiguration),
+    },
 
     // Auth App
-    accessRequests:         new apiClient.AccessRequestsApi(configuration),
-    allowedRolePermissions: new apiClient.AllowedRolePermissionsApi(configuration),
-    currentUser:            new apiClient.CurrentUserApi(configuration),
-    enrollmentMethods:      new apiClient.EnrollmentMethodsApi(configuration),
-    roleAssignments:        new apiClient.RoleAssignmentsApi(configuration),
-    roles:                  new apiClient.RolesApi(configuration),
-    scopeTypes:             new apiClient.ScopeTypesApi(configuration),
-    translatedPermissions:  new apiClient.TranslatedPermissionsApi(configuration),
-    userProfiles:           new apiClient.UserProfilesApi(configuration),
+    auth: {
+        accessRequests:         new apiClient.AccessRequestsApi(apiConfiguration),
+        allowedRolePermissions: new apiClient.AllowedRolePermissionsApi(apiConfiguration),
+        currentUser:            new apiClient.CurrentUserApi(apiConfiguration),
+        enrollmentMethods:      new apiClient.EnrollmentMethodsApi(apiConfiguration),
+        roleAssignments:        new apiClient.RoleAssignmentsApi(apiConfiguration),
+        roles:                  new apiClient.RolesApi(apiConfiguration),
+        scopeTypes:             new apiClient.ScopeTypesApi(apiConfiguration),
+        translatedPermissions:  new apiClient.TranslatedPermissionsApi(apiConfiguration),
+        userProfiles:           new apiClient.UserProfilesApi(apiConfiguration),
+    },
 
     // Course App
-    courses:                new apiClient.CoursesApi(configuration),
+    course: {
+        courses:                new apiClient.CoursesApi(apiConfiguration),
+    },
 }

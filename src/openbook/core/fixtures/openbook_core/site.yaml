@@ -1,8 +1,12 @@
-- model: openbook_core.Site
-  pk: 1
+- model: sites.site
   fields:
-    domain:     openbook.studio
-    name:       OpenBook
+    domain: openbook.studio
+    name: OpenBook
+
+- model: openbook_core.Site
+  fields:
+    site_ptr:
+      - openbook.studio
     short_name: OpenBook
     about_url:  https://openbook.studio
     brand_color: "#e2001a"

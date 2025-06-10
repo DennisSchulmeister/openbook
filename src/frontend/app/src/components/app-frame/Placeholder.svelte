@@ -22,7 +22,7 @@ Placeholder for the start page until we have proper content to show.
 
     async function checkBackendStatus() {
         try {
-            let health = await backend.websites.coreSitesHealthRetrieve();
+            let health = await backend.core.websites.coreSitesHealthRetrieve();
             console.log("Received backend health status", health.status);
     
             backendStatusText  = i18n.value.Placeholder.BackendStatus.Online;

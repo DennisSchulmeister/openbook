@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.conf                      import settings
 from django.db                        import models
 from django.utils.translation         import gettext_lazy as _
 
@@ -61,6 +62,14 @@ class AuthConfig(models.Model):
 
     def __str__(self):
         return self.site.__str__() if self.site else "---"
+    
+    @classmethod
+    def get_for_default_site(cls) -> "AuthConfig":
+        """
+        Get authorization configuration for the default site defined in the `SITE_ID`
+        Django settings. Raises `AuthConfig.DoesNotExist`, if not found.
+        """
+        return cls.objects.get(site=settings.SITE_ID)
 
 class AuthConfigText(UUIDMixin, TranslatableMixin):
     parent           = models.ForeignKey(AuthConfig, on_delete=models.CASCADE, related_name="translations")

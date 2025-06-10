@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     # OpenBook Server (order determines order in the Django Admin)
     "openbook.core",
     "openbook.auth",
-    "openbook.ui_library",
+    # "openbook.ui_library",
     "openbook.taxonomy",
     "openbook.textbook",
     "openbook.course",
@@ -239,6 +239,26 @@ AUTHENTICATION_BACKENDS = (
     "openbook.auth.backends.RoleBasedObjectPermissionsBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+# Allauth – Local accounts
+# See: https://docs.allauth.org/en/latest/account/configuration.html
+ACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.DefaultAccountAdapter"
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
+ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 300
+ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_USERNAME_BLACKLIST = ["admin", "Administrator", "root", "superuser"]
+ACCOUNT_USERNAME_MIN_LENGTH = 5
+
+# Allauith - Headless API
+# See: https://docs.allauth.org/en/latest/headless/configuration.html
+HEADLESS_ONLY = False
+HEADLESS_SERVE_SPECIFICATION = True
+HEADLESS_FRONTEND_URLS = {
+    # "account_confirm_email": "https://app.project.org/account/verify-email/{key}",
+    # "account_reset_password_from_key": "https://app.org/account/password/reset/key/{key}",
+    # "account_signup": "https://app.org/account/signup",
+}
 
 # Private key for OpenID Connect (Identity Provider)
 # IMPORTANT - Generate your own key with:

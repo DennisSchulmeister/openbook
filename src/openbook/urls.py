@@ -48,6 +48,7 @@ urlpatterns = [
 
     # User Accounts
     path('accounts/',         include('allauth.urls')),
+    path("auth-api/",         include("allauth.headless.urls")),
     path("",                  include("allauth.idp.urls")),
 
     # Single Page App

@@ -24,7 +24,7 @@ export interface Site {
      * @type {number}
      * @memberof Site
      */
-    id: number;
+    readonly id: number;
     /**
      * 
      * @type {string}
@@ -55,6 +55,12 @@ export interface Site {
      * @memberof Site
      */
     brandColor?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Site
+     */
+    authConfig: number;
 }
 
 /**
@@ -66,6 +72,7 @@ export function instanceOfSite(value: object): value is Site {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('shortName' in value) || value['shortName'] === undefined) return false;
     if (!('aboutUrl' in value) || value['aboutUrl'] === undefined) return false;
+    if (!('authConfig' in value) || value['authConfig'] === undefined) return false;
     return true;
 }
 
@@ -85,6 +92,7 @@ export function SiteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Site
         'shortName': json['short_name'],
         'aboutUrl': json['about_url'],
         'brandColor': json['brand_color'] == null ? undefined : json['brand_color'],
+        'authConfig': json['auth_config'],
     };
 }
 
@@ -92,19 +100,19 @@ export function SiteToJSON(json: any): Site {
     return SiteToJSONTyped(json, false);
 }
 
-export function SiteToJSONTyped(value?: Site | null, ignoreDiscriminator: boolean = false): any {
+export function SiteToJSONTyped(value?: Omit<Site, 'id'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
         'domain': value['domain'],
         'name': value['name'],
         'short_name': value['shortName'],
         'about_url': value['aboutUrl'],
         'brand_color': value['brandColor'],
+        'auth_config': value['authConfig'],
     };
 }
 
