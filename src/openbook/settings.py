@@ -359,8 +359,8 @@ UNFOLD = {
             "models": [
                 "openbook_auth.authconfig",
                 "socialaccount.socialapp",
+                "openbook_auth.signupgroupassignment",
                 "socialaccount.socialtoken",
-                "socialaccount.socialaccount",
             ],
             "items": [
                 {
@@ -374,14 +374,14 @@ UNFOLD = {
                     "permission": lambda req: req.user.has_perm("socialaccount.view_socialapp"),
                 },
                 {
+                    "title":      _("Group Assignment on Sign-Up"),
+                    "link":       reverse_lazy("admin:openbook_auth_signupgroupassignment_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.view_signupgroupassignment"),
+                },
+                {
                     "title":      _("Social Application Tokens"),
                     "link":       reverse_lazy("admin:socialaccount_socialtoken_changelist"),
                     "permission": lambda req: req.user.has_perm("socialaccount.view_socialtoken"),
-                },
-                {
-                    "title":      _("Social Accounts"),
-                    "link":       reverse_lazy("admin:socialaccount_socialaccount_changelist"),
-                    "permission": lambda req: req.user.has_perm("socialaccount.view_socialaccount"),
                 },
             ],
         },
@@ -391,6 +391,7 @@ UNFOLD = {
                 "openbook_auth.user",
                 "openbook_auth.group",
                 "account.emailaddress",
+                "socialaccount.socialaccount",
                 "allauth_idp_oidc.client",
                 "allauth_idp_oidc.token",
             ],
@@ -409,6 +410,11 @@ UNFOLD = {
                     "title":      _("E-Mail Addresses"),
                     "link":       reverse_lazy("admin:account_emailaddress_changelist"),
                     "permission": lambda req: req.user.has_perm("account.view_emailaddress"),
+                },
+                {
+                    "title":      _("Social Accounts"),
+                    "link":       reverse_lazy("admin:socialaccount_socialaccount_changelist"),
+                    "permission": lambda req: req.user.has_perm("socialaccount.view_socialaccount"),
                 },
                 {
                     "title":      _("Client Applications"),

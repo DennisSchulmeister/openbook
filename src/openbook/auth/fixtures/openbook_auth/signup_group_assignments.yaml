@@ -1,0 +1,59 @@
+# Local Users are Students
+- model: openbook_auth.signupgroupassignment
+  pk: a2373ca0-400d-4b5c-b522-a2d81811bcf4
+  fields:
+    is_active: true
+    name: Local users are students by default
+    description: When a user signs up locally we cannot distinguish if they are students
+      or teachers. So we make them students by default.
+    text_format: MD
+    site: null
+    social_app: null
+    user_groups:
+    - - Student
+
+# Mock SAML: Students
+- model: openbook_auth.signupgroupassignment
+  pk: ee099ee6-fc7e-4b6c-b07e-ea7d0ea61c42
+  fields:
+    is_active: true
+    name: 'Mock SAML: Student (example.com)'
+    description: "Mock SAML supports users with two e-mail domains: example.com and
+      example.org. For testing we use this to distinguish whether students or teachers
+      sign-up.\r\n\r\n* `example.com`: Student\r\n* `example.org`: Teacher"
+    text_format: MD
+    site: null
+    social_app: 1
+    user_groups:
+    - - Student
+
+- model: openbook_auth.securityassertion
+  pk: 0477b9b1-a344-489c-8801-14e9dab9e63c
+  fields:
+    parent: ee099ee6-fc7e-4b6c-b07e-ea7d0ea61c42
+    name: email
+    value: '@example.com'
+    match_strategy: ends-with
+
+# Mock SAML: Teachers
+- model: openbook_auth.signupgroupassignment
+  pk: 57f8c693-5ec2-4d70-b4e1-7c38b277f222
+  fields:
+    is_active: true
+    name: 'Mock SAML: Teacher (example.org)'
+    description: "Mock SAML supports users with two e-mail domains: example.com and
+      example.org. For testing we use this to distinguish whether students or teachers
+      sign-up.\r\n\r\n* `example.com`: Student\r\n* `example.org`: Teacher"
+    text_format: MD
+    site: null
+    social_app: 1
+    user_groups:
+    - - Teacher
+
+- model: openbook_auth.securityassertion
+  pk: 37157ed6-cdf2-467a-a27f-d4b80c3e6b99
+  fields:
+    parent: 57f8c693-5ec2-4d70-b4e1-7c38b277f222
+    name: email
+    value: '@example.org'
+    match_strategy: ends-with

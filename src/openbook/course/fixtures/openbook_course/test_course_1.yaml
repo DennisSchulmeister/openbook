@@ -13,11 +13,11 @@
 - model: openbook_auth.role
   pk: 12d4c201-93b9-46dd-9729-dd3b29c19c4a
   fields:
-    created_by:
-    - dennis
+    #created_by:
+    #- dennis
     created_at: 2025-06-01 12:45:53.058188+00:00
-    modified_by:
-    - dennis
+    #modified_by:
+    #- dennis
     modified_at: 2025-06-01 12:47:06.686942+00:00
     scope_type:
     - openbook_course

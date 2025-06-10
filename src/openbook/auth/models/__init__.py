@@ -15,6 +15,7 @@ from .group                   import Group
 from .permission_text         import PermissionText
 from .role_assignment         import RoleAssignment
 from .role                    import Role
+from .signup_group_assignment import SignupGroupAssignment
 from .user                    import User
 
 from . import mixins

@@ -497,7 +497,9 @@ commands mitigate this a litte:
 * `.headers on` - Show column names in the first line
 * `.quit` - Leave SQLite Shell (and use a proper tool 😛)
 
-Make sure to use an extra wide terminal window, as the lines are still unreadebl when wrapped.
+Make sure to use an extra wide terminal window, as the lines are still unreadable when wrapped.
+
+In Visual Studio Code you can also use the extension "SQLite Viewer" by Florian Klampfer.
 
 NPM and esbuild
 ---------------

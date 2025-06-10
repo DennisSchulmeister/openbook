@@ -22,10 +22,10 @@ class ScopeTypeForeignKeyWidget(ForeignKeyWidget):
         super().__init__(model=ContentType, *args, **kwargs)
 
     def render(self, value, row=None, **kwargs):
-        return model_string_for_content_type(value)
+        return model_string_for_content_type(value) if value else ""
     
     def clean(self, value, obj=None, **kwargs):
-        return content_type_for_model_string(value)
+        return content_type_for_model_string(value) if value else None
 
 class ScopeTypeManyToManyWidget(ManyToManyWidget):
     """
@@ -43,6 +43,9 @@ class ScopeTypeManyToManyWidget(ManyToManyWidget):
         return self.separator.join(model_strings)
     
     def clean(self, value, obj=None, **kwargs):
+        if not value:
+            return []
+        
         model_strings = value.split(self.separator)
         model_strings = filter(None, [ms.strip() for ms in model_strings])
         return [content_type_for_model_string(ms) for ms in model_strings]

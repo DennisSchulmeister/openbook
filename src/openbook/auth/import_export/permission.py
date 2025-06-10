@@ -22,10 +22,10 @@ class PermissionForeignKeyWidget(ForeignKeyWidget):
         super().__init__(model=Permission, *args, **kwargs)
 
     def render(self, value, row=None, **kwargs):
-        return perm_string_for_permission(value)
+        return perm_string_for_permission(value) if value else ""
     
     def clean(self, value, obj=None, **kwargs):
-        return permission_for_perm_string(value)
+        return permission_for_perm_string(value) if value else None
 
 class PermissionManyToManyWidget(ManyToManyWidget):
     """
@@ -43,6 +43,9 @@ class PermissionManyToManyWidget(ManyToManyWidget):
         return self.separator.join(perm_strings)
     
     def clean(self, value, obj=None, **kwargs):
+        if not value:
+            return []
+        
         perm_strings = value.split(self.separator)
         perm_strings = filter(None, [ps.strip() for ps in perm_strings])
         return [permission_for_perm_string(ps) for ps in perm_strings]

@@ -1,0 +1,44 @@
+# Group: Student
+- model: auth.group
+  fields:
+    name: Student
+    permissions:
+    - - add_accessrequest
+      - openbook_auth
+      - accessrequest
+    - - view_user
+      - openbook_auth
+      - user
+
+- model: openbook_auth.group
+  fields:
+    group_ptr:
+    - Student
+    slug: student
+
+# Group: Teacher
+- model: auth.group
+  fields:
+    name: Teacher
+    permissions:
+    - - view_group
+      - auth
+      - group
+    - - add_accessrequest
+      - openbook_auth
+      - accessrequest
+    - - view_group
+      - openbook_auth
+      - group
+    - - view_user
+      - openbook_auth
+      - user
+    - - add_course
+      - openbook_course
+      - course
+
+- model: openbook_auth.group
+  fields:
+    group_ptr:
+    - Teacher
+    slug: teacher

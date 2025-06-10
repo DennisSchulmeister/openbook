@@ -14,7 +14,7 @@ class AuthConfigForeignKeyWidget(ForeignKeyWidget):
         super().__init__(model=AuthConfig, *args, **kwargs)
 
     def render(self, value, row=None, **kwargs):
-        return value.site.domain
+        return value.site.domain if value and value.site else ""
     
     def clean(self, value, obj=None, **kwargs):
-        return AuthConfig.objects.get(site__domain=value)
+        return AuthConfig.objects.get(site__domain=value) if value else None

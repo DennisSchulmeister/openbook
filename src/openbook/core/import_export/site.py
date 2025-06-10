@@ -17,7 +17,7 @@ class SiteForeignKeyWidget(ForeignKeyWidget):
         super().__init__(model=Site, *args, **kwargs)
 
     def render(self, value, row=None, **kwargs):
-        return value.domain
+        return value.domain if value else ""
     
     def clean(self, value, obj=None, **kwargs):
-        return Site.objects.get(domain=value)
+        return Site.objects.get(domain=value) if value else None

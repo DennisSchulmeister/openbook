@@ -13,6 +13,20 @@
     - openbook_auth
     - enrollmentmethod
 - model: openbook_auth.anonymouspermission
+  pk: 6a719f3a-c7d3-4c74-a798-067e117421c5
+  fields:
+    permission:
+    - view_authconfig
+    - openbook_auth
+    - authconfig
+- model: openbook_auth.anonymouspermission
+  pk: 77dd2601-ebac-4b68-b2e8-8325bb8db90d
+  fields:
+    permission:
+    - view_site
+    - openbook_core
+    - site
+- model: openbook_auth.anonymouspermission
   pk: b5b3ef36-6123-4369-b408-9fa8eef09db7
   fields:
     permission:

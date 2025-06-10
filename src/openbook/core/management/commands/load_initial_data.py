@@ -18,6 +18,8 @@ class Command(BaseCommand):
         "openbook_auth/auth_config",
         "openbook_auth/mocksaml",
         "openbook_auth/anonymous_permissions",
+        "openbook_auth/groups",
+        "openbook_auth/signup_group_assignments",
         "openbook_course/test_course_1",
     ]
 

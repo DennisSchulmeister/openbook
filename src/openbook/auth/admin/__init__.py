@@ -16,10 +16,12 @@ from .group                   import GroupAdmin
 from .permission_text         import PermissionTextAdmin
 from .role                    import RoleAdmin
 from .role_assignment         import RoleAssignmentAdmin
+from .signup_group_assignment import SignupGroupAssignmentAdmin
 from .user                    import UserAdmin
 from ..                       import models
 
 admin_site.register(models.AuthConfig,            AuthConfigAdmin)
+admin_site.register(models.SignupGroupAssignment, SignupGroupAssignmentAdmin)
 admin_site.register(models.User,                  UserAdmin)
 admin_site.register(models.Group,                 GroupAdmin)
 admin_site.register(models.PermissionText,        PermissionTextAdmin)

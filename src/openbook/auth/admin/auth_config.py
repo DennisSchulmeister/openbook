@@ -41,7 +41,10 @@ class AuthConfigTextResource(ImportExportModelResource):
 
     class Meta:
         model  = AuthConfigText
-        fields = ("id", "parent", "delete", "language", "logout_next_text")
+        fields = (
+            "id", "delete",
+            "parent", "language", "logout_next_text",
+        )
     
     @classmethod
     def get_display_name(cls):
@@ -65,6 +68,7 @@ class _AuthConfigTextInline(TabularInline):
 class AuthConfigAdmin(CustomModelAdmin):
     model              = AuthConfig
     resource_classes   = (AuthConfigResource, AuthConfigTextResource)
+    ordering           = ("site__domain",)
     list_display       = ("site__domain", "site__name", "local_signup_allowed", "signup_email_suffix", "logout_next_url")
     list_display_links = ("site__domain", "site__name", "local_signup_allowed", "signup_email_suffix")
     list_editable      = ("logout_next_url",)
