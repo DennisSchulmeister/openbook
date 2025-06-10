@@ -18,14 +18,14 @@ from ..models.signup_group_assignment import SecurityAssertion
 from ..models.signup_group_assignment import SignupGroupAssignment
 
 class SignupGroupAssignmentResource(ImportExportModelResource):
-    site        = Field(attribute="site", widget=SiteForeignKeyWidget())
-    user_groups = Field(attribute="user_groups", widget=GroupManyToManyWidget())
+    site   = Field(attribute="site", widget=SiteForeignKeyWidget())
+    groups = Field(attribute="groups", widget=GroupManyToManyWidget())
 
     class Meta:
         model  = SignupGroupAssignment
         fields = (
             "id", "delete",
-            "site", "social_app", "user_groups",
+            "site", "social_app", "groups",
             "name", "description", "text_format",
         )
 
@@ -71,7 +71,7 @@ class SignupGroupAssignmentAdmin(CustomModelAdmin):
         "social_app__name", "social_app__provider_id", "social_app__client_id",
         "name", "description"
     )
-    filter_horizontal  = ("user_groups",)
+    filter_horizontal  = ("groups",)
     inlines            = (_SecurityAssertionInline,)
 
     def get_queryset(self, request):
@@ -94,6 +94,6 @@ class SignupGroupAssignmentAdmin(CustomModelAdmin):
         }),
         (_("Groups"), {
             "classes": ("tab",),
-            "fields": ("user_groups",),
+            "fields": ("groups",),
         }),
     )

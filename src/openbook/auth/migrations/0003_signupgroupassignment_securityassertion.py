@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('text_format', models.CharField(choices=[('TEXT', 'Plain Text'), ('HTML', 'HTML'), ('MD', 'Markdown')], default='MD', max_length=10, verbose_name='Text Format')),
                 ('site', models.ForeignKey(blank=True, help_text='Leave blank for all sites.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='openbook_core.site')),
                 ('social_app', models.ForeignKey(blank=True, help_text='Leave blank for local accounts.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='socialaccount.socialapp')),
-                ('user_groups', models.ManyToManyField(related_name='+', to='openbook_auth.group')),
+                ('groups', models.ManyToManyField(related_name='+', to='openbook_auth.group')),
             ],
             options={
                 'verbose_name': 'Group Assignment on Signup',

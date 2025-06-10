@@ -41,7 +41,7 @@ class SignupGroupAssignment(UUIDMixin, ActiveInactiveMixin, NameDescriptionMixin
         help_text    = _("Leave blank for local accounts."),
     )
 
-    user_groups = models.ManyToManyField(
+    groups = models.ManyToManyField(
         to           = "openbook_auth.group",
         related_name = "+",
     )
@@ -51,22 +51,7 @@ class SignupGroupAssignment(UUIDMixin, ActiveInactiveMixin, NameDescriptionMixin
         verbose_name_plural = _("Group Assignments on Signup")
 
     def __str__(self):
-        result = self.site if self.site else _("All Sites")
-
-        if self.social_app:
-            result += f", {self.social_app}"
-        else:
-            result += f", {_("Local Accounts")}"
-        
-        if self.user_groups:
-            result += ": "
-
-            for user_group in self.user_groups.all():
-                result += f" {user_group},"
-            
-            result = result[:-1]
-        
-        return result.strip()
+        return self.name if self.name else "---"
 
     def match(self, extra_data: dict|list[dict]) -> bool:
         """
@@ -140,9 +125,9 @@ class SecurityAssertion(UUIDMixin):
             elif self.match_strategy == self.MatchStrategy.CONTAINS:
                 return self.value in value
             elif self.match_strategy == self.MatchStrategy.STARTS_WITH:
-                return value.startswith(value)
+                return value.startswith(self.value)
             elif self.match_strategy == self.MatchStrategy.ENDS_WITH:
-                return value.endswith(value)
+                return value.endswith(self.value)
             elif self.match_strategy == self.MatchStrategy.REGEX:
                 pattern = re.compile(self.value)
                 return bool(pattern.match(value))

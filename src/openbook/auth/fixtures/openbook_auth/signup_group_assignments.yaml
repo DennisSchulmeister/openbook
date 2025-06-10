@@ -9,7 +9,7 @@
     text_format: MD
     site: null
     social_app: null
-    user_groups:
+    groups:
     - - Student
 
 # Mock SAML: Students
@@ -24,7 +24,7 @@
     text_format: MD
     site: null
     social_app: 1
-    user_groups:
+    groups:
     - - Student
 
 - model: openbook_auth.securityassertion
@@ -47,7 +47,7 @@
     text_format: MD
     site: null
     social_app: 1
-    user_groups:
+    groups:
     - - Teacher
 
 - model: openbook_auth.securityassertion

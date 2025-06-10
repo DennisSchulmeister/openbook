@@ -8,12 +8,15 @@
 
 from allauth.account.adapter          import DefaultAccountAdapter
 from allauth.socialaccount.adapter    import DefaultSocialAccountAdapter
+from allauth.socialaccount.models     import SocialApp
 from allauth.socialaccount.models     import SocialLogin
 from django.contrib.auth.models       import AbstractUser
 from django.core.exceptions           import ValidationError
+from django.db.models                 import Q
 from django.http                      import HttpRequest
 from django.utils.text                import format_lazy as _f
 
+from openbook.core.models.site        import Site
 from ..models.auth_config             import AuthConfig
 from ..models.signup_group_assignment import SignupGroupAssignment
 
@@ -49,15 +52,70 @@ class AccountAdapter(DefaultAccountAdapter):
         return email
     
     def save_user(self, request: HttpRequest, user: AbstractUser, form, commit=True) -> AbstractUser:
+        """
+        Add user to groups after sign-up.
+        """
         saved_user = super().save_user(request, user, form, commit)
-        # TODO: Group Assignment
-        return user
+        groups = []
+
+        try:
+            current_site = Site.objects.get(site_ptr=request.site)
+        except Site.DoesNotExist:
+            current_site = None
+
+        group_assignments = SignupGroupAssignment.objects.filter(
+            Q(is_active = True),
+            Q(social_app = None),
+            Q(site = None) | Q(site = current_site),
+        )
+
+        for group_assignment in group_assignments.all():
+            for group in group_assignment.groups.all():
+                groups.append(group)
+        
+        saved_user.groups.set(groups)
+        return saved_user
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     """
     Adapted behavior for social account registration.
     """
     def save_user(self, request: HttpRequest, sociallogin: SocialLogin, form=None) -> AbstractUser:
+        """
+        Add user to groups after sign-up.
+        """
         saved_user = super().save_user(request, sociallogin, form)
-        # TODO: Group Assignment
+        social_app = None
+        groups = []
+
+        try:
+            social_app = SocialApp.objects.get(provider_id = sociallogin.account.provider)
+        except SocialApp.DoesNotExist:
+            pass
+    
+        if not social_app:
+            try:
+                social_app = SocialApp.objects.get(provider = sociallogin.account.provider)
+            except SocialApp.DoesNotExist:
+                pass
+
+        if social_app:
+            try:
+                current_site = Site.objects.get(site_ptr=request.site)
+            except Site.DoesNotExist:
+                current_site = None
+
+            group_assignments = SignupGroupAssignment.objects.filter(
+                Q(is_active = True),
+                Q(social_app = social_app),
+                Q(site = None) | Q(site = current_site),
+            )
+
+            for group_assignment in group_assignments.all():
+                if group_assignment.match(sociallogin.account.extra_data):
+                    for group in group_assignment.groups.all():
+                        groups.append(group)
+            
+            saved_user.groups.set(groups)
+
         return saved_user

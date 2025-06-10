@@ -8,7 +8,7 @@ Installation Notes for Administrators
 1. [Docker Compose](#docker-compose)
 1. [Periodic Jobs](#periodic-jobs)
 1. [Backups](#backups)
-1. [SAML SSO](#saml-sso)
+1. [SAML SSO and Social Login](#saml-sso-and-social-login)
 
 System Overview
 ---------------
@@ -203,8 +203,8 @@ Note, to avoid errors the database should be empty when backups are imported.
 The Django DBBackups documentation recommends for larger installations to setup a database replica on
 the database level and use the replica to create the backups, to avoid performance impacts.
 
-SAML SSO
-========
+SAML SSO and Social Login
+=========================
 
 This project uses [django-allauth\[saml\]](https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/saml.html)
 to connect with SAML identity providers. Additionaly it is possible to allow local user registration
@@ -214,4 +214,28 @@ the [django-allauth Documentation](https://django-allauth.readthedocs.io) for fu
 
 When you load the initial test data, a dummy SAML provider based on [mocksaml.com](https://mocksaml.com)
 by Ory will already be configured. Please check [localhost:8887](http://localhost:8887) for the
-account verification e-mail to fully test the sign-up/login flow.
+account verification e-mail to fully test the sign-up/login flow. You can sign-up with two different
+e-mail domains, which will be used to determine the user group of the new user:
+
+ * `example.com`: User group `student`
+ * `example.org`: User group `teacher`
+
+Please consider the following information from the
+[Allauth SAML Guidelines](https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/saml.html#guidelines):
+
+* Most SAML IdPs require TLS (formerly SSL) to be used, making testing with runserver challenging.
+Make sure to configure Django to use HTTPS. (Note: Mock SAML works fine with plain HTTP).
+
+* If using a reverse proxy, be sure to set Django settings `USE_X_FORWARDED_HOST = True`,
+`SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')`, and `SECURE_SSL_REDIRECT = True`.
+In your web server’s reverse proxy configuration, ensure that you set request headers
+`X_FORWARDED_PROTO 'https' env=HTTPS` and `X-Forwarded-Ssl on`.
+
+* Cookies must also be secure; ensure that `CSRF_COOKIE_DOMAIN` and `SESSION_COOKIE_DOMAIN`
+are set to `yourdomain.com`, and that `CSRF_COOKIE_SECURE` and `SESSION_COOKIE_SECURE` are
+`True` in your Django settings.
+
+* Test with your browser in privacy / incognito mode, check your developer console to ensure
+that cookies are being set correctly, and use a tool like SAML Tracer (Firefox / Chromium)
+to inspect the SAML messages being exchanged. SAML Tracer is also useful for looking up the
+IdP SAML values to map to uid, email, and email_verified in the attribute_mapping configuration.

@@ -20,6 +20,11 @@ ALLOWED_HOSTS = ["*"]
 # Where to redirect, when the root URL of the server is accessed
 OB_ROOT_REDIRECT = "/api/"
 
+# Needed to secure the CSRF and session cookies.
+# SECURITY: Use a sub-domain that is not shared with other applications!
+CSRF_COOKIE_DOMAIN = "your-domain.com"
+SESSION_COOKIE_DOMAIN = "your-domain.com"
+
 # Built-in database engines:
 #   * "django.db.backends.postgresql"
 #   * "django.db.backends.mysql"
@@ -81,7 +86,9 @@ SITE_ID = 1
 #DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
 #DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "_backup"}
 
-# Additional social auth integrations - here a few noteworthy examples
+# Additional social auth integrations - here a few noteworthy examples.
+# Manage them in the admin panel for full functionality (don't hard-code
+# the provider settings in the configuration file).
 # See: https://docs.allauth.org/en/latest/socialaccount/providers/index.html
 EXTRA_INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
@@ -90,18 +97,6 @@ EXTRA_INSTALLED_APPS = [
     "allauth.socialaccount.providers.openid_connect",
     "allauth.socialaccount.providers.orcid",
 ]
-
-# Provider specific settings - Alternativeley manage them in the admin panel,
-# if you don't want to hard-code the settings here
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {
-            "client_id": '123',
-            "secret": '456',
-            "key": ''
-        }
-    }
-}
 
 # Private key for OpenID Connect (Identity Provider)
 # IMPORTANT - Generate your own key with:

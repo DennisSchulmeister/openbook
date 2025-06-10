@@ -3,9 +3,6 @@
   fields:
     name: Student
     permissions:
-    - - add_accessrequest
-      - openbook_auth
-      - accessrequest
     - - view_user
       - openbook_auth
       - user
@@ -24,9 +21,6 @@
     - - view_group
       - auth
       - group
-    - - add_accessrequest
-      - openbook_auth
-      - accessrequest
     - - view_group
       - openbook_auth
       - group
