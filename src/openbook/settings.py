@@ -297,11 +297,10 @@ bMGK8/i84PEbNBK/8Iy8pdk=
 -----END PRIVATE KEY-----
 """
 
-# Recommded settings for SAML behind a reverse proxy
+# Recommended settings for SAML behind a reverse proxy
 # See: https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/saml.html#guidelines
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 

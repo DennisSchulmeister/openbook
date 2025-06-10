@@ -22,6 +22,7 @@ OB_ROOT_REDIRECT = "/api/"
 
 # Needed to secure the CSRF and session cookies.
 # SECURITY: Use a sub-domain that is not shared with other applications!
+#SECURE_SSL_REDIRECT = True  # HTTP to HTTPS redirect, if not already done by reverse proxy
 CSRF_COOKIE_DOMAIN = "your-domain.com"
 SESSION_COOKIE_DOMAIN = "your-domain.com"
 
