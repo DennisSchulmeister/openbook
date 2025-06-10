@@ -242,13 +242,15 @@ AUTHENTICATION_BACKENDS = (
 
 # Allauth – Local accounts
 # See: https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.DefaultAccountAdapter"
+ACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.AccountAdapter"
 ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 300
 ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_BLACKLIST = ["admin", "Administrator", "root", "superuser"]
 ACCOUNT_USERNAME_MIN_LENGTH = 5
+
+SOCIALACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.SocialAccountAdapter"
 
 # Allauith - Headless API
 # See: https://docs.allauth.org/en/latest/headless/configuration.html

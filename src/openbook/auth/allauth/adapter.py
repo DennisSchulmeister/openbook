@@ -6,14 +6,18 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from allauth.account.adapter  import DefaultAccountAdapter as AllauthDefaultAccountAdapter
-from django.core.exceptions   import ValidationError
-from django.http              import HttpRequest
-from django.utils.text        import format_lazy as _f
+from allauth.account.adapter          import DefaultAccountAdapter
+from allauth.socialaccount.adapter    import DefaultSocialAccountAdapter
+from allauth.socialaccount.models     import SocialLogin
+from django.contrib.auth.models       import AbstractUser
+from django.core.exceptions           import ValidationError
+from django.http                      import HttpRequest
+from django.utils.text                import format_lazy as _f
 
-from ..models.auth_config     import AuthConfig
+from ..models.auth_config             import AuthConfig
+from ..models.signup_group_assignment import SignupGroupAssignment
 
-class DefaultAccountAdapter(AllauthDefaultAccountAdapter):
+class AccountAdapter(DefaultAccountAdapter):
     """
     Adapted behavior for local account registration.
     """
@@ -43,3 +47,17 @@ class DefaultAccountAdapter(AllauthDefaultAccountAdapter):
             pass
         
         return email
+    
+    def save_user(self, request: HttpRequest, user: AbstractUser, form, commit=True) -> AbstractUser:
+        saved_user = super().save_user(request, user, form, commit)
+        # TODO: Group Assignment
+        return user
+
+class SocialAccountAdapter(DefaultSocialAccountAdapter):
+    """
+    Adapted behavior for social account registration.
+    """
+    def save_user(self, request: HttpRequest, sociallogin: SocialLogin, form=None) -> AbstractUser:
+        saved_user = super().save_user(request, sociallogin, form)
+        # TODO: Group Assignment
+        return saved_user
