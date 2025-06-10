@@ -1,0 +1,19 @@
+- model: socialaccount.socialapp
+  pk: 1
+  fields:
+    provider: saml
+    provider_id: urn:mocksaml.com
+    name: Mock SAML
+    client_id: mocksaml
+    secret: ''
+    key: ''
+    settings:
+      attribute_mapping:
+        uid: http://schemas.auth0.com/clientID
+        email_verified: http://schemas.auth0.com/email_verified
+        email: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
+      idp:
+        entity_id: https://saml.example.com/entityid
+        metadata_url: https://mocksaml.com/api/saml/metadata
+    sites:
+    - - openbook.studio

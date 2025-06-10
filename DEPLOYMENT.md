@@ -8,6 +8,7 @@ Installation Notes for Administrators
 1. [Docker Compose](#docker-compose)
 1. [Periodic Jobs](#periodic-jobs)
 1. [Backups](#backups)
+1. [SAML SSO](#saml-sso)
 
 System Overview
 ---------------
@@ -201,3 +202,16 @@ Note, to avoid errors the database should be empty when backups are imported.
 
 The Django DBBackups documentation recommends for larger installations to setup a database replica on
 the database level and use the replica to create the backups, to avoid performance impacts.
+
+SAML SSO
+========
+
+This project uses [django-allauth\[saml\]](https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/saml.html)
+to connect with SAML identity providers. Additionaly it is possible to allow local user registration
+(per-application silo with built-in user management) and social authentication using Google, Microsoft
+and many other providers. A few hints are contained in the `local-settings.py` file. But please read
+the [django-allauth Documentation](https://django-allauth.readthedocs.io) for full details.
+
+When you load the initial test data, a dummy SAML provider based on [mocksaml.com](https://mocksaml.com)
+by Ory will already be configured. Please check [localhost:8887](http://localhost:8887) for the
+account verification e-mail to fully test the sign-up/login flow.
