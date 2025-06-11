@@ -31,14 +31,43 @@ export function getOptions() {
 
         outfiles:  [
             path.join(cwd, "dist", "library.js"),
-            path.join(cwd, "..", "..", "_media", "lib", name, "library.js"),
         ],
 
         plugins: [
+            logHeader(cwd),
             validateAndCopyElementYml(cwd, path.join(cwd, "dist")),
             createLibraryYml(cwd, path.join(cwd, "dist", "library.yml")),
             createLibraryZip(path.join(cwd, "dist"), path.join(cwd, "zip", "library.zip")),
+            copyToInstallLocation(
+                cwd,
+                path.join(cwd, "zip", "library.zip"),
+                path.join(cwd, "..", "..", "_media", "lib")),
         ],
+    };
+}
+
+/**
+ * Internal plugin that logs a header with the name of the currently built library.
+ * @param {string} cwd Root directory of the library
+ * @returns esbuild plug-in instance
+ */
+function logHeader(cwd) {
+    return {
+        name: "logHeader",
+        setup(build) {
+            build.onStart(async () => {
+                let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
+                let packageJson     = JSON.parse(packageJsonFile);
+                let logLine         = `Building library ${packageJson.name} ${packageJson.version}`;
+                let separator       = "=".repeat(logLine.length);
+
+                console.log();
+                console.log(separator);
+                console.log(logLine);
+                console.log(separator);
+                console.log();
+            });
+        },
     };
 }
 
@@ -56,6 +85,8 @@ function validateAndCopyElementYml(cwd, outdir) {
         name: "copyElementYml",
         setup(build) {
             build.onEnd(async () => {
+                console.log("COPY ELEMENT YAML FILES");
+
                 let srcDir            = path.join(cwd, "src");
                 let elementSchemaFile = await fs.readFile(path.join(import.meta.dirname, "element-schema.yml"), "utf-8");
                 let elementSchemaYml  = yaml.parse(elementSchemaFile);
@@ -94,6 +125,8 @@ function createLibraryYml(cwd, outfile) {
         name: "createLibraryYmlPlugin",
         setup(build) {
             build.onEnd(async () => {
+                console.log("CREATE LIBRARY YAML");
+
                 let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
                 let packageJson     = JSON.parse(packageJsonFile);
                 let readmeFile      = await fs.readFile(path.join(cwd, "README.md"), "utf-8");
@@ -113,7 +146,7 @@ function createLibraryYml(cwd, outfile) {
 }
 
 /**
- * Internal plugin the creates a ZIP file with the bundled library source code,
+ * Internal plugin that creates a ZIP file with the bundled library source code,
  * ready to be installed on the OpenBook server.
  * 
  * @param {string} distdir Directory with the pre-built distribution files
@@ -125,6 +158,8 @@ function createLibraryZip(distdir, outfile) {
         name: "createLibraryZipPlugin",
         setup(build) {
             build.onEnd(async () => {
+                console.log("CREATE LIBRARY ZIP");
+
                 try {
                     await fs.unlink(outfile);
                 } catch {
@@ -153,6 +188,32 @@ function createLibraryZip(distdir, outfile) {
                 await _addDirectoryContent(folder, distdir);
                 let zipContent = await zip.generateAsync({type: "nodebuffer"});
                 await fs.writeFile(outfile, zipContent);
+            });
+        },
+    };
+}
+
+/**
+ * Internal plugin that copies and renames the built ZIP file so that can be
+ * automatically installed by the OpenBook server.
+ * 
+ * @param {string} cwd Root directory of the library
+ * @param {string} zipfile Path to the built ZIP file
+ * @param {string} outdir Install directory
+ * @returns esbuild plug-in instance
+ */
+function copyToInstallLocation(cwd, zipfile, outdir) {
+    return {
+        name: "copyToInstallLocation",
+        setup(build) {
+            build.onEnd(async () => {
+                console.log("COPY LIBRARY ZIP TO INSTALL LOCATION");
+                
+                let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
+                let packageJson     = JSON.parse(packageJsonFile);
+                let dstFile         = `${packageJson.name} ${packageJson.version}.zip`.replaceAll("/", " ");
+
+                shelljs.cp("-R", zipfile, path.join(outdir, dstFile));
             });
         },
     };

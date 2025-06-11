@@ -8,10 +8,10 @@
  * License, or (at your option) any later version.
  */
 
-import concurrently from "concurrently";
 import {glob}       from "glob";
 import path         from "node:path";
 import url          from "node:url";
+import {spawn}      from "node:child_process";
 
 const __dirname = url.fileURLToPath(new url.URL(".", import.meta.url));
 
@@ -26,7 +26,19 @@ for (let packageJson of packageJsons || []) {
     commands.push({ name: subdir, command: `node ${script}`, cwd: subdir });
 }
 
-concurrently(commands, {
-    raw: true,
-    prefixColors: ["auto"],
-});
+for (const command of commands) {
+    const child = spawn(command.command, { cwd: command.cwd, shell: true });
+
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+
+    await new Promise((resolve) => {
+        child.on('close', (code) => {
+            console.log();
+            console.log(`Command exited with code ${code}`);
+            console.log();
+
+            resolve();
+        });
+    });
+}

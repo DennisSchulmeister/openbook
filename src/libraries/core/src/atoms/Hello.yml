@@ -5,7 +5,7 @@
 # HTML tag name
 tagname: ob-hello
 
-# Short description in mulitple languages
+# Short description in multiple languages
 description:
   en: A simple Hello World custom element
   de: Eine einfaches Hallo Welt Custom Element
