@@ -7,25 +7,18 @@
 # License, or (at your option) any later version.
 
 from allauth.account       import admin as account_admin
-from allauth.idp.oidc      import admin as idp_oidc_admin
 from allauth.socialaccount import admin as socialaccount_admin
 from django                import forms
-from unfold.admin          import ModelAdmin
+from openbook.admin        import CustomModelAdmin
 from unfold.widgets        import UnfoldAdminSelectWidget
 
 # Very dirty, but how else could be make Django Unfold play nice with
 # the admin views provided by django-allauth!?
 
-class EmailAddressAdmin(ModelAdmin, account_admin.EmailAddressAdmin):
+class EmailAddressAdmin(CustomModelAdmin, account_admin.EmailAddressAdmin):
     pass
 
-class EmailConfirmationAdmin(ModelAdmin, account_admin.EmailConfirmationAdmin):
-    pass
-
-class ClientAdmin(ModelAdmin, idp_oidc_admin.ClientAdmin):
-    pass
-
-class TokenAdmin(ModelAdmin, idp_oidc_admin.TokenAdmin):
+class EmailConfirmationAdmin(CustomModelAdmin, account_admin.EmailConfirmationAdmin):
     pass
 
 class SocialAppForm(socialaccount_admin.SocialAppForm):
@@ -43,11 +36,11 @@ class SocialAppForm(socialaccount_admin.SocialAppForm):
             widget  = UnfoldAdminSelectWidget(),
         )
 
-class SocialAppAdmin(ModelAdmin, socialaccount_admin.SocialAppAdmin):
+class SocialAppAdmin(CustomModelAdmin, socialaccount_admin.SocialAppAdmin):
     form = SocialAppForm
 
-class SocialAccountAdmin(ModelAdmin, socialaccount_admin.SocialAccountAdmin):
+class SocialAccountAdmin(CustomModelAdmin, socialaccount_admin.SocialAccountAdmin):
     pass
 
-class SocialTokenAdmin(ModelAdmin, socialaccount_admin.SocialTokenAdmin):
+class SocialTokenAdmin(CustomModelAdmin, socialaccount_admin.SocialTokenAdmin):
     pass

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Django REST framework
     "rest_wind",
     "rest_framework",
+
     "django_filters",
     "drf_spectacular",
     "drf_spectacular_sidecar",
@@ -70,7 +71,6 @@ INSTALLED_APPS = [
     # django-allauth
     "allauth",
     "allauth.account",
-    "allauth.idp.oidc",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.saml",
 
@@ -159,13 +159,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "openbook.drf.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 
-    # Remember authenticated user (complimenting our custom middleware)
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        # Remember authenticated user (complimenting our custom middleware, extends DRF SessionAuthentication)
         "openbook.auth.middleware.current_user.CurrentUserTrackingAuthentication",
     ],
 
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    # Serve authenticated users only, checking Django object permissions (with
+    # our own permission backend that falls back on regular Django permissions
+    # on the user/group if the object-based permission check fails)
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
         "openbook.drf.permissions.DjangoObjectPermissionsOnly",
@@ -261,41 +262,6 @@ HEADLESS_FRONTEND_URLS = {
     # "account_reset_password_from_key": "https://app.org/account/password/reset/key/{key}",
     # "account_signup": "https://app.org/account/signup",
 }
-
-# Private key for OpenID Connect (Identity Provider)
-# IMPORTANT - Generate your own key with:
-# $ openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
-# See: https://docs.allauth.org/en/latest/idp/openid-connect/installation.html
-IDP_OIDC_PRIVATE_KEY = """
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC8rtj7ytTwHvw6
-w0BTxwJ12T8ol8Z2fWSReBZ92QEzYxDXkXYFEcMx7WXfX/2Gp463Bv9vG6z/2m1+
-IWlnRpwbC8Q5RYx53yZ5IKv4WUwwYo6ScHV3LFPC2KpOEI9ocROryrF286OuQKAx
-2cx3SCsm0jAPlmJh59LumiGcVKZrlSHj0axsZISLmD+A4BMXeeAIHbLU72T6hc7x
-U7gZlbMilB0Mi/x3BLcjXHSeU+3B4gYESQjQ7y0+5bVpoiMZjDyDI5KhEtl3uZpI
-c+3/xaPPWQ72h0X+uOqvEBV7HssbHvO4AUMVNF1pqcaY7HVIElvLTVODdr3Kv6pf
-7ZjH5e7ZAgMBAAECggEAFKuE6sSUIkAKurdEF0lwbA+iGyTRYY6oE0WYFS5OMt5x
-7GOrja+d9hy/McLWx8cYW9Wg6v+Zqqe3of8wCFfUZyQZWXrUgk9fbBqXrEvADHbn
-joRSYf1RqcFJmua2hycIFCRO36yeLEs5IWzuOM0HqSeSi0qauYYHdgsdjn45gwRx
-YKWCr3j2f6UBorrAdvs1JYrYqtWgELR6a4sZ/vd5oJZkTpuG+y3aDHPN0z3wJvTr
-3Z0ODEfCpOaHMXEDGMN7lkztUCpSaZH44AWTF4/ZKFJcCf1SV1ICflnCD9BF49mJ
-1+zfV+OW73siiMscyHU73aoo8haMhMI35coHgwoQAQKBgQD4O+aZRMIfMGRXk4Hf
-EHxAp9kBgM7fYhPsrVeXCnimGfemqCjAFwt6Qbal6vbvabCb8U/kiPoO6PBxl+1G
-mcf2zSkLWG1sLIirHatMODHY1YY7gc60piNK/7AIxxpJutrTHQijBYH9TplUHQLG
-QJYQSlVKv1IvFWeLUbHZULa62QKBgQDClgErnb4+wO6mYY+CklCJ3ayt2HnGbRWU
-vw30zmELrSr80cD5oqP0rs5SYW6F08uw59lLUEpOUxBOtqc9LGXJT5/dxEhFIT6l
-dtMBDOolgM2En58UOGQ1rnmMLLkDF5TrXuGd6Z4OoHRyak+SMq74TTYyzAqBk1rF
-rkz1pOBUAQKBgC38gtrQBxpaD6y9seiOGEauEaCaqThu5fwJnNlpYjJ7Swq/ylTT
-sBelBt4z6i0uKj6pdMCEs7aBZtHUcGuM36OUHE9ywUqx8Vup8mr7WhiubeCmSpHi
-2VTyiz0FDZStHg7QKSJyScOQhQ01Fqd9nY9FBgoD6Yi5cWY46za0IjX5AoGAW8ci
-sC7Lr4+SQHmdlalrQUuECc8jyLpkxm7Cp2e8ECTSNMK+MUBL8rmMaQC5f3ehCESi
-kcpB8eVtuKKgCNNrAuOCdLgCmlCO2r5L0aAExEGXLemXv5LFeShc/geOD+5MeCOd
-aLzqpt15bwnDlCJBsq3AVX81qV4WH00R0X69rAECgYEA3TzcSJZ4PCqOzsggrtVm
-+RI8D2ZkPUuNeNGyGgk/t1AC/+v89kZCxeZkxUAWk3dlk5clzNqAfW+hoL8mdwt+
-XVwMmmjcJkmCOX5+J09lkI4aA9HdaudunX7NqOGiHUItnsdd4/f2MEXU0UtFK6YB
-bMGK8/i84PEbNBK/8Iy8pdk=
------END PRIVATE KEY-----
-"""
 
 # Recommended settings for SAML behind a reverse proxy
 # See: https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/saml.html#guidelines
@@ -401,8 +367,7 @@ UNFOLD = {
                 "openbook_auth.group",
                 "account.emailaddress",
                 "socialaccount.socialaccount",
-                "allauth_idp_oidc.client",
-                "allauth_idp_oidc.token",
+                "openbook_auth.authtoken",
             ],
             "items": [
                 {
@@ -426,14 +391,9 @@ UNFOLD = {
                     "permission": lambda req: req.user.has_perm("socialaccount.view_socialaccount"),
                 },
                 {
-                    "title":      _("Client Applications"),
-                    "link":       reverse_lazy("admin:allauth_idp_oidc_client_changelist"),
-                    "permission": lambda req: req.user.has_perm("allauth_idp_oidc.view_client"),
-                },
-                {
-                    "title":      _("Client Tokens"),
-                    "link":       reverse_lazy("admin:allauth_idp_oidc_token_changelist"),
-                    "permission": lambda req: req.user.has_perm("allauth_idp_oidc.view_token"),
+                    "title":      _("Authentication Tokens"),
+                    "link":       reverse_lazy("admin:openbook_auth_authtoken_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_auth.authtoken_token"),
                 },
             ],
         },

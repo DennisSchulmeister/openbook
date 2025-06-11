@@ -47,9 +47,8 @@ urlpatterns = [
     path("admin/",            admin_site.urls),
 
     # User Accounts
-    path('accounts/',         include('allauth.urls')),
+    path('accounts/',         include("allauth.urls")),
     path("auth-api/",         include("allauth.headless.urls")),
-    path("",                  include("allauth.idp.urls")),
 
     # Single Page App
     path("",                  RedirectView.as_view(url=settings.OB_ROOT_REDIRECT)),

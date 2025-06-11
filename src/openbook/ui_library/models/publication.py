@@ -24,7 +24,7 @@ class Publication(UUIDMixin, CreatedModifiedByMixin):
 
     This model defines which of the installed libraries are published by the server. The central
     `https://openbook.studio` installation publishes the core libraries. Other installations should
-    therefore only publish their own self-developed libraries.
+    therefore only publish their self-developed libraries.
     """
     library = models.ForeignKey(Library, verbose_name=_("Library"), on_delete=models.CASCADE)
     publish = models.BooleanField(verbose_name=_("Publish"), help_text=_("Allow other installations to download the library from this server."))

@@ -11,6 +11,7 @@ from .access_request          import AccessRequestAdmin
 from .allowed_role_permission import AllowedRolePermissionAdmin
 from .anonymous_permission    import AnonymousPermissionAdmin
 from .auth_config             import AuthConfigAdmin
+from .auth_token              import AuthTokenAdmin
 from .enrollment_method       import EnrollmentMethodAdmin
 from .group                   import GroupAdmin
 from .permission_text         import PermissionTextAdmin
@@ -24,6 +25,7 @@ admin_site.register(models.AuthConfig,            AuthConfigAdmin)
 admin_site.register(models.SignupGroupAssignment, SignupGroupAssignmentAdmin)
 admin_site.register(models.User,                  UserAdmin)
 admin_site.register(models.Group,                 GroupAdmin)
+admin_site.register(models.AuthToken,             AuthTokenAdmin)
 admin_site.register(models.PermissionText,        PermissionTextAdmin)
 admin_site.register(models.AnonymousPermission,   AnonymousPermissionAdmin)
 admin_site.register(models.AllowedRolePermission, AllowedRolePermissionAdmin)
@@ -37,17 +39,13 @@ admin_site.register(models.AccessRequest,         AccessRequestAdmin)
 # Template: https://codeberg.org/allauth/django-allauth/src/branch/main/allauth/idp/oidc/admin.py
 from allauth.account       import app_settings as allauth_app_settings
 from allauth.account       import models       as allauth_account_models
-from allauth.idp.oidc      import models       as allauth_idp_oidc_models
 from allauth.socialaccount import models       as allauth_socialaccount_models
-from .                     import allauth
+from ..allauth             import admin        as allauth
 
 admin_site.register(allauth_account_models.EmailAddress, allauth.EmailAddressAdmin)
 
 if not allauth_app_settings.EMAIL_CONFIRMATION_HMAC:
     admin_site.register(allauth_account_models.EmailConfirmation, allauth.EmailConfirmationAdmin)
-
-admin_site.register(allauth_idp_oidc_models.Client, allauth.ClientAdmin)
-admin_site.register(allauth_idp_oidc_models.Token,  allauth.TokenAdmin)
 
 admin_site.register(allauth_socialaccount_models.SocialApp,     allauth.SocialAppAdmin)
 admin_site.register(allauth_socialaccount_models.SocialAccount, allauth.SocialAccountAdmin)

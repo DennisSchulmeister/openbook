@@ -76,6 +76,21 @@ class AccountAdapter(DefaultAccountAdapter):
         saved_user.groups.set(groups)
         return saved_user
 
+    def authenticate(self, request, **credentials):
+        """
+        Only allow human users to authenticate. App users need to authenticate with an
+        authentication token, instead. This is an extra security measure, since normally
+        app users should not have a passwort set and thus should not be ably to login
+        with username/password, anyway.
+        """
+        user = super().authenticate(request, **credentials)
+
+        if not user.user_type == user.UserType.HUMAN:
+            # Cannot raise exception here
+            return None
+
+        return user
+
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     """
     Adapted behavior for social account registration.
