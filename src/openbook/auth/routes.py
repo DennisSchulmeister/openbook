@@ -8,6 +8,7 @@
 
 from .viewsets.access_request          import AccessRequestViewSet
 from .viewsets.allowed_role_permission import AllowedRolePermissionViewSet
+from .viewsets.auth_token              import AuthTokenViewSet
 from .viewsets.enrollment_method       import EnrollmentMethodViewSet
 from .viewsets.permission              import PermissionViewSet
 from .viewsets.permission_text         import PermissionTextViewSet
@@ -20,6 +21,7 @@ from .viewsets.user                    import UserViewSet
 def register_api_routes(router, prefix):
     router.register(f"{prefix}/access_requests",          AccessRequestViewSet,         basename="access_request")
     router.register(f"{prefix}/allowed_role_permissions", AllowedRolePermissionViewSet, basename="allowed_role_permission")
+    router.register(f"{prefix}/auth_tokens",              AuthTokenViewSet,             basename="auth_token")
     router.register(f"{prefix}/current_user",             CurrentUserViewSet,           basename="current_user")
     router.register(f"{prefix}/enrollment_methods",       EnrollmentMethodViewSet,      basename="enrollment_method")
     router.register(f"{prefix}/users",                    UserViewSet,                  basename="user")

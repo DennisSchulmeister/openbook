@@ -25,7 +25,7 @@ from .textbook.routes                import register_api_routes as register_text
 from .ui_library.routes              import register_api_routes as register_ui_library_api_routes
 
 # Overwrite permission class for API root view, since it uses the default from settings.py,
-# where we set AllowNone.
+# which would only allow authenticated users to see the API documentation.
 DRFDefaultRouter.APIRootView.permission_classes = [IsAuthenticatedOrReadOnly]
 api_router = DRFDefaultRouter()
 
@@ -39,7 +39,6 @@ register_ui_library_api_routes(api_router, "ui_library")
 urlpatterns = [
     # REST API
     path("api/",              include(api_router.urls)),
-    path("api-auth/",         include("rest_framework.urls")),
     path("api/schema/",       SpectacularAPIView.as_view(), name="api-schema"),
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="api-schema"), name="api-redoc"),
 

@@ -350,6 +350,12 @@ class ModelViewSetTestMixin:
             assertions_empty_list = assertions_one_item
 
         for operation, configuration in operations_merged.items():
+            # For tests with missing authentication we cannot use a pre-defined user that
+            # might actually have the required permissions.
+            configuration_no_user = copy.deepcopy(configuration)
+            configuration_no_user["username"] = ""
+            configuration_no_user["password"] = ""
+
             # Operation not supported
             if not configuration["supported"]:
                 setattr(cls, f"test_{operation}_not_supported", cls._create_test_method(
@@ -386,7 +392,7 @@ class ModelViewSetTestMixin:
                 if configuration["model_permission"] or configuration["custom_permissions"]:
                     if operation == "list":
                         setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
-                            configuration   = configuration,
+                            configuration   = configuration_no_user,
                             create_user     = False,
                             add_permissions = False,
                             pk_value        = cls.pk_found,
@@ -396,7 +402,7 @@ class ModelViewSetTestMixin:
                         ))
                     else:
                         setattr(cls, f"test_{operation}_anonymous_unauthorized", cls._create_test_method(
-                            configuration   = configuration,
+                            configuration   = configuration_no_user,
                             create_user     = False,
                             add_permissions = False,
                             pk_value        = cls.pk_found,
@@ -416,7 +422,7 @@ class ModelViewSetTestMixin:
             else:
                 # User must be logged-in and authorized
                 setattr(cls, f"test_{operation}_unauthenticated", cls._create_test_method(
-                    configuration   = configuration,
+                    configuration   = configuration_no_user,
                     create_user     = False,
                     add_permissions = False,
                     pk_value        = cls.pk_found,
@@ -427,7 +433,7 @@ class ModelViewSetTestMixin:
             if configuration["model_permission"] or configuration["custom_permissions"]:
                 if operation == "list":
                     setattr(cls, f"test_{operation}_unauthorized", cls._create_test_method(
-                        configuration   = configuration,
+                        configuration   = configuration_no_user,
                         create_user     = True,
                         add_permissions = False,
                         pk_value        = cls.pk_found,
@@ -437,7 +443,7 @@ class ModelViewSetTestMixin:
                     ))
                 else:
                     setattr(cls, f"test_{operation}_unauthorized", cls._create_test_method(
-                        configuration   = configuration,
+                        configuration   = configuration_no_user,
                         create_user     = True,
                         add_permissions = False,
                         pk_value        = cls.pk_found,
