@@ -6,9 +6,11 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-import threading
+import importlib, threading
+
+from django.conf                   import settings
 from drf_spectacular.extensions    import OpenApiAuthenticationExtension
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import BaseAuthentication
 
 thread_local = threading.local()
 
@@ -25,18 +27,41 @@ def CurrentUserMiddleware(get_response):
 
     return middleware
 
-class CurrentUserTrackingAuthentication(SessionAuthentication):
+class CurrentUserTrackingAuthentication(BaseAuthentication):
     """
     The same as above but for Django REST Framework, which wraps the plain Django
     request object and resolves the user only when first accessed. Because of this
     the middleware above only sees the initial anonymous user.
     """
-    def authenticate(self, request):
-        result = super().authenticate(request)
+    def __init__(self):
+        """
+        Dynamically import classes in the DRF setting _DEFAULT_AUTHENTICATION_CLASSES.
+        We use this to re-implement the authentication logic in DRF, since we need to
+        override DEFAULT_AUTHENTICATION_CLASSES to hook into it.
+        """
+        self.auth_classes = []
 
-        if result is not None:
-            user, _ = result
-            thread_local.current_user = user
+        for auth_class in settings.REST_FRAMEWORK["_DEFAULT_AUTHENTICATION_CLASSES"]:
+            if isinstance(auth_class, str):
+                auth_module, _, auth_class_name = auth_class.rpartition('.')
+                auth_module = importlib.import_module(auth_module)
+                auth_class = getattr(auth_module, auth_class_name)
+            
+            self.auth_classes.append(auth_class)
+
+    def authenticate(self, request):
+        result = False
+
+        for auth_class in self.auth_classes:
+            # Authenticate the same way DRF would do
+            auth_obj = auth_class()
+            result = auth_obj.authenticate(request)
+
+            # Remember authenticated user
+            if result is not None:
+                user, _ = result
+                thread_local.current_user = user
+                break
 
         return result
     

@@ -15,7 +15,7 @@ from ..models.auth_token       import AuthToken
 from ..models.user             import User
 from ..utils                   import permission_for_perm_string
 
-class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
+class AuthToken_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
     Tests for the `RoleViewSet` REST API.
     """
@@ -37,8 +37,9 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         self.user2    = User.objects.create_user("user2", password="password", email="user2@test.com")
         self.token2_1 = AuthToken.objects.create(user=self.user2, name="User 2 Token 1")
 
-        self.url_list     = reverse("auth_token-list")
-        self.url_token1_1 = reverse("auth_token-detail", args=(self.token1_1.id,))
+        self.url_list         = reverse("auth_token-list")
+        self.url_token1_1     = reverse("auth_token-detail", args=(self.token1_1.id,))
+        self.url_current_user = reverse("current_user-list")
 
         permissions = (
             permission_for_perm_string("openbook_auth.manage_own_authtoken"),
@@ -133,3 +134,24 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         })
 
         self.assertEqual(response.data["user"], "user1")
+    
+    def test_token_authentication_invalid_token(self):
+        """
+        Authentication with an invalid token must fail.
+        """
+        response = self.client.get(self.url_current_user, headers={
+            "Authorization": "Token NOT-FOUND"
+        })
+
+        self.assertStatusCode(response, 403)
+
+    def test_token_authentication_valid_token(self):
+        """
+        Authentication with a valid token must succeed.
+        """
+        response = self.client.get(self.url_current_user, headers={
+            "Authorization": f"Token {self.token1_1.token}"
+        })
+
+        self.assertStatusCode(response, 200)
+        self.assertEqual(response.data["username"], "user1")

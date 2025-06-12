@@ -160,8 +160,13 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 100,
 
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # Remember authenticated user (complimenting our custom middleware, extends DRF SessionAuthentication)
+        # Remember authenticated user (similar to our custom middleware)
         "openbook.auth.middleware.current_user.CurrentUserTrackingAuthentication",
+    ],
+
+    "_DEFAULT_AUTHENTICATION_CLASSES": [
+        "openbook.drf.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
 
     # Serve authenticated users only, checking Django object permissions (with
