@@ -100,8 +100,8 @@ class Migration(migrations.Migration):
                 ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='translations', to='openbook_auth.authconfig')),
             ],
             options={
-                'verbose_name': 'Translation',
-                'verbose_name_plural': 'Translations',
+                'verbose_name': 'Authentication Settings: Translation',
+                'verbose_name_plural': 'Authentication Settings: Translations',
                 'ordering': ('parent', 'language'),
                 'abstract': False,
             },
@@ -120,8 +120,8 @@ class Migration(migrations.Migration):
                 ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='translations', to='auth.permission', verbose_name='Permission')),
             ],
             options={
-                'verbose_name': 'Translated Permission',
-                'verbose_name_plural': 'Translated Permissions',
+                'verbose_name': 'Permission: Translation',
+                'verbose_name_plural': 'Permission: Translations',
                 'ordering': ('parent', 'language'),
                 'abstract': False,
             },

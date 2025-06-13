@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './AccessRequestsApi';
 export * from './AllowedRolePermissionsApi';
+export * from './AuthenticationTokensApi';
 export * from './AvailableLanguagesApi';
 export * from './CoursesApi';
 export * from './CurrentUserApi';

@@ -76,8 +76,8 @@ class AuthConfigText(UUIDMixin, TranslatableMixin):
     logout_next_text = models.CharField(verbose_name=_("Link Text after Logout"), max_length=255, null=False, blank=False)
 
     class Meta(TranslatableMixin.Meta):
-        verbose_name        = _("Translation")
-        verbose_name_plural = _("Translations")
+        verbose_name        = _("Authentication Settings: Translation")
+        verbose_name_plural = _("Authentication Settings: Translations")
 
         constraints = (
             models.UniqueConstraint(fields=("parent", "language"), name="unique_auth_config_translation"),

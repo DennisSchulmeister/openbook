@@ -47,3 +47,65 @@ class ValidateImage_Tests(TestCase):
 
         with self.assertRaises(ValidationError):
             validator(self.valid_image)
+
+class ValidateLibrary_Tests(TestCase):
+    """
+    Test cases for validator functions.
+    """
+    
+    def test_validate_library_fqn(self):
+        """
+        Library names should follow similar rules as on npmjs.org.
+        """
+        validators.validate_library_fqn("@test/test")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("a")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("a#b")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("@a")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("@a$b")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("@a/b")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("@a/b!c")
+        with self.assertRaises(ValidationError):
+            validators.validate_library_fqn("@a/b.c-xyz")
+        
+    def test_validate_version_number(self):
+        """
+        Version numbers use semver format.
+        """
+        validators.validate_version_number("1.2.3")
+        validators.validate_version_number("1.2.3-beta")
+        validators.validate_version_number("1.2.3+build")
+        validators.validate_version_number("1.2.3-beta+build")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_version_number("a")
+
+    def test_validate_version_expression(self):
+        """
+        Version expressions have an optional operator followed by a semver.
+        """
+        validators.validate_version_expression("1.2.3")
+        validators.validate_version_expression("<1.2.3")
+        validators.validate_version_expression(">1.2.3")
+        validators.validate_version_expression("<=1.2.3")
+        validators.validate_version_expression(">=1.2.3")
+        validators.validate_version_expression("!=1.2.3")
+        validators.validate_version_expression("!=1.2.3")
+
+        with self.assertRaises(ValidationError):
+            validators.validate_version_expression("@")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_version_expression("+1.2.3")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_version_expression("1,2,3")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_version_expression("#test")

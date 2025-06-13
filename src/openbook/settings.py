@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     # OpenBook Server (order determines order in the Django Admin)
     "openbook.core",
     "openbook.auth",
-    # "openbook.ui_library",
     "openbook.taxonomy",
     "openbook.textbook",
     "openbook.course",

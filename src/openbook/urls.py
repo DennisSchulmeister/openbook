@@ -22,7 +22,6 @@ from .core.routes                    import register_api_routes as register_core
 from .course.routes                  import register_api_routes as register_course_api_routes
 from .taxonomy.routes                import register_api_routes as register_taxonomy_api_routes
 from .textbook.routes                import register_api_routes as register_textbook_api_routes
-from .ui_library.routes              import register_api_routes as register_ui_library_api_routes
 
 # Overwrite permission class for API root view, since it uses the default from settings.py,
 # which would only allow authenticated users to see the API documentation.
@@ -34,7 +33,6 @@ register_core_api_routes(api_router, "core")
 register_course_api_routes(api_router, "course")
 register_taxonomy_api_routes(api_router, "taxonomy")
 register_textbook_api_routes(api_router, "textbook")
-register_ui_library_api_routes(api_router, "ui_library")
 
 urlpatterns = [
     # REST API

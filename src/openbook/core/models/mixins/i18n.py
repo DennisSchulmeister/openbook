@@ -33,7 +33,8 @@ class TranslatableMixin(models.Model):
         text3  = models.CharField(verbose_name=_("Some Text 3"), max_length=255, null=False, blank=False)
 
         class Meta(TranslatableMixin.Meta):
-            pass
+            verbose_name        = _("My Model: Translation")
+            verbose_name_plural = _("My Model: Translations")
     ```
 
     The translation model simply needs a foreign key to the parent model (usually called `parent`
@@ -44,11 +45,9 @@ class TranslatableMixin(models.Model):
     language = LanguageField()
 
     class Meta:
-        abstract            = True
-        verbose_name        = _("Translation")
-        verbose_name_plural = _("Translations")
-        ordering            = ("parent", "language")
-        indexes             = (models.Index(fields=("parent", "language")),)
+        abstract = True
+        ordering = ("parent", "language")
+        indexes  = (models.Index(fields=("parent", "language")),)
 
     def __str__(self):
         return self.language.name

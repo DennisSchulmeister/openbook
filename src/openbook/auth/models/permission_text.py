@@ -25,8 +25,8 @@ class PermissionText(UUIDMixin, TranslatableMixin):
     name   = models.CharField(verbose_name=_("Translated Name"), max_length=255, null=False, blank=False)
 
     class Meta(TranslatableMixin.Meta):
-        verbose_name        = _("Translated Permission")
-        verbose_name_plural = _("Translated Permissions")
+        verbose_name        = _("Permission: Translation")
+        verbose_name_plural = _("Permission: Translations")
 
         constraints = (
             models.UniqueConstraint(fields=("parent", "language"), name="unique_permission_text_translation"),

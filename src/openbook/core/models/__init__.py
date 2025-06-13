@@ -6,11 +6,15 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .file_uploads import AbstractFileModel
-from .file_uploads import MediaFile
-from .language     import Language
+from .file_uploads   import AbstractFileModel
+from .file_uploads   import MediaFile
+from .html_component import HTMLComponent
+from .html_component import HTMLComponentText
+from .html_library   import HTMLLibrary
+from .html_library   import HTMLLibraryText
+from .language       import Language
 # from .message      import Message
-from .site         import Site
+from .site           import Site
 
 from . import mixins
 from . import utils

@@ -1,5 +1,6 @@
 apis/AccessRequestsApi.ts
 apis/AllowedRolePermissionsApi.ts
+apis/AuthenticationTokensApi.ts
 apis/AvailableLanguagesApi.ts
 apis/CoursesApi.ts
 apis/CurrentUserApi.ts
@@ -18,6 +19,8 @@ models/AccessRequestDurationPeriod.ts
 models/AllowedPermission.ts
 models/AllowedRolePermission.ts
 models/AssignmentMethodEnum.ts
+models/AuthToken.ts
+models/AuthTokenUpdate.ts
 models/BlankEnum.ts
 models/Course.ts
 models/CurrentUser.ts
@@ -30,6 +33,7 @@ models/Language.ts
 models/MediaFile.ts
 models/PaginatedAccessRequestList.ts
 models/PaginatedAllowedRolePermissionList.ts
+models/PaginatedAuthTokenList.ts
 models/PaginatedCourseList.ts
 models/PaginatedCurrentUserList.ts
 models/PaginatedEnrollmentMethodList.ts
@@ -42,6 +46,7 @@ models/PaginatedRoleList.ts
 models/PaginatedSiteList.ts
 models/PaginatedUserList.ts
 models/PatchedAccessRequest.ts
+models/PatchedAuthTokenUpdate.ts
 models/PatchedCourse.ts
 models/PatchedCurrentUser.ts
 models/PatchedEnrollmentMethod.ts
