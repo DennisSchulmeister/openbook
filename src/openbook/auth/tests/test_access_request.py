@@ -13,6 +13,7 @@ from django.utils                  import timezone
 from unittest.mock                 import patch
 from rest_framework.reverse        import reverse
 
+from openbook.core.utils           import model_string_for_content_type
 from openbook.course.models.course import Course
 from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
@@ -20,7 +21,6 @@ from ..models.access_request       import AccessRequest
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
-from ..utils                       import model_string_for_content_type
 from ..utils                       import permission_for_perm_string
 
 class AccessRequest_Test_Mixin:

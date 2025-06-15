@@ -6,13 +6,13 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.contenttypes.models    import ContentType
-from django.core.files.uploadedfile        import SimpleUploadedFile
-from django.test                           import TestCase
-from uuid                                  import uuid4
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile     import SimpleUploadedFile
+from django.test                        import TestCase
+from uuid                               import uuid4
 
-from openbook.test                         import ModelViewSetTestMixin
-from ..models.file_uploads                 import MediaFile
+from openbook.test                      import ModelViewSetTestMixin
+from ..models.media_file                import MediaFile
 
 class MediaFile_Model_Tests(TestCase):
     """

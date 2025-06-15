@@ -12,6 +12,7 @@ from django.urls                   import reverse
 from django.test                   import TestCase
 from unittest.mock                 import patch
 
+from openbook.core.utils           import model_string_for_content_type
 from openbook.course.models.course import Course
 from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
@@ -19,7 +20,6 @@ from ..models.enrollment_method    import EnrollmentMethod
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
-from ..utils                       import model_string_for_content_type
 from ..utils                       import permission_for_perm_string
 
 class EnrollmentMethod_Test_Mixin:

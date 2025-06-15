@@ -8,7 +8,7 @@
 
 def calc_file_path(object, pk, filename):
     """
-    Callable for the `upload_to` property of `model.FileField`. Determines the upload bath
+    Callable for the `upload_to` property of `model.FileField`. Determines the upload path
     by joining the app label and model name.
 
     The first parameter normally is the model's `_meta` attribute. But `self.content_type`,

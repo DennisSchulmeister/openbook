@@ -9,7 +9,7 @@
 from django.core.exceptions import ValidationError
 from django.test            import TestCase
 
-from ..utils                import content_type_for_model_string
+from openbook.core.utils    import content_type_for_model_string
 from ..                     import validators
 
 class Validators_Test(TestCase):

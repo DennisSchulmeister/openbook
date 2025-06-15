@@ -14,7 +14,7 @@ from rest_framework.viewsets       import ModelViewSet
 from openbook.drf.flex_serializers import FlexFieldsModelSerializer
 from openbook.drf.viewsets         import ModelViewSetMixin
 from openbook.drf.viewsets         import with_flex_fields_parameters
-from ..models.file_uploads         import MediaFile
+from ..models.media_file           import MediaFile
 
 class MediaFileSerializer(FlexFieldsModelSerializer):
     __doc__ = "Media File"

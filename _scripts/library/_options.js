@@ -211,7 +211,7 @@ function copyToInstallLocation(cwd, zipfile, outdir) {
                 
                 let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
                 let packageJson     = JSON.parse(packageJsonFile);
-                let dstFile         = `${packageJson.name} ${packageJson.version}.zip`.replaceAll("/", " ");
+                let dstFile         = `${packageJson.name}_${packageJson.version}.zip`.replaceAll("/", "_");
 
                 shelljs.cp("-R", zipfile, path.join(outdir, dstFile));
             });

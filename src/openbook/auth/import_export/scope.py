@@ -10,8 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from import_export.widgets              import ForeignKeyWidget
 from import_export.widgets              import ManyToManyWidget
 
-from ..utils                            import content_type_for_model_string
-from ..utils                            import model_string_for_content_type
+from openbook.core.utils                import content_type_for_model_string
+from openbook.core.utils                import model_string_for_content_type
 
 class ScopeTypeForeignKeyWidget(ForeignKeyWidget):
     """

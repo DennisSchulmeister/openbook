@@ -9,17 +9,11 @@
 from django.contrib.contenttypes.models import ContentType
 
 from django.test                        import TestCase
-from openbook.course.models.course      import Course
 from openbook.test                      import ModelViewSetTestMixin
-from ..models.allowed_role_permission   import AllowedRolePermission
-from ..models.role                      import Role
-from ..utils                            import content_type_for_model_string
-from ..utils                            import model_string_for_content_type
-from ..utils                            import permission_for_perm_string
 
-class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
+class ScopeType_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     """
-    Tests for the `RoleViewSet` REST API.
+    Tests for the `ScopeTypeViewSet` REST API.
     """
     base_name = "scope_type"
     model     = ContentType

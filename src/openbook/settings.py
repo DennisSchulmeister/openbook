@@ -334,6 +334,25 @@ UNFOLD = {
     # from the menu structure, that are listed as the non-first tab here, to tidy up the menus.
     "TABS": [
         {
+            "ob_group_name": _("File Management"),
+            "models": [
+                "openbook_core.htmllibrary",
+                "openbook_core.mediafile",
+            ],
+            "items": [
+                {
+                    "title":      _("HTML Libraries"),
+                    "link":       reverse_lazy("admin:openbook_core_htmllibrary_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_core.view_htmllibrary"),
+                },
+                {
+                    "title":      _("Media Files"),
+                    "link":       reverse_lazy("admin:openbook_core_mediafile_changelist"),
+                    "permission": lambda req: req.user.has_perm("openbook_core.view_mediafile"),
+                },
+            ],
+        },
+        {
             "ob_group_name": _("Authentication Methods"),
             "models": [
                 "openbook_auth.authconfig",

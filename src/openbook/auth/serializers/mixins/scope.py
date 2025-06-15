@@ -13,10 +13,10 @@ from rest_flex_fields                   import FlexFieldsModelSerializer
 from rest_framework.serializers         import PrimaryKeyRelatedField
 from rest_framework.serializers         import RelatedField
 
+from openbook.core.utils                import content_type_for_model_string
+from openbook.core.utils                import model_string_for_content_type
 from ..user                             import UserField
 from ..permission                       import PermissionField
-from ...utils                           import content_type_for_model_string
-from ...utils                           import model_string_for_content_type
 from ...validators                      import validate_scope_type
 from ...validators                      import validate_permissions
 

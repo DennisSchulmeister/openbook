@@ -10,13 +10,13 @@ from django.core.exceptions        import ValidationError
 from django.db.utils               import IntegrityError
 from django.test                   import TestCase
 
+from openbook.core.utils           import model_string_for_content_type
 from openbook.course.models.course import Course
 from openbook.test                 import ModelViewSetTestMixin
 from ..middleware.current_user     import reset_current_user
 from ..models.role                 import Role
 from ..models.role_assignment      import RoleAssignment
 from ..models.user                 import User
-from ..utils                       import model_string_for_content_type
 
 class RoleAssignment_Test_Mixin:
     def setUp(self):

@@ -19,12 +19,12 @@ from rest_framework.serializers         import Serializer
 from rest_framework.serializers         import UUIDField
 from rest_framework.viewsets            import ViewSet
 
+from openbook.core.utils                import content_type_for_model_string
+from openbook.core.utils                import model_string_for_content_type
 from ..models.allowed_role_permission   import AllowedRolePermission
 from ..models.permission_text           import PermissionText
 from ..models.mixins.scope              import ScopedRolesMixin
 from ..utils                            import perm_string_for_permission
-from ..utils                            import content_type_for_model_string
-from ..utils                            import model_string_for_content_type
 
 class AllowedPermissionSerializer(Serializer):
     id    = IntegerField()

@@ -6,9 +6,9 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from .viewsets.file_uploads import MediaFileViewSet
-from .viewsets.language     import LanguageViewSet
-from .viewsets.site         import SiteViewSet
+from .viewsets.media_file import MediaFileViewSet
+from .viewsets.language   import LanguageViewSet
+from .viewsets.site       import SiteViewSet
 
 def register_api_routes(router, prefix):
     router.register(f"{prefix}/languages",   LanguageViewSet,  basename="language")

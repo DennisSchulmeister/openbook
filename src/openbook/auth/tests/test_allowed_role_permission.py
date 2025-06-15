@@ -9,12 +9,12 @@
 from django.core.exceptions           import ValidationError
 from django.test                      import TestCase
 
+from openbook.core.utils              import content_type_for_model_string
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user
 from ..models.allowed_role_permission import AllowedRolePermission
 from ..utils                          import permission_for_perm_string
 from ..validators                     import validate_permissions
-from ..utils                          import content_type_for_model_string
 
 class AllowedRolePermissionTextest_Mixin:
     def setUp(self):
