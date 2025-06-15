@@ -35,15 +35,15 @@ class AccessRequestSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = AccessRequest
 
-        fields = (
+        fields = [
             "id", "scope_type", "scope_uuid",
             "user", "role",
             "end_date", "duration_period", "duration_value",
             "decision", "decision_date",
             "created_by", "created_at", "modified_by", "modified_at",
-        )
+        ]
 
-        read_only_fields = ("id", "decision_date", "created_at", "modified_at")
+        read_only_fields = ["id", "decision_date", "created_at", "modified_at"]
 
         expandable_fields = {
             "user":        "openbook.auth.viewsets.user.UserSerializer",
@@ -86,12 +86,12 @@ class AccessRequestViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = AccessRequest.objects.all()
     filterset_class  = AccessRequestFilter
     serializer_class = AccessRequestSerializer
-    ordering         = ("scope_type", "scope_uuid", "user__username", "role__slug")
+    ordering         = ["scope_type", "scope_uuid", "user__username", "role__slug"]
 
-    search_fields = (
+    search_fields = [
         "user__username", "user__first_name", "user__last_name", "user__email",
-        "role__slug", "role__name", "role__description"
-    )
+        "role__slug", "role__name", "role__description",
+    ]
 
     @extend_schema(
         operation_id = "auth_access_requests_accept",

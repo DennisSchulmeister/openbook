@@ -22,7 +22,6 @@ class Utils_Test(TestCase):
         self.model_string = "admin.logentry"
         self.perm_string  = "admin.view_logentry"
         self.permission   = Permission.objects.get(codename="view_logentry", content_type__app_label="admin")
-        self.content_type = ContentType.objects.get(app_label="admin", model="logentry")
 
     def test_for_permission(self):
         """
@@ -56,23 +55,5 @@ class Utils_Test(TestCase):
         with self.assertRaises(Permission.DoesNotExist):
             utils.permission_for_perm_string("admin.invalid_permission")
 
-    def test_for_content_type(self):
-        """
-        Test functions that take a content type object.
-        """
-        self.assertEqual(utils.model_string_for_content_type(self.content_type), self.model_string)
-        self.assertEqual(utils.model_string_for_content_type(None), "")
-
-    def test_for_model_string(self):
-        """
-        Test functions that take a model string.
-        """
-        self.assertIsInstance(utils.content_type_for_model_string(self.model_string), ContentType)
-
-        with self.assertRaises(ContentType.DoesNotExist):
-            utils.content_type_for_model_string("admin.invalid_model")
-        
-        with self.assertRaises(ContentType.DoesNotExist):
-            utils.content_type_for_model_string("invalid_app.logentry")
 
 

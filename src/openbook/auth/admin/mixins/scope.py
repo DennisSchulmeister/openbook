@@ -25,11 +25,11 @@ from ...models.role                     import Role
 from ...validators                      import validate_permissions
 from ...validators                      import validate_scope_type
 
-scope_type_filter = ("scope_type", RelatedOnlyFieldListFilter)
+scope_type_filter = ["scope_type", RelatedOnlyFieldListFilter]
 
 permissions_fieldset = (_("Permissions"), {
-    "classes": ("tab",),
-    "fields": ("owner", "public_permissions"),
+    "classes": ["tab"],
+    "fields": ["owner", "public_permissions"],
 })
 
 class ScopedRolesResourceMixin(ImportExportModelResource):
@@ -43,7 +43,7 @@ class ScopedRolesResourceMixin(ImportExportModelResource):
     public_permissions = Field(attribute="public_permissions", widget=PermissionManyToManyWidget())
 
     class Meta:
-        fields = ("owner", "public_permissions")
+        fields = ["owner", "public_permissions"]
 
 class ScopeResourceMixin(ImportExportModelResource):
     """
@@ -54,7 +54,7 @@ class ScopeResourceMixin(ImportExportModelResource):
     scope_id   = Field(attribute="scope_uuid", column_name="scope_id")
 
     class Meta:
-        fields = ("scope_type", "scope_id")
+        fields = ["scope_type", "scope_id"]
     
     def dehydrate_scope_id(self, instance) -> str:
         """
@@ -101,9 +101,9 @@ class ScopeFormMixin(ModelForm):
 
     class Media:
         css = {
-            "all": ("openbook_auth/scope_uuid_autoload.css",)
+            "all": ["openbook_auth/scope_uuid_autoload.css"]
         }
-        js  = ("openbook_auth/scope_uuid_autoload.js",)
+        js  = ["openbook_auth/scope_uuid_autoload.js"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -159,7 +159,7 @@ class ScopeRoleFieldFormMixin(ModelForm):
     """
     class Media:
         css = {"all": ()}
-        js  = ("openbook_auth/scope_roles_autoload.js",)
+        js  = ["openbook_auth/scope_roles_autoload.js"]
 
 class ScopeRoleFieldInlineMixin(TabularInline):
     """

@@ -28,13 +28,13 @@ class CourseResource(ScopedRolesResourceMixin, ImportExportModelResource):
 
     class Meta:
         model = Course
-        fields = (
+        fields = [
             "id", "delete",
             "slug", "name",
             "description", "text_format", 
             *ScopedRolesResourceMixin.Meta.fields,
             "is_template"
-        )
+        ]
 
 class CourseForm(ScopedRolesFormMixin):
     class Meta:
@@ -44,40 +44,40 @@ class CourseForm(ScopedRolesFormMixin):
 class CourseAdmin(CustomModelAdmin):
     model               = Course
     form                = CourseForm
-    resource_classes    = (CourseResource,)
-    list_display        = ("name", "slug", "is_template", "owner", *created_modified_by_fields)
-    list_display_links  = ("name", "slug", "owner")
-    list_filter         = ("name", "is_template", "owner", *created_modified_by_fields)
-    search_fields       = ("name", "slug", "owner", "description")
-    ordering            = ("name", "slug")
-    readonly_fields     = (*created_modified_by_fields,)
+    resource_classes    = [CourseResource]
+    list_display        = ["name", "slug", "is_template", "owner", *created_modified_by_fields]
+    list_display_links  = ["name", "slug", "owner"]
+    list_filter         = ["name", "is_template", "owner", *created_modified_by_fields]
+    search_fields       = ["name", "slug", "owner", "description"]
+    ordering            = ["name", "slug"]
+    readonly_fields     = [*created_modified_by_fields]
     prepopulated_fields = {"slug": ["name"]}
-    filter_horizontal   = ("public_permissions",)
+    filter_horizontal   = ["public_permissions",]
     _inlines            = (RoleInline, RoleAssignmentInline, EnrollmentMethodInline, AccessRequestInline)
-    _add_inlines        = ()
+    _add_inlines        = []
 
     def get_inlines(self, request, obj):
         return self._inlines if obj else self._add_inlines
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": (("name", "slug", "is_template")) # License, Image
+            "fields": [("name", "slug", "is_template")] # License, Image
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"), # Description, Text Format, AI Notes
+            "classes": ["tab"],
+            "fields": ["description", "text_format"], # Description, Text Format, AI Notes
         }),
         permissions_fieldset,
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": (("name", "slug", "is_template")) # License, Image
+            "fields": [("name", "slug", "is_template")] # License, Image
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"), # Description, Text Format, AI Notes
+            "classes": ["tab"],
+            "fields": ["description", "text_format"], # Description, Text Format, AI Notes
         }),
         permissions_fieldset,
-    )
+    ]

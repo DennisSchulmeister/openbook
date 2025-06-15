@@ -22,7 +22,7 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     search_string     = "test"
     search_count      = 1
     sort_field        = "brand_color"
-    expandable_fields = ("auth_config",)
+    expandable_fields = ["auth_config"]
 
     def setUp(self):
         super().setUp()
@@ -65,7 +65,7 @@ class Site_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             "status_code":        200,      # Okay
             "url_suffix":         "health",
             "requires_auth":      False,
-            "model_permission":   (),
-            "assertions":         (assertHealthStatus,),
+            "model_permission":   [],
+            "assertions":         [assertHealthStatus],
         },
     }

@@ -104,19 +104,19 @@ export interface PatchedHTMLLibrary {
      * @type {Array<string>}
      * @memberof PatchedHTMLLibrary
      */
-    translations?: Array<string>;
+    readonly translations?: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof PatchedHTMLLibrary
      */
-    versions?: Array<string>;
+    readonly versions?: Array<string>;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof PatchedHTMLLibrary
      */
-    createdBy?: number | null;
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -125,10 +125,10 @@ export interface PatchedHTMLLibrary {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof PatchedHTMLLibrary
      */
-    modifiedBy?: number | null;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -181,7 +181,7 @@ export function PatchedHTMLLibraryToJSON(json: any): PatchedHTMLLibrary {
     return PatchedHTMLLibraryToJSONTyped(json, false);
 }
 
-export function PatchedHTMLLibraryToJSONTyped(value?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedHTMLLibraryToJSONTyped(value?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -198,10 +198,6 @@ export function PatchedHTMLLibraryToJSONTyped(value?: Omit<PatchedHTMLLibrary, '
         'readme': value['readme'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
         'published': value['published'],
-        'translations': value['translations'],
-        'versions': value['versions'],
-        'created_by': value['createdBy'],
-        'modified_by': value['modifiedBy'],
     };
 }
 

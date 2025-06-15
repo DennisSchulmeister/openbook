@@ -31,13 +31,13 @@ class AccessRequestResource(ScopeResourceMixin):
 
     class Meta:
         model = AccessRequest
-        fields = (
+        fields = [
             "id", "delete",
             *ScopeResourceMixin.Meta.fields,
             "role", "user",
             "duration_value", "duration_period", "end_date",
             "decision",
-        )
+        ]
 
 class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     class Meta:
@@ -46,17 +46,17 @@ class AccessRequestForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     
     class Media:
         css = {
-            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]),
+            "all": [*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]],
         }
-        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js)
+        js = [*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js]
 
 class AccessRequestInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model               = AccessRequest
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    fields              = ("user", "role", "decision", "decision_date")
-    ordering            = ("user", "role")
-    readonly_fields     = ("user", "role", "decision_date")
+    fields              = ["user", "role", "decision", "decision_date"]
+    ordering            = ["user", "role"]
+    readonly_fields     = ["user", "role", "decision_date"]
     extra               = 0
     show_change_link    = True
     tab                 = True
@@ -67,23 +67,23 @@ class AccessRequestInline(ScopeRoleFieldInlineMixin, GenericTabularInline, Tabul
 class AccessRequestAdmin(CustomModelAdmin):
     model              = AccessRequest
     form               = AccessRequestForm
-    resource_classes   = (AccessRequestResource,)
-    list_display       = ("scope_type", "scope_object", "role", "user", "decision", "decision_date", *created_modified_by_fields)
-    list_display_links = ("scope_type", "scope_object", "role", "user")
-    ordering           = ("scope_type", "scope_uuid", "role", "user")
-    search_fields      = ("role__name", "user__username", "user__first_name", "user__last_name")
-    readonly_fields    = ("decision_date", *created_modified_by_fields,)
+    resource_classes   = [AccessRequestResource]
+    list_display       = ["scope_type", "scope_object", "role", "user", "decision", "decision_date", *created_modified_by_fields]
+    list_display_links = ["scope_type", "scope_object", "role", "user"]
+    ordering           = ["scope_type", "scope_uuid", "role", "user"]
+    search_fields      = ["role__name", "user__username", "user__first_name", "user__last_name"]
+    readonly_fields    = ["decision_date", *created_modified_by_fields]
 
-    list_filter = (
+    list_filter = [
         scope_type_filter,
         ("role", RelatedOnlyFieldListFilter),
         ("user", RelatedOnlyFieldListFilter),
         "decision",
         "decision_date",
         *created_modified_by_filter
-    )
+    ]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
             "fields": (
                 ("scope_type", "scope_uuid"),
@@ -105,27 +105,27 @@ class AccessRequestAdmin(CustomModelAdmin):
             ),
         }),
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("role", "user"),
-            ),
+            ],
         }),
         (_("Validity"), {
-            "classes": ("tab",),
+            "classes": ["tab"],
             "description": _("Leave empty to request access for an unlimited period."),
-            "fields": (
+            "fields": [
                 ("duration_value", "duration_period"),
                 "end_date"
-            ),
+            ],
         }),
         (_("Decision"), {
-            "classes": ("tab",),
-            "fields": (
+            "classes": ["tab"],
+            "fields": [
                 ("decision", "decision_date"),
-            ),
+            ],
         }),
-    )
+    ]

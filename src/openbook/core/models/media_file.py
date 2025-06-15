@@ -29,8 +29,8 @@ class MediaFile(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     class Meta(FileUploadMixin.Meta):
         verbose_name        = _("Media File")
         verbose_name_plural = _("Media Files")
-        ordering            = ("content_type", "object_id", "file_name")
-        indexes             = (models.Index(fields=("content_type", "object_id", "file_name")),)
+        ordering            = ["content_type", "object_id", "file_name"]
+        indexes             = [models.Index(fields=["content_type", "object_id", "file_name"])]
     
     def calc_file_path_hook(self, filename):
         return calc_file_path(self.content_type, self.id, filename)

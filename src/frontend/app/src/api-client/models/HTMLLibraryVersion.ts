@@ -54,7 +54,7 @@ export interface HTMLLibraryVersion {
      * @type {string}
      * @memberof HTMLLibraryVersion
      */
-    fileData: string;
+    fileData?: string;
     /**
      * 
      * @type {string}
@@ -75,10 +75,10 @@ export interface HTMLLibraryVersion {
     mimeType?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof HTMLLibraryVersion
      */
-    createdBy?: number | null;
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -87,10 +87,10 @@ export interface HTMLLibraryVersion {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof HTMLLibraryVersion
      */
-    modifiedBy?: number | null;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -106,8 +106,9 @@ export function instanceOfHTMLLibraryVersion(value: object): value is HTMLLibrar
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('parent' in value) || value['parent'] === undefined) return false;
     if (!('version' in value) || value['version'] === undefined) return false;
-    if (!('fileData' in value) || value['fileData'] === undefined) return false;
+    if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
+    if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
     return true;
 }
@@ -127,13 +128,13 @@ export function HTMLLibraryVersionFromJSONTyped(json: any, ignoreDiscriminator: 
         'version': json['version'],
         'dependencies': json['dependencies'] == null ? undefined : json['dependencies'],
         'frontendUrl': json['frontend_url'] == null ? undefined : json['frontend_url'],
-        'fileData': json['file_data'],
+        'fileData': json['file_data'] == null ? undefined : json['file_data'],
         'fileName': json['file_name'] == null ? undefined : json['file_name'],
         'fileSize': json['file_size'] == null ? undefined : json['file_size'],
         'mimeType': json['mime_type'] == null ? undefined : json['mime_type'],
-        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -142,7 +143,7 @@ export function HTMLLibraryVersionToJSON(json: any): HTMLLibraryVersion {
     return HTMLLibraryVersionToJSONTyped(json, false);
 }
 
-export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, 'id'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -157,8 +158,6 @@ export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, '
         'file_name': value['fileName'],
         'file_size': value['fileSize'],
         'mime_type': value['mimeType'],
-        'created_by': value['createdBy'],
-        'modified_by': value['modifiedBy'],
     };
 }
 

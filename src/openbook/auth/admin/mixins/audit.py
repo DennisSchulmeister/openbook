@@ -9,16 +9,16 @@
 from django.contrib.admin     import RelatedOnlyFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
-created_modified_by_fields = ("created_by", "created_at", "modified_by", "modified_at")
+created_modified_by_fields = ["created_by", "created_at", "modified_by", "modified_at"]
 
-created_modified_by_filter = (
+created_modified_by_filter = [
     ("created_by", RelatedOnlyFieldListFilter),
     "created_at",
     ("modified_by", RelatedOnlyFieldListFilter),
     "modified_at"
-)
+]
 
 created_modified_by_fieldset = (_("Audit Trail"), {
-    "classes": ("tab",),
-    "fields": (("created_by", "created_at"), ("modified_by", "modified_at")),
+    "classes": ["tab"],
+    "fields": [("created_by", "created_at"), ("modified_by", "modified_at")],
 })

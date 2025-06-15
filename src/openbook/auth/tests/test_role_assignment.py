@@ -71,7 +71,7 @@ class RoleAssignment_ViewSet_Tests(ModelViewSetTestMixin, RoleAssignment_Test_Mi
     search_string     = "test-new"
     search_count      = 2
     sort_field        = "user"
-    expandable_fields = ("user", "role", "enrollment_method", "access_request", "created_by", "modified_by")
+    expandable_fields = ["user", "role", "enrollment_method", "access_request", "created_by", "modified_by"]
 
     def setUp(self):
         super().setUp()

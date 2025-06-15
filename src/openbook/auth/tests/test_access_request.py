@@ -304,7 +304,7 @@ class AccessRequest_ViewSet_Tests(ModelViewSetTestMixin, AccessRequest_Test_Mixi
     search_string     = "student"
     search_count      = 1
     sort_field        = "decision"
-    expandable_fields = ("user", "role", "created_by", "modified_by")
+    expandable_fields = ["user", "role", "created_by", "modified_by"]
 
     def setUp(self):
         super().setUp()

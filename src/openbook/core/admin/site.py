@@ -15,21 +15,21 @@ from ..models.site            import Site
 class SiteResource(ImportExportModelResource):
     class Meta:
         model = Site
-        fields = ("id", "delete", "domain", "name", "short_name", "about_url", "brand_color")
+        fields = ["id", "delete", "domain", "name", "short_name", "about_url", "brand_color"]
 
 class SiteAdmin(CustomModelAdmin):
     model              = Site
-    resource_classes   = (SiteResource,)
-    list_display       = ("id", "domain", "name", "short_name")
-    list_display_links = ("id", "domain",)
-    search_fields      = ("domain", "name", "short_name")
+    resource_classes   = [SiteResource]
+    list_display       = ["id", "domain", "name", "short_name"]
+    list_display_links = ["id", "domain"]
+    search_fields      = ["domain", "name", "short_name"]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("domain", "about_url",),
+            "fields": ["domain", "about_url"],
         }),
         (_("Theming"), {
-            "classes": ("tab",),
-            "fields": ("name", "short_name", "brand_color",),
+            "classes": ["tab"],
+            "fields": ["name", "short_name", "brand_color"],
         }),
-    )
+    ]

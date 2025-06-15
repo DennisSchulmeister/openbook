@@ -19,18 +19,18 @@ class AnonymousPermissionResource(ImportExportModelResource):
 
     class Meta:
         model = AnonymousPermission
-        fields = ("id", "delete", "permission")
+        fields = ["id", "delete", "permission"]
 
 class AnonymousPermissionAdmin(CustomModelAdmin):
     model              = AnonymousPermission
-    resource_classes   = (AnonymousPermissionResource,)
-    list_display       = ("perm_name", "perm")
-    list_display_links = ("perm_name", "perm")
-    list_filter        = (("permission", RelatedOnlyFieldListFilter),)
-    search_fields      = ("permission__codename",)
+    resource_classes   = [AnonymousPermissionResource]
+    list_display       = ["perm_name", "perm"]
+    list_display_links = ["perm_name", "perm"]
+    list_filter        = [("permission", RelatedOnlyFieldListFilter)]
+    search_fields      = ["permission__codename"]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("permission",)
+            "fields": ["permission"]
         }),
-    )
+    ]

@@ -32,18 +32,18 @@ class RoleSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = Role
 
-        fields = (
+        fields = [
             "id", "scope_type", "scope_uuid", "slug",
             "name", "description", "text_format",
             "priority", "is_active", "permissions",
             "role_assignments", "enrollment_methods", "access_requests",
             "created_by", "created_at", "modified_by", "modified_at",
-        )
+        ]
 
-        read_only_fields = ("id", "created_at", "modified_at")
+        read_only_fields = ["id", "created_at", "modified_at"]
 
         expandable_fields = {
-            "permissions":        ("openbook.auth.viewsets.permission.PermissionSerializer", {"many": True}),
+            "permissions":        ("openbook.auth.viewsets.permission.PermissionSerializer",              {"many": True}),
             "created_by":         "openbook.auth.viewsets.user.UserSerializer",
             "modified_by":        "openbook.auth.viewsets.user.UserSerializer",
             "role_assignments":   ("openbook.auth.viewsets.role_assignment.RoleAssignmentSerializer",     {"many": True}),
@@ -86,5 +86,5 @@ class RoleViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = Role.objects.all()
     filterset_class  = RoleFilter
     serializer_class = RoleSerializer
-    ordering         = ("scope_type", "scope_uuid", "slug",)
-    search_fields    = ("slug", "name", "description")
+    ordering         = ["scope_type", "scope_uuid", "slug"]
+    search_fields    = ["slug", "name", "description"]

@@ -38,15 +38,15 @@ class EnrollmentMethodSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = EnrollmentMethod
 
-        fields = (
+        fields = [
             "id", "scope_type", "scope_uuid",
             "name", "description", "text_format",
             "role", "end_date", "duration_period", "duration_value",
             "passphrase", "is_active",
             "created_by", "created_at", "modified_by", "modified_at",
-        )
+        ]
 
-        read_only_fields = ("id", "created_at", "modified_at")
+        read_only_fields = ["id", "created_at", "modified_at"]
 
         expandable_fields = {
             "role":        "openbook.auth.viewsets.role.RoleSerializer",
@@ -83,8 +83,8 @@ class EnrollmentMethodViewSet(ModelViewSetMixin, ModelViewSet):
     queryset         = EnrollmentMethod.objects.all()
     filterset_class  = EnrollmentMethodFilter
     serializer_class = EnrollmentMethodSerializer
-    ordering         = ("scope_type", "scope_uuid", "name", "role__slug")
-    search_fields    = ("name", "description", "role__slug", "role__name", "role__description")
+    ordering         = ["scope_type", "scope_uuid", "name", "role__slug"]
+    search_fields    = ["name", "description", "role__slug", "role__name", "role__description"]
 
     @extend_schema(
         operation_id = "auth_enrollment_method_enroll",

@@ -38,15 +38,15 @@ class PermissionSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = Permission
 
-        fields = (
+        fields = [
             "id",
             "name", "codename",
             "perm_string", "perm_display_name",
             "app", "app_display_name",
             "model", "model_display_name",
-        )
+        ]
 
-        read_only_fields  = ("id",)
+        read_only_fields  = ["id"]
         expandable_fields = {}
     
     @extend_schema_field(str)
@@ -81,7 +81,7 @@ class PermissionFilter(FilterSet):
 
     class Meta:
         model  = Permission
-        fields = ("app", "model", "codename")
+        fields = ["app", "model", "codename"]
     
     def filter_perm_string(self, queryset, name, value):
         try:
@@ -104,5 +104,5 @@ class PermissionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelVie
     queryset         = Permission.objects.all()
     filterset_class  = PermissionFilter
     serializer_class = PermissionSerializer
-    ordering         = ("content_type__app_label", "codename")
-    search_fields    = ("content_type__app_label", "codename")
+    ordering         = ["content_type__app_label", "codename"]
+    search_fields    = ["content_type__app_label", "codename"]

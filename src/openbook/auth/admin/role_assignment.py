@@ -33,12 +33,12 @@ class RoleAssignmentResource(ScopeResourceMixin):
 
     class Meta:
         model = RoleAssignment
-        fields = (
+        fields = [
             "id", "delete",
             *ScopeResourceMixin.Meta.fields,
             "role", "user", "is_active",
             "start_date", "end_date",
-        )
+        ]
 
 class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     class Meta:
@@ -47,17 +47,17 @@ class RoleAssignmentForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     
     class Media:
         css = {
-            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]),
+            "all": [*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]],
         }
-        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js)
+        js = [*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js]
 
 class RoleAssignmentInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model            = RoleAssignment
     ct_field         = "scope_type"
     ct_fk_field      = "scope_uuid"
-    fields           = ("role", "user", "is_active", "assignment_method", "enrollment_method", "access_request")
-    ordering         = ("role", "user")
-    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
+    fields           = ["role", "user", "is_active", "assignment_method", "enrollment_method", "access_request"]
+    ordering         = ["role", "user"]
+    readonly_fields  = ["assignment_method", "enrollment_method", "access_request"]
     extra            = 0
     show_change_link = True
     tab              = True
@@ -66,52 +66,52 @@ class RoleAssignmentAdmin(CustomModelAdmin):
     model              = RoleAssignment
     form               = RoleAssignmentForm
     resource_classes   = (RoleAssignmentResource,)
-    list_display       = ("scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields)
-    list_display_links = ("scope_type", "scope_object", "role", "user", "assignment_method")
-    ordering           = ("scope_type", "scope_uuid", "role", "user")
-    search_fields      = ("role__name", "user__username", "user__first_name", "user__last_name")
-    readonly_fields    = ("assignment_method", "enrollment_method", "access_request", *created_modified_by_fields,)
+    list_display       = ["scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields]
+    list_display_links = ["scope_type", "scope_object", "role", "user", "assignment_method"]
+    ordering           = ["scope_type", "scope_uuid", "role", "user"]
+    search_fields      = ["role__name", "user__username", "user__first_name", "user__last_name"]
+    readonly_fields    = ["assignment_method", "enrollment_method", "access_request", *created_modified_by_fields]
 
-    list_filter = (
+    list_filter = [
         scope_type_filter,
         ("role", RelatedOnlyFieldListFilter),
         ("user", RelatedOnlyFieldListFilter),
         "assignment_method",
         "is_active",
         *created_modified_by_filter
-    )
+    ]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("role", "user"),
                 "is_active"
-            ),
+            ],
         }),
         (_("Validity"), {
-            "classes": ("tab",),
+            "classes": ["tab"],
             "description": _("Leave empty to make the assignment valid for an unlimited period."),
-            "fields": ("start_date", "end_date"),
+            "fields": ["start_date", "end_date"],
         }),
         (_("Source"), {
-            "classes": ("tab",),
-            "fields": ("assignment_method", "enrollment_method", "access_request"),
+            "classes": ["tab"],
+            "fields": ["assignment_method", "enrollment_method", "access_request"],
         }),
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("role", "user"),
                 "is_active"
-            ),
+            ],
         }),
         (_("Validity"), {
-            "classes": ("tab",),
+            "classes": ["tab"],
             "description": _("Leave empty to make the assignment valid for an unlimited period."),
-            "fields": ("start_date", "end_date"),
+            "fields": ["start_date", "end_date"],
         }),
-    )
+    ]

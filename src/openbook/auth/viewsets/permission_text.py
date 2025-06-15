@@ -38,7 +38,7 @@ class PermissionTextFilter(FilterSet):
 
     class Meta:
         model  = PermissionText
-        fields = ("app", "model", "codename", "language", "name")
+        fields = ["app", "model", "codename", "language", "name"]
     
     def filter_perm_string(self, queryset, name, value):
         try:
@@ -61,10 +61,10 @@ class PermissionTextViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyMode
     queryset         = PermissionText.objects.all()
     filterset_class  = PermissionTextFilter
     serializer_class = PermissionTextSerializer
-    ordering         = ("parent__content_type__app_label", "parent__codename", "language__language")
+    ordering         = ["parent__content_type__app_label", "parent__codename", "language__language"]
 
-    search_fields = (
+    search_fields = [
         "parent__content_type__app_label", "parent__codename",
         "language__language", "language__name",
         "name",
-    )
+    ]

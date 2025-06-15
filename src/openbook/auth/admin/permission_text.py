@@ -22,25 +22,25 @@ class PermissionTextResource(ImportExportModelResource):
 
     class Meta:
         model  = PermissionText
-        fields = ("id", "delete", "parent", "language", "name")
+        fields = ["id", "delete", "parent", "language", "name"]
 
 class PermissionTextAdmin(CustomModelAdmin):
     model              = PermissionText
-    resource_classes   = (PermissionTextResource,)
-    list_display       = ("appname", "perm_name", "perm", "language", "name")
-    list_display_links = ("appname", "perm_name", "perm", "language")
-    list_editable      = ("name",)
-    search_fields      = ("appname", "perm_name", "perm", "language", "name")
-    readonly_fields    = ("appname", "perm_name", "perm")
+    resource_classes   = [PermissionTextResource]
+    list_display       = ["appname", "perm_name", "perm", "language", "name"]
+    list_display_links = ["appname", "perm_name", "perm", "language"]
+    list_editable      = ["name"]
+    search_fields      = ["appname", "perm_name", "perm", "language", "name"]
+    readonly_fields    = ["appname", "perm_name", "perm"]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("perm", ("appname", "perm_name"), ("language", "name"))
+            "fields": ["perm", ("appname", "perm_name"), ("language", "name")]
         }),
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": ("parent", ("language", "name"))
+            "fields": ["parent", ("language", "name")]
         }),
-    )
+    ]

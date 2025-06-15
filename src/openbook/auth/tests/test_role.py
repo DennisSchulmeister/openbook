@@ -30,7 +30,7 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     search_string     = "teacher"
     search_count      = 1
     sort_field        = "name"
-    expandable_fields = ("permissions[]", "created_by", "modified_by", "role_assignments[]", "enrollment_methods[]", "access_requests[]")
+    expandable_fields = ["permissions[]", "created_by", "modified_by", "role_assignments[]", "enrollment_methods[]", "access_requests[]"]
 
     def setUp(self):
         super().setUp()

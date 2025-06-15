@@ -124,8 +124,8 @@ class Migration(migrations.Migration):
                 ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='openbook_core.language')),
             ],
             options={
-                'verbose_name': 'HTML Component: Translated Text',
-                'verbose_name_plural': 'HTML Component: Translated Texts',
+                'verbose_name': 'HTML Component Text',
+                'verbose_name_plural': 'HTML Component Texts',
                 'ordering': ('parent', 'language'),
                 'abstract': False,
             },

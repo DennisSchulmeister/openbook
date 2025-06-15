@@ -75,10 +75,10 @@ export interface PatchedHTMLLibraryVersion {
     mimeType?: string;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof PatchedHTMLLibraryVersion
      */
-    createdBy?: number | null;
+    readonly createdBy?: string;
     /**
      * 
      * @type {Date}
@@ -87,10 +87,10 @@ export interface PatchedHTMLLibraryVersion {
     readonly createdAt?: Date | null;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof PatchedHTMLLibraryVersion
      */
-    modifiedBy?: number | null;
+    readonly modifiedBy?: string;
     /**
      * 
      * @type {Date}
@@ -136,7 +136,7 @@ export function PatchedHTMLLibraryVersionToJSON(json: any): PatchedHTMLLibraryVe
     return PatchedHTMLLibraryVersionToJSONTyped(json, false);
 }
 
-export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -151,8 +151,6 @@ export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLib
         'file_name': value['fileName'],
         'file_size': value['fileSize'],
         'mime_type': value['mimeType'],
-        'created_by': value['createdBy'],
-        'modified_by': value['modifiedBy'],
     };
 }
 

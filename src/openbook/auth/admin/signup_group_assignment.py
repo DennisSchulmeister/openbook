@@ -23,11 +23,11 @@ class SignupGroupAssignmentResource(ImportExportModelResource):
 
     class Meta:
         model  = SignupGroupAssignment
-        fields = (
+        fields = [
             "id", "delete",
             "site", "social_app", "groups",
             "name", "description", "text_format",
-        )
+        ]
 
     @classmethod
     def get_display_name(cls):
@@ -36,10 +36,10 @@ class SignupGroupAssignmentResource(ImportExportModelResource):
 class SecurityAssertionResource(ImportExportModelResource):
     class Meta:
         model  = SecurityAssertion
-        fields = (
+        fields = [
             "id", "delete",
             "parent", "name", "value", "match_strategy",
-        )
+        ]
     
     @classmethod
     def get_display_name(cls):
@@ -54,25 +54,25 @@ class SecurityAssertionResource(ImportExportModelResource):
 
 class _SecurityAssertionInline(TabularInline):
     model            = SecurityAssertion
-    fields           = ("name", "value", "match_strategy")
-    ordering         = ("name",)
+    fields           = ["name", "value", "match_strategy"]
+    ordering         = ["name"]
     extra            = 0
     show_change_link = False
     tab              = True
 
 class SignupGroupAssignmentAdmin(CustomModelAdmin):
     model              = SignupGroupAssignment
-    resource_classes   = (SignupGroupAssignmentResource, SecurityAssertionResource)
-    ordering           = ("name",)
-    list_display       = ("name", "site__domain", "site__name", "social_app")
-    list_display_links = ("name", "site__domain", "site__name", "social_app")
-    search_fields      = (
+    resource_classes   = [SignupGroupAssignmentResource, SecurityAssertionResource]
+    ordering           = ["name"]
+    list_display       = ["name", "site__domain", "site__name", "social_app"]
+    list_display_links = ["name", "site__domain", "site__name", "social_app"]
+    search_fields      = [
         "site__domain", "site__name", "site__short_name",
         "social_app__name", "social_app__provider_id", "social_app__client_id",
         "name", "description"
-    )
-    filter_horizontal  = ("groups",)
-    inlines            = (_SecurityAssertionInline,)
+    ]
+    filter_horizontal  = ["groups"]
+    inlines            = [_SecurityAssertionInline]
 
     def get_queryset(self, request):
         """
@@ -84,16 +84,16 @@ class SignupGroupAssignmentAdmin(CustomModelAdmin):
             "assertions",
         )
     
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("name", "site", "social_app", "is_active")
+            "fields": ["name", "site", "social_app", "is_active"]
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         (_("Groups"), {
-            "classes": ("tab",),
-            "fields": ("groups",),
+            "classes": ["tab"],
+            "fields": ["groups"],
         }),
-    )
+    ]

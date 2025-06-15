@@ -63,13 +63,13 @@ class ScopeTypeViewSet(ViewSet):
     """
     __doc__ = "Permission Scopes"
     
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     pagination_class   = None
-    filter_backends    = ()
+    filter_backends    = []
     queryset           = ContentType.objects.all()
     lookup_field       = "id"
     lookup_value_regex = '[^/]+'
-    ordering           = ("id",)
+    ordering           = ["id"]
 
     @extend_schema(responses=ScopeTypeListSerializer)
     def list(self, request, *args, **kwargs):

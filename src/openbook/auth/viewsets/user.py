@@ -29,15 +29,15 @@ class UserSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = User
 
-        fields = (
+        fields = [
             "id", "username",
             "full_name", "first_name", "last_name",
             "description", "picture",
             "is_staff", "last_login", "date_joined",
-        )
+        ]
 
-        read_only_fields  = ("username", "is_staff")
-        filterset_fields  = ("first_name", "last_name", "is_staff")
+        read_only_fields  = ["username", "is_staff"]
+        filterset_fields  = ["first_name", "last_name", "is_staff"]
         expandable_fields = {}
     
     @extend_schema_field(str)
@@ -51,8 +51,8 @@ class CurrentUserSerializer(UserSerializer):
 
     class Meta:
         model             = User
-        fields            = (*UserSerializer.Meta.fields, "email", "is_authenticated")
-        filterset_fields  = (*UserSerializer.Meta.filterset_fields,)
+        fields            = [*UserSerializer.Meta.fields, "email", "is_authenticated"]
+        filterset_fields  = [*UserSerializer.Meta.filterset_fields]
 
 class UserFilter(FilterSet):
     class Meta:
@@ -81,11 +81,11 @@ class UserViewSet(ModelViewSetMixin, ModelViewSet):
 
     lookup_field       = "username"
     queryset           = User.objects.filter(is_active=True)
-    http_method_names  = ("get", "put", "patch", "delete")  # Post (create) not allowed!
+    http_method_names  = ["get", "put", "patch", "delete"]  # Post (create) not allowed!
     filterset_class    = UserFilter
     serializer_class   = UserSerializer
-    ordering           = ("username",)
-    search_fields      = ("username", "first_name", "last_name", "description")
+    ordering           = ["username"]
+    search_fields      = ["username", "first_name", "last_name", "description"]
 
 @extend_schema(
     extensions={

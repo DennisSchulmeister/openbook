@@ -68,7 +68,7 @@ class AllowedRolePermission_ViewSet_Tests(ModelViewSetTestMixin, AllowedRolePerm
     search_string     = "add_logentry"
     search_count      = 1
     sort_field        = "permission"
-    expandable_fields = ("permission",)
+    expandable_fields = ["permission"]
 
     operations = {
         "list":           {"requires_auth": False},

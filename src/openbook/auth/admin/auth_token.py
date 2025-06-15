@@ -22,22 +22,22 @@ class AuthTokenResource(ImportExportModelResource):
 
     class Meta:
         model  = AuthToken
-        fields = (
+        fields = [
             "id", "delete",
             "user", "token",
             "name", "description", "text_format",
             "is_active", "start_date", "end_date",
-        )
+        ]
 
 class AuthTokenAdmin(CustomModelAdmin):
     model              = AuthToken
-    resource_classes   = (AuthTokenResource, )
-    ordering           = ("user__username", "token")
-    list_display       = ("user__username", "name", "is_active", "start_date", "end_date", *created_modified_by_fields)
-    list_display_links = ("user__username", "name", "is_active", "start_date", "end_date")
-    list_filter        = ("user__username", "is_active", "start_date", "end_date", *created_modified_by_filter)
-    search_fields      = ("user__username", "token", "name" "description")
-    readonly_fields    = ("token", *created_modified_by_fields,)
+    resource_classes   = [AuthTokenResource]
+    ordering           = ["user__username", "token"]
+    list_display       = ["user__username", "name", "is_active", "start_date", "end_date", *created_modified_by_fields]
+    list_display_links = ["user__username", "name", "is_active", "start_date", "end_date"]
+    list_filter        = ["user__username", "is_active", "start_date", "end_date", *created_modified_by_filter]
+    search_fields      = ["user__username", "token", "name" "description"]
+    readonly_fields    = ["token", *created_modified_by_fields]
 
     def get_queryset(self, request):
         """
@@ -45,31 +45,31 @@ class AuthTokenAdmin(CustomModelAdmin):
         """
         return super().get_queryset(request).prefetch_related("user")
     
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("token", "user", "name")
+            "fields": ["token", "user", "name"]
         }),
         (_("Validity"), {
-            "classes": ("tab",),
-            "fields": ("start_date", "end_date", "is_active")
+            "classes": ["tab"],
+            "fields": ["start_date", "end_date", "is_active"]
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": ("user", "name")
+            "fields": ["user", "name"]
         }),
         (_("Validity"), {
-            "classes": ("tab",),
-            "fields": ("start_date", "end_date", "is_active")
+            "classes": ["tab"],
+            "fields": ["start_date", "end_date", "is_active"],
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
-    )
+    ]

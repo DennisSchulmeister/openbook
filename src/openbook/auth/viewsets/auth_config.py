@@ -15,7 +15,7 @@ class AuthConfigTextSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model  = AuthConfigText
-        fields = ("parent", "language", "logout_next_text")
+        fields = ["parent", "language", "logout_next_text"]
         expandable_fields = {}
 
 class AuthConfigSerializer(FlexFieldsModelSerializer):
@@ -23,11 +23,11 @@ class AuthConfigSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model  = AuthConfig
-        fields = (
+        fields = [
             "site",
             "local_signup_allowed", "signup_email_suffix", "logout_next_url",
             "signup_image", "login_image", "logout_image", "password_reset_image",
-        )
+        ]
         expandable_fields = {
             "translations": (AuthConfigTextSerializer, {"many": True})
         }

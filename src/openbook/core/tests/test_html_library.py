@@ -6,8 +6,6 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.contenttypes.models    import ContentType
-from django.core.files.uploadedfile        import SimpleUploadedFile
 from django.test                           import TestCase
 
 from openbook.auth.middleware.current_user import reset_current_user

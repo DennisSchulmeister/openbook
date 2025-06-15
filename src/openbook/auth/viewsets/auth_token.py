@@ -29,14 +29,14 @@ class AuthTokenSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = AuthToken
 
-        fields = (
+        fields = [
             "id", "user", "token",
             "name", "description", "text_format",
             "is_active", "start_date", "end_date",
             "created_by", "created_at", "modified_by", "modified_at",
-        )
+        ]
 
-        read_only_fields = ("id", "token", "created_at", "modified_at")
+        read_only_fields = ["id", "token", "created_at", "modified_at"]
 
         expandable_fields = {
             "user":        "openbook.auth.viewsets.user.UserSerializer",
@@ -55,11 +55,11 @@ class AuthTokenUpdateSerializer(ModelSerializer):
     class Meta:
         model = AuthToken
 
-        fields = (
+        fields = [
             "id", "user",
             "name", "description", "text_format",
             "is_active", "start_date", "end_date",
-        )
+        ]
 
 class AuthTokenFilter(CreatedModifiedByFilterMixin, FilterSet):
     user = CharFilter(method="user_filter")
@@ -93,8 +93,8 @@ class AuthTokenViewSet(ModelViewSetMixin, ModelViewSet):
     """
     queryset        = AuthToken.objects.all()
     filterset_class = AuthTokenFilter
-    ordering        = ("user__username", "token")
-    search_fields   = ("user__username", "token", "name", "description")
+    ordering        = ["user__username", "token"]
+    search_fields   = ["user__username", "token", "name", "description"]
 
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:

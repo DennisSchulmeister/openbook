@@ -32,5 +32,5 @@ class HTMLComponentText(UUIDMixin, TranslatableMixin, NameDescriptionMixin):
     parent = models.ForeignKey(HTMLComponent, on_delete=models.CASCADE, related_name="translations")
 
     class Meta(TranslatableMixin.Meta):
-        verbose_name        = _("HTML Component: Translated Text")
-        verbose_name_plural = _("HTML Component: Translated Texts")
+        verbose_name        = _("HTML Component Text")
+        verbose_name_plural = _("HTML Component Texts")

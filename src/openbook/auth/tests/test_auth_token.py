@@ -24,7 +24,7 @@ class AuthToken_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     search_string     = "user1"
     search_count      = 2
     sort_field        = "token"
-    expandable_fields = ("user",)
+    expandable_fields = ["user"]
 
     def setUp(self):
         super().setUp()

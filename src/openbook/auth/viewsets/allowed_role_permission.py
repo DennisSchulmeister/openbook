@@ -25,7 +25,7 @@ class AllowedRolePermissionSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model  = AllowedRolePermission
-        fields = ("id", "scope_type", "permission")
+        fields = ["id", "scope_type", "permission"]
         expandable_fields = {"permission": "openbook.auth.viewsets.permission.PermissionSerializer"}
 
 class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin, FilterSet):
@@ -44,16 +44,16 @@ class AllowedRolePermissionFilter(ScopeTypeFilterMixin, PermissionFilterMixin, F
 class AllowedRolePermissionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "Allowed permissions for the roles of a given scope type"
 
-    queryset         = AllowedRolePermission.objects.all()
+    queryset         = AllowedRolePermission.objects.all().prefetch_related("scope_type", "permission")
     serializer_class = AllowedRolePermissionSerializer
     filterset_class  = AllowedRolePermissionFilter
     
-    ordering = (
+    ordering = [
         "scope_type__app_label", "scope_type__model",
         "permission__content_type__app_label", "permission__codename",
-    )
+    ]
     
-    search_fields = (
+    search_fields = [
         "scope_type__app_label", "scope_type__model",
         "permission__content_type__app_label", "permission__codename",
-    )
+    ]

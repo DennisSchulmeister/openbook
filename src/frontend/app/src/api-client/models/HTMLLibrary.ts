@@ -104,19 +104,19 @@ export interface HTMLLibrary {
      * @type {Array<string>}
      * @memberof HTMLLibrary
      */
-    translations: Array<string>;
+    readonly translations: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof HTMLLibrary
      */
-    versions: Array<string>;
+    readonly versions: Array<string>;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof HTMLLibrary
      */
-    createdBy?: number | null;
+    readonly createdBy: string;
     /**
      * 
      * @type {Date}
@@ -125,10 +125,10 @@ export interface HTMLLibrary {
     readonly createdAt: Date | null;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof HTMLLibrary
      */
-    modifiedBy?: number | null;
+    readonly modifiedBy: string;
     /**
      * 
      * @type {Date}
@@ -149,7 +149,9 @@ export function instanceOfHTMLLibrary(value: object): value is HTMLLibrary {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('translations' in value) || value['translations'] === undefined) return false;
     if (!('versions' in value) || value['versions'] === undefined) return false;
+    if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
+    if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
     if (!('modifiedAt' in value) || value['modifiedAt'] === undefined) return false;
     return true;
 }
@@ -178,9 +180,9 @@ export function HTMLLibraryFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'published': json['published'] == null ? undefined : json['published'],
         'translations': json['translations'],
         'versions': json['versions'],
-        'createdBy': json['created_by'] == null ? undefined : json['created_by'],
+        'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
-        'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
+        'modifiedBy': json['modified_by'],
         'modifiedAt': (json['modified_at'] == null ? null : new Date(json['modified_at'])),
     };
 }
@@ -189,7 +191,7 @@ export function HTMLLibraryToJSON(json: any): HTMLLibrary {
     return HTMLLibraryToJSONTyped(json, false);
 }
 
-export function HTMLLibraryToJSONTyped(value?: Omit<HTMLLibrary, 'id'|'fqn'|'created_at'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function HTMLLibraryToJSONTyped(value?: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -206,10 +208,6 @@ export function HTMLLibraryToJSONTyped(value?: Omit<HTMLLibrary, 'id'|'fqn'|'cre
         'readme': value['readme'],
         'text_format': TextFormatEnumToJSON(value['textFormat']),
         'published': value['published'],
-        'translations': value['translations'],
-        'versions': value['versions'],
-        'created_by': value['createdBy'],
-        'modified_by': value['modifiedBy'],
     };
 }
 

@@ -24,12 +24,12 @@ class AuthConfigResource(ImportExportModelResource):
 
     class Meta:
         model  = AuthConfig
-        fields = (
+        fields = [
             "site", "delete",
             "local_signup_allowed", "signup_email_suffix", "logout_next_url",
             "signup_image", "login_image", "logout_image", "password_reset_image",
-        )
-        import_id_fields = ("site",)
+        ]
+        import_id_fields = ["site"]
 
     @classmethod
     def get_display_name(cls):
@@ -41,10 +41,10 @@ class AuthConfigTextResource(ImportExportModelResource):
 
     class Meta:
         model  = AuthConfigText
-        fields = (
+        fields = [
             "id", "delete",
             "parent", "language", "logout_next_text",
-        )
+        ]
     
     @classmethod
     def get_display_name(cls):
@@ -59,21 +59,21 @@ class AuthConfigTextResource(ImportExportModelResource):
 
 class _AuthConfigTextInline(TabularInline):
     model            = AuthConfigText
-    fields           = ("language", "logout_next_text",)
-    ordering         = ("language",)
+    fields           = ["language", "logout_next_text"]
+    ordering         = ["language"]
     extra            = 0
     show_change_link = False
     tab              = True
 
 class AuthConfigAdmin(CustomModelAdmin):
     model              = AuthConfig
-    resource_classes   = (AuthConfigResource, AuthConfigTextResource)
-    ordering           = ("site__domain",)
-    list_display       = ("site__domain", "site__name", "local_signup_allowed", "signup_email_suffix", "logout_next_url")
-    list_display_links = ("site__domain", "site__name", "local_signup_allowed", "signup_email_suffix")
-    list_editable      = ("logout_next_url",)
-    search_fields      = ("site__domain", "site__name", "site__short_name" "signup_email_suffix", "logout_next_url")
-    inlines            = (_AuthConfigTextInline,)
+    resource_classes   = [AuthConfigResource, AuthConfigTextResource]
+    ordering           = ["site__domain"]
+    list_display       = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix", "logout_next_url"]
+    list_display_links = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix"]
+    list_editable      = ["logout_next_url"]
+    search_fields      = ["site__domain", "site__name", "site__short_name" "signup_email_suffix", "logout_next_url"]
+    inlines            = [_AuthConfigTextInline]
 
     def get_queryset(self, request):
         """
@@ -81,16 +81,16 @@ class AuthConfigAdmin(CustomModelAdmin):
         """
         return super().get_queryset(request).prefetch_related("site")
     
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": ("site",)
+            "fields": ["site"]
         }),
         (_("Local User Registration"), {
-            "classes": ("tab",),
-            "fields": ("local_signup_allowed", "signup_email_suffix")
+            "classes": ["tab"],
+            "fields": ["local_signup_allowed", "signup_email_suffix"]
         }),
         (_("Pages"), {
-            "classes": ("tab",),
-            "fields": ("signup_image", "login_image", "logout_image", "password_reset_image", "logout_next_url")
+            "classes": ["tab"],
+            "fields": ["signup_image", "login_image", "logout_image", "password_reset_image", "logout_next_url"]
         }),
-    )
+    ]

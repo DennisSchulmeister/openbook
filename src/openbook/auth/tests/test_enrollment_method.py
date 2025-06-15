@@ -150,7 +150,7 @@ class EnrollmentMethod_ViewSet_Tests(ModelViewSetTestMixin, EnrollmentMethod_Tes
     search_string     = "passphrase"
     search_count      = 1
     sort_field        = "name"
-    expandable_fields = ("role", "created_by", "modified_by")
+    expandable_fields = ["role", "created_by", "modified_by"]
 
     def setUp(self):
         super().setUp()

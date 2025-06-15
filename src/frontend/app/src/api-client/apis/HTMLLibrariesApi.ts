@@ -29,7 +29,7 @@ import {
 } from '../models/index';
 
 export interface CoreHtmlLibraryLibrariesCreateRequest {
-    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'created_at'|'modified_at'>;
+    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -70,7 +70,7 @@ export interface CoreHtmlLibraryLibrariesPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedHTMLLibrary?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'created_at'|'modified_at'>;
+    patchedHTMLLibrary?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface CoreHtmlLibraryLibrariesRetrieveRequest {
@@ -82,7 +82,7 @@ export interface CoreHtmlLibraryLibrariesRetrieveRequest {
 
 export interface CoreHtmlLibraryLibrariesUpdateRequest {
     id: string;
-    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'created_at'|'modified_at'>;
+    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;

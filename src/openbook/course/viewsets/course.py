@@ -27,19 +27,19 @@ class CourseSerializer(ScopedRolesSerializerMixin, FlexFieldsModelSerializer):
     class Meta:
         model = Course
 
-        fields = (
+        fields = [
             "id", "slug",
             "name", "description", "text_format",
             "is_template",
             *ScopedRolesSerializerMixin.Meta.fields,
             "created_by", "created_at", "modified_by", "modified_at",
-        )
+        ]
 
-        read_only_fields = (
+        read_only_fields = [
             "id",
             *ScopedRolesSerializerMixin.Meta.read_only_fields,
             "created_at", "modified_at",
-        )
+        ]
 
         expandable_fields = {
             **ScopedRolesSerializerMixin.Meta.expandable_fields,
@@ -51,14 +51,19 @@ class CourseFilter(CreatedModifiedByFilterMixin, ScopedRolesFilterMixin, FilterS
     class Meta:
         model  = Course
         fields = {
-            "slug":        ("exact",),
-            "name":        ("exact",),
-            "is_template": ("exact",),
+            "slug":        ["exact"],
+            "name":        ["exact"],
+            "is_template": ["exact"],
             **ScopedRolesFilterMixin.Meta.fields,
             **CreatedModifiedByFilterMixin.Meta.fields,
         }
 
-@extend_schema(extensions={"x-app-name": "Courses", "x-model-name": "Courses"})
+@extend_schema(
+    extensions={
+        "x-app-name":   "Courses",
+        "x-model-name": "Courses",
+    }
+)
 @with_flex_fields_parameters()
 class CourseViewSet(AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin, ModelViewSet):
     __doc__ = "Courses"
@@ -66,4 +71,4 @@ class CourseViewSet(AllowAnonymousListRetrieveViewSetMixin, ModelViewSetMixin, M
     queryset         = Course.objects.all()
     filterset_class  = CourseFilter
     serializer_class = CourseSerializer
-    search_fields    = ("slug", "name", "description")
+    search_fields    = ["slug", "name", "description"]

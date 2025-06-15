@@ -29,7 +29,7 @@ import {
 } from '../models/index';
 
 export interface CoreHtmlLibraryVersionsCreateRequest {
-    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_at'|'modified_at'>;
+    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -69,7 +69,7 @@ export interface CoreHtmlLibraryVersionsPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedHTMLLibraryVersion?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_at'|'modified_at'>;
+    patchedHTMLLibraryVersion?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface CoreHtmlLibraryVersionsRetrieveRequest {
@@ -81,7 +81,7 @@ export interface CoreHtmlLibraryVersionsRetrieveRequest {
 
 export interface CoreHtmlLibraryVersionsUpdateRequest {
     id: string;
-    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_at'|'modified_at'>;
+    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;

@@ -24,7 +24,7 @@ class PermissionText_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     search_string     = "Permission"
     search_count      = 1
     sort_field        = "name"
-    expandable_fields = ("parent",)
+    expandable_fields = ["parent"]
 
     operations = {
         "list":           {"requires_auth": False},

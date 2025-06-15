@@ -54,7 +54,7 @@ export interface MediaFile {
      * @type {string}
      * @memberof MediaFile
      */
-    fileData: string;
+    fileData?: string;
 }
 
 /**
@@ -63,7 +63,6 @@ export interface MediaFile {
 export function instanceOfMediaFile(value: object): value is MediaFile {
     if (!('contentType' in value) || value['contentType'] === undefined) return false;
     if (!('objectId' in value) || value['objectId'] === undefined) return false;
-    if (!('fileData' in value) || value['fileData'] === undefined) return false;
     return true;
 }
 
@@ -82,7 +81,7 @@ export function MediaFileFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'fileName': json['file_name'] == null ? undefined : json['file_name'],
         'fileSize': json['file_size'] == null ? undefined : json['file_size'],
         'mimeType': json['mime_type'] == null ? undefined : json['mime_type'],
-        'fileData': json['file_data'],
+        'fileData': json['file_data'] == null ? undefined : json['file_data'],
     };
 }
 

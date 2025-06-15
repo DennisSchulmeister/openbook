@@ -29,22 +29,22 @@ from .mixins.audit                       import created_modified_by_fields
 class _GroupSection(TableSection):
     verbose_name = _("User Groups")
     related_name = "groups"
-    fields       = ("name", "slug")
+    fields       = ["name", "slug"]
 
 class _PermissionSection(TableSection):
     verbose_name = _("User Permissions")
     related_name = "user_permissions"
-    fields       = ("name", "content_type__app_label", "codename")
+    fields       = ["name", "content_type__app_label", "codename"]
 
 class _EmailAddressSection(TableSection):
     verbose_name = _("E-Mail Addresses")
     related_name = "emailaddress_set"
-    fields       = ("email", "verified", "primary")
+    fields       = ["email", "verified", "primary"]
 
 class _EmailAddressInline(TabularInline):
     model            = EmailAddress
-    fields           = ("email", "verified", "primary")
-    ordering         = ("email",)
+    fields           = ["email", "verified", "primary"]
+    ordering         = ["email"]
     extra            = 0
     show_change_link = True
     tab              = True
@@ -52,14 +52,14 @@ class _EmailAddressInline(TabularInline):
 class _AuthTokenSection(TableSection):
     verbose_name = _("Authentication Tokens")
     related_name = "auth_tokens"
-    fields       = ("name", "is_active", "start_date", "end_date", *created_modified_by_fields)
+    fields       = ["name", "is_active", "start_date", "end_date", *created_modified_by_fields]
 
 class _AuthTokenInline(TabularInline):
     model            = AuthToken
     fk_name          = "user"
-    fields           = ("token", "name", "is_active",)
-    ordering         = ("token",)
-    readonly_fields  = ("token",)
+    fields           = ["token", "name", "is_active"]
+    ordering         = ["token"]
+    readonly_fields  = ["token"]
     extra            = 0
     show_change_link = True
     tab              = True
@@ -73,14 +73,14 @@ class UserResource(ImportExportModelResource):
 
     class Meta:
         model = User
-        import_id_fields = ("username",)
-        fields = (
+        import_id_fields = ["username"]
+        fields = [
             "username", "delete", "user_type", "email",
             "first_name", "last_name", "date_joined",
             "is_active", "is_staff", "is_superuser",
             "groups", "user_permissions",
             "description", "picture"
-        )
+        ]
 
 class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     """
@@ -91,12 +91,12 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     add_form             = UserCreationForm
     change_password_form = AdminPasswordChangeForm
 
-    resource_classes     = (UserResource,)
-    list_display         = ("full_name", "username", "is_staff", "is_superuser", "user_type")
-    list_display_links   = ("full_name", "username")
-    list_filter          = DjangoUserAdmin.list_filter + ("is_superuser", "user_type")
-    list_sections        = (_GroupSection, _PermissionSection, _EmailAddressSection, _AuthTokenSection)
-    inlines              = (_EmailAddressInline, _AuthTokenInline)
+    resource_classes     = [UserResource]
+    list_display         = ["full_name", "username", "is_staff", "is_superuser", "user_type"]
+    list_display_links   = ["full_name", "username"]
+    list_filter          = [*DjangoUserAdmin.list_filter, "is_superuser", "user_type"]
+    list_sections        = [_GroupSection, _PermissionSection, _EmailAddressSection, _AuthTokenSection]
+    inlines              = [_EmailAddressInline, _AuthTokenInline]
 
     def get_queryset(self, request):
         """
@@ -109,16 +109,16 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
             "emailaddress_set",
         )
     
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "classes": ("wide",),
-            "fields": ("user_type", "username", "usable_password", "password1", "password2"),
+            "classes": ["wide"],
+            "fields": ["user_type", "username", "usable_password", "password1", "password2"],
         }),
         (_("Personal Information"), {
-            "classes": ("wide",),
-            "fields": ("first_name", "last_name", "email", "description", "picture",),
+            "classes": ["wide"],
+            "fields": ["first_name", "last_name", "email", "description", "picture"],
         }),
-    )
+    ]
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -134,6 +134,6 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     
 UserAdmin.fieldsets[0][1]["fields"] += ("user_type",)
 
-UserAdmin.fieldsets[1][1]["classes"] = ("tab",)
+UserAdmin.fieldsets[1][1]["classes"] = ["tab"]
 UserAdmin.fieldsets[1][1]["fields"] += ("description", "picture")
-UserAdmin.fieldsets[2][1]["classes"] = ("tab",)
+UserAdmin.fieldsets[2][1]["classes"] = ["tab"]

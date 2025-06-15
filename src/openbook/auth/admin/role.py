@@ -33,13 +33,13 @@ class RoleResource(ScopeResourceMixin):
 
     class Meta:
         model = Role
-        fields = (
+        fields = [
             "id", "delete",
             *ScopeResourceMixin.Meta.fields,
             "name", "slug", "priority", "is_active",
             "description", "text_format",
             "permissions",
-        )
+        ]
 
 class RoleForm(ScopeFormMixin):
     class Meta:
@@ -67,9 +67,9 @@ class RoleInline(GenericTabularInline, TabularInline):
     model               = Role
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    fields              = ("priority", "name", "slug", "is_active")
-    ordering            = ("priority", "name")
-    readonly_fields     = ()
+    fields              = ["priority", "name", "slug", "is_active"]
+    ordering            = ["priority", "name"]
+    readonly_fields     = []
     prepopulated_fields = {"slug": ["name"]}
     extra               = 0
     show_change_link    = True
@@ -77,8 +77,8 @@ class RoleInline(GenericTabularInline, TabularInline):
 
 class _EnrollmentMethodInline(TabularInline):
     model               = EnrollmentMethod
-    fields              = ("name", "is_active", "passphrase")
-    ordering            = ("name",)
+    fields              = ["name", "is_active", "passphrase"]
+    ordering            = ["name"]
     extra               = 0
     show_change_link    = True
     tab                 = True
@@ -86,13 +86,13 @@ class _EnrollmentMethodInline(TabularInline):
 class _EnrollmentMethodSection(TableSection):
     verbose_name = _("Enrollment Methods")
     related_name = "enrollment_methods"
-    fields       = ("name", "is_active", "passphrase")
+    fields       = ["name", "is_active", "passphrase"]
 
 class _AccessRequestInline(TabularInline):
     model               = AccessRequest
-    fields              = ("user", "decision", "decision_date")
-    ordering            = ("user",)
-    readonly_fields     = ("user", "decision_date")
+    fields              = ["user", "decision", "decision_date"]
+    ordering            = ["user"]
+    readonly_fields     = ["user", "decision_date"]
     extra               = 0
     show_change_link    = True
     tab                 = True
@@ -103,13 +103,13 @@ class _AccessRequestInline(TabularInline):
 class _AccessRequestSection(TableSection):
     verbose_name = _("Access Requests")
     related_name = "access_requests"
-    fields       = ("user", "decision", "decision_date")
+    fields       = ["user", "decision", "decision_date"]
 
 class _RoleAssignmentInline(TabularInline):
     model            = RoleAssignment
-    fields           = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
-    ordering         = ("user",)
-    readonly_fields  = ("assignment_method", "enrollment_method", "access_request")
+    fields           = ["user", "is_active", "assignment_method", "enrollment_method", "access_request"]
+    ordering         = ["user"]
+    readonly_fields  = ["assignment_method", "enrollment_method", "access_request"]
     extra            = 0
     show_change_link = True
     tab              = True
@@ -117,22 +117,22 @@ class _RoleAssignmentInline(TabularInline):
 class _RoleAssignmentSection(TableSection):
     verbose_name = _("Role Assignments")
     related_name = "role_assignments"
-    fields       = ("user", "is_active", "assignment_method", "enrollment_method", "access_request")
+    fields       = ["user", "is_active", "assignment_method", "enrollment_method", "access_request"]
     
 class RoleAdmin(CustomModelAdmin):
     model               = Role
     form                = RoleForm
-    resource_classes    = (RoleResource,)
-    list_display        = ("scope_type", "scope_object", "priority", "name", "slug", "is_active", *created_modified_by_fields)
-    list_display_links  = ("scope_type", "scope_object", "priority", "name", "slug")
-    list_filter         = (scope_type_filter, "name", "slug", *created_modified_by_filter)
-    list_sections       = (_EnrollmentMethodSection, _AccessRequestSection, _RoleAssignmentSection,)
-    ordering            = ("scope_type", "scope_uuid", "priority", "name")
-    search_fields       = ("name", "slug", "description")
-    readonly_fields     = (*created_modified_by_fields,)
+    resource_classes    = [RoleResource]
+    list_display        = ["scope_type", "scope_object", "priority", "name", "slug", "is_active", *created_modified_by_fields]
+    list_display_links  = ["scope_type", "scope_object", "priority", "name", "slug"]
+    list_filter         = [scope_type_filter, "name", "slug", *created_modified_by_filter]
+    list_sections       = [_EnrollmentMethodSection, _AccessRequestSection, _RoleAssignmentSection]
+    ordering            = ["scope_type", "scope_uuid", "priority", "name"]
+    search_fields       = ["name", "slug", "description"]
+    readonly_fields     = [*created_modified_by_fields]
     prepopulated_fields = {"slug": ["name"]}
-    filter_horizontal   = ("permissions",)
-    inlines             = (_EnrollmentMethodInline, _AccessRequestInline, _RoleAssignmentInline)
+    filter_horizontal   = ["permissions"]
+    inlines             = [_EnrollmentMethodInline, _AccessRequestInline, _RoleAssignmentInline]
 
     def get_queryset(self, request):
         """
@@ -144,41 +144,41 @@ class RoleAdmin(CustomModelAdmin):
             "role_assignments",
         )
     
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("name", "slug"),
                 "priority",
                 "is_active"
-            ),
+            ],
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         (_("Permissions"), {
-            "classes": ("tab",),
-            "fields": ("permissions",),
+            "classes": ["tab"],
+            "fields": ["permissions"],
         }),
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("name", "slug"),
                 "priority",
                 "is_active"
-            ),
+            ],
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         (_("Permissions"), {
-            "classes": ("tab",),
-            "fields": ("permissions",),
+            "classes": ["tab"],
+            "fields": ["permissions"],
         }),
-    )
+    ]

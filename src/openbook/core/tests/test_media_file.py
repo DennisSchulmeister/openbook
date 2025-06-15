@@ -6,18 +6,21 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.files.uploadedfile     import SimpleUploadedFile
-from django.test                        import TestCase
-from uuid                               import uuid4
+from django.contrib.contenttypes.models    import ContentType
+from django.core.files.uploadedfile        import SimpleUploadedFile
+from django.test                           import TestCase
+from uuid                                  import uuid4
 
-from openbook.test                      import ModelViewSetTestMixin
-from ..models.media_file                import MediaFile
+from openbook.auth.middleware.current_user import reset_current_user
+from openbook.test                         import ModelViewSetTestMixin
+from ..models.media_file                   import MediaFile
 
 class MediaFile_Model_Tests(TestCase):
     """
     Test cases for the `save` method of `MediaFile`.
     """
+    def setUp(self):
+        reset_current_user()
 
     def test_save_populates_meta_data_fields(self):
         """
@@ -167,6 +170,9 @@ class MediaFile_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             "file_data":    file_data,
         }
 
+    def get_partial_update_request_data(self):
+        return {"object_id": self.file2.object_id}
+
     operations = {
         "create": {
             "request_data": get_create_request_data,
@@ -176,7 +182,7 @@ class MediaFile_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
             "updates":      {"file_name": "alpha-renamed.txt"},
         },
         "partial_update": {
-            "request_data": {"file_name": "alpha-renamed.txt"},
-            "updates":      {"file_name": "alpha-renamed.txt"},
+            "request_data": get_partial_update_request_data,
+            "updates":      get_partial_update_request_data
         },
     }

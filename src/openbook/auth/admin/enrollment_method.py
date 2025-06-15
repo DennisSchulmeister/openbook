@@ -31,13 +31,13 @@ class EnrollmentMethodResource(ScopeResourceMixin):
 
     class Meta:
         model = EnrollmentMethod
-        fields = (
+        fields = [
             "id", "delete",
             *ScopeResourceMixin.Meta.fields,
             "name", "role", "passphrase", "is_active",
             "duration_value", "duration_period", "end_date",
             "description", "text_format",
-        )
+        ]
 
 class EnrollmentMethodForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     class Meta:
@@ -46,16 +46,16 @@ class EnrollmentMethodForm(ScopeFormMixin, ScopeRoleFieldFormMixin):
     
     class Media:
         css = {
-            "all": (*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]),
+            "all": [*ScopeFormMixin.Media.css["all"], *ScopeRoleFieldFormMixin.Media.css["all"]],
         }
-        js = (*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js)
+        js = [*ScopeFormMixin.Media.js, *ScopeRoleFieldFormMixin.Media.js]
 
 class EnrollmentMethodInline(ScopeRoleFieldInlineMixin, GenericTabularInline, TabularInline):
     model               = EnrollmentMethod
     ct_field            = "scope_type"
     ct_fk_field         = "scope_uuid"
-    fields              = ("name", "role", "is_active", "passphrase")
-    ordering            = ("name", "role")
+    fields              = ["name", "role", "is_active", "passphrase"]
+    ordering            = ["name", "role"]
     extra               = 0
     show_change_link    = True
     tab                 = True
@@ -63,62 +63,62 @@ class EnrollmentMethodInline(ScopeRoleFieldInlineMixin, GenericTabularInline, Ta
 class EnrollmentMethodAdmin(CustomModelAdmin):
     model              = EnrollmentMethod
     form               = EnrollmentMethodForm
-    resource_classes   = (EnrollmentMethodResource,)
-    list_display       = ("scope_type", "scope_object", "name", "role", "passphrase", "is_active", *created_modified_by_fields)
-    list_display_links = ("scope_type", "scope_object", "name", "role")
-    ordering           = ("scope_type", "scope_uuid", "name", "role")
-    search_fields      = ("name", "role__name", "user__username")
-    readonly_fields    = (*created_modified_by_fields,)
+    resource_classes   = [EnrollmentMethodResource]
+    list_display       = ["scope_type", "scope_object", "name", "role", "passphrase", "is_active", *created_modified_by_fields]
+    list_display_links = ["scope_type", "scope_object", "name", "role"]
+    ordering           = ["scope_type", "scope_uuid", "name", "role"]
+    search_fields      = ["name", "role__name", "user__username"]
+    readonly_fields    = [*created_modified_by_fields]
 
-    list_filter = (
+    list_filter = [
         scope_type_filter,
         ("role", RelatedOnlyFieldListFilter),
         "end_date",
         "is_active",
         *created_modified_by_filter
-    )
+    ]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("name", "role"),
                 ("passphrase", "is_active"),
-            ),
+            ],
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         (_("Validity"), {
-            "classes": ("tab",),
+            "classes": ["tab"],
             "description": _("Leave empty to make the enrollment valid for an unlimited period. Otherwise either set a duration or an end date."),
-            "fields": (
+            "fields": [
                 ("duration_value", "duration_period"),
                 "end_date"
-            ),
+            ],
         }),
         created_modified_by_fieldset,
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (None, {
-            "fields": (
+            "fields": [
                 ("scope_type", "scope_uuid"),
                 ("name", "role"),
                 ("passphrase", "is_active"),
-            ),
+            ],
         }),
         (_("Description"), {
-            "classes": ("tab",),
-            "fields": ("description", "text_format"),
+            "classes": ["tab"],
+            "fields": ["description", "text_format"],
         }),
         (_("Validity"), {
-            "classes": ("tab",),
+            "classes": ["tab"],
             "description": _("Leave empty to make the enrollment valid for an unlimited period. Otherwise either set a duration or an end date."),
-            "fields": (
+            "fields": [
                 ("duration_value", "duration_period"),
                 "end_date"
-            ),
+            ],
         }),
-    )
+    ]

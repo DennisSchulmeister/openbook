@@ -25,10 +25,10 @@ class AllowedRolePermissionResource(ImportExportModelResource):
 
     class Meta:
         model = AllowedRolePermission
-        fields = (
+        fields = [
             "id", "delete",
             "scope_type", "permission",
-        )
+        ]
 
 class AllowedRolePermissionForm(ModelForm):
     class Meta:
@@ -61,14 +61,14 @@ class AllowedRolePermissionForm(ModelForm):
 class AllowedRolePermissionAdmin(CustomModelAdmin):
     model              = AllowedRolePermission
     form               = AllowedRolePermissionForm
-    resource_classes   = (AllowedRolePermissionResource,)
-    list_display       = ("scope_type", "perm_name", "perm")
-    list_display_links = ("scope_type", "perm_name", "perm")
-    list_filter        = (scope_type_filter, ("permission", RelatedOnlyFieldListFilter))
-    search_fields      = ("scope_type", "permission__codename")
+    resource_classes   = [AllowedRolePermissionResource]
+    list_display       = ["scope_type", "perm_name", "perm"]
+    list_display_links = ["scope_type", "perm_name", "perm"]
+    list_filter        = [scope_type_filter, ("permission", RelatedOnlyFieldListFilter)]
+    search_fields      = ["scope_type", "permission__codename"]
 
-    fieldsets = (
+    fieldsets = [
         (None, {
-            "fields": (("scope_type", "permission"),)
+            "fields": [("scope_type", "permission")]
         }),
-    )
+    ]
