@@ -591,11 +591,19 @@ class ModelViewSetTestMixin:
                 print()
 
                 if request_data:
-                    print(json.dumps(request_data, indent=4))
-                    print()
+                    try:
+                        print(json.dumps(request_data, indent=4))
+                        print()
+                    except TypeError:
+                        print(request_data)
                 
                 print(f"Response: {response.status_code}")
-                print(json.dumps(response.data, indent=4))
+
+                try:
+                    print(json.dumps(response.data, indent=4))
+                except TypeError:
+                    print(response.data)
+                    
                 raise
 
         return test
@@ -745,7 +753,11 @@ class ModelViewSetTestMixin:
         def assert_updates(obj, upd: dict, full_key: str):
             for key, value in upd.items():
                 new_full_key = f"{full_key}.{key}" if full_key else key
-                new_value    = getattr(obj, key)
+
+                if hasattr(obj, "get"):
+                    new_value = obj.get(key)
+                else:
+                    new_value = getattr(obj, key)
 
                 if isinstance(new_value, Manager):
                     new_value = new_value.all()

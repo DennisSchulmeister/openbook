@@ -5,6 +5,9 @@ apis/AvailableLanguagesApi.ts
 apis/CoursesApi.ts
 apis/CurrentUserApi.ts
 apis/EnrollmentMethodsApi.ts
+apis/HTMLLibrariesApi.ts
+apis/HTMLLibraryTextsApi.ts
+apis/HTMLLibraryVersionsApi.ts
 apis/MediaFilesApi.ts
 apis/RoleAssignmentsApi.ts
 apis/RolesApi.ts
@@ -28,6 +31,9 @@ models/DecisionEnum.ts
 models/DurationPeriodEnum.ts
 models/EnrollActionRequest.ts
 models/EnrollmentMethod.ts
+models/HTMLLibrary.ts
+models/HTMLLibraryText.ts
+models/HTMLLibraryVersion.ts
 models/HealthResponse.ts
 models/Language.ts
 models/MediaFile.ts
@@ -37,6 +43,9 @@ models/PaginatedAuthTokenList.ts
 models/PaginatedCourseList.ts
 models/PaginatedCurrentUserList.ts
 models/PaginatedEnrollmentMethodList.ts
+models/PaginatedHTMLLibraryList.ts
+models/PaginatedHTMLLibraryTextList.ts
+models/PaginatedHTMLLibraryVersionList.ts
 models/PaginatedLanguageList.ts
 models/PaginatedMediaFileList.ts
 models/PaginatedPermissionList.ts
@@ -50,6 +59,9 @@ models/PatchedAuthTokenUpdate.ts
 models/PatchedCourse.ts
 models/PatchedCurrentUser.ts
 models/PatchedEnrollmentMethod.ts
+models/PatchedHTMLLibrary.ts
+models/PatchedHTMLLibraryText.ts
+models/PatchedHTMLLibraryVersion.ts
 models/PatchedMediaFile.ts
 models/PatchedRole.ts
 models/PatchedRoleAssignment.ts

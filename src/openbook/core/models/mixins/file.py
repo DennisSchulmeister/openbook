@@ -25,9 +25,9 @@ class FileUploadMixin(models.Model):
     def _calc_file_path(self, filename):
         return self.calc_file_path_hook(filename)
 
-    file_data = models.FileField(verbose_name=_("File Data"), upload_to=_calc_file_path)
+    file_data = models.FileField(verbose_name=_("File Data"), upload_to=_calc_file_path, null=False, blank=True)
     file_name = models.CharField(verbose_name=_("File Name"), max_length=255, blank=True)
-    file_size = models.PositiveIntegerField(verbose_name=_("File Size"), null=True)
+    file_size = models.PositiveIntegerField(verbose_name=_("File Size"), null=True, blank=True)
     mime_type = models.CharField(verbose_name=_("MIME Type"), max_length=64, blank=True)
 
     class Meta:

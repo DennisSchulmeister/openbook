@@ -45,8 +45,7 @@ class HTMLLibraryVersionResource(ImportExportModelResource):
         fields = [
             "id", "delete",
             "parent", "version", "dependencies", "frontend_url",
-            "file_data",    ### TEST
-            "file_name", "file_size", "mime_type",
+            "file_data", "file_name", "file_size", "mime_type",
         ]
 
     @classmethod
@@ -68,7 +67,7 @@ class _HTMLLibraryVersionSection(TableSection):
 class _HTMLLibraryVersionInline(StackedInline):
     model               = HTMLLibraryVersion
     ordering            = ["-version"]
-    readonly_fields     = ["frontend_url", "file_name", "file_size", "mime_type"]
+    readonly_fields     = ["frontend_url", "file_name", "file_size", "mime_type", *created_modified_by_fields]
     extra               = 0
     show_change_link    = True
     tab                 = True
@@ -76,6 +75,18 @@ class _HTMLLibraryVersionInline(StackedInline):
     verbose_name_plural = _("Versions")
 
     fieldsets = [
+        (None, {
+                "fields": [
+                    ("version", "frontend_url"),
+                    ("file_data", "file_size"),
+                    "dependencies",
+                    ("created_by", "created_at"),
+                    ("modified_by", "modified_at"),
+                ],
+        }),
+    ]
+
+    add_fieldsets = [
         (None, {
                 "fields": [
                     ("version", "frontend_url"),
@@ -95,7 +106,7 @@ class HTMLLibraryTextResource(ImportExportModelResource):
 
     @classmethod
     def get_display_name(cls):
-        return _("HTML Library Translations")
+        return _("HTML Library Texts")
     
     def filter_export(self, queryset, **kwargs):
         """
@@ -126,6 +137,12 @@ class HTMLLibraryAdmin(CustomModelAdmin):
     list_sections      = [_HTMLLibraryVersionSection]
     inlines            = [_HTMLLibraryTextInline, _HTMLLibraryVersionInline]
 
+    def get_queryset(self, request):
+        """
+        Prefetch relations to optimize database performance for the changelist sections.
+        """
+        return super().get_queryset(request).prefetch_related("versions")
+
     fieldsets = [
         (None, {
             "fields": ["organization", "name", "published"],
@@ -133,6 +150,10 @@ class HTMLLibraryAdmin(CustomModelAdmin):
         (_("Meta Data"), {
             "classes": ["tab"],
             "fields": ["author", "license", "website", "coderepo", "bugtracker"],
+        }),
+        (_("Read Me"), {
+            "classes": ["tab"],
+            "fields": ["readme", "text_format"],
         }),
         created_modified_by_fieldset,
     ]
@@ -144,5 +165,9 @@ class HTMLLibraryAdmin(CustomModelAdmin):
         (_("Meta Data"), {
             "classes": ["tab"],
             "fields": ["author", "license", "website", "coderepo", "bugtracker"],
+        }),
+        (_("Read Me"), {
+            "classes": ["tab"],
+            "fields": ["readme", "text_format"],
         }),
     ]

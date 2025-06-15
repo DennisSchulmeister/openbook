@@ -35,7 +35,7 @@ class MediaFileResource(ImportExportModelResource):
         fields = [
             "id", "delete",
             "content_type", "object_id",
-            "file_name", "file_size", "mime_type",
+            "file_data", "file_name", "file_size", "mime_type",
         ]
 
 class MediaFileAdmin(CustomModelAdmin):

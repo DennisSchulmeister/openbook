@@ -48,7 +48,7 @@ class AuthConfigTextResource(ImportExportModelResource):
     
     @classmethod
     def get_display_name(cls):
-        return _("Translations")
+        return _("Authorization Setting Texts")
 
     def filter_export(self, queryset, **kwargs):
         """

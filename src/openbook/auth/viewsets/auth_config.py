@@ -11,7 +11,7 @@ from ..models.auth_config          import AuthConfig
 from ..models.auth_config          import AuthConfigText
 
 class AuthConfigTextSerializer(FlexFieldsModelSerializer):
-    __doc__ = "Translations"
+    __doc__ = "Authorization Setting Texts"
 
     class Meta:
         model  = AuthConfigText

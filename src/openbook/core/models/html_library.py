@@ -36,6 +36,16 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
     website      = models.URLField(verbose_name=_("Website"), blank=True, default="")
     coderepo     = models.URLField(verbose_name=_("Code Repository"), blank=True, default="")
     bugtracker   = models.URLField(verbose_name=_("Bug Tracker"), blank=True, default="")
+    readme       = models.TextField(verbose_name=_("Read Me"), null=False, blank=True)
+
+    text_format = models.CharField(
+        verbose_name = _("Text Format"),
+        max_length   = 10,
+        choices      = NameDescriptionMixin.TextFormatChoices,
+        null         = False,
+        blank        = False,
+        default      = NameDescriptionMixin.TextFormatChoices.MARKDOWN,
+    )
     
     published = models.BooleanField(
         verbose_name = _("Published"),
@@ -60,18 +70,18 @@ class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     short_description = models.CharField(verbose_name=_("Short Description"), max_length=255)
 
     class Meta(TranslatableMixin.Meta):
-        verbose_name        = _("HTML Library: Translated Text")
-        verbose_name_plural = _("HTML Library: Translated Texts")
+        verbose_name        = _("HTML Library Text")
+        verbose_name_plural = _("HTML Library Texts")
 
-class HTMLLibraryVersion(UUIDMixin, FileUploadMixin):
+class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     parent       = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="versions")
     version      = models.CharField(verbose_name=_("Version"), max_length=50, validators=[validate_version_number])
     dependencies = models.JSONField(verbose_name=_("Dependencies"), null=True, blank=True, default=None)
     frontend_url = models.CharField(verbose_name=_("Frontend URL"), blank=True)
 
     class Meta:
-        verbose_name        = _("HTML Library: Version")
-        verbose_name_plural = _("HTML Library: Versions")
+        verbose_name        = _("HTML Library Version")
+        verbose_name_plural = _("HTML Library Versions")
         constraints         = [models.UniqueConstraint(fields=("parent", "version"), name="unique_library_version")]
         ordering            = ["parent", "-version"]
 
