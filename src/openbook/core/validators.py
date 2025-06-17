@@ -44,23 +44,6 @@ def validate_library_name_part(part: str) -> None:
     or not part.islower():
         raise ValidationError(_("Expected alpha-numeric name with at least three letters"))
 
-def validate_library_fqn(name: str) -> None:
-    """
-    Check that the fully qualified name of a library roughly follows the same guidelines as
-    for Node.js packages in npmjs.org: `@organization/package`, whereas each part must be at
-    least three characters long and may only contain alpha-numerics, underline, minus or dot.
-
-    Note: Unlike on npmjs.org the organization is mandatory for us.
-    """
-    if not name.startswith("@") or not "/" in name:
-        raise ValidationError(_("Expected format: @organization/package with each part alpha-numeric and at least three letters"))
-
-    org, lib = name.split("/", 1)
-    org = org[1:]
-
-    validate_library_name_part(org)
-    validate_library_name_part(lib)
-
 def validate_version_number(version: str) -> None:
     """
     Check that version numbers use semver with numeric major, minor, patch
@@ -94,3 +77,54 @@ def validate_version_expression(version_expression: str) -> None:
             return validate_version_number(version_expression[len(operator):])
     
     validate_version_number(version_expression)
+
+def validate_library_fqn(fqn: str) -> None:
+    """
+    Check that the fully qualified name of a library roughly follows the same guidelines as
+    for Node.js packages in npmjs.org: `@organization/package`, whereas each part must be at
+    least three characters long and may only contain alpha-numerics, underline, minus or dot.
+
+    Note: Unlike on npmjs.org the organization is mandatory for us.
+    """
+    if not fqn.startswith("@") or not "/" in fqn:
+        raise ValidationError(_("Expected format: @organization/package with each part alpha-numeric and at least three letters"))
+
+    org, lib = fqn.split("/", 1)
+    org = org[1:]
+
+    validate_library_name_part(org)
+    validate_library_name_part(lib)
+
+def validate_library_version_fqn(fqn: str) -> None:
+    """
+    Validate fully qualified library version: `@organization/library 1.0.0`.
+    """
+    if not " " in fqn:
+        raise ValidationError(_("Library name and version expected"))
+    
+    library_fqn, version = fqn.split(" ", 1)
+    validate_library_fqn(library_fqn)
+    validate_version_number(version)
+
+def split_library_fqn(fqn: str) -> tuple[str, str]:
+    """
+    Split fully qualified library name into organization (without `@`) and library name.
+    Raises a `ValidationError` if the input string doesn't match the expected format.
+    """
+    validate_library_fqn(fqn)
+    organization, name = fqn.split("/", 1)
+    return (organization[1:], name)
+
+def split_library_version_fqn(fqn: str) -> tuple[str, str, str]:
+    """
+    Split fully qualified library version into organization (without `@`), library name and version.
+    Raises a `ValidationError` if the input string doesn't match the expected format.
+    """
+    validate_library_version_fqn(fqn)
+    
+    library_fqn, version = fqn.split(" ", 1)
+    validate_library_fqn(library_fqn)
+    validate_version_number(version)
+
+    organization, name = split_library_fqn(library_fqn)
+    return (organization, name, version)

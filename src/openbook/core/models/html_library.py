@@ -11,6 +11,8 @@ from django.db                         import models
 from django.utils.translation          import gettext_lazy as _
 
 from openbook.auth.models.mixins.audit import CreatedModifiedByMixin
+from ..validators                      import split_library_fqn
+from ..validators                      import split_library_version_fqn
 from ..validators                      import validate_library_name_part
 from ..validators                      import validate_version_number
 from .mixins.file                      import FileUploadMixin
@@ -59,11 +61,16 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         constraints         = [models.UniqueConstraint(fields=("organization", "name"), name="unique_library_name")]
 
     def __str__(self):
-        return self.name
+        return self.fqn()
     
     @display(description=_("Fully Qualified Name"))
     def fqn(self):
         return f"@{self.organization}/{self.name}"
+    
+    @classmethod
+    def get_by_fqn(cls, fqn):
+        organization, name = split_library_fqn(fqn)
+        return cls.objects.get(organization=organization, name=name)
 
 class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     parent            = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="translations")
@@ -87,6 +94,22 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
 
     def __str__(self):
         return f"{self.version}"
+    
+    @display(description=_("Fully Qualified Name"))
+    def fqn(self):
+        return f"@{self.parent.fqn()} {self.version}"
+    
+    @classmethod
+    def get_by_fqn(cls, fqn) -> "HTMLLibraryVersion":
+        organization, name, version = split_library_version_fqn(fqn)
+        library = HTMLLibrary.objects.get(organization=organization, name=name)
+        return HTMLLibraryVersion.objects.get(parent=library, version=version)
+
+    @classmethod
+    def get_by_library_version(cls, library: str, version: str) -> "HTMLLibraryVersion":
+        organization, name = split_library_fqn(fqn)
+        library = HTMLLibrary.objects.get(organization=organization, name=name)
+        return HTMLLibraryVersion.objects.get(parent=library, version=version)
     
     def save(self, *args, **kwargs):
         """

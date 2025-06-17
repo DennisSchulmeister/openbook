@@ -17,6 +17,7 @@ from openbook.core.import_export.boolean import BooleanWidget
 from .mixins.audit                       import created_modified_by_fields
 from .mixins.audit                       import created_modified_by_fieldset
 from .mixins.audit                       import created_modified_by_filter
+from .mixins.audit                       import created_modified_by_related
 from .mixins.scope                       import ScopeFormMixin
 from .mixins.scope                       import ScopeResourceMixin
 from .mixins.scope                       import scope_type_filter
@@ -127,6 +128,7 @@ class RoleAdmin(CustomModelAdmin):
     list_display_links  = ["scope_type", "scope_object", "priority", "name", "slug"]
     list_filter         = [scope_type_filter, "name", "slug", *created_modified_by_filter]
     list_sections       = [_EnrollmentMethodSection, _AccessRequestSection, _RoleAssignmentSection]
+    list_select_related = [*created_modified_by_related]
     ordering            = ["scope_type", "scope_uuid", "priority", "name"]
     search_fields       = ["name", "slug", "description"]
     readonly_fields     = [*created_modified_by_fields]

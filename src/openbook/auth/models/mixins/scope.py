@@ -196,6 +196,8 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
         """
         Validate that role and this object refer to the same scope (if `role` field exists).
         """
+        super().clean()
+        
         if not hasattr(self, "role") or not self.role:
             return
         
@@ -204,8 +206,6 @@ class ScopeMixin(RoleBasedObjectPermissionsMixin):
            self.scope_uuid = self.role.scope_uuid
         elif self.scope_type != self.role.scope_type or self.scope_uuid != self.role.scope_uuid:
             raise ValidationError(_("The scopes of the role and this object don't match."))
-
-        super().clean()
 
     def get_scope(self) -> models.Model:
         """

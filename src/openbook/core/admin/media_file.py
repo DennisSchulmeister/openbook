@@ -15,6 +15,7 @@ from openbook.admin                    import ImportExportModelResource
 from openbook.auth.admin.mixins.audit  import created_modified_by_fields
 from openbook.auth.admin.mixins.audit  import created_modified_by_fieldset
 from openbook.auth.admin.mixins.audit  import created_modified_by_filter
+from openbook.auth.admin.mixins.audit  import created_modified_by_related
 from ..import_export.content_type      import ContentTypeForeignKeyWidget
 from ..models.media_file               import MediaFile
 
@@ -39,14 +40,15 @@ class MediaFileResource(ImportExportModelResource):
         ]
 
 class MediaFileAdmin(CustomModelAdmin):
-    model              = MediaFile
-    resource_classes   = [MediaFileResource]
-    list_display       = ["content_type", "object_id", "file_name", "file_size", "mime_type", *created_modified_by_fields]
-    list_display_links = ["content_type", "object_id", "file_name", "file_size", "mime_type"]
-    list_filter        = ["file_size", "mime_type", *created_modified_by_filter]
-    readonly_fields    = ["file_name", "file_size", "mime_type", *created_modified_by_fields]
-    search_fields      = ["file_name"]
-    ordering           = ["content_type", "object_id", "file_name"]
+    model               = MediaFile
+    resource_classes    = [MediaFileResource]
+    list_display        = ["content_type", "object_id", "file_name", "file_size", "mime_type", *created_modified_by_fields]
+    list_display_links  = ["content_type", "object_id", "file_name", "file_size", "mime_type"]
+    list_filter         = ["file_size", "mime_type", *created_modified_by_filter]
+    list_select_related = [*created_modified_by_related]
+    readonly_fields     = ["file_name", "file_size", "mime_type", *created_modified_by_fields]
+    search_fields       = ["file_name"]
+    ordering            = ["content_type", "object_id", "file_name"]
 
     fieldsets = [
         (None, {

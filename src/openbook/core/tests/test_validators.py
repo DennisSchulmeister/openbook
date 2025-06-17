@@ -54,9 +54,6 @@ class ValidateLibrary_Tests(TestCase):
     """
     
     def test_validate_library_fqn(self):
-        """
-        Library names should follow similar rules as on npmjs.org.
-        """
         validators.validate_library_fqn("@test/test")
         
         with self.assertRaises(ValidationError):
@@ -73,11 +70,42 @@ class ValidateLibrary_Tests(TestCase):
             validators.validate_library_fqn("@a/b!c")
         with self.assertRaises(ValidationError):
             validators.validate_library_fqn("@a/b.c-xyz")
+
+    def test_split_library_fqn(self):
+        (organization, name) = validators.split_library_fqn("@organization/name")
+
+        self.assertEqual(organization, "organization")
+        self.assertEqual(name, "name")
+
+        with self.assertRaises(ValidationError):
+            validators.split_library_fqn("@organization#name")
         
+    def test_validate_library_version_fqn(self):
+        validators.validate_library_version_fqn("@test/test 1.0.0-pre1")
+
+        with self.assertRaises(ValidationError):
+            validators.validate_library_version_fqn("test/test 1.0.0-pre1")
+        
+        with self.assertRaises(ValidationError):
+            validators.validate_library_version_fqn("@test/test1.0.0-pre1")
+
+        with self.assertRaises(ValidationError):
+            validators.validate_library_version_fqn("@test/test")
+
+        with self.assertRaises(ValidationError):
+            validators.validate_library_version_fqn("1.0.0-pre1")
+
+    def test_split_library_version_fqn(self):
+        (organization, name, version) = validators.split_library_version_fqn("@organization/name 1.0.0-pre1")
+
+        self.assertEqual(organization, "organization")
+        self.assertEqual(name, "name")
+        self.assertEqual(version, "1.0.0-pre1")
+
+        with self.assertRaises(ValidationError):
+            validators.split_library_version_fqn("@organization/name#1.0.0-pre1")
+
     def test_validate_version_number(self):
-        """
-        Version numbers use semver format.
-        """
         validators.validate_version_number("1.2.3")
         validators.validate_version_number("1.2.3-beta")
         validators.validate_version_number("1.2.3+build")
@@ -87,9 +115,6 @@ class ValidateLibrary_Tests(TestCase):
             validators.validate_version_number("a")
 
     def test_validate_version_expression(self):
-        """
-        Version expressions have an optional operator followed by a semver.
-        """
         validators.validate_version_expression("1.2.3")
         validators.validate_version_expression("<1.2.3")
         validators.validate_version_expression(">1.2.3")

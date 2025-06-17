@@ -16,6 +16,7 @@ from ..models.auth_token              import AuthToken
 from .mixins.audit                    import created_modified_by_fields
 from .mixins.audit                    import created_modified_by_fieldset
 from .mixins.audit                    import created_modified_by_filter
+from .mixins.audit                    import created_modified_by_related
 
 class AuthTokenResource(ImportExportModelResource):
     user = Field(attribute="user", widget=UserForeignKeyWidget())
@@ -30,21 +31,16 @@ class AuthTokenResource(ImportExportModelResource):
         ]
 
 class AuthTokenAdmin(CustomModelAdmin):
-    model              = AuthToken
-    resource_classes   = [AuthTokenResource]
-    ordering           = ["user__username", "token"]
-    list_display       = ["user__username", "name", "is_active", "start_date", "end_date", *created_modified_by_fields]
-    list_display_links = ["user__username", "name", "is_active", "start_date", "end_date"]
-    list_filter        = ["user__username", "is_active", "start_date", "end_date", *created_modified_by_filter]
-    search_fields      = ["user__username", "token", "name" "description"]
-    readonly_fields    = ["token", *created_modified_by_fields]
+    model               = AuthToken
+    resource_classes    = [AuthTokenResource]
+    ordering            = ["user__username", "token"]
+    list_display        = ["user__username", "name", "is_active", "start_date", "end_date", *created_modified_by_fields]
+    list_display_links  = ["user__username", "name", "is_active", "start_date", "end_date"]
+    list_filter         = ["user__username", "is_active", "start_date", "end_date", *created_modified_by_filter]
+    list_select_related = ["user", *created_modified_by_related]
+    search_fields       = ["user__username", "token", "name" "description"]
+    readonly_fields     = ["token", *created_modified_by_fields]
 
-    def get_queryset(self, request):
-        """
-        Prefetch relations to optimize database performance for the changelist.
-        """
-        return super().get_queryset(request).prefetch_related("user")
-    
     fieldsets = [
         (None, {
             "fields": ["token", "user", "name"]

@@ -90,7 +90,6 @@ class UserAdmin(CustomModelAdmin, DjangoUserAdmin):
     form                 = UserChangeForm
     add_form             = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-
     resource_classes     = [UserResource]
     list_display         = ["full_name", "username", "is_staff", "is_superuser", "user_type"]
     list_display_links   = ["full_name", "username"]

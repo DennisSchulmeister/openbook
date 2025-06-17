@@ -52,6 +52,7 @@ export interface CoreHtmlLibraryTextsListRequest {
     sort?: string;
     language?: string;
     parentAuthorIcontains?: string;
+    parentId?: string;
     parentNameIcontains?: string;
     parentOrganizationIcontains?: string;
     shortDescriptionIcontains?: string;
@@ -230,6 +231,10 @@ export class HTMLLibraryTextsApi extends runtime.BaseAPI {
 
         if (requestParameters['parentAuthorIcontains'] != null) {
             queryParameters['parent__author__icontains'] = requestParameters['parentAuthorIcontains'];
+        }
+
+        if (requestParameters['parentId'] != null) {
+            queryParameters['parent__id'] = requestParameters['parentId'];
         }
 
         if (requestParameters['parentNameIcontains'] != null) {

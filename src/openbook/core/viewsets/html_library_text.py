@@ -33,6 +33,7 @@ class HTMLLibraryTextFilter(FilterSet):
     class Meta:
         model  = HTMLLibraryText
         fields = {
+            "parent__id":           ("exact",),
             "parent__organization": ("icontains",),
             "parent__name":         ("icontains",),
             "parent__author":       ("icontains",),

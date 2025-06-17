@@ -44,6 +44,7 @@ class HTMLLibraryVersionFilter(FilterSet):
     class Meta:
         model  = HTMLLibraryVersion
         fields = {
+            "parent__id":           ("exact",),
             "parent__organization": ("icontains",),
             "parent__name":         ("icontains",),
             "parent__author":       ("icontains",),

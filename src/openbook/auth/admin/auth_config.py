@@ -66,21 +66,16 @@ class _AuthConfigTextInline(TabularInline):
     tab              = True
 
 class AuthConfigAdmin(CustomModelAdmin):
-    model              = AuthConfig
-    resource_classes   = [AuthConfigResource, AuthConfigTextResource]
-    ordering           = ["site__domain"]
-    list_display       = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix", "logout_next_url"]
-    list_display_links = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix"]
-    list_editable      = ["logout_next_url"]
-    search_fields      = ["site__domain", "site__name", "site__short_name" "signup_email_suffix", "logout_next_url"]
-    inlines            = [_AuthConfigTextInline]
+    model               = AuthConfig
+    resource_classes    = [AuthConfigResource, AuthConfigTextResource]
+    ordering            = ["site__domain"]
+    list_display        = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix", "logout_next_url"]
+    list_display_links  = ["site__domain", "site__name", "local_signup_allowed", "signup_email_suffix"]
+    list_editable       = ["logout_next_url"]
+    list_select_related = ["site"]
+    search_fields       = ["site__domain", "site__name", "site__short_name" "signup_email_suffix", "logout_next_url"]
+    inlines             = [_AuthConfigTextInline]
 
-    def get_queryset(self, request):
-        """
-        Prefetch relations to optimize database performance for the changelist.
-        """
-        return super().get_queryset(request).prefetch_related("site")
-    
     fieldsets = [
         (None, {
             "fields": ["site"]

@@ -59,6 +59,7 @@ export interface CoreHtmlLibraryVersionsListRequest {
     modifiedAtLte?: Date;
     modifiedBy?: number;
     parentAuthorIcontains?: string;
+    parentId?: string;
     parentNameIcontains?: string;
     parentOrganizationIcontains?: string;
     versionIcontains?: string;
@@ -265,6 +266,10 @@ export class HTMLLibraryVersionsApi extends runtime.BaseAPI {
 
         if (requestParameters['parentAuthorIcontains'] != null) {
             queryParameters['parent__author__icontains'] = requestParameters['parentAuthorIcontains'];
+        }
+
+        if (requestParameters['parentId'] != null) {
+            queryParameters['parent__id'] = requestParameters['parentId'];
         }
 
         if (requestParameters['parentNameIcontains'] != null) {

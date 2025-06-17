@@ -15,6 +15,7 @@ from openbook.auth.admin.access_request    import AccessRequestInline
 from openbook.auth.admin.enrollment_method import EnrollmentMethodInline
 from openbook.auth.admin.mixins.audit      import created_modified_by_fields
 from openbook.auth.admin.mixins.audit      import created_modified_by_fieldset
+from openbook.auth.admin.mixins.audit      import created_modified_by_related
 from openbook.auth.admin.mixins.scope      import permissions_fieldset
 from openbook.auth.admin.mixins.scope      import ScopedRolesResourceMixin
 from openbook.auth.admin.mixins.scope      import ScopedRolesFormMixin
@@ -48,6 +49,7 @@ class CourseAdmin(CustomModelAdmin):
     list_display        = ["name", "slug", "is_template", "owner", *created_modified_by_fields]
     list_display_links  = ["name", "slug", "owner"]
     list_filter         = ["name", "is_template", "owner", *created_modified_by_fields]
+    list_select_related = [*created_modified_by_related]
     search_fields       = ["name", "slug", "owner", "description"]
     ordering            = ["name", "slug"]
     readonly_fields     = [*created_modified_by_fields]

@@ -16,6 +16,7 @@ from openbook.admin                    import CustomModelAdmin
 from .mixins.audit                     import created_modified_by_fields
 from .mixins.audit                     import created_modified_by_fieldset
 from .mixins.audit                     import created_modified_by_filter
+from .mixins.audit                     import created_modified_by_related
 from .mixins.scope                     import ScopeFormMixin
 from .mixins.scope                     import ScopeResourceMixin
 from .mixins.scope                     import ScopeRoleFieldFormMixin
@@ -65,14 +66,15 @@ class AccessRequestInline(ScopeRoleFieldInlineMixin, GenericTabularInline, Tabul
         return False
 
 class AccessRequestAdmin(CustomModelAdmin):
-    model              = AccessRequest
-    form               = AccessRequestForm
-    resource_classes   = [AccessRequestResource]
-    list_display       = ["scope_type", "scope_object", "role", "user", "decision", "decision_date", *created_modified_by_fields]
-    list_display_links = ["scope_type", "scope_object", "role", "user"]
-    ordering           = ["scope_type", "scope_uuid", "role", "user"]
-    search_fields      = ["role__name", "user__username", "user__first_name", "user__last_name"]
-    readonly_fields    = ["decision_date", *created_modified_by_fields]
+    model               = AccessRequest
+    form                = AccessRequestForm
+    resource_classes    = [AccessRequestResource]
+    list_display        = ["scope_type", "scope_object", "role", "user", "decision", "decision_date", *created_modified_by_fields]
+    list_display_links  = ["scope_type", "scope_object", "role", "user"]
+    list_select_related = ["scope_type", "role", "user", *created_modified_by_related]
+    ordering            = ["scope_type", "scope_uuid", "role", "user"]
+    search_fields       = ["role__name", "user__username", "user__first_name", "user__last_name"]
+    readonly_fields     = ["decision_date", *created_modified_by_fields]
 
     list_filter = [
         scope_type_filter,

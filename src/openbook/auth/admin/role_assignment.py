@@ -17,6 +17,7 @@ from openbook.core.import_export.boolean import BooleanWidget
 from .mixins.audit                       import created_modified_by_fields
 from .mixins.audit                       import created_modified_by_fieldset
 from .mixins.audit                       import created_modified_by_filter
+from .mixins.audit                       import created_modified_by_related
 from .mixins.scope                       import ScopeFormMixin
 from .mixins.scope                       import ScopeResourceMixin
 from .mixins.scope                       import ScopeRoleFieldFormMixin
@@ -63,14 +64,15 @@ class RoleAssignmentInline(ScopeRoleFieldInlineMixin, GenericTabularInline, Tabu
     tab              = True
 
 class RoleAssignmentAdmin(CustomModelAdmin):
-    model              = RoleAssignment
-    form               = RoleAssignmentForm
-    resource_classes   = (RoleAssignmentResource,)
-    list_display       = ["scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields]
-    list_display_links = ["scope_type", "scope_object", "role", "user", "assignment_method"]
-    ordering           = ["scope_type", "scope_uuid", "role", "user"]
-    search_fields      = ["role__name", "user__username", "user__first_name", "user__last_name"]
-    readonly_fields    = ["assignment_method", "enrollment_method", "access_request", *created_modified_by_fields]
+    model               = RoleAssignment
+    form                = RoleAssignmentForm
+    resource_classes    = (RoleAssignmentResource,)
+    list_display        = ["scope_type", "scope_object", "role", "user", "assignment_method", "is_active", *created_modified_by_fields]
+    list_display_links  = ["scope_type", "scope_object", "role", "user", "assignment_method"]
+    list_select_related = [*created_modified_by_related]
+    ordering            = ["scope_type", "scope_uuid", "role", "user"]
+    search_fields       = ["role__name", "user__username", "user__first_name", "user__last_name"]
+    readonly_fields     = ["assignment_method", "enrollment_method", "access_request", *created_modified_by_fields]
 
     list_filter = [
         scope_type_filter,

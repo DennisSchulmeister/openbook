@@ -61,29 +61,23 @@ class _SecurityAssertionInline(TabularInline):
     tab              = True
 
 class SignupGroupAssignmentAdmin(CustomModelAdmin):
-    model              = SignupGroupAssignment
-    resource_classes   = [SignupGroupAssignmentResource, SecurityAssertionResource]
-    ordering           = ["name"]
-    list_display       = ["name", "site__domain", "site__name", "social_app"]
-    list_display_links = ["name", "site__domain", "site__name", "social_app"]
-    search_fields      = [
+    model               = SignupGroupAssignment
+    resource_classes    = [SignupGroupAssignmentResource, SecurityAssertionResource]
+    ordering            = ["name"]
+    list_display        = ["name", "site__domain", "site__name", "social_app"]
+    list_display_links  = ["name", "site__domain", "site__name", "social_app"]
+    list_select_related = ["site", "social_app"]
+    search_fields       = [
         "site__domain", "site__name", "site__short_name",
         "social_app__name", "social_app__provider_id", "social_app__client_id",
         "name", "description"
     ]
-    filter_horizontal  = ["groups"]
-    inlines            = [_SecurityAssertionInline]
+    filter_horizontal   = ["groups"]
+    inlines             = [_SecurityAssertionInline]
 
     def get_queryset(self, request):
-        """
-        Prefetch relations to optimize database performance for the changelist.
-        """
-        return super().get_queryset(request).prefetch_related(
-            "site",
-            "social_app",
-            "assertions",
-        )
-    
+        return super().get_queryset(request).prefetch_related("assertions")
+
     fieldsets = [
         (None, {
             "fields": ["name", "site", "social_app", "is_active"]

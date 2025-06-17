@@ -7,9 +7,10 @@
 # License, or (at your option) any later version.
 
 from .html_component import HTMLComponent
-from .html_component import HTMLComponentText
+from .html_component import HTMLComponentDefinition
 from .html_library   import HTMLLibrary
 from .html_library   import HTMLLibraryText
+from .html_library   import HTMLLibraryVersion
 from .language       import Language
 from .media_file     import MediaFile
 # from .message      import Message
