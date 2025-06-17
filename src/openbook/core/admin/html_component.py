@@ -156,7 +156,7 @@ class HTMLComponentAdmin(CustomModelAdmin):
     list_filter         = ["library__organization", "library__author"]
     list_select_related = ["library"]
     readonly_fields     = ["library_readonly", "min_version", "max_version"]
-    search_fields       = ["library__organization", "library__author", "tag_name"]
+    search_fields       = ["library__organization", "library__name", "library__author", "tag_name"]
     ordering            = ["library__organization", "library__name", "tag_name"]
     list_sections       = [_HTMLComponentDefinitionSection]
     inlines             = [_HTMLComponentDefinitionInline]

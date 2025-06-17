@@ -10,6 +10,8 @@ from django.test                           import TestCase
 
 from openbook.auth.middleware.current_user import reset_current_user
 from openbook.test                         import ModelViewSetTestMixin
+from ..models.html_component               import HTMLComponent
+from ..models.html_component               import HTMLComponentDefinition
 from ..models.html_library                 import HTMLLibrary
 from ..models.html_library                 import HTMLLibraryText
 from ..models.html_library                 import HTMLLibraryVersion
@@ -26,7 +28,7 @@ class HTMLLibrary_Test_Mixin:
         self.language_en = Language.objects.create(language="en", name="English")
 
         # Library 1
-        self.library1 = HTMLLibrary.objects.create(
+        self.lib1 = HTMLLibrary.objects.create(
             organization = "testorg1",
             name         = "lib1",
             author       = "John Q. Public",
@@ -39,32 +41,42 @@ class HTMLLibrary_Test_Mixin:
             published    = True,
         )
 
-        self.library1_text_en = HTMLLibraryText.objects.create(
-            parent            = self.library1,
+        self.lib1_text_en = HTMLLibraryText.objects.create(
+            parent            = self.lib1,
             language          = self.language_en,
             short_description = "Test Library 1"
         )
 
-        self.library1_text_de = HTMLLibraryText.objects.create(
-            parent            = self.library1,
+        self.lib1_text_de = HTMLLibraryText.objects.create(
+            parent            = self.lib1,
             language          = self.language_de,
             short_description = "Test-Bibliothek 1"
         )
 
-        self.library1_version1 = HTMLLibraryVersion.objects.create(
-            parent       = self.library1,
+        self.lib1_v1 = HTMLLibraryVersion.objects.create(
+            parent       = self.lib1,
             version      = "1.0.0",
             dependencies = {"@test/other1": ">=1.0.0"}
         )
 
-        self.library1_version1 = HTMLLibraryVersion.objects.create(
-            parent       = self.library1,
+        self.lib1_v2 = HTMLLibraryVersion.objects.create(
+            parent       = self.lib1,
             version      = "2.0.0",
             dependencies = {"@test/other1": ">=2.0.0"}
         )
 
+        self.lib1_c1    = HTMLComponent.objects.create(library=self.lib1, tag_name="test-1")
+        self.lib1_c1_d1 = HTMLComponentDefinition.objects.create(html_component=self.lib1_c1, library_version=self.lib1_v1, definition={})
+        self.lib1_c1_d2 = HTMLComponentDefinition.objects.create(html_component=self.lib1_c1, library_version=self.lib1_v2, definition={})
+        
+        self.lib1_c2    = HTMLComponent.objects.create(library=self.lib1, tag_name="test-2")
+        self.lib1_c2_d1 = HTMLComponentDefinition.objects.create(html_component=self.lib1_c2, library_version=self.lib1_v1, definition={})
+        self.lib1_c2_d2 = HTMLComponentDefinition.objects.create(html_component=self.lib1_c2, library_version=self.lib1_v2, definition={})
+
+        self.lib1_c3    = HTMLComponent.objects.create(library=self.lib1, tag_name="test-3")
+
         # Library 2
-        self.library2 = HTMLLibrary.objects.create(
+        self.lib2 = HTMLLibrary.objects.create(
             organization = "testorg2",
             name         = "lib2",
             author       = "Joe Doe",
@@ -77,20 +89,20 @@ class HTMLLibrary_Test_Mixin:
             published    = True,
         )
 
-        self.library2_text_en = HTMLLibraryText.objects.create(
-            parent            = self.library2,
+        self.lib2_text_en = HTMLLibraryText.objects.create(
+            parent            = self.lib2,
             language          = self.language_en,
             short_description = "Test Library 2"
         )
 
-        self.library2_version1 = HTMLLibraryVersion.objects.create(
-            parent       = self.library2,
+        self.lib2_v1 = HTMLLibraryVersion.objects.create(
+            parent       = self.lib2,
             version      = "1.0.0",
             dependencies = {"@test/other2": ">=1.0.0"}
         )
 
-        self.library2_version1 = HTMLLibraryVersion.objects.create(
-            parent       = self.library2,
+        self.lib_v2 = HTMLLibraryVersion.objects.create(
+            parent       = self.lib2,
             version      = "2.0.0",
             dependencies = {"@test/other2": ">=2.0.0"}
         )
@@ -107,7 +119,7 @@ class HTMLLibrary_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_Mixin, T
     expandable_fields = ["translations[]", "versions[]", "created_by", "modified_by"]
 
     def pk_found(self):
-        return self.library1.pk
+        return self.lib1.pk
     
     operations = {
         "create": {
@@ -168,18 +180,18 @@ class HTMLLibraryText_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_Mixi
     expandable_fields = ["parent"]
 
     def pk_found(self):
-        return self.library1_text_en.pk
+        return self.lib1_text_en.pk
 
     def get_create_request_data(self):
         return {
-            "parent":            self.library1.pk,
+            "parent":            self.lib1.pk,
             "language":          "fr",
             "short_description": "Bibliothèque de test 1"
         }
 
     def get_update_request_data(self):
         return {
-            "parent":            self.library1.pk,
+            "parent":            self.lib1.pk,
             "language":          "fr",
             "short_description": "Bibliothèque de test 1 modifiée"
         }
@@ -210,18 +222,18 @@ class HTMLLibraryVersion_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_M
     expandable_fields = ["parent", "created_by", "modified_by"]
 
     def pk_found(self):
-        return self.library1_version1.pk
+        return self.lib1_v1.pk
 
     def get_create_request_data(self):
         return {
-            "parent":       self.library1.pk,
+            "parent":       self.lib1.pk,
             "version":      "3.0.0",
             "dependencies": {"@test/other1": ">=3.0.0"}
         }
 
     def get_update_request_data(self):
         return {
-            "parent":       self.library1.pk,
+            "parent":       self.lib1.pk,
             "version":      "3.0.0-pre1",
             "dependencies": {"@test/other1": ">=3.0.0-pre1"}
         }
@@ -246,5 +258,93 @@ class HTMLLibraryVersion_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_M
             "content_type": None,
             "request_data": {"version": "3.0.0-pre2"},
             "updates":      {"version": "3.0.0-pre2"},
+        },
+    }
+
+class HTMLComponent_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_Mixin, TestCase):
+    """
+    Tests for the `HTMLComponentViewSet` REST API.
+    """
+    base_name         = "html_component"
+    model             = HTMLComponent
+    search_string     = "test"
+    search_count      = 3
+    sort_field        = "tag_name"
+    expandable_fields = ["library", "definitions[]"]
+
+    def pk_found(self):
+        return self.lib1_c1.pk
+
+    def get_create_request_data(self):
+        return {
+            "library":   self.lib1.pk,
+            "tag_name": "new-tag",
+        }
+
+    def get_update_request_data(self):
+        return {
+            "library":   self.lib1.pk,
+            "tag_name": "changed-tag",
+        }
+
+    operations = {
+        "create": {
+            "request_data": get_create_request_data,
+        },
+        "update": {
+            "request_data": get_update_request_data,
+            "updates":      {"tag_name": "changed-tag"},
+        },
+        "partial_update": {
+            "request_data": {"tag_name": "changed-tag"},
+            "updates":      {"tag_name": "changed-tag"},
+        },
+    }
+
+class HTMLComponentDefinition_ViewSet_Tests(ModelViewSetTestMixin, HTMLLibrary_Test_Mixin, TestCase):
+    """
+    Tests for the `HTMLComponentDefinitionViewSet` REST API.
+    """
+    base_name         = "html_component_definition"
+    model             = HTMLComponentDefinition
+    search_string     = "test"
+    search_count      = 4
+    sort_field        = ""
+    expandable_fields = ["html_component", "library_version"]
+
+    def pk_found(self):
+        return self.lib1_c1_d1.pk
+
+    def get_create_request_data(self):
+        return {
+            "html_component":  self.lib1_c3.pk,
+            "library_version": self.lib1_v1.pk,
+            "definition":      {},
+        }
+
+    def get_update_request_data(self):
+        return {
+            "html_component":  self.lib1_c3.pk,
+            "library_version": self.lib1_v1.pk,
+            "definition":      {"changed": True},
+        }
+
+    operations = {
+        "create": {
+            "format":       "json",
+            "content_type": None,
+            "request_data": get_create_request_data,
+        },
+        "update": {
+            "format":       "json",
+            "content_type": None,
+            "request_data": get_update_request_data,
+            "updates":      {"definition": {"changed": True}},
+        },
+        "partial_update": {
+            "format":       "json",
+            "content_type": None,
+            "request_data": {"definition": {"changed": True}},
+            "updates":      {"definition": {"changed": True}},
         },
     }

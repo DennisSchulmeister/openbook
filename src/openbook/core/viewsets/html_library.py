@@ -32,16 +32,18 @@ class HTMLLibrarySerializer(FlexFieldsModelSerializer):
         fields = [
             "id", "fqn", "organization", "name",
             "author", "license", "website", "coderepo", "bugtracker",
-            "readme", "text_format", "published", "translations", "versions",
+            "readme", "text_format", "published",
+            "translations", "versions", "components",
             "created_by", "created_at", "modified_by", "modified_at",
         ]
 
-        read_only_fields = ["id", "fqn", "translations", "versions", "created_at", "modified_at"]
+        read_only_fields = ["id", "fqn", "translations", "versions", "components", "created_at", "modified_at"]
 
         expandable_fields = {
             "created_by":   "openbook.auth.viewsets.user.UserSerializer",
             "modified_by":  "openbook.auth.viewsets.user.UserSerializer",
             "translations": ("openbook.core.viewsets.html_library_text.HTMLLibraryTextSerializer",       {"many": True}),
+            "components":   ("openbook.core.viewsets.html_component.HTMLComponentSerializer",            {"many": True}),
             "versions":     ("openbook.core.viewsets.html_library_version.HTMLLibraryVersionSerializer", {"many": True}),
         }
     
