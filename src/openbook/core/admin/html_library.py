@@ -6,10 +6,12 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.http                       import HttpRequest
 from django.utils.translation          import gettext_lazy as _
 from import_export.fields              import Field
 from unfold.admin                      import StackedInline
 from unfold.admin                      import TabularInline
+from unfold.decorators                 import action
 from unfold.sections                   import TableSection
 
 from openbook.admin                    import CustomModelAdmin
@@ -212,3 +214,8 @@ class HTMLLibraryAdmin(CustomModelAdmin):
             "fields": ["readme", "text_format"],
         }),
     ]
+
+    @action(description=_("Unpack archive files"), url_path="html_library-unpack_archive")
+    def unpack_archives(self, request: HttpRequest, object_id: int) -> str:
+        # TODO: https://unfoldadmin.com/docs/actions/action-form-example/
+        return "TODO"

@@ -9,6 +9,7 @@
 from django_filters.filterset           import FilterSet
 from drf_spectacular.utils              import extend_schema
 from drf_spectacular.utils              import extend_schema_field
+from rest_framework.decorators          import action
 from rest_framework.serializers         import SerializerMethodField
 from rest_framework.viewsets            import ModelViewSet
 
@@ -78,3 +79,17 @@ class HTMLLibraryViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class  = HTMLLibraryFilter
     ordering         = ["organization", "name"]
     search_fields    = ["organization", "name", "author", "license"]
+
+    @extend_schema(
+        operation_id = "core_library_install_archive",
+        request      = None, 
+        #responses    = AccessRequestSerializer,
+    )
+    @action(methods=["post"], detail=False)
+    def install_archive(self, request, pk):
+        """
+        Unpack the archive uploaded to this HTML library version and optionally use the manifest
+        data inside the archive to update the database entries.
+        """
+        # TODO:
+        pass

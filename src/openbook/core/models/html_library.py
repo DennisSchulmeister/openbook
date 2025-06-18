@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.core.exceptions            import ObjectDoesNotExist
 from django.contrib.admin              import display
 from django.db                         import models
 from django.utils.translation          import gettext_lazy as _
@@ -72,6 +73,29 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         organization, name = split_library_fqn(fqn)
         return cls.objects.get(organization=organization, name=name)
 
+    @classmethod
+    def install_archive(cls,
+        archive_file_path: str,
+        update_library:    bool = True,
+        update_version:    bool = True,
+        update_components: bool = True,
+        library_version:   "HTMLLibraryVersion" = None,
+    ):
+        """
+        Static method to install a new library version from a library archive file. Depending on
+        the flags, only the archive will be extracted or the database entries will also be updated.
+        Missing database entries will then be created, already existing entries will be updated.
+
+        Parameters:
+            archive_file:      `File` object  for the library archive (usually inside `MEDIA/lib`)
+            update_library:    Update header data of the library
+            update_version:    Update library version data
+            update_components: Update HTML component definitions
+            library_version:   Skip database lookup and update this library and version entries, instead,
+        """
+        # TODO:
+        pass
+
 class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     parent            = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="translations")
     short_description = models.CharField(verbose_name=_("Short Description"), max_length=255)
@@ -120,3 +144,31 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     
     def calc_file_path_hook(self, filename):
         return f"lib/@{self.parent.organization}_{self.parent.name}_{self.version}.zip"
+    
+    def unpack_archive(self,
+        update_library:    bool = True,
+        update_version:    bool = True,
+        update_components: bool = True,
+    ):
+        """
+        Unpack the archive uploaded to this HTML library version and optionally use the manifest
+        data inside the archive to update the database entries.
+
+        Parameters:
+            update_library:    Update header data of the library
+            update_version:    Update data of this library version
+            update_components: Update HTML component definitions
+        
+        Raises:
+            ObjectDoesNotExist: No archive file attached to this entry
+        """
+        if not self.file_data:
+            raise ObjectDoesNotExist(_("Archive for HTML library version not found."))
+        
+        self.parent.install_archive(
+            archive_file      = self.file_data,
+            update_library    = update_library,
+            update_version    = update_version,
+            update_components = update_components,
+            library_version   = self,
+        )

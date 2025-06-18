@@ -8,6 +8,7 @@
 
 from django_filters.filterset           import FilterSet
 from drf_spectacular.utils              import extend_schema
+from rest_framework.decorators          import action
 from rest_framework.viewsets            import ModelViewSet
 
 from openbook.auth.filters.mixins.audit import CreatedModifiedByFilterMixin
@@ -69,3 +70,18 @@ class HTMLLibraryVersionViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class  = HTMLLibraryVersionFilter
     ordering         = ["parent__organization", "parent__name", "version"]
     search_fields    = ["parent__organization", "parent__name", "version", "dependencies"]
+
+
+    @extend_schema(
+        operation_id = "core_html_library_version_unpack_archive",
+        request      = None, 
+        #responses    = AccessRequestSerializer,
+    )
+    @action(methods=["put"], detail=True)   # PUT since an existing library version is updated
+    def unpack_archive(self, request, pk):
+        """
+        Unpack the archive uploaded to this HTML library version and optionally use the manifest
+        data inside the archive to update the database entries.
+        """
+        # TODO:
+        pass
