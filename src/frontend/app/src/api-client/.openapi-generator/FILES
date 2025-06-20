@@ -65,11 +65,6 @@ models/PatchedAuthTokenUpdate.ts
 models/PatchedCourse.ts
 models/PatchedCurrentUser.ts
 models/PatchedEnrollmentMethod.ts
-models/PatchedHTMLComponent.ts
-models/PatchedHTMLComponentDefinition.ts
-models/PatchedHTMLLibrary.ts
-models/PatchedHTMLLibraryText.ts
-models/PatchedHTMLLibraryVersion.ts
 models/PatchedMediaFile.ts
 models/PatchedRole.ts
 models/PatchedRoleAssignment.ts

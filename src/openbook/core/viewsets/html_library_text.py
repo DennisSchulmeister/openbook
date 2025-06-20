@@ -8,10 +8,10 @@
 
 from django_filters.filterset      import FilterSet
 from drf_spectacular.utils         import extend_schema
-from rest_framework.viewsets       import ModelViewSet
+from rest_framework.viewsets       import ReadOnlyModelViewSet
 
 from openbook.drf.flex_serializers import FlexFieldsModelSerializer
-from openbook.drf.viewsets         import ModelViewSetMixin
+from openbook.drf.viewsets         import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf.viewsets         import with_flex_fields_parameters
 from ..models.html_library         import HTMLLibraryText
 
@@ -48,7 +48,7 @@ class HTMLLibraryTextFilter(FilterSet):
     }
 )
 @with_flex_fields_parameters()
-class HTMLLibraryTextViewSet(ModelViewSetMixin, ModelViewSet):
+class HTMLLibraryTextViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "HTML Libraries Texts"
 
     queryset         = HTMLLibraryText.objects.all().prefetch_related("parent")

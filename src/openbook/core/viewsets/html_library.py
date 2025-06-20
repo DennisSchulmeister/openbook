@@ -9,14 +9,13 @@
 from django_filters.filterset           import FilterSet
 from drf_spectacular.utils              import extend_schema
 from drf_spectacular.utils              import extend_schema_field
-from rest_framework.decorators          import action
 from rest_framework.serializers         import SerializerMethodField
-from rest_framework.viewsets            import ModelViewSet
+from rest_framework.viewsets            import ReadOnlyModelViewSet
 
 from openbook.auth.filters.mixins.audit import CreatedModifiedByFilterMixin
 from openbook.auth.serializers.user     import UserField
 from openbook.drf.flex_serializers      import FlexFieldsModelSerializer
-from openbook.drf.viewsets              import ModelViewSetMixin
+from openbook.drf.viewsets              import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf.viewsets              import with_flex_fields_parameters
 from ..models.html_library              import HTMLLibrary
 
@@ -71,7 +70,7 @@ class HTMLLibraryFilter(FilterSet):
     }
 )
 @with_flex_fields_parameters()
-class HTMLLibraryViewSet(ModelViewSetMixin, ModelViewSet):
+class HTMLLibraryViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "HTML Libraries"
 
     queryset         = HTMLLibrary.objects.all()
@@ -79,17 +78,3 @@ class HTMLLibraryViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class  = HTMLLibraryFilter
     ordering         = ["organization", "name"]
     search_fields    = ["organization", "name", "author", "license"]
-
-    @extend_schema(
-        operation_id = "core_library_install_archive",
-        request      = None, 
-        #responses    = AccessRequestSerializer,
-    )
-    @action(methods=["post"], detail=False)
-    def install_archive(self, request, pk):
-        """
-        Unpack the archive uploaded to this HTML library version and optionally use the manifest
-        data inside the archive to update the database entries.
-        """
-        # TODO:
-        pass

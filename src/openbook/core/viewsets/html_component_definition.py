@@ -6,14 +6,14 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django_filters.filterset           import FilterSet
-from drf_spectacular.utils              import extend_schema
-from rest_framework.viewsets            import ModelViewSet
+from django_filters.filterset      import FilterSet
+from drf_spectacular.utils         import extend_schema
+from rest_framework.viewsets       import ReadOnlyModelViewSet
 
-from openbook.drf.flex_serializers      import FlexFieldsModelSerializer
-from openbook.drf.viewsets              import ModelViewSetMixin
-from openbook.drf.viewsets              import with_flex_fields_parameters
-from ..models.html_component            import HTMLComponentDefinition
+from openbook.drf.flex_serializers import FlexFieldsModelSerializer
+from openbook.drf.viewsets         import AllowAnonymousListRetrieveViewSetMixin
+from openbook.drf.viewsets         import with_flex_fields_parameters
+from ..models.html_component       import HTMLComponentDefinition
 
 class HTMLComponentDefinitionSerializer(FlexFieldsModelSerializer):
     __doc__ = "HTML Component Definition"
@@ -47,7 +47,7 @@ class HTMLComponentDefinitionFilter(FilterSet):
     }
 )
 @with_flex_fields_parameters()
-class HTMLComponentDefinitionViewSet(ModelViewSetMixin, ModelViewSet):
+class HTMLComponentDefinitionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "HTML Libraries"
 
     queryset         = HTMLComponentDefinition.objects.all()

@@ -289,6 +289,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     
     @display(description=_("Frontend URL"))
     def frontend_url(self):
+        ## TODO: Full URL
         return f"lib/@{self.parent.organization}/{self.parent.name}/{self.version}"
     
     @classmethod

@@ -17,30 +17,13 @@ import * as runtime from '../runtime';
 import type {
   HTMLComponentDefinition,
   PaginatedHTMLComponentDefinitionList,
-  PatchedHTMLComponentDefinition,
 } from '../models/index';
 import {
     HTMLComponentDefinitionFromJSON,
     HTMLComponentDefinitionToJSON,
     PaginatedHTMLComponentDefinitionListFromJSON,
     PaginatedHTMLComponentDefinitionListToJSON,
-    PatchedHTMLComponentDefinitionFromJSON,
-    PatchedHTMLComponentDefinitionToJSON,
 } from '../models/index';
-
-export interface CoreHtmlLibraryComponentDefinitionsCreateRequest {
-    hTMLComponentDefinition: Omit<HTMLComponentDefinition, 'id'>;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
-
-export interface CoreHtmlLibraryComponentDefinitionsDestroyRequest {
-    id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
 
 export interface CoreHtmlLibraryComponentDefinitionsListRequest {
     expand?: string;
@@ -57,24 +40,8 @@ export interface CoreHtmlLibraryComponentDefinitionsListRequest {
     libraryVersionVersion?: string;
 }
 
-export interface CoreHtmlLibraryComponentDefinitionsPartialUpdateRequest {
-    id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-    patchedHTMLComponentDefinition?: Omit<PatchedHTMLComponentDefinition, 'id'>;
-}
-
 export interface CoreHtmlLibraryComponentDefinitionsRetrieveRequest {
     id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
-
-export interface CoreHtmlLibraryComponentDefinitionsUpdateRequest {
-    id: string;
-    hTMLComponentDefinition: Omit<HTMLComponentDefinition, 'id'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -84,110 +51,6 @@ export interface CoreHtmlLibraryComponentDefinitionsUpdateRequest {
  * 
  */
 export class HTMLComponentDefinitionsApi extends runtime.BaseAPI {
-
-    /**
-     * HTML Libraries
-     * Create
-     */
-    async coreHtmlLibraryComponentDefinitionsCreateRaw(requestParameters: CoreHtmlLibraryComponentDefinitionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLComponentDefinition>> {
-        if (requestParameters['hTMLComponentDefinition'] == null) {
-            throw new runtime.RequiredError(
-                'hTMLComponentDefinition',
-                'Required parameter "hTMLComponentDefinition" was null or undefined when calling coreHtmlLibraryComponentDefinitionsCreate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/component_definitions/`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: HTMLComponentDefinitionToJSON(requestParameters['hTMLComponentDefinition']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLComponentDefinitionFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries
-     * Create
-     */
-    async coreHtmlLibraryComponentDefinitionsCreate(requestParameters: CoreHtmlLibraryComponentDefinitionsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLComponentDefinition> {
-        const response = await this.coreHtmlLibraryComponentDefinitionsCreateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries
-     * Delete
-     */
-    async coreHtmlLibraryComponentDefinitionsDestroyRaw(requestParameters: CoreHtmlLibraryComponentDefinitionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryComponentDefinitionsDestroy().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/component_definitions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * HTML Libraries
-     * Delete
-     */
-    async coreHtmlLibraryComponentDefinitionsDestroy(requestParameters: CoreHtmlLibraryComponentDefinitionsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.coreHtmlLibraryComponentDefinitionsDestroyRaw(requestParameters, initOverrides);
-    }
 
     /**
      * HTML Libraries
@@ -271,60 +134,6 @@ export class HTMLComponentDefinitionsApi extends runtime.BaseAPI {
 
     /**
      * HTML Libraries
-     * Partial Update
-     */
-    async coreHtmlLibraryComponentDefinitionsPartialUpdateRaw(requestParameters: CoreHtmlLibraryComponentDefinitionsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLComponentDefinition>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryComponentDefinitionsPartialUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/component_definitions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PatchedHTMLComponentDefinitionToJSON(requestParameters['patchedHTMLComponentDefinition']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLComponentDefinitionFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries
-     * Partial Update
-     */
-    async coreHtmlLibraryComponentDefinitionsPartialUpdate(requestParameters: CoreHtmlLibraryComponentDefinitionsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLComponentDefinition> {
-        const response = await this.coreHtmlLibraryComponentDefinitionsPartialUpdateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries
      * Retrieve
      */
     async coreHtmlLibraryComponentDefinitionsRetrieveRaw(requestParameters: CoreHtmlLibraryComponentDefinitionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLComponentDefinition>> {
@@ -371,67 +180,6 @@ export class HTMLComponentDefinitionsApi extends runtime.BaseAPI {
      */
     async coreHtmlLibraryComponentDefinitionsRetrieve(requestParameters: CoreHtmlLibraryComponentDefinitionsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLComponentDefinition> {
         const response = await this.coreHtmlLibraryComponentDefinitionsRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries
-     * Update
-     */
-    async coreHtmlLibraryComponentDefinitionsUpdateRaw(requestParameters: CoreHtmlLibraryComponentDefinitionsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLComponentDefinition>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryComponentDefinitionsUpdate().'
-            );
-        }
-
-        if (requestParameters['hTMLComponentDefinition'] == null) {
-            throw new runtime.RequiredError(
-                'hTMLComponentDefinition',
-                'Required parameter "hTMLComponentDefinition" was null or undefined when calling coreHtmlLibraryComponentDefinitionsUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/component_definitions/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: HTMLComponentDefinitionToJSON(requestParameters['hTMLComponentDefinition']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLComponentDefinitionFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries
-     * Update
-     */
-    async coreHtmlLibraryComponentDefinitionsUpdate(requestParameters: CoreHtmlLibraryComponentDefinitionsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLComponentDefinition> {
-        const response = await this.coreHtmlLibraryComponentDefinitionsUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

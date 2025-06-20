@@ -17,30 +17,13 @@ import * as runtime from '../runtime';
 import type {
   HTMLLibraryText,
   PaginatedHTMLLibraryTextList,
-  PatchedHTMLLibraryText,
 } from '../models/index';
 import {
     HTMLLibraryTextFromJSON,
     HTMLLibraryTextToJSON,
     PaginatedHTMLLibraryTextListFromJSON,
     PaginatedHTMLLibraryTextListToJSON,
-    PatchedHTMLLibraryTextFromJSON,
-    PatchedHTMLLibraryTextToJSON,
 } from '../models/index';
-
-export interface CoreHtmlLibraryTextsCreateRequest {
-    hTMLLibraryText: Omit<HTMLLibraryText, 'id'>;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
-
-export interface CoreHtmlLibraryTextsDestroyRequest {
-    id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
 
 export interface CoreHtmlLibraryTextsListRequest {
     expand?: string;
@@ -58,24 +41,8 @@ export interface CoreHtmlLibraryTextsListRequest {
     shortDescriptionIcontains?: string;
 }
 
-export interface CoreHtmlLibraryTextsPartialUpdateRequest {
-    id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-    patchedHTMLLibraryText?: Omit<PatchedHTMLLibraryText, 'id'>;
-}
-
 export interface CoreHtmlLibraryTextsRetrieveRequest {
     id: string;
-    expand?: string;
-    fields?: string;
-    omit?: string;
-}
-
-export interface CoreHtmlLibraryTextsUpdateRequest {
-    id: string;
-    hTMLLibraryText: Omit<HTMLLibraryText, 'id'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -85,110 +52,6 @@ export interface CoreHtmlLibraryTextsUpdateRequest {
  * 
  */
 export class HTMLLibraryTextsApi extends runtime.BaseAPI {
-
-    /**
-     * HTML Libraries Texts
-     * Create
-     */
-    async coreHtmlLibraryTextsCreateRaw(requestParameters: CoreHtmlLibraryTextsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibraryText>> {
-        if (requestParameters['hTMLLibraryText'] == null) {
-            throw new runtime.RequiredError(
-                'hTMLLibraryText',
-                'Required parameter "hTMLLibraryText" was null or undefined when calling coreHtmlLibraryTextsCreate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/texts/`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: HTMLLibraryTextToJSON(requestParameters['hTMLLibraryText']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLLibraryTextFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Create
-     */
-    async coreHtmlLibraryTextsCreate(requestParameters: CoreHtmlLibraryTextsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibraryText> {
-        const response = await this.coreHtmlLibraryTextsCreateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Delete
-     */
-    async coreHtmlLibraryTextsDestroyRaw(requestParameters: CoreHtmlLibraryTextsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryTextsDestroy().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/texts/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Delete
-     */
-    async coreHtmlLibraryTextsDestroy(requestParameters: CoreHtmlLibraryTextsDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.coreHtmlLibraryTextsDestroyRaw(requestParameters, initOverrides);
-    }
 
     /**
      * HTML Libraries Texts
@@ -276,60 +139,6 @@ export class HTMLLibraryTextsApi extends runtime.BaseAPI {
 
     /**
      * HTML Libraries Texts
-     * Partial Update
-     */
-    async coreHtmlLibraryTextsPartialUpdateRaw(requestParameters: CoreHtmlLibraryTextsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibraryText>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryTextsPartialUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/texts/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PatchedHTMLLibraryTextToJSON(requestParameters['patchedHTMLLibraryText']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLLibraryTextFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Partial Update
-     */
-    async coreHtmlLibraryTextsPartialUpdate(requestParameters: CoreHtmlLibraryTextsPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibraryText> {
-        const response = await this.coreHtmlLibraryTextsPartialUpdateRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries Texts
      * Retrieve
      */
     async coreHtmlLibraryTextsRetrieveRaw(requestParameters: CoreHtmlLibraryTextsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibraryText>> {
@@ -376,67 +185,6 @@ export class HTMLLibraryTextsApi extends runtime.BaseAPI {
      */
     async coreHtmlLibraryTextsRetrieve(requestParameters: CoreHtmlLibraryTextsRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibraryText> {
         const response = await this.coreHtmlLibraryTextsRetrieveRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Update
-     */
-    async coreHtmlLibraryTextsUpdateRaw(requestParameters: CoreHtmlLibraryTextsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibraryText>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling coreHtmlLibraryTextsUpdate().'
-            );
-        }
-
-        if (requestParameters['hTMLLibraryText'] == null) {
-            throw new runtime.RequiredError(
-                'hTMLLibraryText',
-                'Required parameter "hTMLLibraryText" was null or undefined when calling coreHtmlLibraryTextsUpdate().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters['expand'] != null) {
-            queryParameters['_expand'] = requestParameters['expand'];
-        }
-
-        if (requestParameters['fields'] != null) {
-            queryParameters['_fields'] = requestParameters['fields'];
-        }
-
-        if (requestParameters['omit'] != null) {
-            queryParameters['_omit'] = requestParameters['omit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
-        }
-
-        const response = await this.request({
-            path: `/api/core/html_library/texts/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: HTMLLibraryTextToJSON(requestParameters['hTMLLibraryText']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLLibraryTextFromJSON(jsonValue));
-    }
-
-    /**
-     * HTML Libraries Texts
-     * Update
-     */
-    async coreHtmlLibraryTextsUpdate(requestParameters: CoreHtmlLibraryTextsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibraryText> {
-        const response = await this.coreHtmlLibraryTextsUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

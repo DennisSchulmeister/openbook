@@ -26,7 +26,7 @@ export interface User {
      */
     readonly id: number;
     /**
-     * Erforderlich. 150 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/_.
+     * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
      * @type {string}
      * @memberof User
      */
@@ -62,7 +62,7 @@ export interface User {
      */
     picture?: string | null;
     /**
-     * Legt fest, ob sich der Benutzer an der Administrationsseite anmelden kann.
+     * Designates whether the user can log into this admin site.
      * @type {boolean}
      * @memberof User
      */

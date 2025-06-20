@@ -8,13 +8,12 @@
 
 from django_filters.filterset           import FilterSet
 from drf_spectacular.utils              import extend_schema
-from rest_framework.decorators          import action
-from rest_framework.viewsets            import ModelViewSet
+from rest_framework.viewsets            import ReadOnlyModelViewSet
 
 from openbook.auth.filters.mixins.audit import CreatedModifiedByFilterMixin
 from openbook.auth.serializers.user     import UserField
 from openbook.drf.flex_serializers      import FlexFieldsModelSerializer
-from openbook.drf.viewsets              import ModelViewSetMixin
+from openbook.drf.viewsets              import AllowAnonymousListRetrieveViewSetMixin
 from openbook.drf.viewsets              import with_flex_fields_parameters
 from ..models.html_library              import HTMLLibraryVersion
 
@@ -62,7 +61,7 @@ class HTMLLibraryVersionFilter(FilterSet):
     }
 )
 @with_flex_fields_parameters()
-class HTMLLibraryVersionViewSet(ModelViewSetMixin, ModelViewSet):
+class HTMLLibraryVersionViewSet(AllowAnonymousListRetrieveViewSetMixin, ReadOnlyModelViewSet):
     __doc__ = "HTML Library Versions"
 
     queryset         = HTMLLibraryVersion.objects.all().prefetch_related("parent")
@@ -70,18 +69,3 @@ class HTMLLibraryVersionViewSet(ModelViewSetMixin, ModelViewSet):
     filterset_class  = HTMLLibraryVersionFilter
     ordering         = ["parent__organization", "parent__name", "version"]
     search_fields    = ["parent__organization", "parent__name", "version", "dependencies"]
-
-
-    @extend_schema(
-        operation_id = "core_html_library_version_unpack_archive",
-        request      = None, 
-        #responses    = AccessRequestSerializer,
-    )
-    @action(methods=["put"], detail=True)   # PUT since an existing library version is updated
-    def unpack_archive(self, request, pk):
-        """
-        Unpack the archive uploaded to this HTML library version and optionally use the manifest
-        data inside the archive to update the database entries.
-        """
-        # TODO:
-        pass
