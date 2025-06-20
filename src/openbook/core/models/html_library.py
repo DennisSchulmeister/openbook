@@ -26,6 +26,7 @@ from .mixins.file                      import FileUploadMixin
 from .mixins.i18n                      import TranslatableMixin
 from .mixins.text                      import NameDescriptionMixin
 from .mixins.uuid                      import UUIDMixin
+from .utils.json                       import PrettyPrintJSONEncoder
 
 class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
     """
@@ -272,7 +273,7 @@ class HTMLLibraryText(UUIDMixin, TranslatableMixin):
 class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     parent       = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="versions")
     version      = models.CharField(verbose_name=_("Version"), max_length=50, validators=[validate_version_number])
-    dependencies = models.JSONField(verbose_name=_("Dependencies"), null=True, blank=True, default=None)
+    dependencies = models.JSONField(verbose_name=_("Dependencies"), null=True, blank=True, default=None, encoder=PrettyPrintJSONEncoder)
 
     class Meta:
         verbose_name        = _("HTML Library Version")
@@ -289,8 +290,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     
     @display(description=_("Frontend URL"))
     def frontend_url(self):
-        ## TODO: Full URL
-        return f"lib/@{self.parent.organization}/{self.parent.name}/{self.version}"
+        return f"{settings.MEDIA_URL}lib/{self.parent.organization}/{self.parent.name}/{self.version}/library.js"
     
     @classmethod
     def get_by_fqn(cls, fqn) -> "HTMLLibraryVersion":

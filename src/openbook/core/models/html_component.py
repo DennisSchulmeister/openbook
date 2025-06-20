@@ -11,6 +11,7 @@ from django.core.exceptions   import ValidationError
 from django.db                import models
 from django.utils.translation import gettext_lazy as _
 from .mixins.uuid             import UUIDMixin
+from .utils.json              import PrettyPrintJSONEncoder
 
 class HTMLComponent(UUIDMixin):
     """
@@ -57,7 +58,7 @@ class HTMLComponentDefinition(UUIDMixin):
     """    
     html_component  = models.ForeignKey(HTMLComponent, on_delete=models.CASCADE, related_name="definitions")
     library_version = models.ForeignKey("htmllibraryversion", on_delete=models.CASCADE, related_name="components")
-    definition      = models.JSONField(verbose_name=_("JSON Definition"), blank=True, default=None)
+    definition      = models.JSONField(verbose_name=_("JSON Definition"), blank=True, default=None, encoder=PrettyPrintJSONEncoder)
 
     class Meta:
         verbose_name        = _("HTML Component Definition")

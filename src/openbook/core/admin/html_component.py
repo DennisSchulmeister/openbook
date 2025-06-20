@@ -24,6 +24,7 @@ from ..import_export.html_library     import HTMLLibraryForeignKeyWidget
 from ..models.html_component          import HTMLComponent
 from ..models.html_component          import HTMLComponentDefinition
 from ..models.html_library            import HTMLLibraryVersion
+from ..models.utils.json              import PrettyPrintJSONEncoder
 
 # =======================
 # Import/Export Resources
@@ -115,7 +116,7 @@ class _HTMLComponentDefinitionInline(StackedInline):
 
                     return ModelChoiceField(queryset=qs, widget=UnfoldAdminSelectWidget())
                 case "definition":
-                    return JSONField(widget=UnfoldAdminTextareaWidget())
+                    return JSONField(widget=UnfoldAdminTextareaWidget(), encoder=PrettyPrintJSONEncoder)
                 case _:
                     return dbfield.formfield(**kwargs)
 

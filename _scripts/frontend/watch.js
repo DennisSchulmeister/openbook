@@ -19,9 +19,10 @@ concurrently([{
     //command: `node ${path.join(__dirname, "build.js")} --watch`
     command: "npm run build",
 }, {
-    name: "tsc",
+    name:    "tsc",
     command: "tsc -w --preserveWatchOutput",
 }], {
-    raw: true,
+    prefix: "name",
     prefixColors: ["auto"],
+    // raw: true,
 });

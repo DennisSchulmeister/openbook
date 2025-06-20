@@ -2,8 +2,14 @@
   "name": "@openbook-studio/frontend",
   "private": true,
   "scripts": {
-    "clean": "node ../../_scripts/all.js frontend/clean.js",
-    "watch": "node ../../_scripts/all.js frontend/watch.js",
-    "build": "node ../../_scripts/all.js frontend/build.js"
+    "clean": "npm run clean:admin && npm run clean:app",
+    "build": "npm run build:admin && npm run build:app",
+    "watch": "conc -n admin,app -c auto \"npm run watch:admin\" \"npm run watch:app\"",
+    "clean:admin": "cd admin && npm run clean",
+    "build:admin": "cd admin && npm run build",
+    "watch:admin": "cd admin && npm run watch",
+    "clean:app": "cd app & npm run clean",
+    "build:app": "cd app && npm run build",
+    "watch:app": "cd app && npm run watch"
   }
 }

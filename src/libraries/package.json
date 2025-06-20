@@ -2,8 +2,14 @@
   "name": "@openbook-studio/libraries",
   "private": true,
   "scripts": {
-    "clean": "node ../../_scripts/all.js library/clean.js",
-    "watch": "node ../../_scripts/all.js library/watch.js",
-    "build": "node ../../_scripts/all.js library/build.js"
+    "clean": "npm run clean:core && npm run clean:ls-compat",
+    "build": "npm run build:core && npm run build:ls-compat",
+    "watch": "conc -n core,ls-compat -c auto \"npm run watch:core\" \"npm run watch:ls-compat\"",
+    "clean:core": "cd core && npm run clean",
+    "build:core": "cd core && npm run build",
+    "watch:core": "cd core && npm run watch",
+    "clean:ls-compat": "cd ls-compat & npm run clean",
+    "build:ls-compat": "cd ls-compat && npm run build",
+    "watch:ls-compat": "cd ls-compat && npm run watch"
   }
 }

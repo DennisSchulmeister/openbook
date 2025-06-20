@@ -182,6 +182,7 @@ class HTMLLibraryAdmin(CustomModelAdmin):
     ordering            = ["organization", "name"]
     list_sections       = [_HTMLLibraryVersionSection, _HTMLComponentSection]
     inlines             = [_HTMLLibraryTextInline, _HTMLLibraryVersionInline, _HTMLComponentInline]
+    actions_detail      = ["unpack_archives"]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("versions")
