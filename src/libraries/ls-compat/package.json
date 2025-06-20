@@ -1,8 +1,24 @@
 {
   "name": "@openbook-studio/ls-compat",
   "version": "1.0.0",
-  "description": "OpenBook: Compatibility library for lecture-slides.js textbooks",
-  "author": "Dennis Schulmeister-Zimolong",
+  "description": "OpenBook: Compatibility library for migration of lecture-slides.js textbooks",
+  "ob-translated-description": {
+    "en": "Compatibility library for migration of lecture-slides.js textbooks",
+    "de": "Kompatibilitätsbibliothek zur Migration von lecture-slides.js Lehrbüchern"
+  },
+  "author": "Dennis Schulmeister-Zimolong <openbook@windows3.de>",
+  "license": "AGPL-3.0",
+  "homepage": "https://openbook.studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DennisSchulmeister/openbook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DennisSchulmeister/openbook/issues/"
+  },
+  "ob-dependencies": {
+    "@openbook-studio/core": ">= 1.0.0"
+  },
   "type": "module",
   "scripts": {
     "clean": "node ../../../_scripts/library/clean.js",

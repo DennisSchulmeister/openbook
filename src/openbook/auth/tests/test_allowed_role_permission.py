@@ -9,7 +9,7 @@
 from django.core.exceptions           import ValidationError
 from django.test                      import TestCase
 
-from openbook.core.utils              import content_type_for_model_string
+from openbook.core.utils.content_type import content_type_for_model_string
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user
 from ..models.allowed_role_permission import AllowedRolePermission

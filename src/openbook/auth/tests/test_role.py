@@ -8,8 +8,8 @@
 
 from django.test                      import TestCase
 
-from openbook.core.utils              import content_type_for_model_string
-from openbook.core.utils              import model_string_for_content_type
+from openbook.core.utils.content_type import content_type_for_model_string
+from openbook.core.utils.content_type import model_string_for_content_type
 from openbook.course.models.course    import Course
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user

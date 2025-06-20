@@ -6,11 +6,11 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.core.exceptions import ValidationError
-from django.test            import TestCase
+from django.core.exceptions           import ValidationError
+from django.test                      import TestCase
 
-from openbook.core.utils    import content_type_for_model_string
-from ..                     import validators
+from openbook.core.utils.content_type import content_type_for_model_string
+from ..                               import validators
 
 class Validators_Test(TestCase):
     """

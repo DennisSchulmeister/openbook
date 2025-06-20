@@ -6,17 +6,17 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.core.exceptions        import ValidationError
-from django.db.utils               import IntegrityError
-from django.test                   import TestCase
+from django.core.exceptions           import ValidationError
+from django.db.utils                  import IntegrityError
+from django.test                      import TestCase
 
-from openbook.core.utils           import model_string_for_content_type
-from openbook.course.models.course import Course
-from openbook.test                 import ModelViewSetTestMixin
-from ..middleware.current_user     import reset_current_user
-from ..models.role                 import Role
-from ..models.role_assignment      import RoleAssignment
-from ..models.user                 import User
+from openbook.core.utils.content_type import model_string_for_content_type
+from openbook.course.models.course    import Course
+from openbook.test                    import ModelViewSetTestMixin
+from ..middleware.current_user        import reset_current_user
+from ..models.role                    import Role
+from ..models.role_assignment         import RoleAssignment
+from ..models.user                    import User
 
 class RoleAssignment_Test_Mixin:
     def setUp(self):

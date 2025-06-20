@@ -2,7 +2,21 @@
   "name": "@openbook-studio/core",
   "version": "1.0.0",
   "description": "OpenBook: Core Library for Textbooks",
-  "author": "Dennis Schulmeister-Zimolong",
+  "ob-translated-description": {
+    "en": "Core Library for Textbooks",
+    "de": "Kernbibliothek für Lehrbücher"
+  },
+  "author": "Dennis Schulmeister-Zimolong <openbook@windows3.de>",
+  "license": "AGPL-3.0",
+  "homepage": "https://openbook.studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DennisSchulmeister/openbook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DennisSchulmeister/openbook/issues/"
+  },
+  "ob-dependencies": {},
   "type": "module",
   "scripts": {
     "clean": "node ../../../_scripts/library/clean.js",

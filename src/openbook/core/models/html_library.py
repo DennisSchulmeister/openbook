@@ -6,12 +6,18 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+import os, sys, typing
+
 from django.core.exceptions            import ObjectDoesNotExist
+from django.core.exceptions            import ValidationError
+from django.core.files                 import File
+from django.conf                       import settings
 from django.contrib.admin              import display
 from django.db                         import models
 from django.utils.translation          import gettext_lazy as _
 
 from openbook.auth.models.mixins.audit import CreatedModifiedByMixin
+from ..utils.html_library_archive      import HTMLLibraryArchive
 from ..validators                      import split_library_fqn
 from ..validators                      import split_library_version_fqn
 from ..validators                      import validate_library_name_part
@@ -40,7 +46,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
     coderepo     = models.URLField(verbose_name=_("Code Repository"), blank=True, default="")
     bugtracker   = models.URLField(verbose_name=_("Bug Tracker"), blank=True, default="")
     readme       = models.TextField(verbose_name=_("Read Me"), null=False, blank=True)
-
+    
     text_format = models.CharField(
         verbose_name = _("Text Format"),
         max_length   = 10,
@@ -75,11 +81,14 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
 
     @classmethod
     def install_archive(cls,
-        archive_file_path: str,
+        archive_file:      str|File,
+        extract_archive:   bool = True,
         update_library:    bool = True,
         update_version:    bool = True,
         update_components: bool = True,
         library_version:   "HTMLLibraryVersion" = None,
+        stdout:            typing.TextIO = sys.stdout,
+        verbosity:         int  = 0,
     ):
         """
         Static method to install a new library version from a library archive file. Depending on
@@ -88,14 +97,154 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
 
         Parameters:
             archive_file:      `File` object  for the library archive (usually inside `MEDIA/lib`)
+            extract_archive:   Extract archive file on filesystem
             update_library:    Update header data of the library
             update_version:    Update library version data
             update_components: Update HTML component definitions
             library_version:   Skip database lookup and update this library and version entries, instead,
+            stdout:            Output stream for console messages
+            verbosity:         Print details on the console (default: 0 = off)
         """
-        # TODO:
-        pass
+        if verbosity > 0:
+            line = f"Installing HTML library file {archive_file}"
 
+            stdout.write("=" * len(line) + "\n")
+            stdout.write(line + "\n")
+            stdout.write("=" * len(line) + "\n")
+            stdout.write("\n")
+
+        # Validate archive file
+        archive = HTMLLibraryArchive(archive_file)
+
+        if not archive.is_valid_archive():
+            raise ValidationError(_("The archive file is no valid HTML library archive."))
+        
+        # Extract archive on filesystem
+        if extract_archive:
+            archive.extract(
+                install_dir = os.path.join(settings.MEDIA_ROOT, "lib"),
+                verbosity   = verbosity,
+            )
+        
+        # Create or update HTMLLibrary and HTMLLibraryText database entries
+        if update_library:
+            if verbosity > 0:
+                stdout.write("HTMLLibrary database entry\n")
+
+            manifest = archive.get_library_manifest()
+
+            if library_version and library_version.parent:
+                library = library_version.parent
+            else:
+                try:
+                    library = HTMLLibrary.objects.get(
+                        organization__iexact = manifest.organization,
+                        name__iexact         = manifest.name,
+                    )
+                except HTMLLibrary.DoesNotExist:
+                    library = None
+
+            if not library:
+                library = HTMLLibrary.objects.create(
+                    organization = manifest.organization,
+                    name         = manifest.name,
+                    author       = manifest.author,
+                    license      = manifest.license,
+                    website      = manifest.website,
+                    coderepo     = manifest.coderepo,
+                    bugtracker   = manifest.bugtracker,
+                    readme       = manifest.readme,
+                )
+            else:
+                library.organization = manifest.organization
+                library.name         = manifest.name
+                library.author       = manifest.author
+                library.license      = manifest.license
+                library.website      = manifest.website
+                library.coderepo     = manifest.coderepo
+                library.bugtracker   = manifest.bugtracker
+                library.readme       = manifest.readme
+                library.save()
+            
+            if verbosity > 0:
+                stdout.write("HTMLLibraryText database entries\n")
+
+            for language in manifest.description.keys():
+                if verbosity > 1:
+                    stdout.write(f" > {language}\n")
+
+                try:
+                    library_text = HTMLLibraryText.objects.get(parent=library, language__iexact=language)
+                    library_text.short_description = manifest.description[language]
+                    library_text.save()
+                except HTMLLibraryText.DoesNotExist:
+                    HTMLLibraryText.objects.create(
+                        parent            = library,
+                        language          = language,
+                        short_description = manifest.description[language],
+                    )
+
+        # Create or update HTMLLibraryVersion database entry
+        if update_version:
+            if verbosity > 0:
+                stdout.write("HTMLLibraryVersion database entry\n")
+            
+            if not library_version:
+                try:
+                    library_version = HTMLLibraryVersion.objects.get(
+                        parent          = library,
+                        version__iexact = manifest.version,
+                    )
+
+                    library_version.dependencies = manifest.dependencies
+                    library_version.file_data    = archive_file
+
+                    library_version.save()
+                except HTMLLibraryVersion.DoesNotExist:
+                    library_version = HTMLLibraryVersion.objects.create(
+                        parent       = library,
+                        version      = manifest.version,
+                        dependencies = manifest.dependencies,
+                        file_data    = archive_file if isinstance(archive_file, File) else File(archive_file)
+                    )
+
+        # Create or update HTMLComponent and HTMLComponentDefinition database entries
+        if update_components:
+            if verbosity > 0:
+                stdout.write("HTMLComponent and HTMLComponentDefinition database entries\n")
+            
+            from .html_component import HTMLComponent
+            from .html_component import HTMLComponentDefinition
+
+            HTMLComponentDefinition.objects.filter(library_version=library_version).delete()
+
+            for component_manifest in archive.get_html_component_manifests().values():
+                if verbosity > 1:
+                    stdout.write(f" > {component_manifest.tagname}\n")
+                
+                try:
+                    html_component = HTMLComponent.objects.get(
+                        library          = library,
+                        tag_name__iexact = component_manifest.tag_name,
+                    )
+                except HTMLComponent.DoesNotExist:
+                    html_component = HTMLComponent.objects.create(
+                        library  = library,
+                        tag_name = component_manifest.tag_name,
+                    )
+                
+                HTMLComponentDefinition.objects.create(
+                    html_component  = html_component,
+                    library_version = library_version,
+                    definition      = component_manifest.to_dict(),
+                )
+            
+            # Delete components without definition
+            HTMLComponentDefinition.objects.filter(
+                library_version__in = HTMLLibraryVersion.objects.filter(parent=library),
+                definitions__isnull = True,
+            ).distinct().delete()
+        
 class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     parent            = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="translations")
     short_description = models.CharField(verbose_name=_("Short Description"), max_length=255)
@@ -108,7 +257,6 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     parent       = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="versions")
     version      = models.CharField(verbose_name=_("Version"), max_length=50, validators=[validate_version_number])
     dependencies = models.JSONField(verbose_name=_("Dependencies"), null=True, blank=True, default=None)
-    frontend_url = models.CharField(verbose_name=_("Frontend URL"), blank=True)
 
     class Meta:
         verbose_name        = _("HTML Library Version")
@@ -123,6 +271,10 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     def fqn(self):
         return f"@{self.parent.fqn()} {self.version}"
     
+    @display(description=_("Frontend URL"))
+    def frontend_url(self):
+        return f"lib/@{self.parent.organization}/{self.parent.name}/{self.version}"
+    
     @classmethod
     def get_by_fqn(cls, fqn) -> "HTMLLibraryVersion":
         organization, name, version = split_library_version_fqn(fqn)
@@ -134,14 +286,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
         organization, name = split_library_fqn(fqn)
         library = HTMLLibrary.objects.get(organization=organization, name=name)
         return HTMLLibraryVersion.objects.get(parent=library, version=version)
-    
-    def save(self, *args, **kwargs):
-        """
-        Populate frontend url when the model is saved.
-        """
-        self.frontend_url = f"lib/@{self.parent.organization}/{self.parent.name}/{self.version}"
-        super().save(*args, **kwargs)
-    
+
     def calc_file_path_hook(self, filename):
         return f"lib/@{self.parent.organization}_{self.parent.name}_{self.version}.zip"
     
@@ -149,6 +294,8 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
         update_library:    bool = True,
         update_version:    bool = True,
         update_components: bool = True,
+        stdout:            typing.TextIO = sys.stdout,
+        verbosity:         int  = 0,
     ):
         """
         Unpack the archive uploaded to this HTML library version and optionally use the manifest
@@ -158,6 +305,8 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
             update_library:    Update header data of the library
             update_version:    Update data of this library version
             update_components: Update HTML component definitions
+            stdout:            Output stream for console messages
+            verbosity:         Print details on the console (default: 0 = off)
         
         Raises:
             ObjectDoesNotExist: No archive file attached to this entry
@@ -171,4 +320,6 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
             update_version    = update_version,
             update_components = update_components,
             library_version   = self,
+            stdout            = stdout,
+            verbosity         = verbosity,
         )

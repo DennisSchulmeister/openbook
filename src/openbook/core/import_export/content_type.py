@@ -9,8 +9,8 @@
 from django.contrib.contenttypes.models import ContentType
 from import_export.widgets              import ForeignKeyWidget
 
-from ..utils                            import content_type_for_model_string
-from ..utils                            import model_string_for_content_type
+from ..utils.content_type               import content_type_for_model_string
+from ..utils.content_type               import model_string_for_content_type
 
 class ContentTypeForeignKeyWidget(ForeignKeyWidget):
     """

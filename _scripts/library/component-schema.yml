@@ -1,8 +1,8 @@
-# JSON Schema to validate custom element descriptors for the WYSIWYG editor
+# JSON Schema to validate custom component descriptors for the WYSIWYG editor
 type: object
 
 properties:
-    tagname:
+    tag-name:
         description: The HTML tag name
         type: string
   
@@ -16,7 +16,7 @@ properties:
                 type: string
 
     text-allowed:
-        description: Whether the element may contain text content
+        description: Whether the component may contain text content
         type: boolean
   
     html-allowed:
@@ -59,11 +59,11 @@ properties:
         additionalProperties: false
   
     events:
-        description: Names of the events raised by the element
+        description: Names of the events raised by the component
         type: array
         items:
             type: string
 
-required: [tagname]
+required: [tag-name]
 
 additionalProperties: false

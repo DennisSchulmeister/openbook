@@ -12,7 +12,7 @@ from drf_spectacular.utils              import extend_schema_field
 from rest_framework.serializers         import RelatedField
 from uuid                               import UUID
 
-from openbook.core.utils                import content_type_for_model_string
+from openbook.core.utils.content_type   import content_type_for_model_string
 from ..models.role                      import Role
 
 @extend_schema_field(str)

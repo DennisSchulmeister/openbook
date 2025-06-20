@@ -7,7 +7,7 @@ project with additional features and content types.
 
 Note that for each library **two** bundles are built:
 
- * `./{library}/dist/**`: Bundle for publishing on npmjs.org
+ * `./{library}/dist`: Bundle for publishing on npmjs.org
 
- * `../src/_media/lib/{library}/**`:
+ * `../src/_media/lib`:
    Pre-installed version shipped with the OpenBook server

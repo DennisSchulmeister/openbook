@@ -35,7 +35,7 @@ export function getOptions() {
 
         plugins: [
             logHeader(cwd),
-            validateAndCopyElementYml(cwd, path.join(cwd, "dist")),
+            validateAndCopyComponentYml(cwd, path.join(cwd, "dist")),
             createLibraryYml(cwd, path.join(cwd, "dist", "library.yml")),
             createLibraryZip(path.join(cwd, "dist"), path.join(cwd, "zip", "library.zip")),
             copyToInstallLocation(
@@ -55,55 +55,65 @@ function logHeader(cwd) {
     return {
         name: "logHeader",
         setup(build) {
-            build.onStart(async () => {
-                let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
-                let packageJson     = JSON.parse(packageJsonFile);
-                let logLine         = `Building library ${packageJson.name} ${packageJson.version}`;
-                let separator       = "=".repeat(logLine.length);
-
-                console.log();
-                console.log(separator);
-                console.log(logLine);
-                console.log(separator);
-                console.log();
-            });
+            try {
+                build.onStart(async () => {
+                    let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
+                    let packageJson     = JSON.parse(packageJsonFile);
+                    let logLine         = `Building library ${packageJson.name} ${packageJson.version}`;
+                    let separator       = "=".repeat(logLine.length);
+    
+                    console.log();
+                    console.log(separator);
+                    console.log(logLine);
+                    console.log(separator);
+                    console.log();
+                });
+            } catch (err) {
+                console.error(err);
+                throw err;
+            }
         },
     };
 }
 
 /**
- * Copy YML files describing the custom elements to the WYSIWYG editor to a
- * new directory called `elements`. Also validates the YML files and raises
+ * Copy YML files describing the custom components to the WYSIWYG editor to a
+ * new directory called `components`. Also validates the YML files and raises
  * an error when validation fails.
  * 
  * @param {string} cwd Root directory of the library
  * @param {string} outdir Build output directory
  * @returns esbuild plug-in instance
  */
-function validateAndCopyElementYml(cwd, outdir) {
+function validateAndCopyComponentYml(cwd, outdir) {
     return {
-        name: "copyElementYml",
+        name: "copyComponentYml",
         setup(build) {
             build.onEnd(async () => {
-                console.log("COPY ELEMENT YAML FILES");
-
-                let srcDir            = path.join(cwd, "src");
-                let elementSchemaFile = await fs.readFile(path.join(import.meta.dirname, "element-schema.yml"), "utf-8");
-                let elementSchemaYml  = yaml.parse(elementSchemaFile);
-                let ajv = new Ajv();
-
-                for (let srcFile of await glob([path.join(srcDir, "**", "*.yml")])) {
-                    // Validate file
-                    let elementFile = await fs.readFile(path.join(srcFile), "utf-8");
-                    let elementYml  = yaml.parse(elementFile);
-
-                    await ajv.validate(elementSchemaYml, elementYml);
-                    if (ajv.errors) throw ajv.errors;
-
-                    // Copy file
-                    srcFile = path.relative(srcDir, srcFile);
-                    shelljs.mkdir("-p", path.join(outdir, "elements", path.dirname(srcFile)));
-                    shelljs.cp("-R", path.join("src", srcFile), path.join(outdir, "elements", srcFile));
+                try {
+                    console.log("COPY COMPONENT YAML FILES");
+    
+                    let srcDir              = path.join(cwd, "src");
+                    let componentSchemaFile = await fs.readFile(path.join(import.meta.dirname, "component-schema.yml"), "utf-8");
+                    let componentSchemaYml  = yaml.parse(componentSchemaFile);
+                    let ajv = new Ajv();
+    
+                    for (let srcFile of await glob([path.join(srcDir, "**", "*.yml")])) {
+                        // Validate file
+                        let componentFile = await fs.readFile(path.join(srcFile), "utf-8");
+                        let componentYml  = yaml.parse(componentFile);
+    
+                        await ajv.validate(componentSchemaYml, componentYml);
+                        if (ajv.errors) throw ajv.errors;
+    
+                        // Copy file
+                        srcFile = path.relative(srcDir, srcFile);
+                        shelljs.mkdir("-p", path.join(outdir, "components", path.dirname(srcFile)));
+                        shelljs.cp("-R", path.join("src", srcFile), path.join(outdir, "components", srcFile));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    throw err;
                 }
             });
         },
@@ -125,21 +135,31 @@ function createLibraryYml(cwd, outfile) {
         name: "createLibraryYmlPlugin",
         setup(build) {
             build.onEnd(async () => {
-                console.log("CREATE LIBRARY YAML");
-
-                let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
-                let packageJson     = JSON.parse(packageJsonFile);
-                let readmeFile      = await fs.readFile(path.join(cwd, "README.md"), "utf-8");
-
-                let data = {
-                    name:        packageJson.name,
-                    version:     packageJson.version,
-                    description: packageJson.description,
-                    author:      packageJson.author,
-                    readme:      readmeFile,
-                };
-
-                await fs.writeFile(outfile, yaml.stringify(data));
+                try {
+                    console.log("CREATE LIBRARY YAML");
+    
+                    let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
+                    let packageJson     = JSON.parse(packageJsonFile);
+                    let readmeFile      = await fs.readFile(path.join(cwd, "README.md"), "utf-8");
+    
+                    let data = {
+                        name:         packageJson.name               || "",
+                        version:      packageJson.version            || "",
+                        author:       packageJson.author             || "",
+                        license:      packageJson.license            || "",
+                        website:      packageJson.homepage           || "",
+                        coderepo:     packageJson.repository?.url    || "",
+                        bugtracker:   packageJson.bugs?.url          || "",
+                        dependencies: packageJson["ob-dependencies"] || {},
+                        description:  packageJson["ob-translated-description"] || {en: packageJson.description || ""},
+                        readme:       readmeFile,
+                    };
+    
+                    await fs.writeFile(outfile, yaml.stringify(data, {lineWidth: 0}));
+                } catch (err) {
+                    console.error(err);
+                    throw err;
+                }
             });
         },
     };
@@ -158,36 +178,41 @@ function createLibraryZip(distdir, outfile) {
         name: "createLibraryZipPlugin",
         setup(build) {
             build.onEnd(async () => {
-                console.log("CREATE LIBRARY ZIP");
-
                 try {
-                    await fs.unlink(outfile);
-                } catch {
-                    // File didn't exist                
-                }
-
-                fs.mkdir(path.dirname(outfile), {recursive: true});
-                
-                let zip = new JSZip();
-                let folder = zip.folder("openbook-library");
-
-                async function _addDirectoryContent(zip, srcdir) {
-                    for (let entry of await fs.readdir(srcdir, {withFileTypes: true})) {
-                        let entryPath = path.join(srcdir, entry.name);
-
-                        if (entry.isDirectory()) {
-                            let subfolder = zip.folder(entry.name);
-                            await _addDirectoryContent(subfolder, entryPath);
-                        } else {
-                            let data = await fs.readFile(entryPath);
-                            zip.file(entry.name, data);   
+                    console.log("CREATE LIBRARY ZIP");
+    
+                    try {
+                        await fs.unlink(outfile);
+                    } catch {
+                        // File didn't exist                
+                    }
+    
+                    fs.mkdir(path.dirname(outfile), {recursive: true});
+                    
+                    let zip = new JSZip();
+                    let folder = zip.folder("openbook-library");
+    
+                    async function _addDirectoryContent(zip, srcdir) {
+                        for (let entry of await fs.readdir(srcdir, {withFileTypes: true})) {
+                            let entryPath = path.join(srcdir, entry.name);
+    
+                            if (entry.isDirectory()) {
+                                let subfolder = zip.folder(entry.name);
+                                await _addDirectoryContent(subfolder, entryPath);
+                            } else {
+                                let data = await fs.readFile(entryPath);
+                                zip.file(entry.name, data);   
+                            }
                         }
                     }
+    
+                    await _addDirectoryContent(folder, distdir);
+                    let zipContent = await zip.generateAsync({type: "nodebuffer"});
+                    await fs.writeFile(outfile, zipContent);
+                } catch (err) {
+                    console.error(err);
+                    throw err;
                 }
-
-                await _addDirectoryContent(folder, distdir);
-                let zipContent = await zip.generateAsync({type: "nodebuffer"});
-                await fs.writeFile(outfile, zipContent);
             });
         },
     };
@@ -207,13 +232,18 @@ function copyToInstallLocation(cwd, zipfile, outdir) {
         name: "copyToInstallLocation",
         setup(build) {
             build.onEnd(async () => {
-                console.log("COPY LIBRARY ZIP TO INSTALL LOCATION");
-                
-                let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
-                let packageJson     = JSON.parse(packageJsonFile);
-                let dstFile         = `${packageJson.name}_${packageJson.version}.zip`.replaceAll("/", "_");
-
-                shelljs.cp("-R", zipfile, path.join(outdir, dstFile));
+                try {
+                    console.log("COPY LIBRARY ZIP TO INSTALL LOCATION");
+                    
+                    let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
+                    let packageJson     = JSON.parse(packageJsonFile);
+                    let dstFile         = `${packageJson.name}_${packageJson.version}.zip`.replaceAll("/", "_");
+    
+                    shelljs.cp("-R", zipfile, path.join(outdir, dstFile));
+                } catch (err) {
+                    console.error(err);
+                    throw err;
+                }
             });
         },
     };

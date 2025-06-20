@@ -1,9 +1,9 @@
-# ========================================== #
-# Element description for the WYSIWYG editor #
-# ========================================== #
+# ============================================ #
+# Component description for the WYSIWYG editor #
+# ============================================ #
 
 # HTML tag name
-tagname: ob-hello
+tag-name: ob-hello
 
 # Short description in multiple languages
 description:
