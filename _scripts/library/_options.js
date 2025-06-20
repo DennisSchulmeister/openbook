@@ -41,7 +41,7 @@ export function getOptions() {
             copyToInstallLocation(
                 cwd,
                 path.join(cwd, "zip", "library.zip"),
-                path.join(cwd, "..", "..", "_media", "lib")),
+                path.join(cwd, "..", "..", "_media", "lib-install")),
         ],
     };
 }
@@ -237,8 +237,9 @@ function copyToInstallLocation(cwd, zipfile, outdir) {
                     
                     let packageJsonFile = await fs.readFile(path.join(cwd, "package.json"), "utf-8");
                     let packageJson     = JSON.parse(packageJsonFile);
-                    let dstFile         = `${packageJson.name}_${packageJson.version}.zip`.replaceAll("/", "_");
-    
+                    let dstFile         = `${packageJson.name.slice(1)}_${packageJson.version}.zip`.replaceAll("/", "_");
+
+                    shelljs.mkdir("-p", path.dirname(path.join(outdir, dstFile)));
                     shelljs.cp("-R", zipfile, path.join(outdir, dstFile));
                 } catch (err) {
                     console.error(err);

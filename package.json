@@ -17,7 +17,8 @@
         "start:debug": "conc -n redis,fake-smtp,frontend,libraries -c auto \"npm run redis\" \"npm run maildev\" \"npm run frontend\" \"npm run libraries\"",
         "build:libraries": "cd src/libraries && npm run build",
         "build:frontend": "cd src/frontend && npm run build",
-        "build": "npm run build:frontend && npm run build:libraries"
+        "build": "npm run build:frontend && npm run build:libraries",
+        "init:db": "cd src && python manage.py migrate && python manage.py load_initial_data && python manage.py install_html_library && python manage.py createsuperuser"
     },
     "devDependencies": {
         "@tsconfig/svelte": "^5.0.4",

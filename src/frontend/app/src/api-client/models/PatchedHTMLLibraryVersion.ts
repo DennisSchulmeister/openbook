@@ -48,7 +48,7 @@ export interface PatchedHTMLLibraryVersion {
      * @type {string}
      * @memberof PatchedHTMLLibraryVersion
      */
-    frontendUrl?: string;
+    readonly frontendUrl?: string;
     /**
      * 
      * @type {string}
@@ -73,6 +73,12 @@ export interface PatchedHTMLLibraryVersion {
      * @memberof PatchedHTMLLibraryVersion
      */
     mimeType?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PatchedHTMLLibraryVersion
+     */
+    readonly components?: Array<string>;
     /**
      * 
      * @type {string}
@@ -125,6 +131,7 @@ export function PatchedHTMLLibraryVersionFromJSONTyped(json: any, ignoreDiscrimi
         'fileName': json['file_name'] == null ? undefined : json['file_name'],
         'fileSize': json['file_size'] == null ? undefined : json['file_size'],
         'mimeType': json['mime_type'] == null ? undefined : json['mime_type'],
+        'components': json['components'] == null ? undefined : json['components'],
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
         'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
@@ -136,7 +143,7 @@ export function PatchedHTMLLibraryVersionToJSON(json: any): PatchedHTMLLibraryVe
     return PatchedHTMLLibraryVersionToJSONTyped(json, false);
 }
 
-export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLibraryVersion, 'id'|'frontend_url'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -146,7 +153,6 @@ export function PatchedHTMLLibraryVersionToJSONTyped(value?: Omit<PatchedHTMLLib
         'parent': value['parent'],
         'version': value['version'],
         'dependencies': value['dependencies'],
-        'frontend_url': value['frontendUrl'],
         'file_data': value['fileData'],
         'file_name': value['fileName'],
         'file_size': value['fileSize'],

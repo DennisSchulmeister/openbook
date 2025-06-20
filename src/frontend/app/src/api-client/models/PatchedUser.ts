@@ -26,7 +26,7 @@ export interface PatchedUser {
      */
     readonly id?: number;
     /**
-     * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+     * Erforderlich. 150 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/_.
      * @type {string}
      * @memberof PatchedUser
      */
@@ -62,7 +62,7 @@ export interface PatchedUser {
      */
     picture?: string | null;
     /**
-     * Designates whether the user can log into this admin site.
+     * Legt fest, ob sich der Benutzer an der Administrationsseite anmelden kann.
      * @type {boolean}
      * @memberof PatchedUser
      */

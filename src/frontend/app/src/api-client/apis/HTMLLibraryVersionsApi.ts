@@ -28,8 +28,15 @@ import {
     PatchedHTMLLibraryVersionToJSON,
 } from '../models/index';
 
+export interface CoreHtmlLibraryVersionUnpackArchiveRequest {
+    id: string;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
 export interface CoreHtmlLibraryVersionsCreateRequest {
-    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'frontend_url'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -70,7 +77,7 @@ export interface CoreHtmlLibraryVersionsPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedHTMLLibraryVersion?: Omit<PatchedHTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    patchedHTMLLibraryVersion?: Omit<PatchedHTMLLibraryVersion, 'id'|'frontend_url'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface CoreHtmlLibraryVersionsRetrieveRequest {
@@ -82,7 +89,7 @@ export interface CoreHtmlLibraryVersionsRetrieveRequest {
 
 export interface CoreHtmlLibraryVersionsUpdateRequest {
     id: string;
-    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    hTMLLibraryVersion: Omit<HTMLLibraryVersion, 'id'|'frontend_url'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -92,6 +99,55 @@ export interface CoreHtmlLibraryVersionsUpdateRequest {
  * 
  */
 export class HTMLLibraryVersionsApi extends runtime.BaseAPI {
+
+    /**
+     * Unpack the archive uploaded to this HTML library version and optionally use the manifest data inside the archive to update the database entries.
+     */
+    async coreHtmlLibraryVersionUnpackArchiveRaw(requestParameters: CoreHtmlLibraryVersionUnpackArchiveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibraryVersion>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling coreHtmlLibraryVersionUnpackArchive().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/core/html_library/versions/{id}/unpack_archive/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLLibraryVersionFromJSON(jsonValue));
+    }
+
+    /**
+     * Unpack the archive uploaded to this HTML library version and optionally use the manifest data inside the archive to update the database entries.
+     */
+    async coreHtmlLibraryVersionUnpackArchive(requestParameters: CoreHtmlLibraryVersionUnpackArchiveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibraryVersion> {
+        const response = await this.coreHtmlLibraryVersionUnpackArchiveRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * HTML Library Versions

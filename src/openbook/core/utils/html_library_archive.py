@@ -14,7 +14,7 @@ from zipfile                import is_zipfile
 from zipfile                import ZipFile
 
 from ..validators           import split_library_fqn
-from ..validators           import validate_library_fqn
+from ..validators           import validate_library_name_part
 from ..validators           import validate_version_number
 
 class HTMLLibraryArchive:
@@ -75,7 +75,8 @@ class HTMLLibraryArchive:
             return False
         
         try:
-            validate_library_fqn(self._manifest.name)
+            validate_library_name_part(self._manifest.organization)
+            validate_library_name_part(self._manifest.name)
             validate_version_number(self._manifest.version)
         except ValidationError:
             return False
@@ -106,8 +107,8 @@ class HTMLLibraryArchive:
         
                 manifest = HTMLComponentManifest.from_dict(manifest_data)
 
-                if manifest.tagname:
-                    result[manifest.tagname] = manifest
+                if manifest.tag_name:
+                    result[manifest.tag_name] = manifest
         
         return result
     
@@ -151,7 +152,10 @@ class HTMLLibraryArchive:
         if verbosity > 0:
             stdout.write(f"Extracting to {library_dir}\n")
 
-        shutil.rmtree(library_dir)
+        if os.path.exists(library_dir):
+            shutil.rmtree(library_dir)
+        
+        os.makedirs(library_dir)
 
         root_dirname = "openbook-library/"
 
@@ -160,13 +164,14 @@ class HTMLLibraryArchive:
                 continue
 
             file_path = zipped_file.filename[len(root_dirname):].replace("/", os.path.sep)
+            file_path = os.path.join(library_dir, file_path)
 
             if verbosity > 1:
                 stdout.write(f" > {file_path}\n")
 
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-            with open(os.path.join(library_dir, file_path), "bw") as extracted_file:
+            with open(file_path, "bw") as extracted_file:
                 extracted_file.write(self._zip_file.read(zipped_file.filename))
 
 T = typing.TypeVar("T")
@@ -326,7 +331,7 @@ class HTMLComponentManifest:
         """
         manifest_data = TypedAccessDict(manifest_data)
         
-        def attribute_dict(key: str) -> dict[str, HTMLLibraryArchive.AttributeDescription]:
+        def attribute_dict(key: str) -> dict[str, HTMLAttributeDescription]:
             attributes = manifest_data.get_typed(key, dict, {})
             result = {}
 

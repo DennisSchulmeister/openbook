@@ -48,7 +48,7 @@ export interface HTMLLibraryVersion {
      * @type {string}
      * @memberof HTMLLibraryVersion
      */
-    frontendUrl?: string;
+    readonly frontendUrl: string;
     /**
      * 
      * @type {string}
@@ -73,6 +73,12 @@ export interface HTMLLibraryVersion {
      * @memberof HTMLLibraryVersion
      */
     mimeType?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof HTMLLibraryVersion
+     */
+    readonly components: Array<string>;
     /**
      * 
      * @type {string}
@@ -106,6 +112,8 @@ export function instanceOfHTMLLibraryVersion(value: object): value is HTMLLibrar
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('parent' in value) || value['parent'] === undefined) return false;
     if (!('version' in value) || value['version'] === undefined) return false;
+    if (!('frontendUrl' in value) || value['frontendUrl'] === undefined) return false;
+    if (!('components' in value) || value['components'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -127,11 +135,12 @@ export function HTMLLibraryVersionFromJSONTyped(json: any, ignoreDiscriminator: 
         'parent': json['parent'],
         'version': json['version'],
         'dependencies': json['dependencies'] == null ? undefined : json['dependencies'],
-        'frontendUrl': json['frontend_url'] == null ? undefined : json['frontend_url'],
+        'frontendUrl': json['frontend_url'],
         'fileData': json['file_data'] == null ? undefined : json['file_data'],
         'fileName': json['file_name'] == null ? undefined : json['file_name'],
         'fileSize': json['file_size'] == null ? undefined : json['file_size'],
         'mimeType': json['mime_type'] == null ? undefined : json['mime_type'],
+        'components': json['components'],
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': json['modified_by'],
@@ -143,7 +152,7 @@ export function HTMLLibraryVersionToJSON(json: any): HTMLLibraryVersion {
     return HTMLLibraryVersionToJSONTyped(json, false);
 }
 
-export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, 'id'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, 'id'|'frontend_url'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -153,7 +162,6 @@ export function HTMLLibraryVersionToJSONTyped(value?: Omit<HTMLLibraryVersion, '
         'parent': value['parent'],
         'version': value['version'],
         'dependencies': value['dependencies'],
-        'frontend_url': value['frontendUrl'],
         'file_data': value['fileData'],
         'file_name': value['fileName'],
         'file_size': value['fileSize'],

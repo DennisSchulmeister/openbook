@@ -113,6 +113,12 @@ export interface PatchedHTMLLibrary {
     readonly versions?: Array<string>;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof PatchedHTMLLibrary
+     */
+    readonly components?: Array<string>;
+    /**
+     * 
      * @type {string}
      * @memberof PatchedHTMLLibrary
      */
@@ -170,6 +176,7 @@ export function PatchedHTMLLibraryFromJSONTyped(json: any, ignoreDiscriminator: 
         'published': json['published'] == null ? undefined : json['published'],
         'translations': json['translations'] == null ? undefined : json['translations'],
         'versions': json['versions'] == null ? undefined : json['versions'],
+        'components': json['components'] == null ? undefined : json['components'],
         'createdBy': json['created_by'] == null ? undefined : json['created_by'],
         'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
         'modifiedBy': json['modified_by'] == null ? undefined : json['modified_by'],
@@ -181,7 +188,7 @@ export function PatchedHTMLLibraryToJSON(json: any): PatchedHTMLLibrary {
     return PatchedHTMLLibraryToJSONTyped(json, false);
 }
 
-export function PatchedHTMLLibraryToJSONTyped(value?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function PatchedHTMLLibraryToJSONTyped(value?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

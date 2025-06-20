@@ -5,6 +5,8 @@ apis/AvailableLanguagesApi.ts
 apis/CoursesApi.ts
 apis/CurrentUserApi.ts
 apis/EnrollmentMethodsApi.ts
+apis/HTMLComponentDefinitionsApi.ts
+apis/HTMLComponentsApi.ts
 apis/HTMLLibrariesApi.ts
 apis/HTMLLibraryTextsApi.ts
 apis/HTMLLibraryVersionsApi.ts
@@ -31,6 +33,8 @@ models/DecisionEnum.ts
 models/DurationPeriodEnum.ts
 models/EnrollActionRequest.ts
 models/EnrollmentMethod.ts
+models/HTMLComponent.ts
+models/HTMLComponentDefinition.ts
 models/HTMLLibrary.ts
 models/HTMLLibraryText.ts
 models/HTMLLibraryVersion.ts
@@ -43,6 +47,8 @@ models/PaginatedAuthTokenList.ts
 models/PaginatedCourseList.ts
 models/PaginatedCurrentUserList.ts
 models/PaginatedEnrollmentMethodList.ts
+models/PaginatedHTMLComponentDefinitionList.ts
+models/PaginatedHTMLComponentList.ts
 models/PaginatedHTMLLibraryList.ts
 models/PaginatedHTMLLibraryTextList.ts
 models/PaginatedHTMLLibraryVersionList.ts
@@ -59,6 +65,8 @@ models/PatchedAuthTokenUpdate.ts
 models/PatchedCourse.ts
 models/PatchedCurrentUser.ts
 models/PatchedEnrollmentMethod.ts
+models/PatchedHTMLComponent.ts
+models/PatchedHTMLComponentDefinition.ts
 models/PatchedHTMLLibrary.ts
 models/PatchedHTMLLibraryText.ts
 models/PatchedHTMLLibraryVersion.ts

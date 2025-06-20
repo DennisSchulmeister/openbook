@@ -29,7 +29,7 @@ import {
 } from '../models/index';
 
 export interface CoreHtmlLibraryLibrariesCreateRequest {
-    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
@@ -70,7 +70,7 @@ export interface CoreHtmlLibraryLibrariesPartialUpdateRequest {
     expand?: string;
     fields?: string;
     omit?: string;
-    patchedHTMLLibrary?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    patchedHTMLLibrary?: Omit<PatchedHTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
 export interface CoreHtmlLibraryLibrariesRetrieveRequest {
@@ -82,7 +82,13 @@ export interface CoreHtmlLibraryLibrariesRetrieveRequest {
 
 export interface CoreHtmlLibraryLibrariesUpdateRequest {
     id: string;
-    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    hTMLLibrary: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
+    expand?: string;
+    fields?: string;
+    omit?: string;
+}
+
+export interface CoreLibraryInstallArchiveRequest {
     expand?: string;
     fields?: string;
     omit?: string;
@@ -472,6 +478,48 @@ export class HTMLLibrariesApi extends runtime.BaseAPI {
      */
     async coreHtmlLibraryLibrariesUpdate(requestParameters: CoreHtmlLibraryLibrariesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibrary> {
         const response = await this.coreHtmlLibraryLibrariesUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Unpack the archive uploaded to this HTML library version and optionally use the manifest data inside the archive to update the database entries.
+     */
+    async coreLibraryInstallArchiveRaw(requestParameters: CoreLibraryInstallArchiveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HTMLLibrary>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['expand'] != null) {
+            queryParameters['_expand'] = requestParameters['expand'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['_fields'] = requestParameters['fields'];
+        }
+
+        if (requestParameters['omit'] != null) {
+            queryParameters['_omit'] = requestParameters['omit'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["sessionId"] = await this.configuration.apiKey("sessionId"); // SessionAuthentication authentication
+        }
+
+        const response = await this.request({
+            path: `/api/core/html_library/libraries/install_archive/`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => HTMLLibraryFromJSON(jsonValue));
+    }
+
+    /**
+     * Unpack the archive uploaded to this HTML library version and optionally use the manifest data inside the archive to update the database entries.
+     */
+    async coreLibraryInstallArchive(requestParameters: CoreLibraryInstallArchiveRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HTMLLibrary> {
+        const response = await this.coreLibraryInstallArchiveRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

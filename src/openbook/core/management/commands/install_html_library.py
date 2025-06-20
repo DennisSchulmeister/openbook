@@ -9,6 +9,7 @@
 import glob, os
 
 from django.conf                 import settings
+from django.core.exceptions      import ValidationError
 from django.core.management.base import BaseCommand
 from django.core.management.base import CommandError
 from django.utils.text           import format_lazy as _f
@@ -30,15 +31,15 @@ class Command(BaseCommand):
         self.stdout.write = lambda x: _write(x, ending="")
 
     def add_arguments(self, parser):
-        lib_dir = os.path.join(settings.MEDIA_ROOT, "lib")
+        lib_install_dir = os.path.join(settings.MEDIA_ROOT, "lib-install")
         parser.add_argument(
             "-f", "--archive-file",
             dest    = "archive_file",
             type    = str,
-            default = lib_dir,
+            default = lib_install_dir,
             help    = _f(
-                "HTML library archive file or directory with archives (default: {lib_dir})",
-                lib_dir = lib_dir,
+                "HTML library archive file or directory with archives (default: {lib_install_dir})",
+                lib_install_dir = lib_install_dir,
             ),
         )
 
@@ -75,20 +76,23 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if os.is_dir(options.archive_file):
-            archive_files = glob.glob(os.path.join(options.archive_file, "*.zip"))
-        elif os.path.exists(options.archive_file):
-            archive_files = [options.archive_file]
+        if os.path.isdir(options["archive_file"]):
+            archive_files = glob.glob(os.path.join(options["archive_file"], "*.zip"))
+        elif os.path.exists(options["archive_file"]):
+            archive_files = [options["archive_file"]]
         else:
-            raise CommandError(_f("Path not found: {path}", path=options.archive_file))
+            raise CommandError(_f("Path not found: {path}", path=options["archive_file"]))
 
         for archive_file in archive_files:
-            HTMLLibrary.install_archive(
-                archive_file      = archive_file,
-                extract_archive   = options.extract_archive,
-                update_library    = options.update_library,
-                update_version    = options.update_version,
-                update_components = options.update_components,
-                verbosity         = options.verbosity,
-                stdout            = self.stdout,
-            )
+            try:
+                HTMLLibrary.install_archive(
+                    archive_file      = archive_file,
+                    extract_archive   = options["extract_archive"],
+                    update_library    = options["update_library"],
+                    update_version    = options["update_version"],
+                    update_components = options["update_components"],
+                    verbosity         = options["verbosity"],
+                    stdout            = self.stdout,
+                )
+            except ValidationError as e:
+                raise CommandError(e.message) from e

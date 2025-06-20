@@ -7,6 +7,8 @@ export * from './AvailableLanguagesApi';
 export * from './CoursesApi';
 export * from './CurrentUserApi';
 export * from './EnrollmentMethodsApi';
+export * from './HTMLComponentDefinitionsApi';
+export * from './HTMLComponentsApi';
 export * from './HTMLLibrariesApi';
 export * from './HTMLLibraryTextsApi';
 export * from './HTMLLibraryVersionsApi';

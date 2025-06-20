@@ -113,6 +113,12 @@ export interface HTMLLibrary {
     readonly versions: Array<string>;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof HTMLLibrary
+     */
+    readonly components: Array<string>;
+    /**
+     * 
      * @type {string}
      * @memberof HTMLLibrary
      */
@@ -149,6 +155,7 @@ export function instanceOfHTMLLibrary(value: object): value is HTMLLibrary {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('translations' in value) || value['translations'] === undefined) return false;
     if (!('versions' in value) || value['versions'] === undefined) return false;
+    if (!('components' in value) || value['components'] === undefined) return false;
     if (!('createdBy' in value) || value['createdBy'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('modifiedBy' in value) || value['modifiedBy'] === undefined) return false;
@@ -180,6 +187,7 @@ export function HTMLLibraryFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'published': json['published'] == null ? undefined : json['published'],
         'translations': json['translations'],
         'versions': json['versions'],
+        'components': json['components'],
         'createdBy': json['created_by'],
         'createdAt': (json['created_at'] == null ? null : new Date(json['created_at'])),
         'modifiedBy': json['modified_by'],
@@ -191,7 +199,7 @@ export function HTMLLibraryToJSON(json: any): HTMLLibrary {
     return HTMLLibraryToJSONTyped(json, false);
 }
 
-export function HTMLLibraryToJSONTyped(value?: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
+export function HTMLLibraryToJSONTyped(value?: Omit<HTMLLibrary, 'id'|'fqn'|'translations'|'versions'|'components'|'created_by'|'created_at'|'modified_by'|'modified_at'> | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

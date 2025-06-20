@@ -33,6 +33,18 @@
             "django": true,
             "autoStartBrowser": false,
             "program": "${workspaceFolder}/src/manage.py"
+        },
+        {
+            "name": "Django Install Libraries",
+            "type": "debugpy",
+            "request": "launch",
+            "args": [
+                "install_html_library",
+                //"-f", "archive.zip"
+            ],
+            "django": true,
+            "autoStartBrowser": false,
+            "program": "${workspaceFolder}/src/manage.py"
         }
     ]
 }

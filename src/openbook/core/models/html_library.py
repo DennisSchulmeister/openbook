@@ -105,8 +105,10 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
             stdout:            Output stream for console messages
             verbosity:         Print details on the console (default: 0 = off)
         """
+        from .language import Language
+
         if verbosity > 0:
-            line = f"Installing HTML library file {archive_file}"
+            line = f"Installing HTML library file {os.path.basename(archive_file)}"
 
             stdout.write("=" * len(line) + "\n")
             stdout.write(line + "\n")
@@ -169,19 +171,24 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
             if verbosity > 0:
                 stdout.write("HTMLLibraryText database entries\n")
 
-            for language in manifest.description.keys():
+            for language_code in manifest.description.keys():
                 if verbosity > 1:
-                    stdout.write(f" > {language}\n")
+                    stdout.write(f" > {language_code}\n")
 
                 try:
-                    library_text = HTMLLibraryText.objects.get(parent=library, language__iexact=language)
-                    library_text.short_description = manifest.description[language]
+                    language = Language.objects.get(pk=language_code)
+                except Language.DoesNotExist:
+                    continue
+
+                try:
+                    library_text = HTMLLibraryText.objects.get(parent=library, language=language)
+                    library_text.short_description = manifest.description[language_code]
                     library_text.save()
                 except HTMLLibraryText.DoesNotExist:
                     HTMLLibraryText.objects.create(
                         parent            = library,
                         language          = language,
-                        short_description = manifest.description[language],
+                        short_description = manifest.description[language_code],
                     )
 
         # Create or update HTMLLibraryVersion database entry
@@ -190,6 +197,11 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
                 stdout.write("HTMLLibraryVersion database entry\n")
             
             if not library_version:
+                if isinstance(archive_file, File):
+                    file_data = archive_file
+                else:
+                    file_data = File(open(archive_file, "rb"), name=os.path.basename(archive_file))
+
                 try:
                     library_version = HTMLLibraryVersion.objects.get(
                         parent          = library,
@@ -197,7 +209,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
                     )
 
                     library_version.dependencies = manifest.dependencies
-                    library_version.file_data    = archive_file
+                    library_version.file_data    = file_data
 
                     library_version.save()
                 except HTMLLibraryVersion.DoesNotExist:
@@ -205,7 +217,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
                         parent       = library,
                         version      = manifest.version,
                         dependencies = manifest.dependencies,
-                        file_data    = archive_file if isinstance(archive_file, File) else File(archive_file)
+                        file_data    = file_data
                     )
 
         # Create or update HTMLComponent and HTMLComponentDefinition database entries
@@ -240,10 +252,14 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
                 )
             
             # Delete components without definition
-            HTMLComponentDefinition.objects.filter(
-                library_version__in = HTMLLibraryVersion.objects.filter(parent=library),
+            HTMLComponent.objects.filter(
+                library             = library,
                 definitions__isnull = True,
             ).distinct().delete()
+        
+        # Finish
+        if verbosity > 0:
+            stdout.write("\n")
         
 class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     parent            = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="translations")
