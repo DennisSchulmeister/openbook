@@ -18,7 +18,7 @@ class ScopeType_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
     base_name = "scope_type"
     model     = ContentType
     count     = -1
-    pk_found  = "openbook_course.course"
+    pk_found  = "openbook_content.course"
 
     operations = {
         "list":           {"model_permission": ()},

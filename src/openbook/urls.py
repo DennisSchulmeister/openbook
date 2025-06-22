@@ -20,9 +20,7 @@ from rest_framework.routers          import DefaultRouter as DRFDefaultRouter
 from .admin                          import admin_site
 from .auth.routes                    import register_api_routes as register_auth_api_routes
 from .core.routes                    import register_api_routes as register_core_api_routes
-from .course.routes                  import register_api_routes as register_course_api_routes
-from .taxonomy.routes                import register_api_routes as register_taxonomy_api_routes
-from .textbook.routes                import register_api_routes as register_textbook_api_routes
+from .content.routes                 import register_api_routes as register_course_api_routes
 
 # Overwrite permission class for API root view, since it uses the default from settings.py,
 # which would only allow authenticated users to see the API documentation.
@@ -31,9 +29,7 @@ api_router = DRFDefaultRouter()
 
 register_auth_api_routes(api_router, "auth")
 register_core_api_routes(api_router, "core")
-register_course_api_routes(api_router, "course")
-register_taxonomy_api_routes(api_router, "taxonomy")
-register_textbook_api_routes(api_router, "textbook")
+register_course_api_routes(api_router, "content")
 
 urlpatterns = [
     # REST API

@@ -28,7 +28,7 @@
       - openbook_auth
       - user
     - - add_course
-      - openbook_course
+      - openbook_content
       - course
 
 - model: openbook_auth.group

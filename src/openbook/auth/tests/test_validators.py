@@ -20,7 +20,7 @@ class Validators_Test(TestCase):
         """
         Models for permission scopes must implement `ScopedRolesMixin`
         """
-        scope_type_valid   = content_type_for_model_string("openbook_course.course")
+        scope_type_valid   = content_type_for_model_string("openbook_content.course")
         scope_type_invalid = content_type_for_model_string("openbook_auth.user")
 
         validators.validate_scope_type(scope_type_valid)

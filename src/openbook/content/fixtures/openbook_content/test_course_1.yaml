@@ -1,5 +1,5 @@
 # Course
-- model: openbook_course.course
+- model: openbook_content.course
   pk: 3629d56b-e3ae-41c9-8438-0046e057a69b
   fields:
     name: Test Course 1
@@ -20,7 +20,7 @@
     #- dennis
     modified_at: 2025-06-01 12:47:06.686942+00:00
     scope_type:
-    - openbook_course
+    - openbook_content
     - course
     scope_uuid: 3629d56b-e3ae-41c9-8438-0046e057a69b
     is_active: true
@@ -35,7 +35,7 @@
   pk: d66d664a-7127-43b9-8dde-ad6ea66d6890
   fields:
     scope_type:
-    - openbook_course
+    - openbook_content
     - course
     scope_uuid: 3629d56b-e3ae-41c9-8438-0046e057a69b
     is_active: true
@@ -50,7 +50,7 @@
   pk: e0cf58ff-264c-4e8b-a3fa-b9dd19c087e6
   fields:
     scope_type:
-    - openbook_course
+    - openbook_content
     - course
     scope_uuid: 3629d56b-e3ae-41c9-8438-0046e057a69b
     is_active: true
@@ -65,7 +65,7 @@
   pk: f99c5fd1-d7fa-4cd8-9931-f21b83230b32
   fields:
     scope_type:
-    - openbook_course
+    - openbook_content
     - course
     scope_uuid: 3629d56b-e3ae-41c9-8438-0046e057a69b
     is_active: true
@@ -83,7 +83,7 @@
     duration_period: ''
     duration_value: 0.0
     scope_type:
-    - openbook_course
+    - openbook_content
     - course
     scope_uuid: 3629d56b-e3ae-41c9-8438-0046e057a69b
     is_active: true

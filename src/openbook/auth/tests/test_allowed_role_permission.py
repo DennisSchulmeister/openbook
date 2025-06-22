@@ -21,7 +21,7 @@ class AllowedRolePermissionTextest_Mixin:
         super().setUp()
         reset_current_user()
         
-        self.scope_type = content_type_for_model_string("openbook_course.course")
+        self.scope_type = content_type_for_model_string("openbook_content.course")
 
         self.allowed_permission = AllowedRolePermission.objects.create(
             scope_type = self.scope_type,

@@ -28,21 +28,21 @@ import {
     PatchedCourseToJSON,
 } from '../models/index';
 
-export interface CourseCoursesCreateRequest {
+export interface ContentCoursesCreateRequest {
     course: Omit<Course, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
     fields?: string;
     omit?: string;
 }
 
-export interface CourseCoursesDestroyRequest {
+export interface ContentCoursesDestroyRequest {
     id: string;
     expand?: string;
     fields?: string;
     omit?: string;
 }
 
-export interface CourseCoursesListRequest {
+export interface ContentCoursesListRequest {
     expand?: string;
     fields?: string;
     omit?: string;
@@ -64,7 +64,7 @@ export interface CourseCoursesListRequest {
     slug?: string;
 }
 
-export interface CourseCoursesPartialUpdateRequest {
+export interface ContentCoursesPartialUpdateRequest {
     id: string;
     expand?: string;
     fields?: string;
@@ -72,14 +72,14 @@ export interface CourseCoursesPartialUpdateRequest {
     patchedCourse?: Omit<PatchedCourse, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
 }
 
-export interface CourseCoursesRetrieveRequest {
+export interface ContentCoursesRetrieveRequest {
     id: string;
     expand?: string;
     fields?: string;
     omit?: string;
 }
 
-export interface CourseCoursesUpdateRequest {
+export interface ContentCoursesUpdateRequest {
     id: string;
     course: Omit<Course, 'id'|'owner'|'role_assignments'|'enrollment_methods'|'access_requests'|'created_by'|'created_at'|'modified_by'|'modified_at'>;
     expand?: string;
@@ -96,11 +96,11 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Create
      */
-    async courseCoursesCreateRaw(requestParameters: CourseCoursesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
+    async contentCoursesCreateRaw(requestParameters: ContentCoursesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
         if (requestParameters['course'] == null) {
             throw new runtime.RequiredError(
                 'course',
-                'Required parameter "course" was null or undefined when calling courseCoursesCreate().'
+                'Required parameter "course" was null or undefined when calling contentCoursesCreate().'
             );
         }
 
@@ -127,7 +127,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/`,
+            path: `/api/content/courses/`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -141,8 +141,8 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Create
      */
-    async courseCoursesCreate(requestParameters: CourseCoursesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
-        const response = await this.courseCoursesCreateRaw(requestParameters, initOverrides);
+    async contentCoursesCreate(requestParameters: ContentCoursesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
+        const response = await this.contentCoursesCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -150,11 +150,11 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Delete
      */
-    async courseCoursesDestroyRaw(requestParameters: CourseCoursesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async contentCoursesDestroyRaw(requestParameters: ContentCoursesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling courseCoursesDestroy().'
+                'Required parameter "id" was null or undefined when calling contentCoursesDestroy().'
             );
         }
 
@@ -179,7 +179,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: `/api/content/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -192,15 +192,15 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Delete
      */
-    async courseCoursesDestroy(requestParameters: CourseCoursesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.courseCoursesDestroyRaw(requestParameters, initOverrides);
+    async contentCoursesDestroy(requestParameters: ContentCoursesDestroyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.contentCoursesDestroyRaw(requestParameters, initOverrides);
     }
 
     /**
      * Courses
      * List
      */
-    async courseCoursesListRaw(requestParameters: CourseCoursesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedCourseList>> {
+    async contentCoursesListRaw(requestParameters: ContentCoursesListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PaginatedCourseList>> {
         const queryParameters: any = {};
 
         if (requestParameters['expand'] != null) {
@@ -286,7 +286,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/`,
+            path: `/api/content/courses/`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -299,8 +299,8 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * List
      */
-    async courseCoursesList(requestParameters: CourseCoursesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedCourseList> {
-        const response = await this.courseCoursesListRaw(requestParameters, initOverrides);
+    async contentCoursesList(requestParameters: ContentCoursesListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PaginatedCourseList> {
+        const response = await this.contentCoursesListRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -308,11 +308,11 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Partial Update
      */
-    async courseCoursesPartialUpdateRaw(requestParameters: CourseCoursesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
+    async contentCoursesPartialUpdateRaw(requestParameters: ContentCoursesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling courseCoursesPartialUpdate().'
+                'Required parameter "id" was null or undefined when calling contentCoursesPartialUpdate().'
             );
         }
 
@@ -339,7 +339,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: `/api/content/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
@@ -353,8 +353,8 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Partial Update
      */
-    async courseCoursesPartialUpdate(requestParameters: CourseCoursesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
-        const response = await this.courseCoursesPartialUpdateRaw(requestParameters, initOverrides);
+    async contentCoursesPartialUpdate(requestParameters: ContentCoursesPartialUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
+        const response = await this.contentCoursesPartialUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -362,11 +362,11 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Retrieve
      */
-    async courseCoursesRetrieveRaw(requestParameters: CourseCoursesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
+    async contentCoursesRetrieveRaw(requestParameters: ContentCoursesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling courseCoursesRetrieve().'
+                'Required parameter "id" was null or undefined when calling contentCoursesRetrieve().'
             );
         }
 
@@ -391,7 +391,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: `/api/content/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -404,8 +404,8 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Retrieve
      */
-    async courseCoursesRetrieve(requestParameters: CourseCoursesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
-        const response = await this.courseCoursesRetrieveRaw(requestParameters, initOverrides);
+    async contentCoursesRetrieve(requestParameters: ContentCoursesRetrieveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
+        const response = await this.contentCoursesRetrieveRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -413,18 +413,18 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Update
      */
-    async courseCoursesUpdateRaw(requestParameters: CourseCoursesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
+    async contentCoursesUpdateRaw(requestParameters: ContentCoursesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Course>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling courseCoursesUpdate().'
+                'Required parameter "id" was null or undefined when calling contentCoursesUpdate().'
             );
         }
 
         if (requestParameters['course'] == null) {
             throw new runtime.RequiredError(
                 'course',
-                'Required parameter "course" was null or undefined when calling courseCoursesUpdate().'
+                'Required parameter "course" was null or undefined when calling contentCoursesUpdate().'
             );
         }
 
@@ -451,7 +451,7 @@ export class CoursesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/api/course/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
+            path: `/api/content/courses/{id}/`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -465,8 +465,8 @@ export class CoursesApi extends runtime.BaseAPI {
      * Courses
      * Update
      */
-    async courseCoursesUpdate(requestParameters: CourseCoursesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
-        const response = await this.courseCoursesUpdateRaw(requestParameters, initOverrides);
+    async contentCoursesUpdate(requestParameters: ContentCoursesUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Course> {
+        const response = await this.contentCoursesUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

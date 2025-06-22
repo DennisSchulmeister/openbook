@@ -10,7 +10,7 @@ from django.test                      import TestCase
 
 from openbook.core.utils.content_type import content_type_for_model_string
 from openbook.core.utils.content_type import model_string_for_content_type
-from openbook.course.models.course    import Course
+from openbook.content.models.course   import Course
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user
 from ..models.access_request          import AccessRequest
@@ -45,7 +45,7 @@ class Role_ViewSet_Tests(ModelViewSetTestMixin, TestCase):
         self.role_assistant.save()
         self.role_teacher.save()
 
-        scope_type = content_type_for_model_string("openbook_course.course")
+        scope_type = content_type_for_model_string("openbook_content.course")
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.add_logentry"))
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.change_logentry"))
         AllowedRolePermission.objects.create(scope_type=scope_type, permission=permission_for_perm_string("admin.delete_logentry"))

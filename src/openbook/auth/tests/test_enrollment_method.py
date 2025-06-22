@@ -13,7 +13,7 @@ from django.test                      import TestCase
 from unittest.mock                    import patch
 
 from openbook.core.utils.content_type import model_string_for_content_type
-from openbook.course.models.course    import Course
+from openbook.content.models.course   import Course
 from openbook.test                    import ModelViewSetTestMixin
 from ..middleware.current_user        import reset_current_user
 from ..models.enrollment_method       import EnrollmentMethod
