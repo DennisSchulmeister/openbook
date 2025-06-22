@@ -9,6 +9,7 @@
 import os, shutil, sys, typing
 
 from django.core.exceptions import ValidationError
+from django.utils.text      import format_lazy as _f
 from yaml                   import safe_load as yaml_safe_load
 from zipfile                import is_zipfile
 from zipfile                import ZipFile
@@ -150,7 +151,7 @@ class HTMLLibraryArchive:
         library_dir = os.path.join(install_dir, self._manifest.organization, self._manifest.name, self._manifest.version)
 
         if verbosity > 0:
-            stdout.write(f"Extracting to {library_dir}\n")
+            stdout.write(_f("Extracting to {library_dir}", library_dir=library_dir) + "\n")
 
         if os.path.exists(library_dir):
             shutil.rmtree(library_dir)

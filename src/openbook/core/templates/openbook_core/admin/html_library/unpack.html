@@ -1,0 +1,69 @@
+{% extends 'unfold/layouts/base.html' %}
+{% load admin_urls i18n unfold %}
+
+{# Breadcrumb must be manually built in custom admin views #}
+{% block breadcrumbs %}
+    {% if not is_popup %}
+    <div class="px-4">
+        <div class="container mb-6 mx-auto -my-3 lg:mb-12">
+            <ul class="flex flex-wrap">
+                {% url 'admin:index' as link %}
+                {% trans 'Home' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=name %}
+
+                {% url 'admin:openbook_core_htmllibrary_changelist' as link %}
+                {% trans 'HTML Libraries' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=name %}
+
+                {% url 'admin:openbook_core_htmllibrary_change' object_id=library.pk as link %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=library.fqn %}
+
+                {% trans 'Unpack Archives' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link='' name=name %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{# Main content #}
+{% block content %}
+    <h1 class="text-xl font-semibold mb-2">{% trans 'HTML Library Installation' %}</h1>
+    <h2 class="text-lg font-semibold mb-8">{% trans 'Unpack uploaded archives' %}</h2>
+
+    <form class="border border-base-200 rounded-default shadow-xs dark:border-base-800 p-4 mb-8" method="POST">
+        {% csrf_token %}
+
+        <div class="flex items-start gap-4 mb-6">
+            {{ form.library_versions }}
+            <span class="text-red-700">{{ form.library_versions.errors }}</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1 mb-6" style="grid-template-columns: max-content max-content; column-gap: 1.5em;">
+            <div>{{ form.extract_archive.label_tag }}</div>
+            <div>{{ form.extract_archive }}</div>
+
+            <div>{{ form.update_library.label_tag }}</div>
+            <div>{{ form.update_library }}</div>
+
+            <div>{{ form.update_version.label_tag }}</div>
+            <div>{{ form.update_version }}</div>
+
+            <div class="mb-6">{{ form.update_components.label_tag }}</div>
+            <div>{{ form.update_components }}</div>
+
+            <div>{{ form.verbosity.label_tag }}</div>
+            <div>{{ form.verbosity }}</div>
+        </div>
+
+        <div>
+            {% component 'unfold/components/button.html' with class='bg-primary-600' name='start-extraction' %}
+                {% trans 'Start Extraction' %}
+            {% endcomponent %}
+        </div>
+    </form>
+
+    {% if log_output %}
+    <pre>{{ log_output }}</pre>
+    {% endif %}
+{% endblock %}

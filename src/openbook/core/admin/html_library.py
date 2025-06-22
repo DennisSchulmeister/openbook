@@ -6,6 +6,7 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
+from django.http                       import HttpResponse
 from django.http                       import HttpRequest
 from django.utils.translation          import gettext_lazy as _
 from import_export.fields              import Field
@@ -25,6 +26,7 @@ from ..models.html_component           import HTMLComponent
 from ..models.html_library             import HTMLLibrary
 from ..models.html_library             import HTMLLibraryText
 from ..models.html_library             import HTMLLibraryVersion
+from ..views.html_library              import UnpackHTMLLibraryArchivesView
 
 # =======================
 # Import/Export Resources
@@ -182,6 +184,7 @@ class HTMLLibraryAdmin(CustomModelAdmin):
     ordering            = ["organization", "name"]
     list_sections       = [_HTMLLibraryVersionSection, _HTMLComponentSection]
     inlines             = [_HTMLLibraryTextInline, _HTMLLibraryVersionInline, _HTMLComponentInline]
+    actions_list        = []
     actions_detail      = ["unpack_archives"]
 
     def get_queryset(self, request):
@@ -216,7 +219,8 @@ class HTMLLibraryAdmin(CustomModelAdmin):
         }),
     ]
 
-    @action(description=_("Unpack archive files"), url_path="html_library-unpack_archive")
-    def unpack_archives(self, request: HttpRequest, object_id: int) -> str:
-        # TODO: https://unfoldadmin.com/docs/actions/action-form-example/
-        return "TODO"
+    @action(description=_("Unpack archive files"), icon="folder_zip", url_path="unpack")
+    def unpack_archives(self, request: HttpRequest, object_id: str) -> HttpResponse:
+        # Directly rendering the view instead of a redirect, since the view works stand-alone
+        view = UnpackHTMLLibraryArchivesView.as_view(model_admin=self)
+        return view(request, library_id=object_id)

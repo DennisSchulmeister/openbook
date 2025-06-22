@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "unfold.contrib.import_export",          # optional, if django-import-export package is used
     #"unfold.contrib.guardian",              # optional, if django-guardian package is used
     #"unfold.contrib.simple_history",        # optional, if django-simple-history package is used
+    "crispy_forms",                          # Better forms for custom admin views
 
     # Django built-in apps
     "openbook.apps.OpenBookAdmin",
@@ -127,6 +128,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "openbook.wsgi.application"
 ASGI_APPLICATION = "openbook.asgi.application"
+
+FORM_RENDERER = "django.forms.renderers.DjangoTemplates"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -275,6 +278,9 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
 # Django Unfold Admin
+CRISPY_TEMPLATE_PACK = "unfold_crispy"
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
+
 UNFOLD = {
     "SITE_TITLE":  _("OpenBook: Admin"),
     "SITE_HEADER": _("OpenBook: Admin"),
@@ -350,6 +356,11 @@ UNFOLD = {
                     "link":       reverse_lazy("admin:openbook_core_htmlcomponent_changelist"),
                     "permission": lambda req: req.user.has_perm("openbook_core.view_htmlcomponent"),
                 },
+
+                # TODO: Repository Servers (Model)
+                # TODO: Install Libraries (Custom View)
+                # TODO: Upgrade Libraries (Custom View)
+                # See: https://unfoldadmin.com/docs/configuration/crispy-forms/
             ],
         },
         {

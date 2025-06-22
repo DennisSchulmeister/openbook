@@ -14,6 +14,7 @@ from django.core.files                 import File
 from django.conf                       import settings
 from django.contrib.admin              import display
 from django.db                         import models
+from django.utils.text                 import format_lazy as _f
 from django.utils.translation          import gettext_lazy as _
 
 from openbook.auth.models.mixins.audit import CreatedModifiedByMixin
@@ -109,21 +110,37 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         from .language import Language
 
         if verbosity > 0:
-            line = f"Installing HTML library file {os.path.basename(archive_file)}"
+            if isinstance(archive_file, str):
+                filename = os.path.basename(archive_file)
+            elif hasattr(archive_file, "name"):
+                filename = os.path.basename(archive_file.name)
+            else:
+                filename = str(archive_file)
+
+            line = _f("Installing HTML library file {filename}", filename=filename)
 
             stdout.write("=" * len(line) + "\n")
             stdout.write(line + "\n")
             stdout.write("=" * len(line) + "\n")
             stdout.write("\n")
-
+        
         # Validate archive file
         archive = HTMLLibraryArchive(archive_file)
 
         if not archive.is_valid_archive():
             raise ValidationError(_("The archive file is no valid HTML library archive."))
+
+        if not extract_archive and not update_library and not update_version and not update_components:
+            if verbosity > 0:
+                stdout.write(_("No action selected. Nothing to do!") + "\n")
+            
+            return
         
         # Extract archive on filesystem
         if extract_archive:
+            if verbosity > 0:
+                stdout.write(_("Unpacking archive file") + "\n")
+
             archive.extract(
                 install_dir = os.path.join(settings.MEDIA_ROOT, "lib"),
                 verbosity   = verbosity,
@@ -132,7 +149,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         # Create or update HTMLLibrary and HTMLLibraryText database entries
         if update_library:
             if verbosity > 0:
-                stdout.write("HTMLLibrary database entry\n")
+                stdout.write(_("Updating library header data") + "\n")
 
             manifest = archive.get_library_manifest()
 
@@ -170,7 +187,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
                 library.save()
             
             if verbosity > 0:
-                stdout.write("HTMLLibraryText database entries\n")
+                stdout.write(_("Updating library descriptions") + "\n")
 
             for language_code in manifest.description.keys():
                 if verbosity > 1:
@@ -195,7 +212,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         # Create or update HTMLLibraryVersion database entry
         if update_version:
             if verbosity > 0:
-                stdout.write("HTMLLibraryVersion database entry\n")
+                stdout.write(_("Updating library version data") + "\n")
             
             if not library_version:
                 if isinstance(archive_file, File):
@@ -224,7 +241,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         # Create or update HTMLComponent and HTMLComponentDefinition database entries
         if update_components:
             if verbosity > 0:
-                stdout.write("HTMLComponent and HTMLComponentDefinition database entries\n")
+                stdout.write(_("Updating component definitions") + "\n")
             
             from .html_component import HTMLComponent
             from .html_component import HTMLComponentDefinition
@@ -233,7 +250,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
 
             for component_manifest in archive.get_html_component_manifests().values():
                 if verbosity > 1:
-                    stdout.write(f" > {component_manifest.tagname}\n")
+                    stdout.write(f" > {component_manifest.tag_name}\n")
                 
                 try:
                     html_component = HTMLComponent.objects.get(
@@ -261,6 +278,7 @@ class HTMLLibrary(UUIDMixin, CreatedModifiedByMixin):
         # Finish
         if verbosity > 0:
             stdout.write("\n")
+            stdout.write(_("Done!") + "\n")
         
 class HTMLLibraryText(UUIDMixin, TranslatableMixin):
     parent            = models.ForeignKey(HTMLLibrary, on_delete=models.CASCADE, related_name="translations")
@@ -286,7 +304,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     
     @display(description=_("Fully Qualified Name"))
     def fqn(self):
-        return f"@{self.parent.fqn()} {self.version}"
+        return f"{self.parent.fqn()} {self.version}"
     
     @display(description=_("Frontend URL"))
     def frontend_url(self):
@@ -307,7 +325,9 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
     def calc_file_path_hook(self, filename):
         return f"lib/@{self.parent.organization}_{self.parent.name}_{self.version}.zip"
     
-    def unpack_archive(self,
+    def unpack_archive(
+        self,
+        extract_archive:   bool = True,
         update_library:    bool = True,
         update_version:    bool = True,
         update_components: bool = True,
@@ -319,6 +339,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
         data inside the archive to update the database entries.
 
         Parameters:
+            extract_archive:   Extract archive file on filesystem
             update_library:    Update header data of the library
             update_version:    Update data of this library version
             update_components: Update HTML component definitions
@@ -333,6 +354,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
         
         self.parent.install_archive(
             archive_file      = self.file_data,
+            extract_archive   = extract_archive,
             update_library    = update_library,
             update_version    = update_version,
             update_components = update_components,
