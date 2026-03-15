@@ -11,7 +11,12 @@ const typescriptFiles = ["**/*.{ts,tsx,mts,cts}"];
 export default defineConfig(
     {
         name: "openbook/ignores",
-        ignores: ["node_modules/*", "**/*.d.ts"],
+        ignores: [
+            "node_modules/*",
+            "**/*.d.ts",
+            "src/frontend/app/src/api-client/**",
+            "src/frontend/app/src/auth-client/**",
+        ],
     },
     {
         name: "openbook/javascript",
