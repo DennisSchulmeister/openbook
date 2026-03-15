@@ -136,11 +136,13 @@ function staticFilesPlugin(outfiles, staticdirs) {
 
                 if (!watchDirsAdded) {
                     for (let staticdir of staticdirs) {
-                        if (staticdir.endsWith("*")) staticdir = path.dirname(staticdir);
-                        watchDirs.push(staticdir);
+                        let watchDir = getStaticWatchDir(staticdir);
+                        if (!shelljs.test("-d", watchDir)) continue;
 
-                        for (let entry of shelljs.ls("-lR", staticdir)) {
-                            let fullname = path.join(staticdir, entry.name);
+                        watchDirs.push(watchDir);
+
+                        for (let entry of shelljs.ls("-lR", watchDir)) {
+                            let fullname = path.join(watchDir, entry.name);
 
                             if (entry.isDirectory()) watchDirs.push(fullname);
                             else watchFiles.push(fullname);
@@ -157,10 +159,13 @@ function staticFilesPlugin(outfiles, staticdirs) {
                 console.log(">>> COPY STATIC FILES <<<");
 
                 for (let staticdir of staticdirs) {    
+                    let staticFiles = getStaticCopySources(staticdir);
+                    if (staticFiles.length < 1) continue;
+
                     for (let outfile of outfiles) {
                         let dst = path.dirname(outfile);
                         shelljs.mkdir("-p", dst);
-                        shelljs.cp("-R", staticdir, dst);
+                        shelljs.cp("-R", staticFiles, dst);
                     }
                 }
 
@@ -168,4 +173,36 @@ function staticFilesPlugin(outfiles, staticdirs) {
             });
         },
     };
+}
+
+/**
+ * Returns the directory path to be watched for static assets.
+ *
+ * If `staticdir` ends with `*`, this strips the wildcard and returns only
+ * the parent directory.
+ *
+ * @param {string} staticdir Static directory configuration value
+ * @returns {string} Directory path for watch mode
+ */
+function getStaticWatchDir(staticdir) {
+    return staticdir.endsWith("*") ? path.dirname(staticdir) : staticdir;
+}
+
+/**
+ * Expands a static directory configuration value into copy sources.
+ *
+ * If the watched directory does not exist, an empty list is returned.
+ * For wildcard values ending with `*`, all top-level entries are returned.
+ * Otherwise the single configured path is returned.
+ *
+ * @param {string} staticdir Static directory configuration value
+ * @returns {string[]} Paths to pass to `shelljs.cp`
+ */
+function getStaticCopySources(staticdir) {
+    let watchDir = getStaticWatchDir(staticdir);
+
+    if (!shelljs.test("-d", watchDir)) return [];
+    if (!staticdir.endsWith("*")) return [staticdir];
+
+    return shelljs.ls("-A", watchDir).map(entry => path.join(watchDir, entry));
 }
