@@ -16,7 +16,7 @@
     "check": "npm run lint && tsc"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.20.0",
-    "svelte-spa-router": "^4.0.1"
+    "@openapitools/openapi-generator-cli": "^2.30.2",
+    "svelte-spa-router": "^4.0.2"
   }
 }

@@ -91,7 +91,7 @@ The OpenBook Server is built with the following technology:
 The idea is to keep the technical requirements lean to enable easy deployment in custom environments.
 Therefor the choice of Django might be considered "conservative", but in fact it contains all the needed
 functionality like HTTP request routing, server-side templates, database access, ... in a single, stable
-and well maintained dependency. 
+and well maintained dependency.
 
 The frontend is a single page app, composed of a core library and several add-on libraries, that
 can also run stand-alone without server backend. In part this is due to the development history
@@ -298,7 +298,7 @@ The API is a compatible extension to the regular API:
 
 * `User.has_perm(self, perm, obj=None)` (Django User)
 * `has_perm(user_obj, perm, obj=None)` (Authentication Backend)
-* `ModelAdmin.has_…_permission(self, request, obj=None)` (Django Admin) 
+* `ModelAdmin.has_…_permission(self, request, obj=None)` (Django Admin)
 * `BasePermission.has_object_permission(self, request, view, obj)` (Django REST Framework)
 
 However, there are some oddities:
@@ -318,7 +318,7 @@ However, there are some oddities:
   manually call the inherited method, when it is replaced with a custom implementation or the generic
   REST views are not used. Limitations of object permissions in Django REST Framework
   ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
-  
+
   * For performance reasons the generic views will not automatically apply object level permissions
     to each instance in a queryset when returning a list of objects.
 
@@ -522,7 +522,7 @@ run scripts are:
 
 * `npm run build` - Build distribution files
 * `npm run clean` - Delete distribution files
-* `npm run watch` - Start watch mode for automatical rebuilds
+* `npm run watch` - Start watch mode for automatic rebuilds
 * `npm run check` - Run all checks and tests: eslint, TypeScript, unit tests
 * `npm run start` or `npm start` - Run from built distribution files
 
