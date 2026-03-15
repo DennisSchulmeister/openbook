@@ -22,8 +22,7 @@
     },
     "devDependencies": {
         "@tsconfig/svelte": "^5.0.8",
-        "@types/glob": "^9.0.0",
-        "@types/node": "^24.14.0",
+        "@types/node": "^25.5.0",
         "@typescript-eslint/eslint-plugin": "^8.57.0",
         "ajv": "^8.18.0",
         "conc": "^0.0.3",
@@ -33,9 +32,7 @@
         "eslint": "^10.0.3",
         "eslint-config-prettier": "^10.1.8",
         "eslint-import-resolver-typescript": "^4.4.4",
-        "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-prettier": "^5.5.5",
-        "eslint-plugin-unused-imports": "^4.4.1",
         "glob": "^13.0.6",
         "jszip": "^3.10.1",
         "maildev": "^2.2.1",
@@ -47,5 +44,8 @@
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "yaml": "^2.8.2"
+    },
+    "dependencies": {
+        "eslint-plugin-unused-imports": "^4.4.1"
     }
 }
