@@ -91,6 +91,7 @@ jobs:
               id: create_pr
               uses: peter-evans/create-pull-request@v8
               with:
+                  token: ${{ secrets.PR_APPROVE_TOKEN || secrets.GITHUB_TOKEN }}
                   branch: "ci/deps-monthly-major"
                   delete-branch: true
                   commit-message: "chore(deps): monthly major dependency updates"
