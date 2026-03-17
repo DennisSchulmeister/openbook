@@ -22,13 +22,14 @@ jobs:
         steps:
             - name: "Checkout code"
               uses: actions/checkout@v6
+              with:
+                  ref: ${{ inputs.ref }}
               # Must be first, so that GH actions finds our local actions!
               
             - name: "Set up CI environment"
               uses: ./.github/actions/setup-ci-environment
               with:
-                ref: ${{ inputs.ref }}
-                setup-node: "true"
+                  setup-node: "true"
 
             - name: "Install Python dependencies"
               run: poetry install --no-interaction --no-root

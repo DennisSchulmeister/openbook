@@ -22,24 +22,19 @@ inputs:
         required: false
         default: "latest"
 
-    ref:
-        description: "Git ref to check out"
-        required: false
-        default: ""
-
 runs:
     using: "composite"
     steps:
+        - name: "Install Poetry"
+          uses: snok/install-poetry@v1
+          with:
+              version: ${{ inputs.poetry-version }}
+
         - name: "Set up Python"
           uses: actions/setup-python@v6
           with:
               python-version: ${{ inputs.python-version }}
               cache: "poetry"
-
-        - name: "Install Poetry"
-          uses: snok/install-poetry@v1
-          with:
-              version: ${{ inputs.poetry-version }}
 
         - name: "Set up Node.js"
           if: ${{ inputs.setup-node == 'true' }}
