@@ -14,6 +14,7 @@ export default defineConfig(
         ignores: [
             "node_modules/*",
             "**/*.d.ts",
+            "sbom/**",
             "src/frontend/app/src/api-client/**",
             "src/frontend/app/src/auth-client/**",
         ],

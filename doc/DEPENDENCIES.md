@@ -187,9 +187,22 @@ or pull request that introduces the dependency.
 Version Upgrades and Security Fixes
 -------------------------------------
 
-* **Routine upgrades** – Dependencies should be updated regularly. We have to GitHub Actions workflows in place for this:
+* **Routine upgrades** – Dependencies should be updated regularly. We have two GitHub Actions workflows in place for this:
   Each week minor/patch versions are upgraded and a PR is auto-merged, when all tests pass. At the beginning of each month
-  all major versions are upgraded and a PR for manual review is created.
+  all major versions are upgraded and a PR for manual review is created. Both workflows also regenerate the whole-project
+  CycloneDX SBOM at `sbom/openbook.cyclonedx.json`, covering the backend Python dependencies and all frontend `npm`
+  workspaces, and include the updated file in the same PR.
+
+  **Always trigger dependency updates through these workflows rather than running `poetry update` or `npm update` by
+  hand.** Manual updates bypass the automated SBOM regeneration, skip all CI tests, and leave no pull-request audit
+  trail. You can trigger either workflow from the command line or from the GitHub Actions tab:
+
+  ```sh
+  npm run deps:update-minor    # triggers the weekly minor/patch workflow
+  npm run deps:update-major    # triggers the monthly major-version workflow
+  ```
+
+  Both scripts require the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
 * **Major version bumps** – These frequently introduce breaking changes. Review the migration guide before upgrading.
   If the effort is significant, create a dedicated issue and plan the migration explicitly rather than letting it accumulate.

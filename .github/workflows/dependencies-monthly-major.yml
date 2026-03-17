@@ -87,6 +87,9 @@ jobs:
 
                     npm install --legacy-peer-deps
 
+            - name: "Generate whole-project SBOM"
+              uses: ./.github/actions/generate-project-sbom
+
             - name: "Create or update pull request"
               id: create_pr
               uses: peter-evans/create-pull-request@v8
@@ -103,6 +106,7 @@ jobs:
 
                         This PR was created automatically by the monthly major dependency update workflow.
                         It upgrades dependencies to the latest major versions and is intended for manual review.
+                        The whole-project CycloneDX SBOM at `sbom/openbook.cyclonedx.json` is updated to reflect the new dependency versions.
 
                         ## Validation
 

@@ -37,6 +37,9 @@ jobs:
             - name: "Update root/workspace npm dependencies (minor/patch)"
               run: npm update --workspaces --include-workspace-root --legacy-peer-deps
 
+            - name: "Generate whole-project SBOM"
+              uses: ./.github/actions/generate-project-sbom
+
             - name: "Create or update pull request"
               id: create_pr
               uses: peter-evans/create-pull-request@v8
@@ -53,6 +56,7 @@ jobs:
 
                         This PR was created automatically by the weekly dependency update workflow.
                         It updates dependencies to the latest patch/minor versions permitted by the current constraints.
+                        The whole-project CycloneDX SBOM at `sbom/openbook.cyclonedx.json` is updated to reflect the new dependency versions.
 
                         ## Validation
 

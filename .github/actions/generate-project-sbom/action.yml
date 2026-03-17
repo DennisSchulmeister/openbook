@@ -1,0 +1,18 @@
+name: "Generate project SBOM"
+description: "Generate a whole-project CycloneDX SBOM and write it to sbom/openbook.cyclonedx.json"
+
+runs:
+    using: "composite"
+    steps:
+        - name: "Create SBOM output directory"
+          shell: bash
+          run: mkdir -p sbom
+
+        - name: "Generate CycloneDX SBOM"
+          uses: anchore/sbom-action@v0
+          with:
+              path: "."
+              format: "cyclonedx-json"
+              output-file: "sbom/openbook.cyclonedx.json"
+              upload-artifact: false
+              upload-release-assets: false
