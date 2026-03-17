@@ -70,20 +70,25 @@ jobs:
         with:
             ref: ${{ needs.update-dependencies.outputs.pr_branch }}
 
-    auto-approve:
-        name: "Auto approve PR"
+    auto-merge:
+        name: "Auto merge PR"
         needs: [update-dependencies, run-tests]
         if: ${{ needs.run-tests.result == 'success' && (needs.update-dependencies.outputs.pr_operation == 'created' || needs.update-dependencies.outputs.pr_operation == 'updated') }}
         runs-on: ubuntu-latest
 
         permissions:
+            contents: write
             pull-requests: write
 
         steps:
-            - name: "Approve dependency update pull request"
-              uses: hmarr/auto-approve-action@v4
-              with:
-                    pull-request-number: ${{ needs.update-dependencies.outputs.pr_number }}
-                    # Must be a different user than the GITHUB_TOKEN. GitHub doesn't allow the same
-                    # user to open and approve pull requests via the API!
-                    github-token: ${{ secrets.PR_APPROVE_TOKEN }}
+            # Only works if there are no branch protection rules that require explicit approval before merging PRs.
+            # If there are, "Allow specified actors to bypass required pull requests" can be checked in the branch
+            # protection rules.
+            - name: "Merge dependency update pull request"
+              run: |
+                  gh pr merge "${{ needs.update-dependencies.outputs.pr_number }}" \
+                      --squash \
+                      --delete-branch \
+                      --repo "${{ github.repository }}"
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
