@@ -1,6 +1,13 @@
 OpenBook: Changelog
 ==========================
 
+2026-03-17: Dependency updates and policy
+-----------------------------------------
+
+After the project reached a status, where the technical core is working (backend, REST API, ...)
+it was put aside for a few months. Now to continue with the development, all dependencies have
+been updated to their latest major versions and a policy for dependency handling as been documented.
+
 2024-08-06: Development started
 -------------------------------
 
@@ -11,5 +18,5 @@ have an excuse to start this project.
 
 Initial development will be slow. Initially I only want to implement the backend functionality
 for feedback surveys and integrate this in my existing materials. But while doing so I want
-to lay the groundwork for the following re-implemenation, leveraging the scaffolding I did
+to lay the groundwork for the following re-implementation, leveraging the scaffolding I did
 for Lernspiel Online (another platform I wanted to start for a long time).

@@ -1,0 +1,118 @@
+name: "Dependency Updates (Monthly Major)"
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "0 5 1 * *"
+
+permissions:
+    contents: write
+    pull-requests: write
+
+concurrency:
+    group: "dependency-updates-monthly-major"
+    cancel-in-progress: true
+
+jobs:
+    update-major-dependencies:
+        name: "Update major dependency versions"
+        runs-on: ubuntu-latest
+
+        outputs:
+            pr_operation: ${{ steps.create_pr.outputs.pull-request-operation }}
+            pr_branch: ${{ steps.create_pr.outputs.pull-request-branch }}
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v4
+
+            - name: "Set up CI environment"
+              uses: ./.github/actions/setup-ci-environment
+
+            - name: "Upgrade Poetry dependencies to latest major versions"
+              run: |
+                  python - <<"PY"
+                  from pathlib import Path
+                  import subprocess
+                  import tomllib
+
+                  pyproject_data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+                  poetry_data = pyproject_data["tool"]["poetry"]
+
+                  def dependency_spec_to_package_ref(name: str, spec: object) -> str:
+                      if isinstance(spec, str):
+                          return name
+
+                      if isinstance(spec, dict):
+                          extras = spec.get("extras", [])
+                          if extras:
+                              return f"{name}[{",".join(extras)}]"
+                          return name
+
+                      return name
+
+                  for dep_name, dep_spec in poetry_data.get("dependencies", {}).items():
+                      if dep_name.lower() == "python":
+                          continue
+
+                      package_ref = dependency_spec_to_package_ref(dep_name, dep_spec)
+                      subprocess.run(
+                          ["poetry", "add", f"{package_ref}@latest"],
+                          check=True,
+                      )
+
+                  dev_group = poetry_data.get("group", {}).get("dev", {}).get("dependencies", {})
+                  for dep_name, dep_spec in dev_group.items():
+                      package_ref = dependency_spec_to_package_ref(dep_name, dep_spec)
+                      subprocess.run(
+                          ["poetry", "add", "--group", "dev", f"{package_ref}@latest"],
+                          check=True,
+                      )
+                  PY
+
+            - name: "Upgrade npm dependencies to latest major versions"
+              run: |
+                  npm_manifests=(
+                      "package.json"
+                      "src/frontend/app/package.json"
+                      "src/frontend/admin/package.json"
+                      "src/libraries/core/package.json"
+                      "src/libraries/ls-compat/package.json"
+                  )
+
+                  for manifest in "${npm_manifests[@]}"; do
+                      npx --yes npm-check-updates@latest --upgrade --packageFile "$manifest"
+                  done
+
+                  npm install --legacy-peer-deps
+
+            - name: "Create or update pull request"
+              id: create_pr
+              uses: peter-evans/create-pull-request@v7
+              with:
+                  branch: "ci/deps-monthly-major"
+                  delete-branch: true
+                  commit-message: "chore(deps): monthly major dependency updates"
+                  title: "chore(deps): monthly major dependency updates"
+                  body: |
+                      ## Summary
+
+                      This PR was created automatically by the monthly major dependency update workflow.
+                      It upgrades dependencies to the latest major versions and is intended for manual review.
+
+                      ## Validation
+
+                      Unit tests are executed by the reusable test workflow.
+                  labels: |
+                      dependencies
+                      automated
+                      major-update
+                      manual-review
+
+    run-tests:
+        name: "Run tests"
+        needs: update-major-dependencies
+        if: ${{ needs.update-major-dependencies.outputs.pr_operation == 'created' || needs.update-major-dependencies.outputs.pr_operation == 'updated' }}
+        uses: ./.github/workflows/reusable-tests.yml
+        with:
+            ref: ${{ needs.update-major-dependencies.outputs.pr_branch }}

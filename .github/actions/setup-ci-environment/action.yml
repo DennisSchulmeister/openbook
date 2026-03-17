@@ -1,0 +1,44 @@
+name: "Setup CI environment"
+description: "Set up Python, Poetry, and optionally Node.js for CI workflows"
+
+inputs:
+    setup-node:
+        description: "Whether to set up Node.js as well"
+        required: false
+        default: "true"
+
+    python-version:
+        description: "Python version to install"
+        required: false
+        default: "3.12"
+
+    node-version:
+        description: "Node.js version to install"
+        required: false
+        default: "22"
+
+    poetry-version:
+        description: "Poetry version to install"
+        required: false
+        default: "latest"
+
+runs:
+    using: "composite"
+    steps:
+        - name: "Set up Python"
+          uses: actions/setup-python@v5
+          with:
+              python-version: ${{ inputs.python-version }}
+              cache: "poetry"
+
+        - name: "Install Poetry"
+          uses: snok/install-poetry@v1
+          with:
+              version: ${{ inputs.poetry-version }}
+
+        - name: "Set up Node.js"
+          if: ${{ inputs.setup-node == 'true' }}
+          uses: actions/setup-node@v4
+          with:
+              node-version: ${{ inputs.node-version }}
+              cache: "npm"

@@ -1,0 +1,83 @@
+name: "Dependency Updates (Weekly Minor/Patch)"
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "0 4 * * 1"
+
+permissions:
+    contents: write
+    pull-requests: write
+
+concurrency:
+    group: "dependency-updates-weekly"
+    cancel-in-progress: true
+
+jobs:
+    update-dependencies:
+        name: "Update dependencies"
+        runs-on: ubuntu-latest
+
+        outputs:
+            pr_number: ${{ steps.create_pr.outputs.pull-request-number }}
+            pr_operation: ${{ steps.create_pr.outputs.pull-request-operation }}
+            pr_branch: ${{ steps.create_pr.outputs.pull-request-branch }}
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v4
+
+            - name: "Set up CI environment"
+              uses: ./.github/actions/setup-ci-environment
+
+            - name: "Update Python dependencies (minor/patch within constraints)"
+              run: poetry update
+
+            - name: "Update root/workspace npm dependencies (minor/patch)"
+              run: npm update --workspaces --include-workspace-root --legacy-peer-deps
+
+            - name: "Create or update pull request"
+              id: create_pr
+              uses: peter-evans/create-pull-request@v7
+              with:
+                  branch: "ci/deps-weekly-minor-patch"
+                  delete-branch: true
+                  commit-message: "chore(deps): weekly minor and patch updates"
+                  title: "chore(deps): weekly minor and patch updates"
+                  body: |
+                      ## Summary
+
+                      This PR was created automatically by the weekly dependency update workflow.
+                      It updates dependencies to the latest patch/minor versions permitted by the current constraints.
+
+                      ## Validation
+
+                      Unit tests are executed by the reusable test workflow.
+                  labels: |
+                      dependencies
+                      automated
+                      weekly-update
+
+    run-tests:
+        name: "Run tests"
+        needs: update-dependencies
+        if: ${{ needs.update-dependencies.outputs.pr_operation == 'created' || needs.update-dependencies.outputs.pr_operation == 'updated' }}
+        uses: ./.github/workflows/reusable-tests.yml
+        with:
+            ref: ${{ needs.update-dependencies.outputs.pr_branch }}
+
+    auto-approve:
+        name: "Auto approve PR"
+        needs: [update-dependencies, run-tests]
+        if: ${{ needs.run-tests.result == 'success' && (needs.update-dependencies.outputs.pr_operation == 'created' || needs.update-dependencies.outputs.pr_operation == 'updated') }}
+        runs-on: ubuntu-latest
+
+        permissions:
+            pull-requests: write
+
+        steps:
+            - name: "Approve dependency update pull request"
+              uses: hmarr/auto-approve-action@v4
+              with:
+                  pull-request-number: ${{ needs.update-dependencies.outputs.pr_number }}
+                  github-token: ${{ secrets.DEPENDENCY_APPROVER_TOKEN || secrets.GITHUB_TOKEN }}

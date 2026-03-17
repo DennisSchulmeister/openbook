@@ -187,9 +187,9 @@ or pull request that introduces the dependency.
 Version Upgrades and Security Fixes
 -------------------------------------
 
-* **Routine upgrades** – Dependencies should be updated regularly. As of now, we rely on `poetry update` and `npm update`
-  for this. Prefer upgrading to the latest patch or minor version as soon as it appears. We plan to introduce an automated
-  process for this later.
+* **Routine upgrades** – Dependencies should be updated regularly. We have to GitHub Actions workflows in place for this:
+  Each week minor/patch versions are upgraded and a PR is auto-merged, when all tests pass. At the beginning of each month
+  all major versions are upgraded and a PR for manual review is created.
 
 * **Major version bumps** – These frequently introduce breaking changes. Review the migration guide before upgrading.
   If the effort is significant, create a dedicated issue and plan the migration explicitly rather than letting it accumulate.
