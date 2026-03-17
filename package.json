@@ -23,7 +23,10 @@
         "lint:libraries": "cd src/libraries && npm run lint",
         "lint": "npm run lint:frontend && npm run lint:libraries",
         "fix:frontend-install": "rm -rf src/frontend/node_modules && npm install --legacy-peer-deps",
-        "init:db": "cd src && python manage.py migrate && python manage.py load_initial_data && python manage.py install_html_library && python manage.py createsuperuser"
+        "init:db": "cd src && python manage.py migrate && python manage.py load_initial_data && python manage.py install_html_library && python manage.py createsuperuser",
+        "test:backend": "cd src && poetry run python manage.py test",
+        "test": "npm run test:backend",
+        "check": "npm run lint && npm run test"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

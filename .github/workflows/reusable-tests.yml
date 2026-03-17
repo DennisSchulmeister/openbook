@@ -20,11 +20,11 @@ jobs:
                     - 6379:6379
 
         steps:
+            # Must be first, so that GH actions finds our local actions!
             - name: "Checkout code"
               uses: actions/checkout@v6
               with:
                   ref: ${{ inputs.ref }}
-              # Must be first, so that GH actions finds our local actions!
               
             - name: "Set up CI environment"
               uses: ./.github/actions/setup-ci-environment
@@ -34,5 +34,6 @@ jobs:
             - name: "Install Python dependencies"
               run: poetry install --no-interaction --no-root
 
-            - name: "Run unit tests"
-              run: poetry run python src/manage.py test
+            - name: "Run all checks and tests"
+              run: |
+                  npm run check
