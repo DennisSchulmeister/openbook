@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic     import FormView
 from unfold.views             import UnfoldModelAdminViewMixin
 from unfold.widgets           import UnfoldBooleanSwitchWidget
-from unfold.widgets           import UnfoldAdminCheckboxSelectMultiple
+from unfold.widgets           import UnfoldAdminCheckboxSelectMultipleWidget
 from unfold.widgets           import UnfoldAdminSelectWidget
 
 from ..models.html_library    import HTMLLibrary
@@ -29,7 +29,7 @@ class UnpackHTMLLibraryArchivesForm(forms.Form):
         label    = _("Library Versions"),
         choices  = [],
         required = True,
-        widget   = UnfoldAdminCheckboxSelectMultiple,
+        widget   = UnfoldAdminCheckboxSelectMultipleWidget,
     )
 
     extract_archive = forms.BooleanField(
