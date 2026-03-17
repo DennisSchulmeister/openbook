@@ -1,5 +1,5 @@
 Developer Notes for OpenBook
-===================================
+============================
 
 This document serves as a cheat sheet for developers to get started quickly. There are no
 fancy things -- if you already know Python, Poetry, Django, NPM, … But finding the right
@@ -124,28 +124,8 @@ for the frontend we use the following additional things:
 Dependency Policy
 -----------------
 
-There are no hard rules whether to allow or avoid external dependencies. But we try to not depend too
-much on external dependencies as they might cause major rewrites when their API changes or they become
-unmaintained. Generally speaking, dependencies are okay, when they are either small or would be too
-costly to reimplement.
-
-### Small Dependencies
-
-These should be limited and scope and either easy to replace or dispersible.
-E.g. [Django Color Field](https://github.com/fabiocaccamo/django-colorfield), which is used to add
-color pickers to the admin interface. Having color pickers is nice but not mission critical. Plus, we
-could reimplement the widget with acceptable effort, if needed.
-
-Still, if a dependency is too small (think if small utilities with a few lines of code), it is probably
-best to implement the functionality oneself.
-
-### Too Costly to Reimplement
-
-These bring a major advantage, drastically decreasing "time to market". Using an external library makes
-perfectly sense but comes at a price. If they ever go away, most likely major parts must be rewritten.
-So they should either be time-proven an API-stable (think [Django](https://www.djangoproject.com/) or
-[Django REST Framework](https://www.djangoproject.com/)) or at least somewhat limited in scope
-([lua-wrapper](https://pypi.org/project/lua-wrapper/)).
+See [DEPENDENCIES.md](DEPENDENCIES.md) for the full guidelines on how to evaluate and choose new
+dependencies.
 
 Directory Layout
 ----------------
