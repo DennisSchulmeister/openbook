@@ -17,10 +17,10 @@
     "check": "npm run lint && tsc"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.18.4",
-    "svelte-spa-router": "^4.0.2"
+    "@openapitools/openapi-generator-cli": "^2.30.2",
+    "svelte-spa-router": "^5.0.0"
   },
   "dependencies": {
-    "maildev": "1.1.1"
+    "maildev": "2.2.1"
   }
 }
