@@ -1,9 +1,12 @@
 name: "Setup CI environment"
 description: "Set up Python, Poetry, and optionally Node.js for CI workflows"
 
-inputs:
-    setup-node:
-        description: "Whether to set up Node.js as well"
+inputs:   
+    # ====== #
+    # Python #
+    # ====== #
+    setup-python:
+        description: "Whether to set up Python"
         required: false
         default: "true"
 
@@ -12,33 +15,59 @@ inputs:
         required: false
         default: "3.12"
 
-    node-version:
-        description: "Node.js version to install"
-        required: false
-        default: "22"
-
     poetry-version:
         description: "Poetry version to install"
         required: false
         default: "latest"
 
+    # ======= #
+    # Node.js #
+    # ======= #
+    setup-node:
+        description: "Whether to set up Node.js"
+        required: false
+        default: "true"
+
+    node-version:
+        description: "Node.js version to install"
+        required: false
+        default: "22"
+
 runs:
     using: "composite"
     steps:
+        # ====== #
+        # Python #
+        # ====== #
         - name: "Install Poetry"
+          if: ${{ inputs.setup-python == 'true' }}
           uses: snok/install-poetry@v1
           with:
               version: ${{ inputs.poetry-version }}
 
         - name: "Set up Python"
+          if: ${{ inputs.setup-python == 'true' }}
           uses: actions/setup-python@v6
           with:
               python-version: ${{ inputs.python-version }}
               cache: "poetry"
 
+        - name: "Install Python dependencies"
+          if: ${{ inputs.setup-python == 'true' }}
+          run: poetry install
+          shell: bash
+
+        # ======= #
+        # Node.js #
+        # ======= #
         - name: "Set up Node.js"
           if: ${{ inputs.setup-node == 'true' }}
           uses: actions/setup-node@v6
           with:
               node-version: ${{ inputs.node-version }}
               cache: "npm"
+
+        - name: "Install Node.js dependencies"
+          if: ${{ inputs.setup-node == 'true' }}
+          run: npm install
+          shell: bash
