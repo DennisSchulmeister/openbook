@@ -35,26 +35,26 @@ Baseline Eligibility Criteria
 
 Every dependency must satisfy **all** of the following before any further evaluation takes place.
 If a candidate fails any one criterion, it is immediately disqualified and must not be integrated
-in our codebase!
+in our codebase! 
 
--[ ] **License:** Must carry a clear license statement, and the license must be compatible with
- [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html). Copyleft licenses (GPL, LGPL, AGPL) are
- acceptable for dependencies that are not distributed as part of the application binary / bundle.
- Permissive licenses (MIT, BSD, Apache 2.0, ISC) are always fine. Proprietary or "source-available"
- licenses need explicit review.
+- [ ] **License:** Must carry a clear license statement, and the license must be compatible with
+  [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html). Copyleft licenses (GPL, LGPL, AGPL) are
+  acceptable for dependencies that are not distributed as part of the application binary / bundle.
+  Permissive licenses (MIT, BSD, Apache 2.0, ISC) are always fine. Proprietary or "source-available"
+  licenses need explicit review.
 
--[ ] **Formal release:** Must have at least one tagged, versioned release on its package registry
- (PyPI, npm, …). Depending on a git commit or an unreleased `main` branch is not acceptable,
- because this cannot guarantee maintenance and upgrades.
+- [ ] **Formal release:** Must have at least one tagged, versioned release on its package registry
+  (PyPI, npm, …). Depending on a git commit or an unreleased `main` branch is not acceptable,
+  because this cannot guarantee maintenance and upgrades.
 
--[ ] **Semantic versioning:** Must use, or clearly commit to, [Semantic Versioning](https://semver.org/),
- or a similar versioning scheme, so that the impact of updates can be anticipated.
+- [ ] **Semantic versioning:** Must use, or clearly commit to, [Semantic Versioning](https://semver.org/),
+  or a similar versioning scheme, so that the impact of updates can be anticipated.
 
--[ ] **Active maintenance:** Must show evidence of active development: at least one commit **and** at least
- one release within the past 12 months. Projects that are archived, explicitly abandoned, or have had no
- activity for over a year are disqualified.
+- [ ] **Active maintenance:** Must show evidence of active development: at least one commit **and** at least
+  one release within the past 12 months. Projects that are archived, explicitly abandoned, or have had no
+  activity for over a year are disqualified.
 
--[ ] **No active CVEs:** Must not carry known unpatched security vulnerabilities at the time it is introduced.
+- [ ] **No active CVEs:** Must not carry known unpatched security vulnerabilities at the time it is introduced.
   Check the package's advisory database (e.g., [GitHub Advisory Database](https://github.com/advisories),
   `pip-audit`, `npm audit`).
 
