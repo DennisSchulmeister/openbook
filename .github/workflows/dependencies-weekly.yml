@@ -41,24 +41,26 @@ jobs:
               id: create_pr
               uses: peter-evans/create-pull-request@v8
               with:
-                  token: ${{ secrets.PR_APPROVE_TOKEN || secrets.GITHUB_TOKEN }}
+                  # Automatically created by GH Actions with a short-lived token. Usage rights determined
+                  # by the permissions defined at the top of the workflow file.
+                  token: ${{ secrets.GITHUB_TOKEN }}
                   branch: "ci/deps-weekly-minor-patch"
                   delete-branch: true
                   commit-message: "chore(deps): weekly minor and patch updates"
                   title: "chore(deps): weekly minor and patch updates"
                   body: |
-                      ## Summary
+                        ## Summary
 
-                      This PR was created automatically by the weekly dependency update workflow.
-                      It updates dependencies to the latest patch/minor versions permitted by the current constraints.
+                        This PR was created automatically by the weekly dependency update workflow.
+                        It updates dependencies to the latest patch/minor versions permitted by the current constraints.
 
-                      ## Validation
+                        ## Validation
 
-                      Unit tests are executed by the reusable test workflow.
+                        Unit tests are executed by the reusable test workflow.
                   labels: |
-                      dependencies
-                      automated
-                      weekly-update
+                        dependencies
+                        automated
+                        weekly-update
 
     run-tests:
         name: "Run tests"
@@ -81,5 +83,7 @@ jobs:
             - name: "Approve dependency update pull request"
               uses: hmarr/auto-approve-action@v4
               with:
-                  pull-request-number: ${{ needs.update-dependencies.outputs.pr_number }}
-                  github-token: ${{ secrets.PR_APPROVE_TOKEN || secrets.GITHUB_TOKEN }}
+                    pull-request-number: ${{ needs.update-dependencies.outputs.pr_number }}
+                    # Must be a different user than the GITHUB_TOKEN. GitHub doesn't allow the same
+                    # user to open and approve pull requests via the API!
+                    github-token: ${{ secrets.PR_APPROVE_TOKEN }}
