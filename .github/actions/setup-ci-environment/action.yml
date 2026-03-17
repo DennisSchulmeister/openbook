@@ -47,8 +47,3 @@ runs:
           with:
               node-version: ${{ inputs.node-version }}
               cache: "npm"
-
-        - name: "Checkout code"
-          uses: ./.github/actions/checkout-source-tree
-          with:
-            ref: ${{ inputs.ref }}

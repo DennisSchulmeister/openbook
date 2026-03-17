@@ -24,6 +24,10 @@ jobs:
             pr_branch: ${{ steps.create_pr.outputs.pull-request-branch }}
 
         steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v6
+              # Must be first, so that GH actions finds our local actions!
+
             - name: "Set up CI environment"
               uses: ./.github/actions/setup-ci-environment
 
