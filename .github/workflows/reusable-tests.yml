@@ -20,20 +20,11 @@ jobs:
                     - 6379:6379
 
         steps:
-            - name: "Checkout code (input ref)"
-              if: ${{ inputs.ref != '' }}
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ inputs.ref }}
-
-            - name: "Checkout code (current commit)"
-              if: ${{ inputs.ref == '' }}
-              uses: actions/checkout@v4
-
             - name: "Set up CI environment"
               uses: ./.github/actions/setup-ci-environment
               with:
-                  setup-node: "false"
+                ref: ${{ inputs.ref }}
+                setup-node: "true"
 
             - name: "Install Python dependencies"
               run: poetry install --no-interaction --no-root

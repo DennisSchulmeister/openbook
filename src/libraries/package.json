@@ -1,6 +1,7 @@
 {
   "name": "@openbook-studio/libraries",
   "private": true,
+  "packageManager": "npm",
   "scripts": {
     "clean": "npm run clean:core && npm run clean:ls-compat",
     "build": "npm run build:core && npm run build:ls-compat",

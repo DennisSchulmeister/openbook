@@ -2,6 +2,7 @@
   "name": "@openbook-studio/frontend-website",
   "private": true,
   "type": "module",
+  "packageManager": "npm",
   "scripts": {
     "clean": "node ../../../_scripts/frontend/clean.js",
     "watch": "node ../../../_scripts/frontend/watch.js",

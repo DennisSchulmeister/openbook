@@ -1,6 +1,7 @@
 {
   "name": "@openbook-studio/frontend",
   "private": true,
+  "packageManager": "npm",
   "scripts": {
     "clean": "npm run clean:admin && npm run clean:app",
     "build": "npm run build:admin && npm run build:app",

@@ -23,9 +23,6 @@ jobs:
             pr_branch: ${{ steps.create_pr.outputs.pull-request-branch }}
 
         steps:
-            - name: "Checkout code"
-              uses: actions/checkout@v4
-
             - name: "Set up CI environment"
               uses: ./.github/actions/setup-ci-environment
 
@@ -88,7 +85,7 @@ jobs:
 
             - name: "Create or update pull request"
               id: create_pr
-              uses: peter-evans/create-pull-request@v7
+              uses: peter-evans/create-pull-request@v8
               with:
                   branch: "ci/deps-monthly-major"
                   delete-branch: true

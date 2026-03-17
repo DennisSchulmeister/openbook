@@ -41,9 +41,12 @@ in with the rest (redact and change as necessary) and is as good as hand-written
 generated code for subtle bugs and straight-forwardness. LLMs tend for very elaborate and indirect
 solutions even when a straight-forward way exists.
 
-* Understand every line as if you had written it yourself. Then it is fine.
-* Spamming us with unrevised AI slob is no trivial offense.
+* Be precise in your prompts and refer to examples in the repo that the LLM can use as reference.
+* Understand *every* line as if you had written it yourself. Then it is fine.
+* Manually rework the code to blend in with the rest (style, comments, complexity, ...)
+* Don't spam us with unrevised AI slob. This is considered no trivial offense.
 * If in doubt prefer hand-written code, even if it is less complete. 🙃
+* Have fun.
 
 Quick Start
 -----------

@@ -18,6 +18,7 @@
   },
   "ob-dependencies": {},
   "type": "module",
+  "packageManager": "npm",
   "scripts": {
     "clean": "node ../../../_scripts/library/clean.js",
     "watch": "node ../../../_scripts/library/watch.js",

@@ -20,6 +20,7 @@
     "@openbook-studio/core": ">= 1.0.0"
   },
   "type": "module",
+  "packageManager": "npm",
   "scripts": {
     "clean": "node ../../../_scripts/library/clean.js",
     "watch": "node ../../../_scripts/library/watch.js",
