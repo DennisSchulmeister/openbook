@@ -307,7 +307,7 @@ class HTMLLibraryVersion(UUIDMixin, FileUploadMixin, CreatedModifiedByMixin):
         return f"{self.parent.fqn()} {self.version}"
     
     @display(description=_("Frontend URL"))
-    def frontend_url(self):
+    def frontend_url(self) -> str:
         return f"{settings.MEDIA_URL}lib/{self.parent.organization}/{self.parent.name}/{self.version}/library.js"
     
     @classmethod

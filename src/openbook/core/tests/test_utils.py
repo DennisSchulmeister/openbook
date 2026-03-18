@@ -6,11 +6,10 @@
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
 
-from django.contrib.auth.models         import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.test                        import TestCase
 from django.utils.translation           import activate
-from ..                                 import utils
+from ..utils                            import content_type
 
 class Utils_Test(TestCase):
     """
@@ -26,19 +25,19 @@ class Utils_Test(TestCase):
         """
         Test functions that take a content type object.
         """
-        self.assertEqual(utils.model_string_for_content_type(self.content_type), self.model_string)
-        self.assertEqual(utils.model_string_for_content_type(None), "")
+        self.assertEqual(content_type.model_string_for_content_type(self.content_type), self.model_string)
+        self.assertEqual(content_type.model_string_for_content_type(None), "")
 
     def test_for_model_string(self):
         """
         Test functions that take a model string.
         """
-        self.assertIsInstance(utils.content_type_for_model_string(self.model_string), ContentType)
+        self.assertIsInstance(content_type.content_type_for_model_string(self.model_string), ContentType)
 
         with self.assertRaises(ContentType.DoesNotExist):
-            utils.content_type_for_model_string("admin.invalid_model")
+            content_type.content_type_for_model_string("admin.invalid_model")
         
         with self.assertRaises(ContentType.DoesNotExist):
-            utils.content_type_for_model_string("invalid_app.logentry")
+            content_type.content_type_for_model_string("invalid_app.logentry")
 
 

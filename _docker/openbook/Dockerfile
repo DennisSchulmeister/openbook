@@ -1,7 +1,7 @@
 #===============================================================================
 # Python build container
 #===============================================================================
-FROM python:slim AS python-build
+FROM python:3.12-slim AS python-build
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -18,7 +18,7 @@ RUN .env/bin/poetry export --format=requirements.txt --output=requirements.txt
 #===============================================================================
 # Frontend build container
 #===============================================================================
-FROM node:alpine AS nodejs-build
+FROM node:22-alpine AS nodejs-build
 
 WORKDIR /app
 COPY . .
@@ -29,7 +29,7 @@ RUN npm run build:frontend
 #===============================================================================
 # App container
 #===============================================================================
-FROM python:slim
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

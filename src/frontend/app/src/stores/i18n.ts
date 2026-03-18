@@ -75,7 +75,7 @@ export const language = {
  */
 export function _(text: string, values: any): string {
     for (let key of Object.keys(values) || []) {
-        text = text.replaceAll(`\$${key}\$`, values[key]);
+        text = text.replaceAll(`$${key}$`, values[key]);
     }
 
     return text;

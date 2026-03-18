@@ -8,7 +8,7 @@
  * License, or (at your option) any later version.
  */
 
-// @ts-ignore: Could not find a declaration file
+// @ts-expect-error: Could not find a declaration file
 import TinyMDE from "tiny-markdown-editor/dist/tiny-mde.js";
 import "tiny-markdown-editor/dist/tiny-mde.css";
 

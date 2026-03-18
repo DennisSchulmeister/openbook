@@ -1,5 +1,5 @@
 Developer Notes for OpenBook
-===================================
+============================
 
 This document serves as a cheat sheet for developers to get started quickly. There are no
 fancy things -- if you already know Python, Poetry, Django, NPM, … But finding the right
@@ -41,9 +41,12 @@ in with the rest (redact and change as necessary) and is as good as hand-written
 generated code for subtle bugs and straight-forwardness. LLMs tend for very elaborate and indirect
 solutions even when a straight-forward way exists.
 
-* Understand every line as if you had written it yourself. Then it is fine.
-* Spamming us with unrevised AI slob is no trivial offense.
+* Be precise in your prompts and refer to examples in the repo that the LLM can use as reference.
+* Understand *every* line as if you had written it yourself. Then it is fine.
+* Manually rework the code to blend in with the rest (style, comments, complexity, ...)
+* Don't spam us with unrevised AI slob. This is considered no trivial offense.
 * If in doubt prefer hand-written code, even if it is less complete. 🙃
+* Have fun.
 
 Quick Start
 -----------
@@ -58,8 +61,30 @@ Then you can install all dependent libraries:
 
 ```sh
 poetry install
-npm install
+npm install --legacy-peer-deps
 ```
+
+Always run `npm install` from the repository root. Do not run `npm install`
+inside `src/frontend`, because this creates a nested `src/frontend/node_modules`
+directory that can shadow root workspace dependencies and cause mixed package
+versions during frontend builds.
+
+If this already happened, clean up with:
+
+```sh
+npm run fix:frontend-install
+```
+
+> 2026-03-16: The `--legacy-peer-deps` flag is currently required because
+> `eslint-plugin-import` has not yet updated its peer dependency metadata
+> for ESLint 10, even though the installed version seems to work with this
+> repository's lint configuration.
+> See https://github.com/import-js/eslint-plugin-import/issues/3227
+> for progress on full ESLint 10 compatibility.
+>
+> Once we can remove the flag, it must also be removed in the GH action
+> `.github/actions/setup-ci-environment/action.yml` file and the `renovate-*.yml`
+> workflows.
 
 To run all components locally:
 
@@ -89,14 +114,14 @@ The OpenBook Server is built with the following technology:
 * Django Channels - Websocket Support
 
 The idea is to keep the technical requirements lean to enable easy deployment in custom environments.
-Therefor the choice of Django might be considered "conservative", but in fact it contains all the needed
+Therefore the choice of Django might be considered "conservative", but in fact it contains all the needed
 functionality like HTTP request routing, server-side templates, database access, ... in a single, stable
-and well maintained dependency. 
+and well maintained dependency.
 
 The frontend is a single page app, composed of a core library and several add-on libraries, that
 can also run stand-alone without server backend. In part this is due to the development history
 of the project starting as a pure static SPA in 2017. But it has the nice advantage to still allow
-static deployments of course materials on any web server or learning management system. Therefor,
+static deployments of course materials on any web server or learning management system. Therefore,
 for the frontend we use the following additional things:
 
  * esbuild - Bundler
@@ -106,28 +131,8 @@ for the frontend we use the following additional things:
 Dependency Policy
 -----------------
 
-There are no hard rules whether to allow or avoid external dependencies. But we try to not depend too
-much on external dependencies as they might cause major rewrites when their API changes or they become
-unmaintained. Generally speaking, dependencies are okay, when they are either small or would be too
-costly to reimplement.
-
-### Small Dependencies
-
-These should be limited and scope and either easy to replace or dispensible.
-E.g. [Django Color Field](https://github.com/fabiocaccamo/django-colorfield), which is used to add
-color pickers to the admin interface. Having color pickers is nice but not mission critical. Plus, we
-could reimplement the widget with acceptable effort, if needed.
-
-Still, if a dependency is too small (think if small utilities with a few lines of code), it is probably
-best to implement the functionality oneself.
-
-### Too Costly to Reimplement
-
-These bring a major advantage, drastically decreasing "time to market". Using an external library makes
-perfectly sense but comes at a price. If they ever go away, most likely major parts must be rewritten.
-So they should either be time-proven an API-stable (think [Django](https://www.djangoproject.com/) or
-[Django REST Framework](https://www.djangoproject.com/)) or at least somewhat limited in scope
-([lua-wrapper](https://pypi.org/project/lua-wrapper/)).
+See [DEPENDENCIES.md](DEPENDENCIES.md) for the full guidelines on how to evaluate and choose new
+dependencies.
 
 Directory Layout
 ----------------
@@ -215,7 +220,7 @@ When you have a project like `openbook` the Django Admin command created a top-l
 directory of that name, containing a sub-directory of the same name. But to avoid having
 three nested directories of the same name, that directory was renamed to `src`, inside
 which the `openbook` Django project lives, inside which several apps live. Technically
-the apps could also live a siblings to the project, but allos us to use the sibling
+the apps could also live a siblings to the project, but allows us to use the sibling
 directories for other things.
 
 
@@ -256,20 +261,20 @@ model in lower-case (no other transformation done).
 
 **Django Admin:**
 By default the model permissions are checked in the Django Admin (in the `ModelAdmin` class, methods
-`has_…_permission(self, request)`) to check, if a user is allowed to perform the correspinding action.
+`has_…_permission(self, request)`) to check, if a user is allowed to perform the corresponding action.
 
 **Own Code:**
 No permissions check is done when directly accessing the database with the Django ORM. Permission checks
 must be performed in the higher-levels (views) of which the Django Admin happens to be one. The easiest way
 to check a permission is to call `has_perm()` on the user object, e.g. `user.has_perm("myapp.view_model").
-This in turn iteratores over the installed authentication backends and calls `has_perm(user_obj, perm)`
+This in turn iterates over the installed authentication backends and calls `has_perm(user_obj, perm)`
 until one backend grants the permission.
 
 **Django REST Framework:**
 Django REST Framework doesn't do permission checks, unless specifically asked in the `ViewSet`s. Permission checks
 are encapsulated in `permission_classes` that may implement arbitrary logic. These classes inherit from a
 `BasePermission` that defines the method `has_permission(self, request, view)`. Most implementations don't
-use the `django.contrib.auth` permissions but rahter implement simpler checks like `IsAuthenticated` or `AllowAny`.
+use the `django.contrib.auth` permissions but rather implement simpler checks like `IsAuthenticated` or `AllowAny`.
 `DjangoModelPermissions` applies similar permission checks as Django Admin's `ModelAdmin`, though they are
 not sharing any code.
 
@@ -298,7 +303,7 @@ The API is a compatible extension to the regular API:
 
 * `User.has_perm(self, perm, obj=None)` (Django User)
 * `has_perm(user_obj, perm, obj=None)` (Authentication Backend)
-* `ModelAdmin.has_…_permission(self, request, obj=None)` (Django Admin) 
+* `ModelAdmin.has_…_permission(self, request, obj=None)` (Django Admin)
 * `BasePermission.has_object_permission(self, request, view, obj)` (Django REST Framework)
 
 However, there are some oddities:
@@ -312,13 +317,13 @@ However, there are some oddities:
 * `ModelAdmin` ignores the `obj` parameter and always checks for model permissions.
 
 * Django REST Framework checks object-level permissions only in class `DjangoObjectPermissions`, but despite
-  the documentaiton it seems the the add permission is not checked (because the new object is not yet existing).
+  the documentation it seems the the add permission is not checked (because the new object is not yet existing).
 
 * Django REST Framework checks object permissions on the `get_object()` method. It may be necessary to
   manually call the inherited method, when it is replaced with a custom implementation or the generic
   REST views are not used. Limitations of object permissions in Django REST Framework
   ([Source](https://www.django-rest-framework.org/api-guide/permissions/)):
-  
+
   * For performance reasons the generic views will not automatically apply object level permissions
     to each instance in a queryset when returning a list of objects.
 
@@ -349,14 +354,14 @@ or textbook pages) that also support object-permissions but share the scope of t
 This allows to express permissions like "In this course (scope object) teachers (role) can create
 materials (related object)". For this the related objects must inherit `RoleBasedObjectPermissionsMixin`
 and override the `get_scope()` method. In both cases (scope objects and related objects) the method
-`has_perm()` can be overriden to implement additional custom-checks.
+`has_perm()` can be overridden to implement additional custom-checks.
 
 **Authentication Backend:**
 We provide a custom authentication backend in class `openbook.core.RoleBasedObjectPermissionsBackend`
 as it appears simpler than reusing third-party libraries. Especially libraries like Django Guardian
-which requires to explicitely persist and keep in sync who can do what for which single object.
+which requires to explicitly persist and keep in sync who can do what for which single object.
 
-`RoleBasedObjectPermissionsBackend` inherits from the stock `ModelBackend` and changes its behaviour
+`RoleBasedObjectPermissionsBackend` inherits from the stock `ModelBackend` and changes its behavior
 as follows- For normal permission checks without an object it behaves exactly the same. Object permissions
 are checked in the following order, stopping at the first match:
 
@@ -373,7 +378,7 @@ permissions are checked. If this is not supported by the object or fails, it fal
 Thus, the `ModelBackend` doesn't need to be included in the Django settings, as its function is already covered.
 
 The Django Admin first checks "view" than "change" permissions when a single object should be displayed.
-This logic has been moved to our `RoleBasedObjectPermissionsBackend` to unify the behaviour in all parts
+This logic has been moved to our `RoleBasedObjectPermissionsBackend` to unify the behavior in all parts
 of the application.
 
 #### How we Iron out the Inconsistencies
@@ -381,7 +386,7 @@ of the application.
 **Querying and Filtering:**
 No deliberate attempt is done on the technical level to restrict query results to objects where the user
 has view permissions. Applying several database joins this would in theory be possible, but it seems not
-worth the effort or performance loss. Instead, we should be cautios to return as little fields as possible
+worth the effort or performance loss. Instead, we should be cautious to return as little fields as possible
 when models are searched and queried, always assuming that the returned values could be visible to anyone.
 
 **Django Admin:**
@@ -390,7 +395,7 @@ object-level permissions are checked for displaying, changing and deleting singl
 stock class, this version applies a hack to check object-permissions also for new objects ("add").
 
 **Django REST Framework:**
-We set our own `AllowNone` default permission in `settings.py` to enforce a deliberate decission for
+We set our own `AllowNone` default permission in `settings.py` to enforce a deliberate decision for
 each view set and prevent unprotected REST endpoints by accident.
 
 The module `openbook.core.drf` contains specialized `ModelSerializer` and `ModelViewSet` classes that
@@ -425,7 +430,7 @@ content (textbooks) from its usage (courses):
 * Courses have students assigned.
 * Thus persons in a course have different roles (e.g, teacher, student).
 * Permissions depend on the role a user has within a course (e.g., teacher, student).
-* Roles exist only within their respecitve scope (textbook or course).
+* Roles exist only within their respective scope (textbook or course).
 * The scope owner always has full permissions, regardless of their assigned role.
 
 To better understand where we are coming from, consider the module "Distributed System Development"
@@ -478,7 +483,7 @@ from UUIDs and generally much easier to read. But the attached trade-offs quickl
   But that is quite a lot of code that needs deep understanding of Django's inner workings. 🤯
   Clearly something to avoid, if at all possible.
 
-Thankfuly using UUIDs the problem is not as large as if we were using the traditional auto-incremented
+Thankfully, using UUIDs the problem is not as large as if we were using the traditional auto-incremented
 IDs. With auto-incremented IDs natural keys are needed to ensure stable keys. Otherwise entries will
 not be imported if the ID is already used by another entry and imported foreign keys will reference
 the wrong object. UUIDs are supposed to be globally unique by default, avoiding most of the problems
@@ -510,7 +515,7 @@ panel, WYSIWYG editor and server-controlled content that can be embedded into te
 The textbooks, on the other hand, are displayed in a single page app, that can also be used without the
 server backend.
 
-For both parts the NPM package index is indispensible to mange client-side dependencies. We therefor use
+For both parts the NPM package index is indispensable to mange client-side dependencies. We therefore use
 a subset of Node.js and NPM to pull client-side libraries and bundle them into distribution files with
 [esbuild](https://esbuild.github.io/).
 
@@ -522,7 +527,7 @@ run scripts are:
 
 * `npm run build` - Build distribution files
 * `npm run clean` - Delete distribution files
-* `npm run watch` - Start watch mode for automatical rebuilds
+* `npm run watch` - Start watch mode for automatic rebuilds
 * `npm run check` - Run all checks and tests: eslint, TypeScript, unit tests
 * `npm run start` or `npm start` - Run from built distribution files
 

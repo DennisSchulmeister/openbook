@@ -1,0 +1,47 @@
+name: "PR Checks"
+
+on:
+    pull_request:
+        types:
+            - opened
+            - reopened
+            - synchronize
+            - ready_for_review
+
+concurrency:
+    group: "pr-checks-${{ github.event.pull_request.number }}"
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+
+jobs:
+    run-tests:
+        runs-on: ubuntu-latest
+
+        services:
+            redis:
+                image: redis:7-alpine
+                ports:
+                    - 6379:6379
+
+        steps:
+            # Must be first, so that GH actions finds our local actions!
+            - name: "Checkout code"
+              uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - name: "Set up CI environment"
+              uses: ./.github/actions/setup-ci-environment
+              with:
+                  setup-python: "true"
+                  setup-node: "true"
+
+            - name: "Regenerate project SBOM"
+              if: ${{ startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository }}
+              uses: ./.github/actions/generate-project-sbom
+
+            - name: "Run all checks and tests"
+              run: |
+                  npm run check
