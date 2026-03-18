@@ -1,7 +1,7 @@
 {
   "name": "@openbook-studio/libraries",
   "private": true,
-  "packageManager": "npm",
+  "packageManager": "npm@11.x",
   "scripts": {
     "clean": "npm run clean:core && npm run clean:ls-compat",
     "build": "npm run build:core && npm run build:ls-compat",
@@ -11,7 +11,7 @@
     "build:core": "cd core && npm run build",
     "lint:core": "cd core && npm run lint",
     "watch:core": "cd core && npm run watch",
-    "clean:ls-compat": "cd ls-compat & npm run clean",
+    "clean:ls-compat": "cd ls-compat && npm run clean",
     "build:ls-compat": "cd ls-compat && npm run build",
     "lint:ls-compat": "cd ls-compat && npm run lint",
     "watch:ls-compat": "cd ls-compat && npm run watch"

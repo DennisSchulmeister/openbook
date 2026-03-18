@@ -1,7 +1,7 @@
 {
   "name": "@openbook-studio/frontend",
   "private": true,
-  "packageManager": "npm",
+  "packageManager": "npm@11.x",
   "scripts": {
     "clean": "npm run clean:admin && npm run clean:app",
     "build": "npm run build:admin && npm run build:app",
@@ -11,7 +11,7 @@
     "build:admin": "cd admin && npm run build",
     "lint:admin": "cd admin && npm run lint",
     "watch:admin": "cd admin && npm run watch",
-    "clean:app": "cd app & npm run clean",
+    "clean:app": "cd app && npm run clean",
     "build:app": "cd app && npm run build",
     "lint:app": "cd app && npm run lint",
     "watch:app": "cd app && npm run watch"

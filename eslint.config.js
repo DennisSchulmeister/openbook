@@ -12,7 +12,7 @@ export default defineConfig(
     {
         name: "openbook/ignores",
         ignores: [
-            "node_modules/*",
+            "node_modules/**",
             "**/*.d.ts",
             "sbom/**",
             "src/frontend/app/src/api-client/**",

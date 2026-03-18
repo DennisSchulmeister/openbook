@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "type": "module",
-    "packageManager": "npm",
+    "packageManager": "npm@11.x",
     "workspaces": [
         "src/frontend/*",
         "src/libraries/*"
@@ -22,7 +22,7 @@
         "lint:frontend": "cd src/frontend && npm run lint",
         "lint:libraries": "cd src/libraries && npm run lint",
         "lint": "npm run lint:frontend && npm run lint:libraries",
-        "fix:frontend-install": "rm -rf src/frontend/node_modules && npm install --legacy-peer-deps",
+        "fix:frontend-install": "rimraf src/frontend/node_modules && npm install --legacy-peer-deps",
         "init:db": "cd src && python manage.py migrate && python manage.py load_initial_data && python manage.py install_html_library && python manage.py createsuperuser",
         "test:backend": "cd src && poetry run python manage.py test",
         "test": "npm run test:backend",
@@ -49,11 +49,13 @@
         "eslint-import-resolver-typescript": "^4.4.4",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-unused-imports": "^4.4.1",
         "glob": "^13.0.6",
         "globals": "^17.4.0",
         "jszip": "^3.10.1",
         "maildev": "^2.2.1",
         "prettier": "^3.8.1",
+        "rimraf": "^6.1.3",
         "shelljs": "^0.10.0",
         "sv": "^0.12.8",
         "svelte": "^5.54.0",
@@ -61,8 +63,5 @@
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "yaml": "^2.8.2"
-    },
-    "dependencies": {
-        "eslint-plugin-unused-imports": "^4.4.1"
     }
 }

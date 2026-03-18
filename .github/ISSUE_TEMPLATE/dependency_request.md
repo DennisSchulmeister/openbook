@@ -9,7 +9,7 @@ assignees:
 ### Assessment Status (select exactly one)
 
 - [ ] Assessment is ongoing, issue text will be replaced with updated information.
-- [ ] ASsessment is finished, issue text will not be changed, anymore.
+- [ ] Assessment is finished, issue text will not be changed, anymore.
 
 ### Problem and Expected Benefit
 
