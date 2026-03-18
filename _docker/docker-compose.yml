@@ -12,7 +12,12 @@ services:
     # https://github.com/docker-library/docs/blob/master/postgres/README.md
     #---------------------------------------------------------------------------
     postgres:
-        image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
+        # NOTE: This uses PostgreSQL 18. If you previously ran this stack with
+        # PostgreSQL 17 using the `openbook_postgres` volume, you must either
+        # migrate the data (for example via `pg_upgrade` or dump/restore) or
+        # delete and recreate the `openbook_postgres` volume for a clean start
+        # before running `docker compose up`.
+        image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
         restart: unless-stopped
         shm_size: 256mb
         environment:
