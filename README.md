@@ -2,7 +2,7 @@ OpenBook: Interactive Online Textbooks
 ======================================
 
 [![Test Suite](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests.yml)
-[![SBOM](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml) <br/>
+[![SBOM](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml)
 [![Dependencies (Minor/Patch)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml)
 [![Dependencies (Major)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml)
 
