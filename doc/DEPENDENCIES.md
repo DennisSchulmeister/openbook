@@ -199,8 +199,13 @@ Version Upgrades and Security Fixes
   just refresh `package-lock.json` or `poetry.lock`; they also raise the declared minimum version in `package.json` and
   `pyproject.toml` when a newer compatible release exists.
 
-  Renovate PR checks also regenerate the whole-project CycloneDX SBOM at `sbom/openbook.cyclonedx.json` and commit the
-  updated file to the same dependency PR branch.
+  The required CI checks for Renovate PRs regenerate the whole-project CycloneDX SBOM at
+  `sbom/openbook.cyclonedx.json` and upload it as an artifact, but do not commit changes to
+  the dependency PR branch itself.
+
+  Persistent SBOM updates are produced by `.github/workflows/refresh-sbom.yml`, which creates
+  or updates a dedicated SBOM PR on a weekly schedule, after successful Renovate workflow runs,
+  or when manually dispatched (for example before a release).
 
   The same automation also tracks GitHub Actions versions and the pinned image tags in the Docker Compose example under
   `_docker/`.
@@ -216,9 +221,10 @@ Version Upgrades and Security Fixes
 
   The script requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
-  The repository must define a `RENOVATE_TOKEN` secret for the workflow. Use a fine-grained personal access token or
-  GitHub App token that can create pull requests and trigger follow-up workflows. The default `GITHUB_TOKEN` is not
-  sufficient here, because PRs created with it do not reliably trigger the Renovate PR check workflow.
+  The repository must define a `RENOVATE_TOKEN` secret for these automation workflows. Use a fine-grained personal
+  access token or GitHub App token that can create pull requests and trigger follow-up workflows. The default
+  `GITHUB_TOKEN` is not sufficient here, because PRs created with it do not reliably trigger the Renovate PR check
+  workflow or the follow-up checks for SBOM refresh PRs.
 
 * **Major version bumps** – These frequently introduce breaking changes. Review the migration guide before upgrading.
   If the effort is significant, create a dedicated issue and plan the migration explicitly rather than letting it accumulate.
