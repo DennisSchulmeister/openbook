@@ -11,7 +11,7 @@ permissions:
     pull-requests: write
 
 jobs:
-    renovate:
+    renovate_major:
         name: "Bump Dependencies (Major)"
         runs-on: ubuntu-latest
 

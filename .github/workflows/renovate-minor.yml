@@ -11,7 +11,7 @@ permissions:
     pull-requests: write
 
 jobs:
-    renovate:
+    renovate_minor:
         name: "Bump Dependencies (Minor/Patch)"
         runs-on: ubuntu-latest
 
