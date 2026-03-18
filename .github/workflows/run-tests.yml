@@ -7,6 +7,10 @@ on:
 permissions:
     contents: write
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
 jobs:
     # Job name used in the branch protection rules of the repo
     tests:
