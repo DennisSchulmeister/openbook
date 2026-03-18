@@ -43,6 +43,7 @@ twisted = {extras = ["http2", "tls"], version = "^25.5.0"}
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.50.0"
+pip-audit = "^2.10.0"
 
 [build-system]
 requires = ["poetry-core"]
