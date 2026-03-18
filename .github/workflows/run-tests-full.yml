@@ -32,6 +32,9 @@ jobs:
 
             - name: "Regenerate project SBOM"
               uses: ./.github/actions/generate-project-sbom
+              with:
+                  commit-changes: "false"
+                  upload-artifact: "true"
 
             - name: "Run all checks and tests"
               run: |

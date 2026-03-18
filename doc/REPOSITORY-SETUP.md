@@ -25,12 +25,14 @@ be created:
 
 | Secret name      | Description                                                         |
 |------------------|---------------------------------------------------------------------|
-| `RENOVATE_TOKEN` | Fine-grained personal access token for the Renovate bot (see below) |
+| `RENOVATE_TOKEN` | Fine-grained personal access token for dependency and SBOM automation (see below) |
 
 `RENOVATE_TOKEN` is used by the Renovate bot to authenticate against the GitHub API.
 It is required to create pull requests and, for auto-mergeable updates, to merge them
-without manual intervention. The token must be owned by a user with write access to
-the repository. Required permissions:
+without manual intervention. The same token is also used by the SBOM refresh workflow
+to create or update SBOM pull requests that should trigger regular PR checks.
+
+The token must be owned by a user with write access to the repository. Required permissions:
 
 - Read access to metadata
 - Read and Write access to code, issues, pull requests, and workflows
@@ -50,9 +52,17 @@ router workflow always runs, detects whether any file under `src/` changed, and 
 either `.github/workflows/run-tests-full.yml` for the full CI suite or
 `.github/workflows/run-tests-dummy.yml` for a no-op success path.
 
+The full CI workflow regenerates the CycloneDX SBOM during the run and uploads it as an
+artifact, but it does **not** commit any SBOM changes back to the pull request branch.
+This avoids creating a new head commit while required checks are still evaluating.
+
 This ensures that linting, security checks, and the Django test suite all pass before any
 relevant change lands on the default branch, while documentation- or tooling-only pull
 requests still satisfy the required branch protection check without running the full suite.
+
+SBOM refresh commits are handled separately by `.github/workflows/refresh-sbom.yml`.
+That workflow opens or updates a dedicated PR for SBOM-only updates on a weekly schedule,
+after successful Renovate runs, or via manual dispatch (for example before a release).
 
 ### Automatically request a Copilot code review
 
