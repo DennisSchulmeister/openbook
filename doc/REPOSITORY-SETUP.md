@@ -23,13 +23,17 @@ Repository Secrets
 Under **Settings → Secrets and variables → Actions**, the following repository secrets must
 be created:
 
-| Secret name       | Description                                                                          |
-|-------------------|--------------------------------------------------------------------------------------|
-| `RENOVATE_TOKEN`  | Personal access token (fine-grained) used by the Renovate bot to authenticate        |
-|                   | against the GitHub API. Required to create pull requests and, for auto-mergeable     |
-|                   | updates, to merge them without manual intervention. The token must be owned by a     |
-|                   | user with write access to the repository. Required permissions: (a)  Read access     |
-|                   | to metadata, (b) Read and Write access to code, issues, pull requests, and workflows |
+| Secret name      | Description                                                         |
+|------------------|---------------------------------------------------------------------|
+| `RENOVATE_TOKEN` | Fine-grained personal access token for the Renovate bot (see below) |
+
+`RENOVATE_TOKEN` is used by the Renovate bot to authenticate against the GitHub API.
+It is required to create pull requests and, for auto-mergeable updates, to merge them
+without manual intervention. The token must be owned by a user with write access to
+the repository. Required permissions:
+
+- Read access to metadata
+- Read and Write access to code, issues, pull requests, and workflows
 
 Branch Protection Rules
 -----------------------
