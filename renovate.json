@@ -22,13 +22,13 @@
         "automated"
     ],
     "configMigration": true,
-    "platformAutomerge": false,
     "prConcurrentLimit": 5,
     "prHourlyLimit": 2,
     "rebaseWhen": "behind-base-branch",
     "lockFileMaintenance": {
         "enabled": true,
         "automerge": true,
+        "platformAutomerge": true,
         "addLabels": [
             "weekly-update"
         ]
@@ -61,6 +61,7 @@
                 "pinDigest"
             ],
             "automerge": true,
+            "platformAutomerge": true,
             "addLabels": [
                 "weekly-update"
             ]
@@ -71,6 +72,7 @@
                 "major"
             ],
             "automerge": false,
+            "platformAutomerge": false,
             "addLabels": [
                 "major-update",
                 "manual-review"
