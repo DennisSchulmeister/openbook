@@ -1,10 +1,10 @@
 OpenBook: Interactive Online Textbooks
 ======================================
 
-[![Run Full Test Suite](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml)
-[![Refresh Project SBOM](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml)
-[![Bump Dependencies (Minor/Patch)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml)
-[![Bump Dependencies (Major)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml)
+[![Test Suite](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml)
+[![SBOM](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml)
+[![Dependencies (Minor/Patch)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml)
+[![Dependencies (Major)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml)
 
 1. [Short Description](#short-description)
 1. [Further Documentation](#further-documentation)
