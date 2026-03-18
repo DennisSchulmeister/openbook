@@ -28,7 +28,7 @@ be created:
 | `RENOVATE_TOKEN`  | Personal access token (fine-grained) used by the Renovate bot to authenticate        |
 |                   | against the GitHub API. Required to create pull requests and, for auto-mergeable     |
 |                   | updates, to merge them without manual intervention. The token must be owned by a     |
-|                   | user with write access to the repository. Required permissions: | (a)  Read access   |
+|                   | user with write access to the repository. Required permissions: (a)  Read access     |
 |                   | to metadata, (b) Read and Write access to code, issues, pull requests, and workflows |
 
 Branch Protection Rules
