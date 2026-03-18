@@ -1,9 +1,14 @@
 OpenBook: Interactive Online Textbooks
-=============================================
+======================================
+
+[![Run Full Test Suite](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/run-tests-full.yml)
+[![Refresh Project SBOM](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/refresh-sbom.yml)
+[![Bump Dependencies (Minor/Patch)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-minor.yml)
+[![Bump Dependencies (Major)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml/badge.svg)](https://github.com/DennisSchulmeister/openbook/actions/workflows/renovate-major.yml)
 
 1. [Short Description](#short-description)
-1. [Didactic Considerations](#didactic-considerations)
 1. [Further Documentation](#further-documentation)
+1. [Problem Statements](#problem-statements)
 1. [Copyright](#copyright)
 
 <p align="center">
@@ -33,12 +38,8 @@ Additionally, not only the architecture shall be completely renewed, but many mo
    * AI-based interactive tutor
    * And many more
 
-Didactic Considerations
------------------------
-
-[Conecpt Board](https://app.conceptboard.com/board/gp1k-h2o7-igee-qbh5-z41k?invitationid=ece6433d-432d-4e35-b755-d0366abc0e47)
-
-### Problem Statements
+Problem Statements
+------------------
 
  1. Typical lecture scripts (including the textbooks developed with lecture-slide.js)
     have a rigid, linear structure that is aimed at all learners equally. As a result,
@@ -51,108 +52,17 @@ Didactic Considerations
  3. As a student, I quickly lose track of what I have to learn by when and what
     content is important.
 
-### Solution Stories
-
-The solution stories are based on typical learning situations over the course of
-a semester. Additionally, the need of lecturers to get an overview of their students'
-progress is explicitly addressed.
-
- 1. Course Preparation:
-
-    - As a teacher, I would like to be able to define the planned chapters,
-      sub-chapters and the associated learning objectives of my lecture in advance.
-
-    - As a teacher, I would like to be able to assign existing teaching materials
-      such as scripts in PDF format and HTML textbook pages to the individual chapters.
-
-    - As a teacher, I want to be able to assign my already existing exercises so that
-      they can be suggested to learners at the right time or new exercises can be
-      automatically derived from them.
-
-    - As a lecturer, I would like to be able to enter the planned lecture dates
-      and assign the topics covered. I would also like to be able to assign which
-      topics the students should prepare for or follow up on.
-
- 2. Self-study before or after a lecture:
-
-    - As a student, I would like to receive summaries that help me to work on a
-      topic in a time-saving manner.
-
-    - As a student, I would like my level of knowledge to be assessed in advance
-      so that I can receive suggestions as to what I should learn and how much.
-
-    - As a teacher, I want the students to work on the topics I have set and to
-      achieve the minimum learning targets associated with them.
-
-    - As a student, I would like to be offered customised learning nuggets from
-      the lecture materials (lecture notes etc.) as well as other materials such
-      as videos on a topic. The system should guide me, but allow me to vary the
-      order and prioritise topics.
-
-    - As a student, I want to be able to ask questions to clarify unclear issues
-      or to explore a topic in greater depth.
-
-    - As a student, I would like various tasks to be generated for me so that I
-      can test my knowledge or practise certain aspects.
-
- 3. Learning during a classroom lecture:
-
-    - As a teacher, I would also like to be able to store course materials and
-      assignments for use in classroom lessons.
-
-    - In general, as a teacher I would like to be able to use the system in my
-      classroom teaching, e.g. in practice sessions.
-
- 5. Learning progress:
-
-    - As a student, I want to know what content will be covered and when, and
-      what I need to prepare or follow up on.
-
-    - As a student, I would like to have a skills assessment that gives me an
-      indication of the gaps I need to fill.
-
-    - As a teacher, I would like to have an anonymised overview of my students'
-      learning progress so that I can adapt my classroom lectures accordingly.
-      This should at least show me which units the students have started with and
-      which they have already completed. Optionally, I can also see how well they
-      have done in these units.
-
-    - As a student, I would like to be able to enquire about the current status
-      of the lecture so that I can catch up on the material after an illness.
-
-    - As a student, I would like to be shown the lecture dates from my online
-      timetable and be reminded of self-study units that are due.
-
- 4. Exam preparation:
-
-    - As a student, I would like to be given tasks to prepare for exams and have
-      my solutions assessed.
-
-    - As a teacher, I want the tasks generated to be based on examples I provide
-      and to cover different learning levels of Bloom's taxonomy.
-
-    - As a student, I would like flashcards (and other forms of self-tests) to
-      be created for me so that I can test my knowledge.
-
 Further Documentation
 ---------------------
 
 At the time being there is no full documentation, yet. But README files are available to summarize the
-most important points for different target groups:
-
-* [CHANGELOG.md](CHANGELOG.md): Release change log
-* [PLANNING.md](PLANNING.md): Planned developments
-* [BACKLOG.md](BACKLOG.md): Ideas what could be done
-* [HACKING.md](HACKING.md): Information for developers
-* [DEPLOYMENT.md](DEPLOYMENT.md): Installation notes for administrators
-* [CONTRIBUTORS.md](CONTRIBUTORS.md): List of contributors (patches welcome)
-* [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): Our community code of conduct
+most important points for different target groups. See [./doc](./doc) directory.
 
 Copyright
 ---------
 
 OpenBook: Interactive Online Textbooks <br/>
-© 2024 Dennis Schulmeister-Zimolong <dennis@wpvs.de> <br>
+© 2024 – 2026 Dennis Schulmeister-Zimolong <dennis@wpvs.de> <br>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
