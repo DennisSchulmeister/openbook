@@ -1,7 +1,10 @@
 #===============================================================================
 # Python build container
 #===============================================================================
-FROM python:3.12-slim@sha256:7026274c107626d7e940e0e5d6730481a4600ae95d5ca7eb532dd4180313fea9 AS python-build
+ARG PYTHON_IMAGE=python:3.12-slim@sha256:7026274c107626d7e940e0e5d6730481a4600ae95d5ca7eb532dd4180313fea9
+ARG NODE_IMAGE=node:22-alpine@sha256:8094c002d08262dba12645a3b4a15cd6cd627d30bc782f53229a2ec13ee22a00
+
+FROM ${PYTHON_IMAGE} AS python-build
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -18,7 +21,7 @@ RUN .env/bin/poetry export --format=requirements.txt --output=requirements.txt
 #===============================================================================
 # Frontend build container
 #===============================================================================
-FROM node:22-alpine@sha256:8094c002d08262dba12645a3b4a15cd6cd627d30bc782f53229a2ec13ee22a00 AS nodejs-build
+FROM ${NODE_IMAGE} AS nodejs-build
 
 WORKDIR /app
 COPY . .
@@ -29,7 +32,7 @@ RUN npm run build:frontend
 #===============================================================================
 # App container
 #===============================================================================
-FROM python:3.12-slim@sha256:7026274c107626d7e940e0e5d6730481a4600ae95d5ca7eb532dd4180313fea9
+FROM ${PYTHON_IMAGE}
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
