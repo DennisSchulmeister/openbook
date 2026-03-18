@@ -44,11 +44,15 @@ rules must be applied to the default branch (typically `main`):
 ### Require a pull request before merging
 
 Direct pushes to the default branch are blocked. All changes must go through a pull request.
-Additionally, the status check named `tests` (which corresponds to the `tests` job in
-`.github/workflows/run-tests.yml`) must pass before a pull request can be merged.
+Additionally, the status check named `tests` (which corresponds to the final aggregator job
+in `.github/workflows/run-tests.yml`) must pass before a pull request can be merged. The
+router workflow always runs, detects whether any file under `src/` changed, and then calls
+either `.github/workflows/run-tests-full.yml` for the full CI suite or
+`.github/workflows/run-tests-dummy.yml` for a no-op success path.
 
 This ensures that linting, security checks, and the Django test suite all pass before any
-change lands on the default branch.
+relevant change lands on the default branch, while documentation- or tooling-only pull
+requests still satisfy the required branch protection check without running the full suite.
 
 ### Automatically request a Copilot code review
 
