@@ -30,3 +30,6 @@ align the values with at least one space after the colon.
 
 Remember: Before you can execute shell commands that need to access python packages,
 first execute `poetry shell` to switch into the virtual environment.
+
+When modifying the repo setup or tooling, please update the documentation in the
+`doc` directory accordingly.
