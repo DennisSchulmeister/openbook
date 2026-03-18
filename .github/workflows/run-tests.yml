@@ -43,6 +43,8 @@ jobs:
                   filters: |
                       src:
                           - "src/**"
+                          - "poetry.lock"
+                          - "package-lock.json"
 
     # Branch into reusable sub-workflow for the full test suite. Moved into a separate workflow
     # to only initialize the full CI environment when it is really needed.
