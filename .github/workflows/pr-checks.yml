@@ -21,14 +21,14 @@ jobs:
 
         services:
             redis:
-                image: redis:7-alpine
+                image: redis:7-alpine@sha256:8b81dd37ff027bec4e516d41acfbe9fe2460070dc6d4a4570a2ac5b9d59df065
                 ports:
                     - 6379:6379
 
         steps:
             # Must be first, so that GH actions finds our local actions!
             - name: "Checkout code"
-              uses: actions/checkout@v6
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   ref: ${{ github.head_ref }}
 
