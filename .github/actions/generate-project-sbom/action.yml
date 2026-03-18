@@ -20,7 +20,7 @@ runs:
           run: mkdir -p sbom
 
         - name: "Generate CycloneDX SBOM"
-          uses: anchore/sbom-action@v0
+          uses: anchore/sbom-action@57aae528053a48a3f6235f2d9461b05fbcb7366d # v0
           with:
               path: "."
               format: "cyclonedx-json"
