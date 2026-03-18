@@ -1,4 +1,4 @@
-name: "Renovate (Major)"
+name: "Bump Dependencies (Major)"
 
 on:
     workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
     renovate:
-        name: "Bump dependency versions  (Major)"
+        name: "Bump Dependencies (Major)"
         runs-on: ubuntu-latest
 
         steps:
