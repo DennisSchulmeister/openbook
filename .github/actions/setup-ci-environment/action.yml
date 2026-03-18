@@ -54,7 +54,7 @@ runs:
 
         - name: "Install Python dependencies"
           if: ${{ inputs.setup-python == 'true' }}
-          run: poetry install
+          run: poetry install --no-interaction --no-root
           shell: bash
 
         # ======= #

@@ -26,9 +26,11 @@
         "init:db": "cd src && python manage.py migrate && python manage.py load_initial_data && python manage.py install_html_library && python manage.py createsuperuser",
         "test:backend": "cd src && poetry run python manage.py test",
         "test": "npm run test:backend",
-        "check": "npm run lint && npm run test",
-        "deps:update-minor": "gh workflow run dependencies-weekly-minor.yml",
-        "deps:update-major": "gh workflow run dependencies-monthly-major.yml"
+        "check:security:npm": "npm audit --audit-level=moderate",
+        "check:security:python": "cd src && poetry run pip-audit",
+        "check:security": "npm run check:security:npm && npm run check:security:python",
+        "check": "npm run lint && npm run check:security && npm run test",
+        "deps:update": "gh workflow run renovate.yml"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

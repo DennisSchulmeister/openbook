@@ -27,3 +27,6 @@ method call.
 
 When breaking long dictionary definitions into multiple lines, please vertically
 align the values with at least one space after the colon.
+
+Remember: Before you can execute shell commands the need to access python packages,
+first execute `poetry shell` to switch in the the virtual environment.

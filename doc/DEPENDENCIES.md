@@ -187,22 +187,35 @@ or pull request that introduces the dependency.
 Version Upgrades and Security Fixes
 -------------------------------------
 
-* **Routine upgrades** – Dependencies should be updated regularly. We have two GitHub Actions workflows in place for this:
-  Each week minor/patch versions are upgraded and a PR is auto-merged, when all tests pass. At the beginning of each month
-  all major versions are upgraded and a PR for manual review is created. Both workflows also regenerate the whole-project
-  CycloneDX SBOM at `sbom/openbook.cyclonedx.json`, covering the backend Python dependencies and all frontend `npm`
-  workspaces, and include the updated file in the same PR.
+* **Routine upgrades** – Dependencies should be updated regularly. We use Renovate for this. The Renovate runner workflow
+  executes hourly, but dependency creation is constrained by Renovate schedules:
 
-  **Always trigger dependency updates through these workflows rather than running `poetry update` or `npm update` by
-  hand.** Manual updates bypass the automated SBOM regeneration, skip all CI tests, and leave no pull-request audit
-  trail. You can trigger either workflow from the command line or from the GitHub Actions tab:
+  - Each Monday morning, patch/minor updates are proposed and auto-merged after the Renovate PR checks succeed.
+  - On the first day of each month, major updates are proposed in separate PRs for manual review.
+
+  For `npm` and Poetry dependencies, Renovate uses a `bump` range strategy. This means weekly non-major updates do not
+  just refresh `package-lock.json` or `poetry.lock`; they also raise the declared minimum version in `package.json` and
+  `pyproject.toml` when a newer compatible release exists.
+
+  Renovate PR checks also regenerate the whole-project CycloneDX SBOM at `sbom/openbook.cyclonedx.json` and commit the
+  updated file to the same dependency PR branch.
+
+  The same automation also tracks GitHub Actions versions and the pinned image tags in the Docker Compose example under
+  `_docker/`.
+
+  **Always trigger dependency updates through Renovate rather than running `poetry update` or `npm update` by hand.**
+  Manual updates skip the automated pull-request audit trail and the dedicated Renovate PR checks. You can trigger an
+  out-of-band Renovate run from the command line or from the GitHub Actions tab:
 
   ```sh
-  npm run deps:update-minor    # triggers the weekly minor/patch workflow
-  npm run deps:update-major    # triggers the monthly major-version workflow
+  npm run deps:update
   ```
 
-  Both scripts require the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
+  The script requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
+
+  The repository must define a `RENOVATE_TOKEN` secret for the workflow. Use a fine-grained personal access token or
+  GitHub App token that can create pull requests and trigger follow-up workflows. The default `GITHUB_TOKEN` is not
+  sufficient here, because PRs created with it do not reliably trigger the Renovate PR check workflow.
 
 * **Major version bumps** – These frequently introduce breaking changes. Review the migration guide before upgrading.
   If the effort is significant, create a dedicated issue and plan the migration explicitly rather than letting it accumulate.
