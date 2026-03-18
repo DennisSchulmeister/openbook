@@ -83,7 +83,8 @@ npm run fix:frontend-install
 > for progress on full ESLint 10 compatibility.
 >
 > Once we can remove the flag, it must also be removed in the GH action
-> `.github/actions/setup-ci-environment/action.yml` file.
+> `.github/actions/setup-ci-environment/action.yml` file and the `renovate-*.yml`
+> workflows.
 
 To run all components locally:
 

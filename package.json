@@ -30,7 +30,8 @@
         "check:security:python": "cd src && poetry run pip-audit",
         "check:security": "npm run check:security:npm && npm run check:security:python",
         "check": "npm run lint && npm run check:security && npm run test",
-        "deps:update": "gh workflow run renovate.yml"
+        "deps:update:minor": "gh workflow run renovate-minor.yml",
+        "deps:update:major": "gh workflow run renovate-major.yml"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

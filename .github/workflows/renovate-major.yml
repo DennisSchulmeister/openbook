@@ -1,9 +1,9 @@
-name: "Renovate"
+name: "Renovate (Major)"
 
 on:
     workflow_dispatch:
     schedule:
-        - cron: "17 * * * *"
+        - cron: "17 4 1 * *"
 
 permissions:
     contents: write
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
     renovate:
-        name: "Run Renovate"
+        name: "Bump dependency versions  (Major)"
         runs-on: ubuntu-latest
 
         steps:
@@ -24,3 +24,5 @@ jobs:
               env:
                   LOG_LEVEL: "info"
                   NPM_CONFIG_LEGACY_PEER_DEPS: "true"
+                  RENOVATE_PACKAGE_RULES: >-
+                      [{"matchUpdateTypes":["digest","minor","patch","pin","pinDigest","lockFileMaintenance"],"enabled":false}]

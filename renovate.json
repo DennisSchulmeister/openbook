@@ -28,9 +28,6 @@
     "rebaseWhen": "behind-base-branch",
     "lockFileMaintenance": {
         "enabled": true,
-        "schedule": [
-            "* 0-5 * * 1"
-        ],
         "automerge": true,
         "addLabels": [
             "weekly-update"
@@ -55,7 +52,7 @@
             ]
         },
         {
-            "description": "Automerge weekly non-major dependency updates",
+            "description": "Automerge non-major dependency updates",
             "matchUpdateTypes": [
                 "digest",
                 "minor",
@@ -63,21 +60,15 @@
                 "pin",
                 "pinDigest"
             ],
-            "schedule": [
-                "* 0-5 * * 1"
-            ],
             "automerge": true,
             "addLabels": [
                 "weekly-update"
             ]
         },
         {
-            "description": "Create monthly major update PRs for manual review",
+            "description": "Create major update PRs for manual review",
             "matchUpdateTypes": [
                 "major"
-            ],
-            "schedule": [
-                "* 0-5 1 * *"
             ],
             "automerge": false,
             "addLabels": [

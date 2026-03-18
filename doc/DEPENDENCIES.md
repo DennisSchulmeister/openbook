@@ -187,11 +187,13 @@ or pull request that introduces the dependency.
 Version Upgrades and Security Fixes
 -------------------------------------
 
-* **Routine upgrades** – Dependencies should be updated regularly. We use Renovate for this. The Renovate runner workflow
-  executes hourly, but dependency creation is constrained by Renovate schedules:
+* **Routine upgrades** – Dependencies should be updated regularly. We use Renovate for this with two dedicated workflows:
 
-  - Each Monday morning, patch/minor updates are proposed and auto-merged after the Renovate PR checks succeed.
-  - On the first day of each month, major updates are proposed in separate PRs for manual review.
+  - `.github/workflows/renovate-minor.yml` runs each Monday morning and proposes patch/minor updates that are
+    auto-merged after the Renovate PR checks succeed.
+
+  - `.github/workflows/renovate-major.yml` runs on the first day of each month and proposes major updates in separate
+    PRs for manual review.
 
   For `npm` and Poetry dependencies, Renovate uses a `bump` range strategy. This means weekly non-major updates do not
   just refresh `package-lock.json` or `poetry.lock`; they also raise the declared minimum version in `package.json` and
@@ -208,7 +210,8 @@ Version Upgrades and Security Fixes
   out-of-band Renovate run from the command line or from the GitHub Actions tab:
 
   ```sh
-  npm run deps:update
+  npm run deps:update:minor
+  npm run deps:update:major
   ```
 
   The script requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.

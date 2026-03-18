@@ -1,4 +1,4 @@
-name: "Renovate PR Checks"
+name: "PR Checks"
 
 on:
     pull_request:
@@ -9,7 +9,7 @@ on:
             - ready_for_review
 
 concurrency:
-    group: "renovate-pr-checks-${{ github.event.pull_request.number }}"
+    group: "pr-checks-${{ github.event.pull_request.number }}"
     cancel-in-progress: true
 
 permissions:

@@ -1,0 +1,28 @@
+name: "Renovate (Non-Major)"
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: "17 3 * * 1"
+
+permissions:
+    contents: write
+    issues: write
+    pull-requests: write
+
+jobs:
+    renovate:
+        name: "Bump dependency versions (Minor/Patch)"
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Run Renovate"
+              uses: renovatebot/github-action@v46
+              with:
+                  configurationFile: renovate.json
+                  token: ${{ secrets.RENOVATE_TOKEN }}
+              env:
+                  LOG_LEVEL: "info"
+                  NPM_CONFIG_LEGACY_PEER_DEPS: "true"
+                  RENOVATE_PACKAGE_RULES: >-
+                      [{"matchUpdateTypes":["major"],"enabled":false}]
