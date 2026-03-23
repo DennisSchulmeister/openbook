@@ -1,7 +1,7 @@
 #===============================================================================
 # Python build container
 #===============================================================================
-ARG PYTHON_IMAGE=python:3.12-slim@sha256:7026274c107626d7e940e0e5d6730481a4600ae95d5ca7eb532dd4180313fea9
+ARG PYTHON_IMAGE=python:3.12-slim@sha256:3d5ed973e45820f5ba5e46bd065bd88b3a504ff0724d85980dcd05eab361fcf4
 ARG NODE_IMAGE=node:24-alpine@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114
 
 FROM ${PYTHON_IMAGE} AS python-build
