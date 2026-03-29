@@ -196,6 +196,19 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "OpenBook API",
     "DESCRIPTION": "Beautiful and Engaging Learning Materials",
     "VERSION": "1.0.0",
+    "LICENSE": {
+        "name": "GNU Affero General Public License, Version 3 (or later)",
+        "url": "https://www.gnu.org/licenses/agpl-3.0.html.en",
+    },
+    "SERVERS": [
+        # This surpresses a warnign durign OpenAPI generation. But we need to be careful to
+        # manually set the base URL when instantiating the generated API client classes in
+        # the frontend.
+        {
+            "url": f"http://localhost:8000",
+            "description": "Local Development"
+        }
+    ],
     "SERVE_INCLUDE_SCHEMA": False,
 
     # Self-serve Swagger and Redoc instead of loading from CDN
