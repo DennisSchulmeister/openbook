@@ -13,113 +13,53 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthenticatorType } from './AuthenticatorType';
-import {
-    AuthenticatorTypeFromJSON,
-    AuthenticatorTypeFromJSONTyped,
-    AuthenticatorTypeToJSON,
-    AuthenticatorTypeToJSONTyped,
-} from './AuthenticatorType';
-import type { Provider } from './Provider';
-import {
-    ProviderFromJSON,
-    ProviderFromJSONTyped,
-    ProviderToJSON,
-    ProviderToJSONTyped,
-} from './Provider';
-
 /**
  * 
  * @export
- * @interface Flow
+ * @interface InlineObject4Meta
  */
-export interface Flow {
+export interface InlineObject4Meta {
     /**
-     * 
-     * @type {string}
-     * @memberof Flow
-     */
-    id: FlowIdEnum;
-    /**
-     * 
-     * @type {Provider}
-     * @memberof Flow
-     */
-    provider?: Provider;
-    /**
-     * 
+     * Whether or not recovery codes where generated automatically.
      * @type {boolean}
-     * @memberof Flow
+     * @memberof InlineObject4Meta
      */
-    isPending?: boolean;
-    /**
-     * Matches `settings.MFA_SUPPORTED_TYPES`.
-     * @type {Array<AuthenticatorType>}
-     * @memberof Flow
-     */
-    types?: Array<AuthenticatorType>;
+    recoveryCodesGenerated?: boolean;
 }
 
-
 /**
- * @export
+ * Check if a given object implements the InlineObject4Meta interface.
  */
-export const FlowIdEnum = {
-    Login: 'login',
-    LoginByCode: 'login_by_code',
-    MfaAuthenticate: 'mfa_authenticate',
-    MfaReauthenticate: 'mfa_reauthenticate',
-    ProviderRedirect: 'provider_redirect',
-    ProviderSignup: 'provider_signup',
-    ProviderToken: 'provider_token',
-    Reauthenticate: 'reauthenticate',
-    Signup: 'signup',
-    VerifyEmail: 'verify_email',
-    VerifyPhone: 'verify_phone'
-} as const;
-export type FlowIdEnum = typeof FlowIdEnum[keyof typeof FlowIdEnum];
-
-
-/**
- * Check if a given object implements the Flow interface.
- */
-export function instanceOfFlow(value: object): value is Flow {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfInlineObject4Meta(value: object): value is InlineObject4Meta {
     return true;
 }
 
-export function FlowFromJSON(json: any): Flow {
-    return FlowFromJSONTyped(json, false);
+export function InlineObject4MetaFromJSON(json: any): InlineObject4Meta {
+    return InlineObject4MetaFromJSONTyped(json, false);
 }
 
-export function FlowFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flow {
+export function InlineObject4MetaFromJSONTyped(json: any, ignoreDiscriminator: boolean): InlineObject4Meta {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
-        'provider': json['provider'] == null ? undefined : ProviderFromJSON(json['provider']),
-        'isPending': json['is_pending'] == null ? undefined : json['is_pending'],
-        'types': json['types'] == null ? undefined : ((json['types'] as Array<any>).map(AuthenticatorTypeFromJSON)),
+        'recoveryCodesGenerated': json['recovery_codes_generated'] == null ? undefined : json['recovery_codes_generated'],
     };
 }
 
-export function FlowToJSON(json: any): Flow {
-    return FlowToJSONTyped(json, false);
+export function InlineObject4MetaToJSON(json: any): InlineObject4Meta {
+    return InlineObject4MetaToJSONTyped(json, false);
 }
 
-export function FlowToJSONTyped(value?: Flow | null, ignoreDiscriminator: boolean = false): any {
+export function InlineObject4MetaToJSONTyped(value?: InlineObject4Meta | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
-        'provider': ProviderToJSON(value['provider']),
-        'is_pending': value['isPending'],
-        'types': value['types'] == null ? undefined : ((value['types'] as Array<any>).map(AuthenticatorTypeToJSON)),
+        'recovery_codes_generated': value['recoveryCodesGenerated'],
     };
 }
 

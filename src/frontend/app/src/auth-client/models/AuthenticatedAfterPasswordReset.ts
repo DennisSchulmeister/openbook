@@ -13,113 +13,84 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthenticatorType } from './AuthenticatorType';
-import {
-    AuthenticatorTypeFromJSON,
-    AuthenticatorTypeFromJSONTyped,
-    AuthenticatorTypeToJSON,
-    AuthenticatorTypeToJSONTyped,
-} from './AuthenticatorType';
-import type { Provider } from './Provider';
-import {
-    ProviderFromJSON,
-    ProviderFromJSONTyped,
-    ProviderToJSON,
-    ProviderToJSONTyped,
-} from './Provider';
-
 /**
  * 
  * @export
- * @interface Flow
+ * @interface AuthenticatedAfterPasswordReset
  */
-export interface Flow {
+export interface AuthenticatedAfterPasswordReset {
     /**
      * 
      * @type {string}
-     * @memberof Flow
+     * @memberof AuthenticatedAfterPasswordReset
      */
-    id: FlowIdEnum;
+    method: AuthenticatedAfterPasswordResetMethodEnum;
     /**
+     * An epoch based timestamp (trivial to parse using: `new Date(value)*1000`)
      * 
-     * @type {Provider}
-     * @memberof Flow
+     * @type {number}
+     * @memberof AuthenticatedAfterPasswordReset
      */
-    provider?: Provider;
+    at: number;
     /**
+     * The email address.
      * 
-     * @type {boolean}
-     * @memberof Flow
+     * @type {string}
+     * @memberof AuthenticatedAfterPasswordReset
      */
-    isPending?: boolean;
-    /**
-     * Matches `settings.MFA_SUPPORTED_TYPES`.
-     * @type {Array<AuthenticatorType>}
-     * @memberof Flow
-     */
-    types?: Array<AuthenticatorType>;
+    email: string;
 }
 
 
 /**
  * @export
  */
-export const FlowIdEnum = {
-    Login: 'login',
-    LoginByCode: 'login_by_code',
-    MfaAuthenticate: 'mfa_authenticate',
-    MfaReauthenticate: 'mfa_reauthenticate',
-    ProviderRedirect: 'provider_redirect',
-    ProviderSignup: 'provider_signup',
-    ProviderToken: 'provider_token',
-    Reauthenticate: 'reauthenticate',
-    Signup: 'signup',
-    VerifyEmail: 'verify_email',
-    VerifyPhone: 'verify_phone'
+export const AuthenticatedAfterPasswordResetMethodEnum = {
+    PasswordReset: 'password_reset'
 } as const;
-export type FlowIdEnum = typeof FlowIdEnum[keyof typeof FlowIdEnum];
+export type AuthenticatedAfterPasswordResetMethodEnum = typeof AuthenticatedAfterPasswordResetMethodEnum[keyof typeof AuthenticatedAfterPasswordResetMethodEnum];
 
 
 /**
- * Check if a given object implements the Flow interface.
+ * Check if a given object implements the AuthenticatedAfterPasswordReset interface.
  */
-export function instanceOfFlow(value: object): value is Flow {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfAuthenticatedAfterPasswordReset(value: object): value is AuthenticatedAfterPasswordReset {
+    if (!('method' in value) || value['method'] === undefined) return false;
+    if (!('at' in value) || value['at'] === undefined) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
     return true;
 }
 
-export function FlowFromJSON(json: any): Flow {
-    return FlowFromJSONTyped(json, false);
+export function AuthenticatedAfterPasswordResetFromJSON(json: any): AuthenticatedAfterPasswordReset {
+    return AuthenticatedAfterPasswordResetFromJSONTyped(json, false);
 }
 
-export function FlowFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flow {
+export function AuthenticatedAfterPasswordResetFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthenticatedAfterPasswordReset {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
-        'provider': json['provider'] == null ? undefined : ProviderFromJSON(json['provider']),
-        'isPending': json['is_pending'] == null ? undefined : json['is_pending'],
-        'types': json['types'] == null ? undefined : ((json['types'] as Array<any>).map(AuthenticatorTypeFromJSON)),
+        'method': json['method'],
+        'at': json['at'],
+        'email': json['email'],
     };
 }
 
-export function FlowToJSON(json: any): Flow {
-    return FlowToJSONTyped(json, false);
+export function AuthenticatedAfterPasswordResetToJSON(json: any): AuthenticatedAfterPasswordReset {
+    return AuthenticatedAfterPasswordResetToJSONTyped(json, false);
 }
 
-export function FlowToJSONTyped(value?: Flow | null, ignoreDiscriminator: boolean = false): any {
+export function AuthenticatedAfterPasswordResetToJSONTyped(value?: AuthenticatedAfterPasswordReset | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
-        'provider': ProviderToJSON(value['provider']),
-        'is_pending': value['isPending'],
-        'types': value['types'] == null ? undefined : ((value['types'] as Array<any>).map(AuthenticatorTypeToJSON)),
+        'method': value['method'],
+        'at': value['at'],
+        'email': value['email'],
     };
 }
 

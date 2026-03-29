@@ -12,114 +12,60 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { AuthenticatorType } from './AuthenticatorType';
+
+import * as runtime from '../runtime';
+import type {
+  AuthApiAppV1TokensRefreshPost200Response,
+  AuthApiAppV1TokensRefreshPostRequest,
+  ErrorResponse,
+} from '../models/index';
 import {
-    AuthenticatorTypeFromJSON,
-    AuthenticatorTypeFromJSONTyped,
-    AuthenticatorTypeToJSON,
-    AuthenticatorTypeToJSONTyped,
-} from './AuthenticatorType';
-import type { Provider } from './Provider';
-import {
-    ProviderFromJSON,
-    ProviderFromJSONTyped,
-    ProviderToJSON,
-    ProviderToJSONTyped,
-} from './Provider';
+    AuthApiAppV1TokensRefreshPost200ResponseFromJSON,
+    AuthApiAppV1TokensRefreshPost200ResponseToJSON,
+    AuthApiAppV1TokensRefreshPostRequestFromJSON,
+    AuthApiAppV1TokensRefreshPostRequestToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
+} from '../models/index';
+
+export interface AuthApiAppV1TokensRefreshPostOperationRequest {
+    authApiAppV1TokensRefreshPostRequest?: AuthApiAppV1TokensRefreshPostRequest;
+}
 
 /**
  * 
- * @export
- * @interface Flow
  */
-export interface Flow {
+export class TokensApi extends runtime.BaseAPI {
+
     /**
-     * 
-     * @type {string}
-     * @memberof Flow
+     * Used to retrieve a new access token. Depending on `settings.HEADLESS_JWT_ROTATE_REFRESH_TOKEN`, a new refresh token is returned as well. 
+     * Refresh the access token 
      */
-    id: FlowIdEnum;
-    /**
-     * 
-     * @type {Provider}
-     * @memberof Flow
-     */
-    provider?: Provider;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof Flow
-     */
-    isPending?: boolean;
-    /**
-     * Matches `settings.MFA_SUPPORTED_TYPES`.
-     * @type {Array<AuthenticatorType>}
-     * @memberof Flow
-     */
-    types?: Array<AuthenticatorType>;
-}
+    async authApiAppV1TokensRefreshPostRaw(requestParameters: AuthApiAppV1TokensRefreshPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthApiAppV1TokensRefreshPost200Response>> {
+        const queryParameters: any = {};
 
+        const headerParameters: runtime.HTTPHeaders = {};
 
-/**
- * @export
- */
-export const FlowIdEnum = {
-    Login: 'login',
-    LoginByCode: 'login_by_code',
-    MfaAuthenticate: 'mfa_authenticate',
-    MfaReauthenticate: 'mfa_reauthenticate',
-    ProviderRedirect: 'provider_redirect',
-    ProviderSignup: 'provider_signup',
-    ProviderToken: 'provider_token',
-    Reauthenticate: 'reauthenticate',
-    Signup: 'signup',
-    VerifyEmail: 'verify_email',
-    VerifyPhone: 'verify_phone'
-} as const;
-export type FlowIdEnum = typeof FlowIdEnum[keyof typeof FlowIdEnum];
+        headerParameters['Content-Type'] = 'application/json';
 
+        const response = await this.request({
+            path: `/auth-api/app/v1/tokens/refresh`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AuthApiAppV1TokensRefreshPostRequestToJSON(requestParameters['authApiAppV1TokensRefreshPostRequest']),
+        }, initOverrides);
 
-/**
- * Check if a given object implements the Flow interface.
- */
-export function instanceOfFlow(value: object): value is Flow {
-    if (!('id' in value) || value['id'] === undefined) return false;
-    return true;
-}
-
-export function FlowFromJSON(json: any): Flow {
-    return FlowFromJSONTyped(json, false);
-}
-
-export function FlowFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flow {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'id': json['id'],
-        'provider': json['provider'] == null ? undefined : ProviderFromJSON(json['provider']),
-        'isPending': json['is_pending'] == null ? undefined : json['is_pending'],
-        'types': json['types'] == null ? undefined : ((json['types'] as Array<any>).map(AuthenticatorTypeFromJSON)),
-    };
-}
-
-export function FlowToJSON(json: any): Flow {
-    return FlowToJSONTyped(json, false);
-}
-
-export function FlowToJSONTyped(value?: Flow | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthApiAppV1TokensRefreshPost200ResponseFromJSON(jsonValue));
     }
 
-    return {
-        
-        'id': value['id'],
-        'provider': ProviderToJSON(value['provider']),
-        'is_pending': value['isPending'],
-        'types': value['types'] == null ? undefined : ((value['types'] as Array<any>).map(AuthenticatorTypeToJSON)),
-    };
-}
+    /**
+     * Used to retrieve a new access token. Depending on `settings.HEADLESS_JWT_ROTATE_REFRESH_TOKEN`, a new refresh token is returned as well. 
+     * Refresh the access token 
+     */
+    async authApiAppV1TokensRefreshPost(requestParameters: AuthApiAppV1TokensRefreshPostOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthApiAppV1TokensRefreshPost200Response> {
+        const response = await this.authApiAppV1TokensRefreshPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
+}

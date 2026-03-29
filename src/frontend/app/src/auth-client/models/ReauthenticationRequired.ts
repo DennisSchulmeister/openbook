@@ -13,113 +13,95 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthenticatorType } from './AuthenticatorType';
+import type { User } from './User';
 import {
-    AuthenticatorTypeFromJSON,
-    AuthenticatorTypeFromJSONTyped,
-    AuthenticatorTypeToJSON,
-    AuthenticatorTypeToJSONTyped,
-} from './AuthenticatorType';
-import type { Provider } from './Provider';
+    UserFromJSON,
+    UserFromJSONTyped,
+    UserToJSON,
+    UserToJSONTyped,
+} from './User';
+import type { AuthenticationMethod } from './AuthenticationMethod';
 import {
-    ProviderFromJSON,
-    ProviderFromJSONTyped,
-    ProviderToJSON,
-    ProviderToJSONTyped,
-} from './Provider';
+    AuthenticationMethodFromJSON,
+    AuthenticationMethodFromJSONTyped,
+    AuthenticationMethodToJSON,
+    AuthenticationMethodToJSONTyped,
+} from './AuthenticationMethod';
+import type { Flow } from './Flow';
+import {
+    FlowFromJSON,
+    FlowFromJSONTyped,
+    FlowToJSON,
+    FlowToJSONTyped,
+} from './Flow';
 
 /**
  * 
  * @export
- * @interface Flow
+ * @interface ReauthenticationRequired
  */
-export interface Flow {
+export interface ReauthenticationRequired {
     /**
      * 
-     * @type {string}
-     * @memberof Flow
+     * @type {Array<Flow>}
+     * @memberof ReauthenticationRequired
      */
-    id: FlowIdEnum;
+    flows: Array<Flow>;
     /**
      * 
-     * @type {Provider}
-     * @memberof Flow
+     * @type {User}
+     * @memberof ReauthenticationRequired
      */
-    provider?: Provider;
+    user: User;
     /**
+     * A list of methods used to authenticate.
      * 
-     * @type {boolean}
-     * @memberof Flow
+     * @type {Array<AuthenticationMethod>}
+     * @memberof ReauthenticationRequired
      */
-    isPending?: boolean;
-    /**
-     * Matches `settings.MFA_SUPPORTED_TYPES`.
-     * @type {Array<AuthenticatorType>}
-     * @memberof Flow
-     */
-    types?: Array<AuthenticatorType>;
+    methods: Array<AuthenticationMethod>;
 }
 
-
 /**
- * @export
+ * Check if a given object implements the ReauthenticationRequired interface.
  */
-export const FlowIdEnum = {
-    Login: 'login',
-    LoginByCode: 'login_by_code',
-    MfaAuthenticate: 'mfa_authenticate',
-    MfaReauthenticate: 'mfa_reauthenticate',
-    ProviderRedirect: 'provider_redirect',
-    ProviderSignup: 'provider_signup',
-    ProviderToken: 'provider_token',
-    Reauthenticate: 'reauthenticate',
-    Signup: 'signup',
-    VerifyEmail: 'verify_email',
-    VerifyPhone: 'verify_phone'
-} as const;
-export type FlowIdEnum = typeof FlowIdEnum[keyof typeof FlowIdEnum];
-
-
-/**
- * Check if a given object implements the Flow interface.
- */
-export function instanceOfFlow(value: object): value is Flow {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfReauthenticationRequired(value: object): value is ReauthenticationRequired {
+    if (!('flows' in value) || value['flows'] === undefined) return false;
+    if (!('user' in value) || value['user'] === undefined) return false;
+    if (!('methods' in value) || value['methods'] === undefined) return false;
     return true;
 }
 
-export function FlowFromJSON(json: any): Flow {
-    return FlowFromJSONTyped(json, false);
+export function ReauthenticationRequiredFromJSON(json: any): ReauthenticationRequired {
+    return ReauthenticationRequiredFromJSONTyped(json, false);
 }
 
-export function FlowFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flow {
+export function ReauthenticationRequiredFromJSONTyped(json: any, ignoreDiscriminator: boolean): ReauthenticationRequired {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
-        'provider': json['provider'] == null ? undefined : ProviderFromJSON(json['provider']),
-        'isPending': json['is_pending'] == null ? undefined : json['is_pending'],
-        'types': json['types'] == null ? undefined : ((json['types'] as Array<any>).map(AuthenticatorTypeFromJSON)),
+        'flows': ((json['flows'] as Array<any>).map(FlowFromJSON)),
+        'user': UserFromJSON(json['user']),
+        'methods': ((json['methods'] as Array<any>).map(AuthenticationMethodFromJSON)),
     };
 }
 
-export function FlowToJSON(json: any): Flow {
-    return FlowToJSONTyped(json, false);
+export function ReauthenticationRequiredToJSON(json: any): ReauthenticationRequired {
+    return ReauthenticationRequiredToJSONTyped(json, false);
 }
 
-export function FlowToJSONTyped(value?: Flow | null, ignoreDiscriminator: boolean = false): any {
+export function ReauthenticationRequiredToJSONTyped(value?: ReauthenticationRequired | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
-        'provider': ProviderToJSON(value['provider']),
-        'is_pending': value['isPending'],
-        'types': value['types'] == null ? undefined : ((value['types'] as Array<any>).map(AuthenticatorTypeToJSON)),
+        'flows': ((value['flows'] as Array<any>).map(FlowToJSON)),
+        'user': UserToJSON(value['user']),
+        'methods': ((value['methods'] as Array<any>).map(AuthenticationMethodToJSON)),
     };
 }
 

@@ -13,113 +13,84 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AuthenticatorType } from './AuthenticatorType';
-import {
-    AuthenticatorTypeFromJSON,
-    AuthenticatorTypeFromJSONTyped,
-    AuthenticatorTypeToJSON,
-    AuthenticatorTypeToJSONTyped,
-} from './AuthenticatorType';
-import type { Provider } from './Provider';
-import {
-    ProviderFromJSON,
-    ProviderFromJSONTyped,
-    ProviderToJSON,
-    ProviderToJSONTyped,
-} from './Provider';
-
 /**
  * 
  * @export
- * @interface Flow
+ * @interface AuthenticatedByConfirmingACodeSentByEmail
  */
-export interface Flow {
+export interface AuthenticatedByConfirmingACodeSentByEmail {
     /**
      * 
      * @type {string}
-     * @memberof Flow
+     * @memberof AuthenticatedByConfirmingACodeSentByEmail
      */
-    id: FlowIdEnum;
+    method: AuthenticatedByConfirmingACodeSentByEmailMethodEnum;
     /**
+     * An epoch based timestamp (trivial to parse using: `new Date(value)*1000`)
      * 
-     * @type {Provider}
-     * @memberof Flow
+     * @type {number}
+     * @memberof AuthenticatedByConfirmingACodeSentByEmail
      */
-    provider?: Provider;
+    at: number;
     /**
+     * The email address.
      * 
-     * @type {boolean}
-     * @memberof Flow
+     * @type {string}
+     * @memberof AuthenticatedByConfirmingACodeSentByEmail
      */
-    isPending?: boolean;
-    /**
-     * Matches `settings.MFA_SUPPORTED_TYPES`.
-     * @type {Array<AuthenticatorType>}
-     * @memberof Flow
-     */
-    types?: Array<AuthenticatorType>;
+    email: string;
 }
 
 
 /**
  * @export
  */
-export const FlowIdEnum = {
-    Login: 'login',
-    LoginByCode: 'login_by_code',
-    MfaAuthenticate: 'mfa_authenticate',
-    MfaReauthenticate: 'mfa_reauthenticate',
-    ProviderRedirect: 'provider_redirect',
-    ProviderSignup: 'provider_signup',
-    ProviderToken: 'provider_token',
-    Reauthenticate: 'reauthenticate',
-    Signup: 'signup',
-    VerifyEmail: 'verify_email',
-    VerifyPhone: 'verify_phone'
+export const AuthenticatedByConfirmingACodeSentByEmailMethodEnum = {
+    Code: 'code'
 } as const;
-export type FlowIdEnum = typeof FlowIdEnum[keyof typeof FlowIdEnum];
+export type AuthenticatedByConfirmingACodeSentByEmailMethodEnum = typeof AuthenticatedByConfirmingACodeSentByEmailMethodEnum[keyof typeof AuthenticatedByConfirmingACodeSentByEmailMethodEnum];
 
 
 /**
- * Check if a given object implements the Flow interface.
+ * Check if a given object implements the AuthenticatedByConfirmingACodeSentByEmail interface.
  */
-export function instanceOfFlow(value: object): value is Flow {
-    if (!('id' in value) || value['id'] === undefined) return false;
+export function instanceOfAuthenticatedByConfirmingACodeSentByEmail(value: object): value is AuthenticatedByConfirmingACodeSentByEmail {
+    if (!('method' in value) || value['method'] === undefined) return false;
+    if (!('at' in value) || value['at'] === undefined) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
     return true;
 }
 
-export function FlowFromJSON(json: any): Flow {
-    return FlowFromJSONTyped(json, false);
+export function AuthenticatedByConfirmingACodeSentByEmailFromJSON(json: any): AuthenticatedByConfirmingACodeSentByEmail {
+    return AuthenticatedByConfirmingACodeSentByEmailFromJSONTyped(json, false);
 }
 
-export function FlowFromJSONTyped(json: any, ignoreDiscriminator: boolean): Flow {
+export function AuthenticatedByConfirmingACodeSentByEmailFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthenticatedByConfirmingACodeSentByEmail {
     if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
-        'provider': json['provider'] == null ? undefined : ProviderFromJSON(json['provider']),
-        'isPending': json['is_pending'] == null ? undefined : json['is_pending'],
-        'types': json['types'] == null ? undefined : ((json['types'] as Array<any>).map(AuthenticatorTypeFromJSON)),
+        'method': json['method'],
+        'at': json['at'],
+        'email': json['email'],
     };
 }
 
-export function FlowToJSON(json: any): Flow {
-    return FlowToJSONTyped(json, false);
+export function AuthenticatedByConfirmingACodeSentByEmailToJSON(json: any): AuthenticatedByConfirmingACodeSentByEmail {
+    return AuthenticatedByConfirmingACodeSentByEmailToJSONTyped(json, false);
 }
 
-export function FlowToJSONTyped(value?: Flow | null, ignoreDiscriminator: boolean = false): any {
+export function AuthenticatedByConfirmingACodeSentByEmailToJSONTyped(value?: AuthenticatedByConfirmingACodeSentByEmail | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
 
     return {
         
-        'id': value['id'],
-        'provider': ProviderToJSON(value['provider']),
-        'is_pending': value['isPending'],
-        'types': value['types'] == null ? undefined : ((value['types'] as Array<any>).map(AuthenticatorTypeToJSON)),
+        'method': value['method'],
+        'at': value['at'],
+        'email': value['email'],
     };
 }
 
