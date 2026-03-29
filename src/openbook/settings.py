@@ -271,14 +271,17 @@ ACCOUNT_USERNAME_MIN_LENGTH = 5
 
 SOCIALACCOUNT_ADAPTER = "openbook.auth.allauth.adapter.SocialAccountAdapter"
 
-# Allauith - Headless API
+# Allauth - Headless API
 # See: https://docs.allauth.org/en/latest/headless/configuration.html
 HEADLESS_ONLY = False
+HEADLESS_ADAPTER = "allauth.headless.adapter.DefaultHeadlessAdapter"
 HEADLESS_SERVE_SPECIFICATION = True
 HEADLESS_FRONTEND_URLS = {
-    # "account_confirm_email": "https://app.project.org/account/verify-email/{key}",
-    # "account_reset_password_from_key": "https://app.org/account/password/reset/key/{key}",
-    # "account_signup": "https://app.org/account/signup",
+    #"account_confirm_email": "https://app.project.org/account/verify-email/{key}",
+    #"account_reset_password": "https://app.project.org/account/password/reset",
+    #"account_reset_password_from_key": "https://app.project.org/account/password/reset/key/{key}",
+    #"account_signup": "https://app.project.org/account/signup",
+    #"socialaccount_login_error": "https://app.project.org/account/provider/callback",
 }
 
 # Recommended settings for SAML behind a reverse proxy
@@ -538,6 +541,7 @@ STATIC_ROOT = BASE_DIR / "_static"
 
 STATICFILES_DIRS = [
     BASE_DIR / "frontend" / "admin" / "dist",
+    BASE_DIR / "frontend" / "allauth" / "dist",
     BASE_DIR / "frontend" / "app" / "dist",
 ]
 

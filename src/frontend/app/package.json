@@ -19,8 +19,5 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.30.2",
     "svelte-spa-router": "^5.0.0"
-  },
-  "dependencies": {
-    "maildev": "2.2.1"
   }
 }

@@ -8,11 +8,9 @@
  * License, or (at your option) any later version.
  */
 
-// import type {RouteDetail} from "svelte-spa-router";
-
-import {wrap}             from "svelte-spa-router/wrap";
-import Placeholder        from "./app-frame/Placeholder.svelte";
-import NotFoundPage       from "./pages/errors/NotFoundPage.svelte";
+import {wrap}       from "svelte-spa-router/wrap";
+import Placeholder  from "./app-frame/Placeholder.svelte";
+import NotFoundPage from "./pages/errors/NotFoundPage.svelte";
 // import {currentPage}      from "../stores/book.js";
 
 // /**
