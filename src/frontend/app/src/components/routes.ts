@@ -28,15 +28,11 @@ import NotFoundPage       from "./pages/errors/NotFoundPage.svelte";
 
 export default {
     "/": wrap({
-        // @ts-expect-error: Temporary silence type error, until svelte-spa-router adds official Svelte 5 support.
-        // Issue: https://github.com/ItalyPaleAle/svelte-spa-router/issues/318
         component: Placeholder,
         // conditions: [setPageNumber],
     }),
     
     // "/book/page/:pageNumber": wrap({
-    //     // @ts-ignore: Temporary silence type error, until svelte-spa-router adds official Svelte 5 support.
-    //     // Issue: https://github.com/ItalyPaleAle/svelte-spa-router/issues/318
     //     component: BookContentPage,
     //     conditions: [setPageNumber],
     // }),
