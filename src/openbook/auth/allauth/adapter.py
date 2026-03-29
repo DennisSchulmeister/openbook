@@ -80,7 +80,7 @@ class AccountAdapter(DefaultAccountAdapter):
         """
         Only allow human users to authenticate. App users need to authenticate with an
         authentication token, instead. This is an extra security measure, since normally
-        app users should not have a passwort set and thus should not be ably to login
+        app users should not have a passwort set and thus should not be able to login
         with username/password, anyway.
         """
         user = super().authenticate(request, **credentials)
