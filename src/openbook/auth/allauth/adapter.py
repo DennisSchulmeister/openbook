@@ -85,7 +85,10 @@ class AccountAdapter(DefaultAccountAdapter):
         """
         user = super().authenticate(request, **credentials)
 
-        if not user.user_type == user.UserType.HUMAN:
+        if not user:
+            return user
+        
+        if hasattr(user, "user_type") and not user.user_type == user.UserType.HUMAN:
             # Cannot raise exception here
             return None
 
