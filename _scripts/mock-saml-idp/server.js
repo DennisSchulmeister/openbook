@@ -8,19 +8,36 @@
  * License, or (at your option) any later version.
  */
 
+import {parseArgs}   from "node:util";
 import {startServer} from 'mock-saml-idp';
 
 /**
  * Configure and start mock SAML IDP server to local testing and unit tests.
  */
+const args = parseArgs({
+    options: {
+        h: {type: "string"},
+        p: {type: "string"},
+    }
+});
+
+const config = {
+    host: args.values.h || "localhost",
+    port: args.values.p || 7000,            // mock-saml-idp default port is 7000
+}
+
+if (Number.isNaN(config.port)) {
+    throw new Error(`Invalid port number: ${config.port}`);
+}
+
 const {url} = await startServer({
-    port: 8886,          // default: 7000
-    host: "localhost",   // default: localhost
+    host: config.host,
+    port: config.port,
 
     // Default user shown in the login form. Actually the server accepts all
     // credentials and simply passes them on to the service provider. For testing
     // we use different e-mail domains to assign initial permission groups:
-    // @student.com, @teacher.com
+    // @student.com, @teacher.com, @admin.com
     defaultUser: {
         nameId:    "alice@student.com",
         firstName: "Alice",

@@ -133,7 +133,14 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 if group_assignment.match(sociallogin.account.extra_data):
                     for group in group_assignment.groups.all():
                         groups.append(group)
+                    
+                    if group_assignment.is_staff:
+                        saved_user.is_staff = True
+                    
+                    if group_assignment.is_superuser:
+                        saved_user.is_superuser = True
             
+            saved_user.save()
             saved_user.groups.set(groups)
 
         return saved_user
