@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "channels",
 
     # Django REST framework
-    "rest_wind",
+    #"rest_wind",
     "rest_framework",
 
     "django_filters",
@@ -178,7 +178,7 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_FILTER_BACKENDS": (
-        #"rest_flex_fields.filter_backends.FlexFieldsFilterBackend",    # (Not possible here due to circular import): drf-flex-fields: Automatic query optimization
+        "rest_flex_fields2.filter_backends.FlexFieldsFilterBackend",    # (Not possible here due to circular import): drf-flex-fields2: Automatic query optimization
         "django_filters.rest_framework.DjangoFilterBackend",            # Query filters
         "rest_framework.filters.SearchFilter",                          # _search query parameter
         "openbook.drf.filters.DjangoObjectPermissionsFilter",           # Object-permission based filter
@@ -228,8 +228,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 # See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
-# Must be defined before the first import of rest_flex_field!
-REST_FLEX_FIELDS = {
+# Must be defined before the first import of rest_flex_field2!
+rest_flex_fields = {
     "EXPAND_PARAM": "_expand",
     "FIELDS_PARAM": "_fields",
     "OMIT_PARAM": "_omit",
