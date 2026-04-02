@@ -79,13 +79,9 @@ INSTALLED_APPS = [
     "import_export",                        # Django Import/Export: Import and export data in the Django Admin
     "djangoql",                             # Django QL: Advanced search language for Django
     "colorfield",                           # Django Color Field: Color field for models with color-picker in the admin
-    "debug_toolbar",                        # Django Debug Toolbar: See SQL queries and more
 ]
 
 MIDDLEWARE = [
-    # Django Debug Toolbar
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
-
     # Django
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
