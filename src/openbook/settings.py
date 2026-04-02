@@ -223,9 +223,9 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-# See: https://github.com/rsinger86/drf-flex-fields?tab=readme-ov-file#customization
-# Must be defined before the first import of rest_flex_field2!
-rest_flex_fields = {
+# See: https://github.com/openbook-education/drf-flex-fields2/blob/master/docs/guide/advanced.rst
+# Must be defined before the first import of rest_flex_fields2!
+REST_FLEX_FIELDS2 = {
     "EXPAND_PARAM": "_expand",
     "FIELDS_PARAM": "_fields",
     "OMIT_PARAM": "_omit",
